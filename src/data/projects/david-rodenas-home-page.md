@@ -6,6 +6,7 @@ abstract: >
   It combines cutting-edge web app technologies to create
   a fast and appealing web page.
 url: "http://david-rodenas.com"
+source: "https://github.com/drpicox/david-rodenas.com"
 relevance: 5
 tags:
   - javascript
