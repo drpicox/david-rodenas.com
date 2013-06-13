@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="third-party.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.1.0/css/font-awesome.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic|Lobster' rel='stylesheet' type='text/css'>
+    <title>David Rodenas home page</title>
+  </head>
+  <body ng-app="PolarisApp">
+
+
+    <!-- NAVIGATION BAR -->
+    <div class="navbar navbar-fixed-top" bs-navbar>
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">
+            <img src='images/david-head.jpg' class="img-circle" style="max-height:39px">
+          </a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <div class="hidden-desktop" style="height:10px"></div>
+              <li data-match-route="/?"><a href="#/">Home</a></li>
+              <li data-match-route="/apps"><a href="#/apps">Apps</a></li>
+              <li data-match-route="/data"><a href="#/data">Data</a></li>
+              <li data-match-route="/real-time"><a href="#/real-time">Real-Time</a></li>
+              <li data-match-route="/projects"><a href="#/projects">Projects</a></li>
+              <li data-match-route="/people"><a href="#/people">People</a></li>
+              <li data-match-route="/about"><a href="#/about">About</a></li>
+            </ul>
+            <form class="navbar-form pull-right">
+              <a href="#/contact" class="btn btn-success">Contact me</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- The gap for the navbar -->
+    <div style="padding-top:40px" class="visible-desktop"></div>
+    <!-- end navigation bar -->
+
+    <!-- VIEW: specific location view -->
+    
+    <div ng-view></div>
+
+    <!-- HOME PAGE -->
+    <!-- This is the content of the home page.
+    Although home page is only visible in one part of the page,
+    it is encoded here in order to improve loading performance,
+    and a little bit the search optimisation.    
+    It will be hidded when the user changes of page.
+     -->
+    <div ng-show="showHome" style="display:none">
+      <!-- HOME PAGE: Jumbotron -->
+      <div class="jumbotron" 
+           style="background-image: url('images/barcelona-skyline.png');background-repeat:no-repeat;background-position:bottom;background-size:contain;">
+
+        <div class="container-fluid">
+          <div>
+            <h1 class="animated fade-in-down delayed-025s">Your Developer!</h1>
+            <p class="lead animated fade-in-down delayed-025s">
+              Front-end, back-end, large data bases, 
+              high performance computing. 
+              I have many skills, and they even worth a PhD.
+              You can hire me, 
+              for your startup, 
+              your product. 
+              Prices are reasonable, results are impeccables.
+              These are my rates.
+              
+<!--
+        After more than 15 years static web-pages are back!
+        Blogs, twitter, even google searches are too volatile.
+        This web-page is the result of helping people
+        to <emph>curate</emph> things on internet.
+        If you are visiting this page, probably you have been invited by me,
+        if not, I strongly suggest you contact me, and why not, also hire me.
+ -->
+            </p>
+<br>
+            <div class="row-fluid">
+              <div class="span4" style="text-align:center">
+                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
+                  <i class="icon-time"></i>
+                </div>
+                <p>1 hour</p>
+                <p style="font-size:300%">50&euro;</p><br>
+              </div>
+              <div class="span4" style="text-align:center">
+                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
+                  <i class="icon-calendar-empty"></i>
+                </div>
+                <p>1 day</p>
+                <p style="font-size:300%">300&euro;</p><br>
+              </div>
+              <div class="span4" style="text-align:center">
+                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
+                  <i class="icon-calendar"></i>
+                </div>
+                <p>1 week</p>
+                <p style="font-size:300%">1200&euro;</p><br>
+              </div>
+            </div>
+            <br>
+            <p>* Results delivered dialy. Payments shall be made within 1 week.</p>
+            <br>
+            <a class="btn btn-large btn-inverse animated fade-in-up delayed-1s" href="#/apps">
+              Learn more 
+              &nbsp;&nbsp;&nbsp<i class="icon-play-sign"></i>
+            </a>
+          </div>
+        </div>
+        <div style="padding-top: 200px"></div>
+      </div>
+
+      <!-- HOME PAGE: Promo -->
+      <div class="content content-white centered">
+        <div class="container-fluid">
+          <div class="row-fluid"><div class="span10 offset1"><div class="row-fluid">
+            <div class="span4">
+              <div class="emblem"><i class="icon-code"></i></div>
+              <h3>Quick Apps</h3>
+              <p>
+                Great apps and prototypes in almost no time.
+                There are a lot of tools to create great apps
+                and great sites like this one.
+                Now I'm using Ruby+DataMapper+AngularJS in 
+                my developments, 
+                it allows me to build working prototypes in
+                just one week.
+                But there are more tools and more options. 
+                <br><a href="#/apps">Learn more &rarr;</a>
+              </p>
+            </div>
+            <div class="span4">
+              <div class="emblem"><i class="icon-tasks"></i></div>
+              <h3>Smart Data</h3>
+              <p>
+                It is not just big data, 
+                it is to be smart with data. 
+                As large data sets grows
+                more important is to
+                know how to handle them.
+                I have used many NoSQL and
+                also some tricks over SQL
+                which makes data process faster.
+                It enables better data processing
+                and changes what you can do
+                with your data.
+                <br><a href="#/data">Learn more &rarr;</a>
+              </p>
+            </div>
+            <div class="span4">
+              <div class="emblem"><i class="icon-bolt"></i></div>
+              <h3>Real-Time</h3>
+              <p>
+                Things can go really fast,
+                really really fast.
+                Just think this: an average
+                computer can perform 
+                thousands of billions 
+                of operations per second.
+                I have been working for a long
+                time making things fast. C, CUDA,
+                multithreading are just the beggining.
+                <br><a href="#/real-time">Learn more &rarr;</a>
+              </p>
+            </div>
+          </div></div></div>
+        </div>
+      </div>
+      <!-- HOME PAGE: Projects -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class="span12" ng-controller="ProjectTopCtrl">
+              <h1>Projects</h1>
+              <p>In all these years I have been working in lots of projects.
+                Some of them were just as fun, some from my studies
+                (computer engineering and PhD),
+                and others from work.
+                I will try to collect as many of them, 
+                make available the source code (if it is possible),
+                and make a little explanation of each.
+                <br>
+                Here is a small list of these projects:
+                <div ng-hide="!loading">
+                  <h3><i class="icon-spinner icon-spin"></i> Loading...</h3>
+                </div>
+                <project-brief ng-repeat="project in projects" 
+                               project="project"
+                        ></project-brief>
+                <a href="#/projects">See all projects &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end home page -->
+    
+    <!-- FOOTER -->
+    <div class="content content-black">
+      <div class="container-fluid">
+        <div class="row-fluid">
+          <div class="span10">
+            (c) David Rodenas
+          </div>
+          <div class="span2">
+            <ul class="unstyled">
+              <li>
+                <a href="https://twitter.com/drpicox">
+                  <i class="icon-twitter"></i>
+              @drpicox
+                </a>
+              </li><li>
+                <a href="https://github.com/drpicox">
+                  <i class="icon-github"></i>
+              drpicox
+                </a>
+              </li><li>
+                <a href="#/contact">
+                  <i class="icon-mail"></i>
+              contact
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading" ng-class="{in: viewLoading}">
+      <i class="icon-spinner icon-spin"></i> Loading...</i>
+    </div> 
+   <!-- end footer -->
+    
+    <!-- 
+    <script src="components/jquery/jquery.js"></script>
+    <script src="components/bootstrap/js/bootstrap.js"></script>
+    <script src="components/google-code-prettify-lite/prettify.js"></script>
+    <script src="components/showdown/src/showdown.js"></script>
+    <script src="components/showdown/src/extensions/prettify.js"></script>
+    <script src="components/angular/angular.js"></script>
+    <script src="components/angular-resource/angular-resource.js"></script>
+    <script src="components/angular-cookies/angular-cookies.js"></script>
+    <script src="components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="components/angular-strap/dist/angular-strap.js"></script>
+ -->
+    <script src="third-party.js"></script>
+    <script src="app.js"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-41300908-1', 'david-rodenas.com');
+  ga('send', 'pageview');
+
+</script>    
+  </body>
+</html>

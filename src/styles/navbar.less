@@ -1,0 +1,34 @@
+// = Extra styles for navbar
+
+@navbarLinkBackgroundHover: fade(@navbarLinkBackgroundActive, 40%);
+
+// Max height for picture
+.navbar .brand {
+    max-height: @navbarHeight * 0.9;
+    overflow: visible;
+    padding-top: @navbarHeight * 0.025;
+    padding-bottom: @navbarHeight * 0.05;
+}
+
+// Propper shadow for the theme
+.navbar-fixed-top .navbar-inner,
+.navbar-static-top .navbar-inner {
+  -webkit-box-shadow: 0 1px 10px rgba(0,0,0,.9);
+  -moz-box-shadow: 0 1px 10px rgba(0,0,0,.1);
+  box-shadow: 0 2px 1px rgba(0,0,0,.4);
+}
+.navbar-fixed-top { 
+  }
+
+.navbar { 
+
+  &.navbar-fixed-top { 
+    margin-bottom: 0px;
+
+    @media (max-width: 978px) { 
+      position: relative;
+      z-index: 1000;
+      }
+    }
+  
+ }

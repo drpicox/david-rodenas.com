@@ -1,0 +1,43 @@
+markdown { 
+  display: block;
+
+  h2 { 
+    font-size: 42px;
+    line-height: 1.1;
+    font-weight: bolder; 
+    border-bottom: 2px solid @secondaryBlack;
+    padding-bottom: 0.05em;
+    margin: 1.5em 0 0.5em 0;
+    }
+
+  h3 { 
+    font-size: 32px;
+    line-height: 1.4;
+    margin: 1em 0 0.2em 0;
+    color: @secondaryBlack;
+    &::before { 
+	content: "> "; 
+    }
+    &::afterall { 
+	display: block;
+	content: "";
+	height: 140px;
+	margin: -140px 0 0; 
+    }
+    @media (max-width: 979px) {
+	&::after {
+	    display: none;
+	}
+    }
+  }
+
+  h4 { 
+    margin-top: 1.2em;
+    }
+
+  pre { 
+    margin: 2em;
+    }
+
+  :first-child { margin-top: 0; }
+  }

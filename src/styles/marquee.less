@@ -1,0 +1,28 @@
+.marquee { 
+  @lineHeight: 1.6;
+  font-size: 150%;
+  line-height: @lineHeight;
+
+  h1 { 
+    font-weight: bolder;
+    font-size: 266%;
+    line-height: @lineHeight;
+
+    .plam,.emblem.emblem-inline { 
+      line-height: @lineHeight em;
+      width: @lineHeight em; height: @lineHeight em;
+      vertical-align: baseline;
+      font-size: 100%;
+      }    
+    }
+  p { font-weight: 200; }
+  a { color: mix(@tertiary,white);
+    &:hover { color: @tertiary; }
+    }
+  .btn,.btn:hover, .label, .label:hover { 
+    color: @white;
+    }
+  .btn.btn-gray,.btn-gray:hover { 
+    color: @black;
+    }
+  }

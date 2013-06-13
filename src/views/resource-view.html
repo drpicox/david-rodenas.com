@@ -1,0 +1,61 @@
+<div class="section-resource">
+<div class="content content-tertiary">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="canopy">
+          <h1>
+            <!-- div class="emblem emblem-inline"><i class="icon-{{resource.icon}}"></i></div -->
+            <resource-logo basename="{{resource.basename}}"
+                     style="font-size:2.5em;
+                       display:inline-block;
+                       vertical-align: middle;"></resource-logo>
+          {{resource.title}} <small>resource</small>
+          </h1>
+          <markdown>{{resource.abstract}}</markdown>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content content-white">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <ul class="breadcrumb">
+          <li><a href="#/">Home</a> <span class="divider">/</span></li>
+          <li>Resources <span class="divider">/</span></li>
+          <li class="active">{{resource.title}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <markdown toc="1">{{content}}</markdown>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <form class='form-search'>
+          <div class='input-append'>
+            <input type='text' placeholder='search in resources...'
+                   class='input-large search-query'
+                   ng-model='search'>
+            <button class='btn disabled'><i class='icon-search'></i></button>
+          </div>
+        </form>
+        <ul class="inline">
+          <li ng-repeat="resource in filtered = (resources | filter:advanced)"
+              ><resource-link basename="{{resource.basename}}"
+                        ></resource-link
+                        ></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

@@ -1,0 +1,50 @@
+
+@import "../components/bootstrap/less/bootstrap.less";
+@import "../components/bootstrap/less/responsive.less";
+
+
+// = Less has lazy evaluation, so we redefine variables here
+// Global redefinitions
+@sansFontFamily: Lato, 'sans-serif';
+
+@secondary: #5ab4eb;//#75beeb; //@blue; //#80b3ff;//@blue;
+@secondary: #75beeb; 
+@secondary: @blue; //#80b3ff;//@blue;
+@tertiary: @yellow; //desaturate(darken(@yellow,10%),10%);
+@inputBackground: white;
+
+//@secondary: @blue;
+//@secondary: @msdosBlue;
+//@secondary: @termBlue;
+//@secondary: #800000; 
+
+//@secondaryBlack: mix(@secondary,black);
+@secondaryBlack: mix(@secondary,black,75%);
+.color-secondary-black { color: @secondaryBlack; }
+
+body { background: black; }
+h1 { .color-secondary-black }
+.at::before { content:'@'; }
+
+@import "../styles/a.less";
+@import "../styles/animated.less";
+@import "../styles/block.less";
+@import "../styles/centered.less";
+@import "../styles/clear.less";
+@import "../styles/content.less";
+@import "../styles/colors.less";
+@import "../styles/code.less";
+@import "../styles/emblem.less";
+@import "../styles/forms.less";
+@import "../styles/headings.less";
+@import "../styles/jumbotron.less";
+@import "../styles/loading.less";
+@import "../styles/markdown.less";
+@import "../styles/marquee.less";
+@import "../styles/navbar.less";
+@import "../styles/sections.less";
+@import "../styles/sidenav.less";
+@import "../styles/thumbnails.less";
+@import "../styles/toc.less";
+@import "../styles/well.less";
+

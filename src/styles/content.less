@@ -1,0 +1,46 @@
+.content { 
+  padding: 20px 0 50px 0;
+  background: @bodyBackground;
+
+  &.content-black { 
+    background: black;//#000;
+    color: #fff;
+    a { color: @tertiary; }
+    }
+
+  &.content-secondary { 
+    padding-top: 50px;
+    background: @secondary;
+    h1,h2,h3 { color: white; text-shadow: 0px 2px rgba(0, 0, 0, 0.5); }
+    color: mix(@black,black); 
+    .emblem { 
+      //color: @secondaryBlack; 
+      //background: white;
+      color: white;
+      background: @black;
+      text-shadow: none;
+      }
+    }
+  &.content-tertiary { 
+    .content-secondary;
+    padding: 20px 0;
+    background: @tertiary;
+    h1 { 
+      text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.8); 
+      small { text-shadow: none; }
+      }
+    }
+
+  &.content-white { 
+    background: white;
+
+    //h1,h2,h3 { color: black; }
+    }
+  
+  @media (max-width: 767px) { 
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    }
+  }

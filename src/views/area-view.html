@@ -1,0 +1,56 @@
+<div class="content content-secondary">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <div class="marquee">
+          <h1>
+            <div class="emblem emblem-inline"><i class="icon-{{area.icon}}"></i></div>
+          {{area.title}}
+          <small><resource-logo ng-repeat="resource in area.resources" 
+                          basename="{{resource}}"
+                          style="margin-right:0.2em;"
+                          ></resource-logo></small>
+          </h1>
+          <markdown>{{area.abstract}}</markdown>
+          <a class="btn btn-large btn-gray pull-right" href="{{area.next.url}}">
+              {{area.next.text}}
+              &nbsp;&nbsp;&nbsp<i class="icon-play-sign"></i>
+            </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="content content-white">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <ul class="breadcrumb">
+          <li><a href="#/">Home</a> <span class="divider">/</span></li>
+          <li class="active">{{area.title}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <markdown>{{content}}</markdown>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RELATED PROJECTS -->
+<div class="content">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span12">
+        <h4>Some projects in this area are:</h4>
+        <project-brief ng-repeat="project in projects"
+                project="project"
+                ></project-brief>
+        <a href="#/projects?search=tag:{{area.basename}}"
+           >See all projects in this area &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
