@@ -39,6 +39,10 @@
                 Please, specify your name.</span>
               </div>
             </div>
+            <div ng-show="initialSubject">
+            <label>Subject:</label>
+            <input type="text" name="subject" ng-model="subject" placeholder="{{initialSubject}}" class="input-block-level">
+            </div>
             <label>Message:</label>
             <textarea ng-model="message" placeholder="your message for me..."
                       class="input-block-level" rows="5"></textarea>

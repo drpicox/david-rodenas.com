@@ -10,9 +10,11 @@ angular.module('PolarisApp').config [
   
 #    ProjectsResolver = ['Project',(Project) -> Project.asyncQuery() ]
     ContactViewCtrl = [
-      '$scope','$timeout','$rootElement','projects'
-      ($scope , $timeout , $rootElement , projects ) ->
+      '$scope','$timeout','$rootElement','$routeParams','projects'
+      ($scope , $timeout , $rootElement , $routeParams , projects ) ->
         $rootElement.find("input[type='email']").focus()
+        $scope.initialSubject = $scope.subject = $routeParams.subject
+        console.log $scope.subject
         $scope.projects = projects
         $scope.$watch 'email', () ->
           if $scope.autoName == $scope.name and $scope.email
@@ -26,6 +28,8 @@ angular.module('PolarisApp').config [
           $.post "send.php", r: {
               name: $scope.name
               email: $scope.email
+              subject: $scope.subject
+              initialSubject: $scope.initialSubject
               message: $scope.message
             }, () ->
               $scope.sent = true
