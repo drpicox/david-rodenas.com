@@ -31,8 +31,8 @@ angular.module('PolarisApp').config [
         $scope.resources = resources
         $scope.advanced = (doc) ->
           Resource.filterSearch doc, $scope.search
-     ]
-     $routeProvider.when '/resources/:resource',
+    ]
+    $routeProvider.when '/resources/:resource',
        templateUrl: 'views/resource-view.html'
        resolve:
          resource: ResourceResolver
@@ -40,5 +40,4 @@ angular.module('PolarisApp').config [
          resources: ResourcesResolver
        controller: ResourceViewCtrl
 ]
-
 

@@ -58,6 +58,17 @@ angular.module('PolarisApp').factory 'StaticResource',
     docsDefer = $q.defer()
     docing = docsDefer.promise
     
+    asyncContent = (arg) ->
+      basename = if angular.isString arg then arg else arg.basename
+      file = "data/#{options.name}/#{basename}.md"
+      contentDefer = $q.defer()
+      $http.get(file)
+      .success (content) ->
+        contentDefer.resolve content.slice 5+content.search(/\n---\n/)
+      .error (e) ->
+        contentDefer.reject e
+      contentDefer.promise
+
     # Preprocess all docs to ease its representation
     preprocessDocs = (docs) ->
       for k,doc of docs
@@ -67,33 +78,45 @@ angular.module('PolarisApp').factory 'StaticResource',
         doc.relevance ?= 1
         # Generate the search keys
         doc._search = {}
+        doc._search["basename:#{k}"] = true
         texts = JSON.stringify(doc).toLowerCase().match(/\w+/g) or []
         for text in texts
           for i in [1..text.length]
             doc._search[text.slice(0, i)] = true
         for tag in doc.tags
-          doc._search["tag:#{tag}"] = true
+          doc._search["tag:#{tag.toLowerCase()}"] = true
         # Generate the tag set
         doc._tagSet = {}
         for tag in doc.tags
           doc._tagSet[tag] = true
-
+        doc._asyncContent = () ->
+          asyncContent this.basename
+          
     # A list of all docs
     listing = docing.then (docs) ->
       (doc for k,doc of docs).sort (a,b) -> b.relevance - a.relevance
     
-    # A hash of tags weighted
+    # A list of tags
     tagging = listing.then (list) ->
-        tags = {}
+        tagHash = {}
         for doc in list
           for tag in doc.tags
-            tags[tag] = (tags[tag] or 0) + doc.relevance
-        max = Math.max (m for tag,m of tags)...
-        min = Math.min (m for tag,m of tags)...
-        max = max + 1 if max == min
-        for tag,m of tags
-          tags[tag] = (m - min) / (max - min)
+            tagHash[tag] = true
+        tags = (tag for tag,val of tagHash)
         tags
+        
+    # A hash of tags weighted
+    tagClouding = listing.then (list) ->
+        tagCloud = {}
+        for doc in list
+          for tag in doc.tags
+            tagCloud[tag] = (tagCloud[tag] or 0) + doc.relevance
+        max = Math.max (m for tag,m of tagCloud)...
+        min = Math.min (m for tag,m of tagCloud)...
+        max = max + 1 if max == min
+        for tag,m of tagCloud
+          tagCloud[tag] = (m - min) / (max - min)
+        tagCloud
                 
     # Get all docs
     $http.get("data/#{options.name}.json")
@@ -117,21 +140,20 @@ angular.module('PolarisApp').factory 'StaticResource',
       console.log a.title + " <-> " + b.title
       console.log "distance:"+ d
       distances[k] = -d
+
     
+#    this.filterSearch = (doc, query) ->
+#      return true if not query
+#      q = query.toLowerCase().match(/[^\s]+/g) or []
+#      for k in q
+#        return false if not doc._search[k]
+#      true
+        
     Resource =
       asyncQuery : () -> listing
       asyncGet : (basename) -> docing.then (docs) -> docs[basename]
-      asyncContent : (arg) ->
-        basename = if angular.isString arg then arg else arg.basename
-        file = "data/#{options.name}/#{basename}.md"
-        contentDefer = $q.defer()
-        $http.get(file)
-        .success (content) ->
-          contentDefer.resolve content.slice 5+content.search(/\n---\n/)
-        .error (e) ->
-          contentDefer.reject e
-        contentDefer.promise
       asyncTags : () -> tagging
+      asyncTagCloud : () -> tagClouding
       asyncRelated : (basename) -> docing.then (docs) ->
         if not docs[basename]
           throw new Error("resource '#{options.name}/#{basename}' not found")
@@ -139,12 +161,6 @@ angular.module('PolarisApp').factory 'StaticResource',
         related = (doc for k,doc of docs when k != basename)
         related.sort (a,b) -> distance(a,c) - distance(b,c)
         c._related = related
-      filterSearch: (doc, query) ->
-        return true if not query
-        q = query.toLowerCase().match(/[^\s]+/g) or []
-        for k in q
-          return false if not doc._search[k]
-        true
 
         
 ]

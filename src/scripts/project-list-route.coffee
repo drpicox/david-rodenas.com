@@ -7,21 +7,21 @@ angular.module('PolarisApp').config [
   '$routeProvider',
   ($routeProvider ) ->
 
-    ProjectListResolve = ['Project',(Project) -> Project.asyncQuery()]
-    ProjectTagsResolve = ['Project',(Project) -> Project.asyncTags() ]
     ProjectListCtrl = [
-      '$scope','$routeParams','projects','tags'
-      ($scope , $routeParams , projects , tags ) ->
+      '$scope','$routeParams','projects','tags','tagCloud'
+      ($scope , $routeParams , projects , tags , tagCloud) ->
         $scope.search = $routeParams.search
         $scope.projects = projects
         $scope.tags = tags
+        $scope.tagCloud = tagCloud
     ]
 
     $routeProvider.when '/projects',
       templateUrl: 'views/project-list-view.html'
       resolve:
-        projects: ProjectListResolve
-        tags: ProjectTagsResolve
+        projects: ['Project',(Project) -> Project.asyncQuery()   ]
+        tags:     ['Project',(Project) -> Project.asyncTags()    ]
+        tagCloud: ['Project',(Project) -> Project.asyncTagCloud()]
       controller: ProjectListCtrl
   
 ]

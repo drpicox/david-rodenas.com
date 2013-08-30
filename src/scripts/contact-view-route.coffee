@@ -37,6 +37,8 @@ angular.module('PolarisApp').config [
         $scope.clear = () ->
           $scope.message = ""
           $scope.sent = false
+          delete $scope.subject
+          delete $scope.initialSubject
     ]
 
     $routeProvider.when "/contact",

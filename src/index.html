@@ -8,262 +8,135 @@
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic|Lobster' rel='stylesheet' type='text/css'>
     <title>David Rodenas homepage</title>
   </head>
-  <body ng-app="PolarisApp">
+  <body ng-app='PolarisApp'>
 
+    <div class='page'>
 
-    <!-- NAVIGATION BAR -->
-    <div class="navbar navbar-fixed-top" bs-navbar>
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <button type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="brand" href="#">
-            <img src='images/david-head.jpg' class="img-circle" style="max-height:39px">
-          </a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <div class="hidden-desktop" style="height:10px"></div>
-              <li data-match-route="/?"><a href="#/">Home</a></li>
-              <li data-match-route="/apps"><a href="#/apps">Apps</a></li>
-              <li data-match-route="/data"><a href="#/data">Data</a></li>
-              <li data-match-route="/real-time"><a href="#/real-time">Real-Time</a></li>
-              <li data-match-route="/projects"><a href="#/projects">Projects</a></li>
-              <li data-match-route="/people"><a href="#/people">People</a></li>
-              <li data-match-route="/about"><a href="#/about">About</a></li>
-            </ul>
-            <form class="navbar-form pull-right">
-              <a href="#/contact" class="btn btn-success">Contact me</a>
-            </form>
-          </div>
+      
+      <div class='card'>
+        <div class='navbar' navbar>
+          <a href="#/"
+             ><img src='images/david-head.jpg' class='navbar-img img-circle'
+          ></a>
+          <a href="#/" data-match-route="/?" class="navbar-a"
+             >Home</a>
+          <a href="#/people" data-match-route="/people(/.*)?" class="navbar-a"
+             >People</a>
+          <a href="#/projects" data-match-route="/projects(/.*)?" class="navbar-a"
+             >Projects</a>
+          <a href="#/resources" data-match-route="/resources(/.*)?" class="navbar-a"
+             >Resources</a>
+          <a href="#/contact" data-match-route="/contact" 
+             class="navbar-right btn"
+             >Contact me</a>
         </div>
-      </div>
-    </div>
-    <!-- The gap for the navbar -->
-    <div style="padding-top:40px" class="visible-desktop"></div>
-    <!-- end navigation bar -->
+      </div><!-- end .card -->
+      
+      <!-- VIEW: specific location view -->
+      <div ng-view></div>
 
-    <!-- VIEW: specific location view -->
-    
-    <div ng-view></div>
+      <!-- HOME PAGE -->
+      <div ng-show="showHome" style="display:none">
+        <div class='card'>
+          <div class='row'>
+            <div class='span7'>
+              <markdown>
+# David Ródenas i Picó
 
-    <!-- HOME PAGE -->
-    <!-- This is the content of the home page.
-    Although home page is only visible in one part of the page,
-    it is encoded here in order to improve loading performance,
-    and a little bit the search optimisation.    
-    It will be hidded when the user changes of page.
-     -->
-    <div ng-show="showHome" style="display:none">
-      <!-- HOME PAGE: Jumbotron -->
-      <div class="jumbotron" 
-           style="background-image: url('images/barcelona-skyline.png');background-repeat:no-repeat;background-position:bottom;background-size:contain;">
+I'm PhD in Computer Architecture 
+specialised in algorithm optimization
+and creation of tools to ease complex hardware programming.
 
-        <div class="container-fluid">
-          <div>
-            <h1 class="animated fade-in-down delayed-025s">Your Developer!</h1>
-            <p class="lead animated fade-in-down delayed-025s">
-              Front-end, back-end, large data bases, 
-              high performance computing. 
-              I have many skills, and they even worth a PhD.
-              You can hire me, 
-              for your startup, 
-              your product. 
-              Prices are reasonable, results are impeccables.
-<!--          These are my rates. -->
-              
-<!--
-        After more than 15 years static web-pages are back!
-        Blogs, twitter, even google searches are too volatile.
-        This web-page is the result of helping people
-        to <emph>curate</emph> things on internet.
-        If you are visiting this page, probably you have been invited by me,
-        if not, I strongly suggest you contact me, and why not, also hire me.
- -->
-            </p>
-<br>
-            <div class="row-fluid">
-              <div class="span4" style="text-align:center">
-                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
-                  <i class="icon-time"></i>
-                </div>
-                <p>1 hour</p>
-                <!-- p style="font-size:300%">50&euro;</p -->
-                <a ng-href="#/contact?subject=Hire 1 hour" 
-                   class="btn btn-info">
-                  Hire
-                  &nbsp;<i class="icon-ok-circle"></i>
-                </a>
-                <br>
-              </div>
-              <div class="span4" style="text-align:center">
-                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
-                  <i class="icon-calendar-empty"></i>
-                </div>
-                <p>1 day</p>
-                <a ng-href="#/contact?subject=Hire 1 day" 
-                   class="btn btn-info">
-                  Hire
-                  &nbsp;<i class="icon-ok-circle"></i>
-                </a>
-                <!-- p style="font-size:300%">300&euro;</p -->
-                <br>
-              </div>
-              <div class="span4" style="text-align:center">
-                <div style="font-size: 800%;color:white;text-shadow: 0 2px rgba(0,0,0,0.4);">
-                  <i class="icon-calendar"></i>
-                </div>
-                <p>1 week</p>
-                <a ng-href="#/contact?subject=Hire 1 week" 
-                   class="btn btn-info">
-                  Hire
-                  &nbsp;<i class="icon-ok-circle"></i>
-                </a>
-                <!-- p style="font-size:300%">1200&euro;</p -->
-                <br>
-              </div>
-            </div>
-            <br>
-            <p>
-              * Results delivered dialy. 
-              Payments shall be made within 1 week.
-              <a ng-href="#/contact?subject=I want a quotation for...">
-                Get a quotation
-                &nbsp;<i class="icon-double-angle-right"></i>
-              </a>
-            </p>
-            <br>
-            <a class="btn btn-xlarge btn-inverse animated fade-in-up delayed-1s" href="#/apps">
-              Learn more 
-              &nbsp;&nbsp;&nbsp<i class="icon-play-sign"></i>
-            </a>
-          </div>
-        </div>
-        <div style="padding-top: 200px"></div>
-      </div>
+I was born in Barcelona in 1978 and raised in Montgat, 
+a small town near Barcelona. 
+I started to write programs when I was 8 years old, 
+with a ZX Spectrum and a book called "Basic para niños".
+Before the university I wrote some complex programs,
+including a simple neuronal net, or a 3D raytracer.
+The university was for me like an *all you can eat*,
+full of rich concepts and challenges.
 
-      <!-- HOME PAGE: Promo -->
-      <div class="content content-white centered">
-        <div class="container-fluid">
-          <div class="row-fluid"><div class="span10 offset1"><div class="row-fluid">
-            <div class="span4">
-              <div class="emblem"><i class="icon-code"></i></div>
-              <h3>Quick Apps</h3>
-              <p>
-                Great apps and prototypes in almost no time.
-                There are a lot of tools to create great apps
-                and great sites like this one.
-                Now I'm using Ruby+DataMapper+AngularJS in 
-                my developments, 
-                it allows me to build working prototypes in
-                just one week.
-                But there are more tools and more options. 
-                <br><a href="#/apps">Learn more &rarr;</a>
-              </p>
-            </div>
-            <div class="span4">
-              <div class="emblem"><i class="icon-tasks"></i></div>
-              <h3>Smart Data</h3>
-              <p>
-                It is not just big data, 
-                it is to be smart with data. 
-                As large data sets grows
-                more important is to
-                know how to handle them.
-                I have used many NoSQL and
-                also some tricks over SQL
-                which makes data process faster.
-                It enables better data processing
-                and changes what you can do
-                with your data.
-                <br><a href="#/data">Learn more &rarr;</a>
-              </p>
-            </div>
-            <div class="span4">
-              <div class="emblem"><i class="icon-bolt"></i></div>
-              <h3>Real-Time</h3>
-              <p>
-                Things can go really fast,
-                really really fast.
-                Just think this: an average
-                computer can perform 
-                thousands of billions 
-                of operations per second.
-                I have been working for a long
-                time making things fast. C, CUDA,
-                multithreading are just the beggining.
-                <br><a href="#/real-time">Learn more &rarr;</a>
-              </p>
-            </div>
-          </div></div></div>
-        </div>
-      </div>
-      <!-- HOME PAGE: Projects -->
-      <div class="content">
-        <div class="container-fluid">
-          <div class="row-fluid">
-            <div class="span12" ng-controller="ProjectTopCtrl">
-              <h1>Projects</h1>
-              <p>In all these years I have been working in lots of projects.
+When I had my degree, 
+with the opportunity to start a new road for multi-core processors
+(there was none in the mainstream market)
+I started to work as intern in
+the CIRI (CEPBA IBM Research Institute). 
+This is how I began my PhD. 
+When I finished it, I had programmed many kinds of processor
+architectures, and even designed a generic simulator and 
+my own programming model.
+
+Last years I get involved in the startups world,
+beginning developing the core of a graph database,
+and currently building data analysis backends 
+to get real-time queries around social recommendation engines.
+              </markdown>
+              <div ng-controller="ProjectTopCtrl">
+                <h2>Projects</h2>
+                <p>In all these years I have been working in lots of projects.
                 Some of them were just as fun, some from my studies
                 (computer engineering and PhD),
                 and others from work.
                 I will try to collect as many of them, 
                 make available the source code (if it is possible),
-                and make a little explanation of each.
-                <br>
-                Here is a small list of these projects:
-                <div ng-hide="!loading">
-                  <h3><i class="icon-spinner icon-spin"></i> Loading...</h3>
+                and make a little explanation of each.</p>
+
+                <p>Here is a small list of these projects:</p>
+                <ul>
+                  <div ng-hide="!loading">
+                    <li><i class="icon-spinner icon-spin"></i> Loading...</li>
+                  </div>
+                  <div ng-show="!loading">
+                    <li ng-repeat="project in projects">
+                      <i class="icon-{{project.icon}}"></i>
+                      {{project.title}}
+                      <a href='#/projects?search=basename:{{project.basename}}'>(see &rarr;)</a>
+                    </li>
                 </div>
-                <project-brief ng-repeat="project in projects" 
-                               project="project"
-                        ></project-brief>
-                <a href="#/projects">See all projects &rarr;</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- end home page -->
-    
-    <!-- FOOTER -->
-    <div class="content content-black">
-      <div class="container-fluid">
-        <div class="row-fluid">
-          <div class="span10">
+                <li><a href="#/projects">See all projects &rarr;</a></li>
+                </ul>
+              </div><!-- end ng-controller=Projects -->
+            </div><!-- end .span -->
+            <div class='span4 offset1'>
+              <a class="twitter-timeline" href="https://twitter.com/drpicox" data-widget-id="372605367676440576">Tweets by @drpicox</a>
+              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </div><!-- end .span -->
+          </div><!-- end .row -->
+        </div><!-- end ng-show='showHome' -->
+      </div><!-- end .card -->
+
+      <!-- FOOTER -->
+      <div class='card'>
+        <hr>
+        <div class='row'>
+          <div class='span6'>
             (c) David Rodenas
           </div>
-          <div class="span2">
-            <ul class="unstyled">
-              <li>
-                <a href="https://twitter.com/drpicox">
-                  <i class="icon-twitter"></i>
+          <div class='span6 right'>
+            <a href="https://twitter.com/drpicox">
+              <i class="icon-twitter"></i>
               @drpicox
-                </a>
-              </li><li>
-                <a href="https://github.com/drpicox">
-                  <i class="icon-github"></i>
+            </a>
+          |
+            <a href="https://github.com/drpicox">
+              <i class="icon-github"></i>
               drpicox
-                </a>
-              </li><li>
-                <a href="#/contact">
-                  <i class="icon-mail"></i>
+            </a>
+          |
+            <a href="#/contact">
+              <i class="icon-envelope-alt"></i>
               contact
-                </a>
-              </li>
-            </ul>
+            </a>
           </div>
-        </div>
-      </div>
-    </div>
+        </div><!-- end .row -->
+      </div><!-- end .card -->
+      
+    </div><!-- end .page -->
+
 
     <div class="loading" ng-class="{in: viewLoading}">
       <i class="icon-spinner icon-spin"></i> Loading...</i>
     </div> 
-   <!-- end footer -->
     
     <!-- 
     <script src="components/jquery/jquery.js"></script>

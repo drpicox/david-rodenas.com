@@ -1,9 +1,7 @@
 ---
 title: Douglas Crockford
 photo: images/people/douglas-crockford.jpg
-website:
-  name: Home
-  url: "http://crockford.com/"
+url: "http://crockford.com/"
 tags:
   - guru
 ---

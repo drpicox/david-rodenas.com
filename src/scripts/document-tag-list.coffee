@@ -4,11 +4,11 @@
 angular.module('PolarisApp').directive 'documentTagList', () -> {
 
   restrict: 'E'
-  scope: document:'=', collection:'@'
+  scope: tags:'=', collection:'@'
   template: """
-<span ng-repeat='tag in document.tags'>
+<span ng-repeat='tag in tags'>
   <a  href='#/{{collection}}?search=tag:{{tag}}'
-      ><span class='label label-info'>{{tag}}</span
+      ><span class='tag tag-item'>{{tag}}</span
       ></a>
 </span>
             """

@@ -24,6 +24,7 @@ angular.module('PolarisApp').run [
   '$rootScope','$location'
   ($rootScope , $location ) ->
     $rootScope.$on '$routeChangeSuccess', () ->
+      #console.log $location.path()
       $rootScope.showHome = $location.path() == '/'
 
 ]
