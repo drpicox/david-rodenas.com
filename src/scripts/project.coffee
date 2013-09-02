@@ -1,5 +1,5 @@
 # = Project StaticResource
-angular.module('PolarisApp').factory 'Project',
+app.factory 'Project',
 ['StaticResource',
 ( StaticResource ) ->
         

@@ -1,0 +1,28 @@
+@screenPhoneMax:   @screenTablet - 1px;
+@screenTabletMin:  @screenTablet;
+@screenTabletMax:  @screenDesktop - 1px;
+@screenDesktopMin: @screenDesktop;
+
+// Phone
+@media (max-width: @screenPhoneMax) { 
+
+  .hidden-phone    { display: none; }
+  .visible-tablet  { display: none; }
+  .visible-desktop { display: none; }
+  }
+
+// Tablet
+@media (min-width: @screenTabletMin) and (max-width: @screenTabletMax) { 
+
+  .hidden-tablet   { display: none; }
+  .visible-phone   { display: none; }
+  .visible-desktop { display: none; }  
+  }
+
+// Desktop
+@media (min-width: @screenDesktopMin) { 
+
+  .hidden-desktop  { display: none; }
+  .visible-phone   { display: none; }
+  .visible-tablet  { display: none; }  
+  }

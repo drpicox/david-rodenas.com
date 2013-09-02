@@ -3,7 +3,7 @@
 #
 # It registers the route `/resources/:resource`
 
-angular.module('PolarisApp').config [
+app.config [
   '$routeProvider',
   ($routeProvider ) ->
     ResourceResolver = [

@@ -1,0 +1,123 @@
+<!-- 
+EXPECTED INPUTS:
+   documents: [ {document}, ... ]
+   collection: "collection-name"
+   tagCloud: { "tag":weight, ... }
+-->
+<div class="row-fluid">
+
+
+  <div class="span2 phone-span1"></div>
+  <div class="span10 phone-span3">
+    <form class="form-search">
+      <div class="input-append">
+        <input type="text" 
+               placeholder="search in {{collection}}..."
+               class="input-large search-query"
+               ng-model="search">
+        <button class="btn disabled"><i class="icon-search"></i></button>
+      </div>
+      <div style="margin-top: 10px; font-size:80%;">
+        <tag-cloud tag-cloud="tagCloud" 
+            collection="{{collection}}"
+            ></tag-cloud>
+      </div>
+    </form>
+  </div>
+
+
+</div>
+
+<br>
+<br>
+
+
+<div ng-repeat="document in filtered = (documents | documentFilter:search)">  
+  
+  <div class="row-fluid">
+
+
+    <div class="span2 phone-span1" ng-click="show(document)">      
+      <div class="block tile x2 img-contain"
+           style="cursor: pointer;"
+           ng-style="{'background-image':'url('+document.image+')'}"
+           ng-class="{'blue': !document.image}"
+           >
+        <div class="icon">
+          <i class="icon-{{document.icon}}"></i>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="span10 phone-span3">
+  
+      <h3>
+        {{document.title}}
+        <small>
+          <a ng-show="document.url"
+             href="{{document.url}}" target="_blank">
+          &nbsp;<i class="icon-external-link"></i>
+          </a>
+          <a ng-show="document.source"
+             href="{{document.source}}" target="_blank">
+          &nbsp;<i class="icon-code"></i>
+          </a>
+          <a ng-show="document.twitter"
+             href="https://twitter.com/{{document.twitter}}" target="_blank">
+          &nbsp;<i class="icon-twitter-sign"></i>
+          </a>
+          <a ng-show="document.github"
+             href="https://github.com/{{document.github}}" target="_blank">
+          &nbsp;<i class="icon-github-sign"></i>
+          </a>
+          <a ng-show="document.linkedin"
+             href="{{document.linkedin}}" target="_blank">
+          &nbsp;<i class="icon-linkedin-sign"></i>
+          </a>
+        </small>
+      </h3>
+
+      <p ng-click="show(document)" 
+         style="cursor: pointer;">
+         {{document.preview}}
+         <i class="icon-chevron-sign-down"
+            ng-show="visible != document.basename"></i>
+         <i class="icon-chevron-sign-up"
+            ng-show="visible == document.basename"></i>
+      </p>
+
+      <div ng-show="visible == document.basename" class="hidden-phone">
+        <markdown text="document._content"
+                  class="collapse"></markdown>
+        <tag-list tags="document.tags" 
+            collection="{{collection}}"
+            style="font-size:70%;"></tag-list>
+        <br>
+        <br>
+      </div>
+    </div>
+  </div>
+  
+  <div class="visible-phone">
+    <div class="collapse"
+         ng-class="{in: visible == document.basename}">
+      <br>
+      <markdown text="document._content"></markdown>
+      <p ng-click="show(document)"
+         style="cursor: pointer; border-top: solid 1px #eee;">
+        <i class="icon-chevron-sign-up"></i>
+      </p>
+    </div>
+  </div>
+
+  <br>
+</div>
+
+<div class="row-fluid"><div class="offset2 span10 phone-offset1 phone-span3">
+<div class="alert alert-info"
+  ng-show="!filtered || filtered.length == 0">
+  <strong>Not found.</strong>
+  There is no element matching search criteria.
+</div>
+</div></div>

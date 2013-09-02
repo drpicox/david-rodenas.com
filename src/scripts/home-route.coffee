@@ -5,12 +5,19 @@
 # redirections for home if it is needed,
 # and a watch on the route to hide home contents.
 
-angular.module('PolarisApp').config [
+app.config [
   '$routeProvider'
   ($routeProvider ) ->
 
+    HomeCtrl = [
+      '$scope',
+      ($scope ) ->
+    ]
+
     $routeProvider.when '/',
-      template: ''
+      #resolve: promise: ['Entity', (Entity) -> Entity.promise]
+      template: '',
+      controller: HomeCtrl
     $routeProvider.when '/home',
       redirectTo: '/'
     $routeProvider.when '',
@@ -20,11 +27,10 @@ angular.module('PolarisApp').config [
 ]
 
 
-angular.module('PolarisApp').run [
+app.run [
   '$rootScope','$location'
   ($rootScope , $location ) ->
     $rootScope.$on '$routeChangeSuccess', () ->
-      #console.log $location.path()
-      $rootScope.showHome = $location.path() == '/'
+      $rootScope.isHome = $location.path() == '/'
 
 ]

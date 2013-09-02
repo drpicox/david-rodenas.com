@@ -1,4 +1,4 @@
-angular.module('PolarisApp').run [
+app.run [
   '$rootScope','$location','$window',
   ($rootScope , $location , $window ) ->
     $rootScope.$on '$routeChangeSuccess', () ->

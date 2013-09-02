@@ -1,4 +1,4 @@
-angular.module('PolarisApp').directive 'markdown',
+app.directive 'markdown',
 ['$interpolate','$compile','$location',
 ( $interpolate , $compile , $location) ->
   tocCount = 0

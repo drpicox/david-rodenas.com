@@ -1,13 +1,13 @@
 ## = A tool to look for loading and warn to the user
 ## =================================================
 ##
-angular.module('PolarisApp').run [
+app.run [
   '$rootScope',
   ($rootScope ) ->
 
-    $rootScope.viewLoading = false
+    $rootScope.viewLoading = 0
     $rootScope.$on '$routeChangeStart', () ->
-      $rootScope.viewLoading = true
+      $rootScope.viewLoading = 1
     $rootScope.$on '$routeChangeSuccess', () ->
-      $rootScope.viewLoading = false
+      $rootScope.viewLoading = $rootScope.viewLoading - 1
 ]

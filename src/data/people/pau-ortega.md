@@ -1,6 +1,6 @@
 ---
 title: Pau Ortega
-photo: images/people/no-photo.png
+image: images/people/no-photo.png
 linkedin: "http://es.linkedin.com/in/pauortega"
 tags:
   - friend

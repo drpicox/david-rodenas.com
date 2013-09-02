@@ -1,6 +1,7 @@
 ---
-icon: list
 title: JSON
+image: images/resources/json.png
+url: http://json.org/
 abstract: >
   JSON is a data-interchange format.
   It is a replacement for XML in many
@@ -8,7 +9,11 @@ abstract: >
   with Javascript.
 
 tags:
-  - apps  
+  - apps
+  - rest
+  - server
+  - document
+  
 ---
 I like to say that 
 [JSON](http://json.org) 
@@ -18,7 +23,7 @@ The reason is because JSON
 is just a subset of Javascript,
 in other words: it is Javascript.
 
-## Definition
+#### Definition
 
 JSON was <em>discovered</em>
 in [2006](http://tools.ietf.org/html/rfc4627)
@@ -62,7 +67,7 @@ are outside of an string.
 	  ]
 	}
 
-## Notes
+#### Notes
 
 JSON is a subset of Javascript, so,
 not any valid Javascript value is a valid
@@ -108,7 +113,7 @@ whole JSON data:
 	/* invalid JSON data: not object nor array */
 	true
 
-### JSONP
+#### JSONP
 
 [JSONP](http://en.wikipedia.org/wiki/JSONP)
 is in fact a function call wrapping JSON data.
@@ -152,7 +157,7 @@ because you must trust to the source of the data:
 they can introduce in the script any
 kind of code that they want.
 
-### JSON vs XML
+#### JSON vs XML
 
 JSON was *discovered* to replace XML.
 The strong points are: it is lighter, 

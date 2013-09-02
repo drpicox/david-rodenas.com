@@ -1,6 +1,6 @@
 ---
 title: Jordi Moraleda
-photo: images/people/jordi-moraleda.jpg
+image: images/people/jordi-moraleda.jpg
 company: 
   name: "Uniclau"
   url: "http://uniclau.com"

@@ -46,7 +46,7 @@
 # #{name}.json contains a object indexing
 # all documents and their metadata.
 #
-angular.module('PolarisApp').factory 'StaticResource',
+app.factory 'StaticResource',
 ['$http','$q',
 ( $http,  $q) ->
 

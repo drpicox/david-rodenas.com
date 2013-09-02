@@ -1,6 +1,6 @@
 ---
 title: Natalia Girona
-photo: images/people/natalia-girona.jpg
+image: images/people/natalia-girona.jpg
 tags:
   - friend
   - colleague

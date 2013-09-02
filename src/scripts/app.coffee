@@ -1,3 +1,4 @@
-angular.module 'PolarisApp', [
+app = angular.module 'DavidRodenas.HomePage', [
+  'ui.bootstrap'
   '$strap.directives'
 ]

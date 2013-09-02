@@ -1,0 +1,21 @@
+.centered { 
+  text-align: center;
+  }
+
+.align-right { 
+  text-align: right;
+  }
+
+.vertical-align {
+  &::before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing, not firefox */
+    }
+  &>* {
+    display: inline-block;
+    vertical-align: middle;
+  }  
+}

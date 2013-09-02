@@ -1,6 +1,6 @@
 {
-  "name": "Polaris",
-  "version": "1.0.0",
+  "name": "david-rodenas.com",
+  "version": "2.0.0",
   "dependencies": {},
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -21,9 +21,17 @@
     "grunt-contrib-cssmin": "~0.6.0",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-coffeelint": "0.0.6",
-    "grunt-markdown-to-json": "~0.4.1"
+    "grunt-markdown-to-json": "~0.4.1",
+    "jsdom": "~0.6.5",
+    "q": "~0.9.5",
+    "underscore": "~1.4.4",
+    "request": "~2.21.0"
   },
   "engines": {
     "node": ">=0.8.0"
+  },
+  "repository" : { 
+    "type" : "git",
+    "url"  : "https://github.com/drpicox/david-rodenas.com.git"
   }
 }

@@ -1,17 +1,22 @@
 ---
-icon: tasks
-logo: images/resources/couchdb.png
 title: CouchDB
+image: images/resources/couchdb.png
+url: http://couchdb.apache.org
 abstract: >
-  A NoSQL highly scalable document database.
+  CouchDB is a database oriented to documents
+  with a high scalability.	
 tags:
-  - apps  
----
-CouchDB is a highly scalable NoSQL database.
-It does not support complex queries, 
-like sorting elements, 
-but it relays in map-reduce operations to overcome initial limitations.
-CouchDB is designed to be just like a REST service
-and it is integrated with
-<resource-link basename="memcached"></resource-link>.
+  - data
+  - nosql
+  - document
+  - scalable
+  - json
 
+---
+CouchDB is designed a REST database oriented to documents.
+Its interface is exposed through REST operations,
+where it stores and queries saved documents 
+through REST operations and URL accesses.
+
+CouchDB is a scalable database with direct itegration with memcached.
+It also has map/reduce operations for advanced queries.

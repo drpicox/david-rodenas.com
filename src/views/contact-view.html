@@ -1,84 +1,69 @@
-<div class="content content-secondary">
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12">
-        <div class="marquee">
-          <h1>
-            <div class="emblem emblem-inline"><i class="icon-envelope"></i></div>
-            Contact
-          </h1>    
+<br>
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span2 phone-span1">
+      <h1 class="pull-right">
+        <a href="#/">
+          <i class="icon-chevron-sign-left"></i>
+        </a>
+      </h1>
+    </div>
+    <div class="span10 phone-span3">
+      <h1>Contact me</h1>
+      <hr>
+      <h3>Send me a message:</h3>
+      <form name="sendForm">
+        <div class="row-fluid">
+          <!-- email -->
+          <div class="control-group span6" 
+               ng-class="{error: sendForm.email.$invalid}">
+            <label>Email:</label>
+            <input type="email" name="email" ng-model="email" 
+                   placeholder="your@email.address" 
+                   class="input-block-level" required>
+            <span ng-show="sendForm.email.$error.required" class="help-inline"
+                  >Please, write your email.</span>
+            <span ng-show="sendForm.email.$error.email" class="help-inline"
+                  >Check your email address.</span>
+          </div>
+          <!-- end email -->
+          <!-- name -->
+          <div class="control-group span6" 
+               ng-class="{error: sendForm.name.$invalid}">
+            <label>Nom:</label>
+            <input type="text" name="name" ng-model="name" 
+                   placeholder="your name" 
+                   class="input-block-level" required>
+            <span ng-show="sendForm.name.$error.required" class="help-inline">
+                Please, write your name.</span>
+          </div>
+          <!-- end name -->
+        </div>
+        <label>Message:</label>
+        <textarea ng-model="message" placeholder="your message for me..."
+                  class="input-block-level" rows="5"></textarea>
+        <br>
+        <button type="submit" 
+                ng-disabled="sendForm.$invalid || sent"
+                class="btn btn-primary btn-large"
+                ng-click="send()">Send</button>
+      </form>
+      <div class="collapse" ng-class="{in: sent}">
+        <br>
+        <div class="alert alert-success">
+          <h4>Message sent!</h4>
+          <p>Your message have been sent successfully.
+            Please, add
+            <a href="mailto:david.rodenas@gmail.com">david.rodenas@gmail.com</a>
+            to your contact list. 
+            If you do not receive any message shortly, 
+            please, write me an email directly.
+          </p>
           <p>
-            You need help for building an app?
-            You want to choose the best data storage?
-            You need to improve the performance of your app?
-            Or, you just want to meet me?
-            Just write me.
+            <button class="btn btn-success" ng-click="clear()">Dismiss</button>
           </p>
         </div>
-      </div>
-    </div>
-    <div class="hidden-phone" style="padding-bottom:100px;"></div>
-    <div class="row-fluid">
-      <div class="span6 offset3">
-        <h4>Send me a message:</h4>
-        <div class="well">
-          <form name="sendForm">
-            <div class="row-fluid">
-              <div class="control-group span6" ng-class="{error: sendForm.email.$invalid}">
-                <label>Email:</label>
-                <input type="email" name="email" ng-model="email" placeholder="your@email.address" class="input-block-level" required>
-                <span ng-show="sendForm.email.$error.required" class="help-inline">
-                Please, specify your email.</span>
-                <span ng-show="sendForm.email.$error.email" class="help-inline">
-        Not a email.</span>
-              </div>
-              <div class="control-group span6" ng-class="{error: sendForm.name.$invalid}">
-                <label>Name:</label>
-                <input type="text" name="name" ng-model="name" placeholder="Your Name" class="input-block-level" required>
-                <span ng-show="sendForm.name.$error.required" class="help-inline">
-                Please, specify your name.</span>
-              </div>
-            </div>
-            <div ng-show="initialSubject">
-            <label>Subject:</label>
-            <input type="text" name="subject" ng-model="subject" placeholder="{{initialSubject}}" class="input-block-level">
-            </div>
-            <label>Message:</label>
-            <textarea ng-model="message" placeholder="your message for me..."
-                      class="input-block-level" rows="5"></textarea>
-            <br>
-            <button type="submit" 
-                    ng-disabled="sendForm.$invalid || sent"
-                    class="btn btn-primary btn-large"
-                    ng-click="send()">Send</button>
-
-          </form>
-          <div class="collapse" ng-class="{in: sent}">
-            <br>
-            <div class="alert alert-success">
-              <h4>Message sent!</h4>
-              <p>Your message is successfully sent.
-              Please, add david.rodenas<span class="at"></span>gmail.com
-              to your contact list.
-              If you do not receive any message in shortly, please, 
-              write me an email directly.  
-                </p>
-                <p>
-                  <button class="btn btn-success" ng-click="clear()">Dismiss</button>
-                </p>
-            </div>
-          </div>
-          </div>
-      </div>
+      </div><!-- end .collapse -->
     </div>
   </div>
 </div>
-<!-- div class="content content-white">
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span12 desktop-center">
-        <h1>Contact</h1>
-      </div>
-    </div>
-  </div>
-</div -->

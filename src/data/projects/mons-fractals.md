@@ -1,6 +1,6 @@
 ---
 title: Mons Fractals
-icon: rocket
+image: images/projects/mons-fractals.jpg
 source: "https://github.com/drpicox/mons-fractals"
 url: "http://drpicox.github.io/mons-fractals"
 abstract: > 
@@ -12,10 +12,9 @@ tags:
   - vrml
   - 3D
   - fractal
+  
 ---
-## Overview
-
-**Mons fractals** is a 3D planet generator implemented
+Mons fractals is a 3D planet generator implemented
 in Java using fractal algorithms.
 A generator of a 3D world implemented in Java with fractal algorithms.
 

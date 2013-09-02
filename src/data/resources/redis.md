@@ -1,17 +1,27 @@
 ---
-icon: tasks
-logo: images/resources/redis.png
 title: Redis
+image: images/resources/redis.png
+url: http://redis.io/
+source: https://github.com/antirez/redis
 abstract: >
-  It is an open-source 
-  server in-memory database.
+  Redis is a transactional key/value in-memory database
+  with support to special structures.
+
 tags:
   - data
+  - nosql
+  - key/value
+  - in-memory
+  
 ---
-Redis is an open-source server in-memory database.
-Although it is in-memory it can save data into disk for future uses.
+Redis acts as a server of transactional data structures.
+Programs connects to a Redis server where they can
+store, query, and update data.
+It is in-memory storage, 
+so it can be very fast,
+but it also saves data in disk, 
+so it can be also used as database.
+
+Redis has clients available for most of the environments and languages.
 An instance of redis can be 
 shared among multiple apps.
-Redis, although it is key-value data-store like memcached,
-offers many utilities to create complex data structures.
-

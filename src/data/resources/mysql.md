@@ -1,19 +1,27 @@
 ---
-icon: tasks
-logo: images/resources/mysql.png
 title: MySQL
+image: images/resources/mysql.png
+url: http://www.mysql.com/
+source: http://dev.mysql.com/downloads/mysql/
 abstract: >
-  An open source database 
-  known by its high scalability
-  and its performance.
+  MySQL is a SQL database
+  optimized for high scalability.
 tags:
-  - apps  
+  - data
+  - sql
+  
 ---
-MySQL is 
-an open source database 
-known by its high scalability
-and its performance.
-It is very famous by the
-performance of its storage MyISAM,
-that, although it has no ACID transactions,
-it offers a really high performance.
+MySQL was initially designed for web environments
+with low resources.
+It's default implementation do not have transactions
+but tools to make updates safe and efficient.
+Because of these, MySQL services can offer
+great capacity and scalability.
+
+Greatest MySQL setup is Facebook.
+
+    :::sql
+    INSERT INTO table (a,b,c) VALUES (1,2,3)
+      ON DUPLICATE KEY UPDATE c=c+1;
+
+

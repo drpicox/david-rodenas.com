@@ -1,5 +1,5 @@
-# = Person StaticPerson
-angular.module('PolarisApp').factory 'Person',
+# = Person StaticResource
+app.factory 'Person',
 ['StaticResource',
 ( StaticResource ) ->
         

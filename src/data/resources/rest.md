@@ -1,13 +1,16 @@
 ---
-icon: cogs
 title: REST
+icon: cogs
 abstract: >
   REST is a standard application
   communication protocol based
   in the HTTP protocol. 
 
 tags:
-  - apps  
+  - apps
+  - server
+  - rest
+  
 ---
 To describe REST or how it came is a little bit complex.
 Like 
@@ -21,9 +24,7 @@ the protocol used to send web pages to your browser,
 but it have been slighly extended to send data between 
 applications and services rather from servers to people.
 
-## Overview
-
-### URL and resources
+#### URL and resources
 
 Http addresses have been always describing how to reach a resource
 (a document, a directory, a CGI, ...). 
@@ -56,7 +57,7 @@ More example of these can be found in this
 same web page, take a look to the directions
 bar and you will see it.
 	
-### Methods and actions
+#### Methods and actions
 
 Originally HTTP had two methods: `GET` and `POST`.
 The method `GET` was designed to obtain a
@@ -102,7 +103,7 @@ but instead of replacing an object,
 the object is updated with the 
 changes sent in the data.
 
-### Notes
+#### Notes
 
 I have discovered by the hard way that 
 the `GET` should not send data.
@@ -149,7 +150,7 @@ which ensures that multiple invocations
 have always the same result. They
 are `GET`, `PUT`, and somehow `PATCH`.
 
-## It is like a kind of SQL
+#### It is like a kind of SQL
 
 Well... this is not really true,
 but it really fits very will in 
@@ -174,14 +175,14 @@ An example of this is
 ([API basics](http://docs.couchdb.org/en/latest/api-basics.html)).
 
 
-## From the browser
+#### From the browser
 
 `GET` queries can be emulated really fast,
 just write the URL and you will read the
 answer. Just like that.
 
 
-## From the shell
+#### From the shell
 
 I recommend to use [curl](http://en.wikipedia.org/wiki/CURL)
 it is already installed on MacOS environments, 
@@ -205,7 +206,7 @@ are:
 
 Remember to escape shell special characters like `?` with the backslash `\`.
 
-## Learn more
+#### Learn more
 
 For more details take a look to 
 [apigee restful api design](https://blog.apigee.com/detail/restful_api_design),

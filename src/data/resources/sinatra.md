@@ -1,16 +1,38 @@
 ---
-icon: sitemap
-logo: images/resources/sinatra.png
 title: Sinatra
+image: images/resources/sinatra.png
+relevance: 3
+url: http://sinatrarb.com/
+source: https://github.com/sinatra/sinatra/
+tags:
+  - apps
+  - server
+  - rest
+  - ruby
 abstract: >
   Sinatra is a web Ruby framework
   designed to build web applications
   with a minimal effort.
-
-tags:
-  - apps
+  
 ---
-## First steps
+Sinatra is a new kind of library that 
+allows to create web servers and services
+with a high productivity and with no configuration.
+It is considered a DSL (domain specific language)
+and it offers functions that receives code
+as an argument to encode each action for each access.
+
+Sinatra is really suitable to write REST services.
+
+    ::: ruby
+    require 'sinatra'
+
+    get '/' do
+      'Hello world!'
+    end 
+
+
+#### First steps
 
 You just need to install the sinatra gem:
 
@@ -45,7 +67,7 @@ Full documentation can be found in the
 [Sinatra README](http://www.sinatrarb.com/intro.html).
 
 
-## Code bits
+#### Code bits
 
 Ensure that a connection is always secure (`https`) 
 when we are in the development environment (from [Heroku](http://heroku.com)):
@@ -96,7 +118,7 @@ And parse and JSON body can be a little tricky:
 	  product.to_json                # response in JSON
 	end
 
-### Logger
+##### Logger
 
 In addition, it is not directly related to Sinatra, 
 but you may find useful to have a configurable logger.

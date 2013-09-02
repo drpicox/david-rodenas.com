@@ -1,0 +1,19 @@
+.brandbar { 
+  @height: 60px;
+
+  position: relative;
+  line-height: @height;
+  vertical-align: middle;
+  .bg-and-fg(@navbarBackground);
+    
+  img { max-height: @height*0.95; vertical-align: middle; }
+
+  .btn-navbar { 
+    .navbar .btn-navbar; 
+    .icon-bar { .navbar .btn-navbar .icon-bar; }
+    @media (max-width: @navbarCollapseWidth) { 
+      display: block;
+      }
+    margin-top: 5px;
+    }
+  }

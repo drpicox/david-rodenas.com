@@ -1,6 +1,6 @@
 ---
 title: Jordi Camps
-photo: images/people/no-photo.png
+image: images/people/no-photo.png
 linkedin: "http://es.linkedin.com/pub/jordi-camps/1/760/991"
 tags:
   - friend

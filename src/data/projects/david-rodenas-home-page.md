@@ -1,6 +1,6 @@
 ---
-icon: html5
 title: David Rodenas Home Page
+image: images/david-head.jpg
 abstract: >
   This is the project of this web page.
   It combines cutting-edge web app technologies to create
@@ -20,14 +20,11 @@ tags:
   - angularjs
   - yaml
   - apps
+  
 ---
-## Overview
-
-This is the **project** of this web page.
-
 I really believe that web page rendering should be
 done in the browser side, server side should only
-be used to send and get data. Because of this
+be used to send, get data and interact users. Because of this
 for a long time I have been building 
 build web pages using Javascript to increase their speed. 
 But most of the solutions were not standar
@@ -40,9 +37,9 @@ all tools are mantained by the community,
 and others can collaborate, even if their 
 are not Javascript developers.
 
-## Project structure
+#### Project structure
 
-### File directory
+##### File directory
 
 This project is basically a static web page.
 It combines lesscss, html, javascript, and images
@@ -67,7 +64,7 @@ The directory structure is the following:
 	/dist                     # Build compressed ready to deploy
 
 <!-- */ <- this is here because of bash -->
-### GruntJS tasks
+##### GruntJS tasks
 
 The project is built with
 <resource-link basename="gruntjs"></resource-link>.
@@ -82,7 +79,7 @@ It has three main tasks:
 - **dist**: runs the *debug* task, and compress
   all the web from `debug/` to `dist/`.
 
-### index.html
+##### index.html
 
 `index.html` is the main controller/view of the project.
 There is no other html file dirctly accessible 

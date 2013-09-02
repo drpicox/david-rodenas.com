@@ -1,7 +1,6 @@
 ---
-icon: fire
-logo: images/resources/javascript.png
 title: Javascript
+image: images/resources/javascript.png
 abstract: >
   Javascript is the current
   standard of programming,
@@ -10,7 +9,8 @@ abstract: >
   almost any application.
 
 tags:
-  - apps  
+  - apps
+  - javascript
 ---
 Javascript was created in the 1995 
 under the appearance of an
@@ -35,7 +35,7 @@ the page of the Chuck Norris of
 Javascript: 
 [Douglas Crockford](http://javascript.crockford.com/javascript.html).
 
-## Javascript foundation
+#### Javascript foundation
 
 Javascript is based in two programming languages:
 [Self](https://en.wikipedia.org/wiki/Self_(programming_language\))
@@ -132,7 +132,7 @@ Note: I have used `MutableObject` just for *keep in mind*
 purposes, but in **this** example is not actually necessary.
 
 	
-## Testing and learning
+#### Testing and learning
 
 To test and learn Javascript my best tip is to use Chrome console.
 Just click right button, inspect element, and look for the

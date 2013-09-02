@@ -3,7 +3,7 @@
 #
 # A controller that provides convinence methods
 # to get a list of the top 5 projects.
-angular.module('PolarisApp').controller('ProjectTopCtrl', [
+app.controller('ProjectTopCtrl', [
   'Project', '$scope',
   (Project ,  $scope ) ->
 

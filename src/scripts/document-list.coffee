@@ -1,11 +1,11 @@
-# Document Search directive
+# Document List directive
 # ========================
 
-angular.module('PolarisApp').directive 'documentList', [
+app.directive 'documentList', [
   'StaticResource', (StaticResource) -> {
 
     restrict: 'E'
-    scope: documents: '=', search: '@', tags: '=', collection: '@'
+    scope: documents: '=', search: '@', tagCloud: '=', collection: '@'
     templateUrl: 'views/document-list.html'
     link: (scope,element,attrs) ->
       scope.show = (doc, force) ->
@@ -24,7 +24,6 @@ angular.module('PolarisApp').directive 'documentList', [
           scope.show v[0], true
       ), true
       
-#scope.advanced = (doc) -> StaticResource.filterSearch doc, scope.search
         
   }
 ]

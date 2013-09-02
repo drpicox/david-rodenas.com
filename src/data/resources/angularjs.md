@@ -1,15 +1,68 @@
 ---
-icon: shield
-logo: images/resources/angularjs.png
 title: AngularJS
-abstract: >
-  AngularJS is a
-  modular 
-  MV* Javascript
-  framework.
+image: images/resources/angularjs.png
+relevance: 3
+url: http://angularjs.org/
+source: https://github.com/angular/angular.js
 tags:
-  - apps  
+  - apps
+  - web
+  - mobile
+  - javascript
+abstract: >
+  AngularJS is a library to
+  create apps with HTML and Javascript.
+
 ---
+AngularJS, currently a Javascript library maintained by Google,
+is considered pioneer in *HTML6*:
+AngularJS fuses itself with the code of the web page
+to extend its functionalities.
+
+The library allows to divide effectively
+the creation of the visualization
+(a web page)
+and the creation of the behavior
+(a Javascript program).
+This method allows to the designers 
+to focus in the visualization
+and create the best presentation for each part and component.
+And at the same time programmers can write 
+and test their code effectively without worry about nothing else but code.
+AngularJS creates automatically a bidirectial 
+bridge between both parts.
+
+AngularJS is designed to be modular,
+it is very easy to reuse parts from one project to other,
+adapt visualization,
+or even to test and verify the correct behavior of each
+module independently
+(reducing the possibility to introduce bugs).
+
+AngularJS is used to create web pages
+but also mobile apps.
+
+Nowadays, some libraries so populars like jQuery,
+are being replaced by AngularJS. Making them almos obsolete.
+
+    :::html
+	&lt;!doctype html&gt;
+	&lt;html ng-app&gt;
+	  &lt;head&gt;
+	    &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"&gt;&lt;/script&gt;
+	  &lt;/head&gt;
+	  &lt;body&gt;
+	    &lt;div&gt;
+	      &lt;label&gt;Name:&lt;/label&gt;
+	      &lt;input type="text" ng-model="yourName" placeholder="Enter a name here"&gt;
+	      &lt;hr&gt;
+	      &lt;h1&gt;Hello {{yourName}}!&lt;/h1&gt;
+	    &lt;/div&gt;
+	  &lt;/body&gt;
+	&lt;/html&gt;
+
+#### Overview 
+
 [AngularJS](http://angularjs.org/)
 is one of the most amazing 
 frameworks to develop web applications.
@@ -18,7 +71,7 @@ The best of it is that it works
 like magic (of course, no magic involved, only
 lots of comparissons).
 
-### Works like a game engine
+#### Works like a game engine
 
 AngularJS works like a game engine:
 it has a engine loop that updates and draws
@@ -47,7 +100,7 @@ I really suggest to read the
 [source code](https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js)
 to learn about it works.
 
-### Lots of libraries
+#### Lots of libraries
 
 AngularJS have lots of external modules. Some of them are:
 
@@ -60,6 +113,6 @@ Bootstrap + AngularJS:
 - [UI Utils](https://github.com/angular-ui/ui-utils)
 - [UI Router](https://github.com/angular-ui/ui-router)
   
-### Other
+#### Other
 
 How to control route changes and avoid false redraws: [here](http://www.youtube.com/watch?v=P6KITGRQujQ).

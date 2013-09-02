@@ -1,18 +1,26 @@
 ---
-icon: tasks
-logo: images/resources/memcached.png
 title: memcached
-abstract: >
-  A library/server used to cache
-  data and speedup database queries.
+image: images/resources/memcached.png
+url: http://memcached.org/
+source: https://github.com/memcached/memcached
 tags:
-  - apps  
+  - data
+  - cache
+  - server
+  - rest
+abstract: >
+  Memcached is a query accelerator for databases.
+  
 ---
-Memcached is a memory caching system.
-It can work as a library inside any app, but also
-as a server for cached data (because network is faster than disks).
-It is used to cache data from databases in order
-to save accesses to disk.
-Then used as a server, the same memcached server can be
-shared among multiple apps.
+Reading data from a database is a slow operation
+(it has to read from hard disk which is slow).
+Memcached offsers a shared memory space service where 
+multiple apps can store temporal results,
+and reuse them later 
+(saving time).
 
+Memcached can be used as a library or as a server.
+An app can use it remotely through REST.
+The key point is that it can be used as a shared
+memory between multiple apps and it
+scales very well.

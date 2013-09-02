@@ -1,0 +1,83 @@
+// Global for all tiles
+.tile { 
+  
+  display:  block;
+  float:    left;
+  overflow: hidden;
+  position: relative;
+  background: red;  
+
+  // Components
+  .icon { 
+    text-align: center;
+    display: block;
+    position: absolute;
+    left: 0; right: 0;
+    }
+
+  .label { 
+    text-align: left;
+    display: block;
+    position: absolute;
+    }  
+
+  // Colors
+                   .bg-and-fg(@btnNormalBackground );
+  &.tile-white   { .bg-and-fg(white                ); }
+  &.tile-black   { .bg-and-fg(black                ); }
+  &.tile-primary { .bg-and-fg(@btnPrimaryBackground); }
+  &.tile-info    { .bg-and-fg(@btnInfoBackground   ); }
+  &.tile-success { .bg-and-fg(@btnSuccessBackground); }
+  &.tile-warning { .bg-and-fg(@btnWarningBackground); }
+  &.tile-danger  { .bg-and-fg(@btnDangerBackground ); }
+  &.tile-inverse { .bg-and-fg(@btnInverseBackground); }
+  }
+
+// Specifics for each size
+.class-tile(@size,@space) { 
+
+  .tile() { 
+    
+    margin:   @space;
+    }
+
+  // Specifics for each x factor
+  .tile-x(@x) { 
+
+    @tileSize: @size*@x - @space*2;
+    width:     @tileSize;
+    height:    @tileSize;
+
+    @labelOffset: @space;
+    @labelSize:   (@tileSize - @labelOffset*2)/8;
+    @iconOffset:  @space + @labelOffset + @labelSize;
+    @iconSize:    @tileSize - @iconOffset*2;
+
+    .icon { 
+      top:         @iconOffset;
+      height:      @iconSize;
+      font-size:   @iconSize;
+      line-height: @iconSize;
+      }
+    .label { 
+      left:        @space;
+      right:       @space;
+      bottom:      @labelOffset;
+      height:      @labelSize;
+      font-size:   @labelSize;
+      line-height: @labelSize;
+      }
+    
+    }
+
+  //.tile-x(@x) when (@x >= 2) { background: green; }
+
+  .tile { .tile(); .tile-x(1); 
+
+    &.tile-x2 { .tile-x(2); }
+    &.tile-x3 { .tile-x(3); }
+    &.tile-x4 { .tile-x(4); }
+    &.tile-x5 { .tile-x(5); }
+    &.tile-x6 { .tile-x(6); }
+    }
+  }

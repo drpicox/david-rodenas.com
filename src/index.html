@@ -1,48 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="content-language" content="ca">
+    <title>Home Page - David Ródenas i Picó</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="David Rodenas homepage">
+    <meta name="author" content="David Rodenas">
     <link href="third-party.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.1.0/css/font-awesome.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic|Lobster' rel='stylesheet' type='text/css'>
-    <title>David Rodenas homepage</title>
+    <link href="styles.css"      rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.min.css" rel="stylesheet">
   </head>
-  <body ng-app='PolarisApp'>
+  <body ng-app="DavidRodenas.HomePage">
 
-    <div class='page'>
+    <div class="page">
 
-      
-      <div class='card'>
-        <div class='navbar' navbar>
-          <a href="#/"
-             ><img src='images/david-head.jpg' class='navbar-img img-circle'
-          ></a>
-          <a href="#/" data-match-route="/?" class="navbar-a"
-             >Home</a>
-          <a href="#/people" data-match-route="/people(/.*)?" class="navbar-a"
-             >People</a>
-          <a href="#/projects" data-match-route="/projects(/.*)?" class="navbar-a"
-             >Projects</a>
-          <a href="#/resources" data-match-route="/resources(/.*)?" class="navbar-a"
-             >Resources</a>
-          <a href="#/contact" data-match-route="/contact" 
-             class="navbar-right btn"
-             >Contact me</a>
+      <div toggle="toggleNavbar">
+        <div class="brandbar">
+          <div class="container-fluid">
+          </div>
         </div>
-      </div><!-- end .card -->
+        <div class="navbar" bs-navbar>
+          <div clas="navbar-inner">
+            <div class="container-fluid">
+              <button type="button" class="btn btn-navbar" ng-click="toggle()">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a href="#/" class="brand">
+                <img class="img-circle" alt="David Rodenas" src="images/david-head.jpg">
+                <div style="display: inline-block;">&nbsp;<strong class="visible-phone"><sub>Home Page</sub></strong></div>
+              </a>
+              <div class="nav-collapse collapse" 
+                   ng-class="{in: toggleNavbar}"
+                   ng-click="toggle()">
+                <ul class="nav">
+                  <li data-match-route="/?"><a href="#/">Home</a></li>
+                  <li data-match-route="/projects"><a href="#/projects">Projects</a></li>
+                  <li data-match-route="/resources"><a href="#/resources">Resources</a></li>
+                  <li data-match-route="/people"><a href="#/people">People</a></li>
+                </ul>
+                <div class="pull-right">
+                  <a class="btn btn-success" href="#/contact">Contact me</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- end !toggleBar -->
+
+      <div style="margin-top: 50px" class="hidden-phone"></div>
       
-      <!-- VIEW: specific location view -->
-      <div ng-view></div>
+      <div ng-show="isHome"> 
+        
+        <div class="container-fluid">
+          <br>
+          <div class="row-fluid">
+            <div class="span7">
+              <div class="hidden-phone">
+                <h2>Dr. David Ródenas i Picó</h2>
+                <hr>
+              </div>
 
-      <!-- HOME PAGE -->
-      <div ng-show="showHome" style="display:none">
-        <div class='card'>
-          <div class='row'>
-            <div class='span7'>
               <markdown>
-# David Ródenas i Picó
-
 I'm PhD in Computer Architecture 
 specialised in algorithm optimization
 and creation of tools to ease complex hardware programming.
@@ -71,13 +92,15 @@ beginning developing the core of a graph database,
 and currently building data analysis backends 
 to get real-time queries around social recommendation engines.
               </markdown>
+              
+              <br>
               <div ng-controller="ProjectTopCtrl">
-                <h2>Projects</h2>
+                <h3>Projects</h3>
                 <p>In all these years I have been working in lots of projects.
                 Some of them were just as fun, some from my studies
                 (computer engineering and PhD),
                 and others from work.
-                I will try to collect as many of them, 
+                I will try to collect many of them, 
                 make available the source code (if it is possible),
                 and make a little explanation of each.</p>
 
@@ -96,63 +119,73 @@ to get real-time queries around social recommendation engines.
                 <li><a href="#/projects">See all projects &rarr;</a></li>
                 </ul>
               </div><!-- end ng-controller=Projects -->
-            </div><!-- end .span -->
-            <div class='span4 offset1'>
+              
+
+            </div><!-- end .span7 -->
+
+            <div class="span4 offset1 hidden-phone">
               <a class="twitter-timeline" href="https://twitter.com/drpicox" data-widget-id="372605367676440576">Tweets by @drpicox</a>
               <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
             </div><!-- end .span -->
-          </div><!-- end .row -->
-        </div><!-- end ng-show='showHome' -->
-      </div><!-- end .card -->
 
-      <!-- FOOTER -->
-      <div class='card'>
-        <hr>
-        <div class='row'>
-          <div class='span6'>
-            (c) David Rodenas
-          </div>
-          <div class='span6 right'>
-            <a href="https://twitter.com/drpicox">
-              <i class="icon-twitter"></i>
+
+          </div><!-- end .row-fluid -->
+          
+        
+        </div><!-- end .container -->
+      </div><!-- end ng-show="isHome" -->
+
+      <div ng-view></div>
+      
+      
+      <footer>
+        <div class="container-fluid">
+          <div class="row-fluid">
+            <div class='span6'>
+            &copy; David Rodenas
+            </div>
+            <div class='span6 align-right'>
+              <a href="https://twitter.com/drpicox">
+                <i class="icon-twitter"></i>
               @drpicox
-            </a>
+              </a>
           |
-            <a href="https://github.com/drpicox">
-              <i class="icon-github"></i>
+              <a href="https://github.com/drpicox">
+                <i class="icon-github"></i>
               drpicox
-            </a>
+              </a>
           |
-            <a href="#/contact">
-              <i class="icon-envelope-alt"></i>
+              <a href="#/contact">
+                <i class="icon-envelope"></i>
               contact
-            </a>
-          </div>
-        </div><!-- end .row -->
-      </div><!-- end .card -->
+              </a>
+            </div><!-- end .span -->
+          </div><!-- end .row -->
+        </div>
+      </footer>
       
     </div><!-- end .page -->
-
-
+    
+    
+    
     <div class="loading" ng-class="{in: viewLoading}">
       <i class="icon-spinner icon-spin"></i> Loading...</i>
     </div> 
     
-    <!-- 
-    <script src="components/jquery/jquery.js"></script>
-    <script src="components/bootstrap/js/bootstrap.js"></script>
-    <script src="components/google-code-prettify-lite/prettify.js"></script>
-    <script src="components/showdown/src/showdown.js"></script>
-    <script src="components/showdown/src/extensions/prettify.js"></script>
-    <script src="components/angular/angular.js"></script>
-    <script src="components/angular-resource/angular-resource.js"></script>
-    <script src="components/angular-cookies/angular-cookies.js"></script>
-    <script src="components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="components/angular-strap/dist/angular-strap.js"></script>
- -->
+    <script>
+    String.prototype.hashCode = function(){
+      var hash = 0, i, char;
+      if (this.length == 0) return hash;
+      for (i = 0, l = this.length; i < l; i++) {
+        char  = this.charCodeAt(i);
+        hash  = ((hash<<5)-hash)+char;
+        hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
+    };    </script>
     <script src="third-party.js"></script>
     <script src="app.js"></script>
-
+    
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -163,5 +196,6 @@ to get real-time queries around social recommendation engines.
   ga('send', 'pageview');
 
 </script>    
+
   </body>
 </html>

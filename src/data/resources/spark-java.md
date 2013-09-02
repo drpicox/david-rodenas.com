@@ -1,18 +1,21 @@
 ---
-icon: sitemap
-title: SparkJava
+image: images/resources/spark-java.png
+title: Sparkjava
+tags:
+  - apps  
+  - java
+  - rest
+url: http://sparkjava.com
+source: https://github.com/perwendel/spark
 abstract: >
-  SparkJava is a Sinatra
+  Sparkjava is a Sinatra
   inspired web framework
   for Java. 
   It offers a minimal set
   of functionalities to
   build a web server.
-
-tags:
-  - apps  
 ---
-[SparkJava](http://sparkjava.com/)
+[Sparkjava](http://sparkjava.com/)
 is a micro framework inspired in 
 <resource-link basename="sinatra"></resource-link>.
 It uses a functional approach to define a

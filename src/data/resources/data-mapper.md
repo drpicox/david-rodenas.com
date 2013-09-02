@@ -1,17 +1,57 @@
 ---
-icon: tasks
-logo: images/resources/data-mapper.png
 title: DataMapper
-abstract: >
-  DataMapper is an Object Relational Mapper for Ruby
-  that provides persistence through many database
-  vendors with almost no effort.
-
+image: images/resources/data-mapper.png
+relevance: 3
 tags:
   - apps
+  - server
+  - data
+  - ruby
+abstract: >
+  DataMapper is a library for Ruby
+  that eases the connection against any data base.
+
 ---
-## Install DataMapper
-### Prerequisites
+Databases uses their own languages, and many times,
+even SQLs, their oen idioms.
+In addition, 
+their use require to prepare correctly a schema
+and perform the addient operations just for get it fresh.
+When an app is built, 
+it is required to make the code connect to the database.
+
+DataMapper connects automatically 
+classes and methods against any database.
+It use adaptors that abstracts the access to a database
+(so database can be changed without changing code)
+and it adds a lot of functionalities that
+build queries and updates automatically.
+
+The strong point of DataMapper is that it offers
+a very high degree of productivity 
+and it requires a very low level of speicialization
+(and almost no configuration).
+
+    :::ruby
+    require 'data_mapper'
+    DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/local.db")
+   
+    class Hello
+      include DataMapper::Resource
+
+      property :id,          Serial
+      property :name,        String
+    end 
+   
+    DataMapper.finalize
+    DataMapper.auto_upgrade!
+   
+    Hello.create :name => World"
+    Hello.all
+
+
+#### Install DataMapper
+##### Prerequisites
 
 DataMapper is a Ruby persistence library. 
 Install [Ruby] and
@@ -21,7 +61,7 @@ some SQL engine, like [SQLite]:
     $ sudo apt-get install ruby
     $ sudo apt-get install libsqlite3-dev
 
-### Install gems
+##### Install gems
 
 Install `data_mapper` gem
 and the adapter for SQLite gem (`dm-sqlite-adapter`):
@@ -38,7 +78,7 @@ or MySQL `dm-mysql-adapter`.
 The official list of adapters is
 [here](https://github.com/datamapper/dm-core/wiki/Adapters).
 
-## Set up your app
+#### Set up your app
 
 ### With gemfile bundler
 
@@ -66,7 +106,7 @@ Make effective your `Gemfile`:
     :::term
     $ bundle install
 
-### Require DataMapper gem
+##### Require DataMapper gem
 
 To use DataMapper in your code you have to require the gem.
 Add the require to your `app.rb`:
@@ -74,7 +114,7 @@ Add the require to your `app.rb`:
     :::ruby
     require 'data_mapper'
 
-### Connect to the database
+##### Connect to the database
 
 DataMapper connects to the database using
 the database connection URL 
@@ -90,7 +130,7 @@ production environment) and if it does not exists
 it automatically create or open a SQLite
 database contained in the `local.db` file.
 
-### Define the schema
+##### Define the schema
 
 Database schema definition is done automatically. 
 It matches persistent classes against your
@@ -137,7 +177,7 @@ the property `:name` will map into a column called
 See 
 [working with Legacy Schemas](http://datamapper.org/docs/legacy.html).
 
-### Schema setup
+##### Schema setup
 
 Once everything it is defined (all classes are defined), 
 we tell it to DataMapper:
@@ -151,7 +191,7 @@ make sure that you will not loose data.
 Check also if you need to use
 `DataMapper.auto_migrate!` instead.
 
-## Query databasase
+#### Query databasase
 
 All SQL operations 
 (INSERT, UPDATE, SELECT, DELETE)
@@ -159,7 +199,7 @@ are available through
 class methods. 
 No SQL it is required.
 
-### Insert objects
+##### Insert objects
 
 Create a new instance of the class:
 
@@ -188,7 +228,7 @@ Or even mixing searches with `first_or_create`:
     rico = nyc.animals.first_or_create { :name => "Rico" }
 
 
-### Update objects
+##### Update objects
 
 Modify instance values with assignation and `save` method:
 
@@ -204,7 +244,7 @@ The same operation is valid for relationships:
     kowalski.save
     # nyc.reload if you reuse it
 
-### Query objects
+##### Query objects
 
 Use the class to get instances of objects:
 
@@ -240,7 +280,7 @@ when it does happens, it combines all steps into
 one single and efficient SQL sentence.
 </div>
 
-### Delete objects
+##### Delete objects
 
 Just use the `destroy` method:
 
@@ -250,9 +290,9 @@ Just use the `destroy` method:
     Zoo.all.animals.destroy
     Zoo.all.destroy
 	
-## Tips or fine tunning
+#### Tips or fine tunning
 
-### Verbose SQL sentences 
+##### Verbose SQL sentences 
 
 DataMapper can log all
 SQL sentences executed in
@@ -266,7 +306,7 @@ how this framework builds
 SQL sentences.
 </div>
 	
-### Failures as exceptions
+##### Failures as exceptions
 
 By default, 
 when a problem is found or a query is not possible
@@ -277,7 +317,7 @@ request to raise an exeption when save fails:
     :::ruby
     DataMapper::Model.raise_on_save_failure = true
 	
-### Tune types
+##### Tune types
 
 Data types are decided automatically by DataMapper
 and by your database,
@@ -288,7 +328,7 @@ you should tell some details about types
     property :name,  String,  :length => 32
     property :price, Decimal, :precision=>12, :scale=>2
 
-### Get more extensions
+##### Get more extensions
 
 Do not limit yourself to the basics, there are lots
 of extensions that you can use: 
