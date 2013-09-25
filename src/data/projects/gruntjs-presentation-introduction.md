@@ -5,7 +5,6 @@ abstract: >
   Is a HTML5/CSS3 presentation of a GruntJS introduction.
 url: "http://drpicox.github.io/gruntjs-presentation-introduction/#/index"
 source: "https://github.com/drpicox/gruntjs-presentation-introduction"
-relevance: 4
 tags:
   - javascript
   - markdown

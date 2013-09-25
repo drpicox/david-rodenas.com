@@ -2,6 +2,7 @@
 title: Cleaning Robot AI
 image: images/projects/robot-cleaning-ai.png
 url: "http://hdl.handle.net/2099.1/13129"
+relevance: 2
 abstract: >
   A project to create and evaluate a new AI 
   based in genetic algorithms and
@@ -171,7 +172,7 @@ Lines are individuals, vertical is performance, horizontal are days.
 ![Simulator UML](images/projects/robot-cleaning-ai_rl-improved.png)
 
 Algorithm performance seems a little bit caotic, but it performs really
-good. All individuals outperforms the original and random algorithm
+good. All individuals outperforms the manufacturer and random algorithm
 from the first day, and have a cloose behavior to the best genetic algorithm
 in just few days. 
 There is an oscillation in results performance (which should be studied

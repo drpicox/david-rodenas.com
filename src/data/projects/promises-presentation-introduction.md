@@ -7,7 +7,6 @@ abstract: >
   callback handling.
 url: "http://drpicox.github.io/promises-presentation-introduction/#/index"
 source: "https://github.com/drpicox/promises-presentation-introduction"
-relevance: 4
 tags:
   - javascript
   - promises
