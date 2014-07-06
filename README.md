@@ -7,11 +7,11 @@ Compile the web page:
 
     npm install
     bower install
-    grunt server
+    grunt serve
 
 Then you can connect to [localhost:9302](http://localhost:9302).
-Create the distribution version:
+Create and test the distribution version:
 
-    grunt public
+    grunt serve:public
     
   
