@@ -71,6 +71,7 @@ module.exports = (grunt) ->
         files:
           'build/third-party.js': [
             'components/jquery/jquery.js'
+            'components/bootstrap/docs/assets/js/bootstrap.js'
             'components/google-code-prettify/src/prettify.js'
             'components/google-code-prettify/src/lang*.js'
             'components/showdown/src/showdown.js'
@@ -222,6 +223,7 @@ module.exports = (grunt) ->
       'build-resources':
         options: width: 100
         files:
+          'build/data/courses.json': ['src/data/courses/*.md']
           'build/data/people.json': ['src/data/people/*.md']
           'build/data/projects.json': ['src/data/projects/*.md']
           'build/data/resources.json': ['src/data/resources/*.md']
@@ -260,7 +262,7 @@ module.exports = (grunt) ->
         tasks: ['imagemin']
       styles:
         files: ['src/styles/*.less']
-        tasks: ['less:build','cssmin:public-lesscss']
+        tasks: ['less:build']#,'cssmin:public-lesscss']
       scripts:
         files: ['src/scripts/*.coffee','src/scripts/**/*.coffee']
         tasks: ['coffeelint','coffee:build','uglify:public-coffee']
