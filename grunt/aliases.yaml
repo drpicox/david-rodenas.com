@@ -1,0 +1,24 @@
+serve:
+    - 'build-dev'
+    - 'connect:livereload'
+    - 'watch'
+
+build-dev:
+    - 'jshint'
+    - 'clean'
+    - 'less'
+    - 'autoprefixer'
+
+build:
+    - 'build-dev'
+    - 'copy'
+    - 'useminPrepare' 
+    - 'concat'
+    - 'uglify'
+    - 'cssmin'
+    - 'usemin'
+    - 'ngtemplates'
+
+
+server:
+    - 'serve'
