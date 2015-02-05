@@ -1,0 +1,7 @@
+<angular-element name="sidebar">
+	<template layout="column" class="margin">
+		<a href="#/" class="btn btn-block btn-margin show-sm">Home</a>
+		<a href="#/posts" class="btn btn-block btn-margin">Posts</a>
+		<a href="#/tags" class="btn btn-block btn-margin">Tags</a>
+	</template>
+</angular-element>

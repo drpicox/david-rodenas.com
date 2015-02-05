@@ -1,0 +1,28 @@
+@font-family-sans-serif: "Open Sans","Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-monospace: "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
+
+@font-family-base: @font-family-sans-serif;
+@headings-font-family: @font-family-monospace;
+
+@headings-font-weight: 800;
+@font-size-base: 16px;
+@font-factor: 1.1278385;
+
+
+html, body {
+	color: @text-color;
+	font-size: @font-size-base;
+	font-family: @font-family-sans-serif;
+	@media (max-width: @screen-sm) {
+		font-size: @font-size-base / @font-factor;
+	}
+	@media (min-width: @screen-lg) {
+		font-size: @font-size-base * @font-factor;
+	}
+}
+
+h1,h2,h3,h4,h5 {
+	font-family: @headings-font-family;
+	font-weight: @headings-font-weight;
+	color: @primary;
+}

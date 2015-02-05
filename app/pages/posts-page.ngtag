@@ -1,0 +1,15 @@
+<angular-page name="/posts">
+	<template>
+		<div class="margin">
+			<post-list posts="vm.posts"></post-list>
+		</div>
+	</template>
+	<resolve>
+		<script name="posts" inject="postsService">
+			return postsService.list();
+		</script>
+	</resolve>
+	<script inject="$route">
+		$route.current.title = 'Posts';
+	</script>
+</angular-page>

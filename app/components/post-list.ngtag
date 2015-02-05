@@ -1,0 +1,14 @@
+<angular-element name="post-list" bindings="posts">
+	<style>
+		post-list > div > h2 {
+			margin-bottom: 0;
+		}
+	</style>
+	<template>
+		<div ng-repeat="post in vm.posts">
+			<h2><a ng-href="#/posts/{{post.basename}}" ng-bind="post.title"></a></h2>
+			<span ng-bind="post.preview"></span><br>
+			<tag-list tagnames="post.tags"></tag-list>
+		</div>
+	</template>
+</angular-element>

@@ -1,0 +1,15 @@
+@text-color: rgba(0,0,0,0.87);
+@secondary-color: rgba(0,0,0,0.54);
+
+a {
+	color: fadeout(@primary, 13%);
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+.scaffold-color(@bg: white) {
+	background-color: @bg;
+	color: contrast(@bg, @text-color, rgba(255,255,255,0.87));
+}

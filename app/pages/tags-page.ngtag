@@ -1,0 +1,15 @@
+<angular-page name="/tags">
+	<template>
+		<div class="margin">
+			<tag-cloud tags="vm.tags"></tag-cloud>
+		</div>
+	</template>
+	<resolve>
+		<script name="tags" inject="tagsService">
+			return tagsService.list();
+		</script>
+	</resolve>
+	<script inject="$route">
+		$route.current.title = 'Tag cloud';
+	</script>
+</angular-page>

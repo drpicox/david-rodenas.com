@@ -1,0 +1,56 @@
+<angular-element name="site-header">
+	<style> 
+		site-header {	
+			display: flex;
+			.scaffold-color(@primary);
+			padding: 1.333em 1em;
+		}
+
+		site-header h1 {
+			margin: 0;
+			color: contrast(@primary);
+		}
+
+		site-header a {	
+			color: inherit;
+		}
+
+		site-header img {
+			margin: -1em 1em -1em 0;
+			max-height: 3em;
+			max-width: 100%;
+			border-radius: 100%;
+		}
+
+		site-header .ellipsis {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	</style>
+	<template layout="row" layout-align="start center">
+		<a href="#/"><img src="images/david.jpg"></a>
+		<h1 class="visible-sm" ng-hide="vm.isHome()"><a href="#/">Home</a>&nbsp;/&nbsp;</h1>
+		<h1 ng-bind="vm.title" class="ellipsis"></h1>
+	</template>
+	<script inject="$location,$route,$scope">
+		var vm = this;
+
+		vm.title = '';
+		vm.isHome = isHome;
+
+		$scope.$watch(function() {
+			return $route.current && $route.current.title;
+		}, updateTitle);
+
+		updateTitle();
+
+		function isHome() {
+			return $location.path().length <= 1;
+		}
+
+		function updateTitle() {
+			vm.title = $route.current && $route.current.title || 'David Rodenas';
+		}
+	</script>
+</angular-element>

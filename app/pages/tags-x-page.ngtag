@@ -1,0 +1,17 @@
+<angular-page name="/tags/:tagname">
+	<template>
+		<div class="margin">
+			<post-list posts="vm.posts"></post-list>
+		</div>
+	</template>
+	<resolve>
+		<script name="posts" params="tagname" inject="tagsService">
+			return tagsService.get(tagname).then(function(tag) {
+				return tag.posts;
+			});
+		</script>
+	</resolve>
+	<script inject="$route">
+		$route.current.title = 'Posts with '+$route.current.params.tagname;
+	</script>
+</angular-page>

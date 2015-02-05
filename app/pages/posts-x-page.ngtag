@@ -1,0 +1,15 @@
+<angular-page name="/posts/:basename">
+	<template>
+		<div class="margin posts-x">
+			<post-view post="vm.post"></post-view>
+		</div>
+	</template>
+	<resolve>
+		<script name="post" params="basename" inject="postsService">
+			return postsService.get(basename);
+		</script>
+	</resolve>
+	<script inject="$route">
+		$route.current.title = post.title;
+	</script>
+</angular-page>

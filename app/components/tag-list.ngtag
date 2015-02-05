@@ -1,0 +1,17 @@
+<angular-element name="tag-list" bindings="tagnames">
+	<style>
+		tag-list > a {
+			text-decoration: none;
+			font-size: 100% / pow(@font-factor,4);
+			padding: 0.3em 1em;
+			margin: 0.3em 1em 0.3em 0;
+			.scaffold-color(@primary-hue-1);
+		}
+	</style>
+	<template>
+		<a ng-repeat="tagname in vm.tagnames"
+		ng-href="#/tags/{{tagname}}" 
+		ng-bind="tagname" 
+		></a>
+	</template>
+</angular-element>
