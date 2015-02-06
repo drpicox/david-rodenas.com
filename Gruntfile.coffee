@@ -13,6 +13,10 @@ module.exports = (grunt) ->
 				dest: '.tmp/'
 			]
 
+		clean:
+			www: files: [ dot: true, src: [ 'dist/*','!dist/.git' ], ]
+			tmp: files: [ dot: true, src: [ '.tmp' ], ]
+
 		connect:
 			options: hostname: '0.0.0.0', port: 9302, livereload: 19302
 			livereload:	options: base: [ '.tmp','app','.' ]
@@ -92,6 +96,7 @@ module.exports = (grunt) ->
 
 	# (L) Load here grunt plugins with tasks
 	grunt.loadNpmTasks('grunt-autoprefixer');
+	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
@@ -117,6 +122,7 @@ module.exports = (grunt) ->
 	]
 
 	grunt.registerTask 'build', [ 
+		'clean'
     	'build-dev'
     	'copy'
     	'useminPrepare' 
