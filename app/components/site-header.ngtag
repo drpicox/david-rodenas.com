@@ -1,24 +1,13 @@
 <angular-element name="site-header">
 	<style> 
-		site-header .brand {
-			width: 11em;
-			background: rgba(0,0,0,0.2);
-		}
-		site-header .img {
+		site-header .homeBtn {
 			display: block;
-			height: 4em;
-			width: 4em;
+			height: 2em;
+			width: 2em;
+			margin: 0 1em 0 0.5em;
 			background-image: url(images/david.jpg);
 			background-size: cover;
-		}
-		site-header .title {
-			margin: 0 0 0 1em;
-			padding: 0 1em;
-			.scaffold-color(@primary);
-		}
-		site-header h1 {
-			margin: 0;
-			color: contrast(@primary);
+			border-radius: 100%;
 		}
 		site-header .ellipsis {
 			white-space: nowrap;
@@ -26,20 +15,20 @@
 			text-overflow: ellipsis;
 		}
 	</style>
-	<template layout="row" layout-align="start center">
-		<div class="brand" layout="row" layout-align="end center">
-			<a href="#/" class="img"></a>
-		</div>
-		<div class="title" flex layout="row">
-			<h1 class="visible-sm" ng-hide="vm.isHome()"><a href="#/">Home</a>&nbsp;/&nbsp;</h1>
+	<template>
+		<md-toolbar layout="row" layout-align="start center">
+			<button ng-click="vm.toggleSidebar()" hide-gt-sm class="menuBtn">
+				<span class="visuallyhidden">Menu</span>
+			</button>
+			<a href="#/" class="homeBtn"></a>
 			<h1 ng-bind="vm.title" class="ellipsis"></h1>
-		</div>
+		</md-toolbar>
 	</template>
-	<script inject="$location,$route,$scope">
+	<script inject="$mdSidenav,$route,$scope">
 		var vm = this;
 
 		vm.title = '';
-		vm.isHome = isHome;
+		vm.toggleSidebar = toggleSidebar;
 
 		$scope.$watch(function() {
 			return $route.current && $route.current.title;
@@ -47,8 +36,9 @@
 
 		updateTitle();
 
-		function isHome() {
-			return $location.path().length <= 1;
+		function toggleSidebar() {
+			console.log('toogggle');
+			$mdSidenav('sidebar').toggle();
 		}
 
 		function updateTitle() {

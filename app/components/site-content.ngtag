@@ -1,9 +1,5 @@
 <angular-element name="site-content">
-    <style> 
-        site-content {
-            margin: 2em 0;
-            max-width: 50em;
-            display: block;
-        }
-    </style>
+    <template>
+    	<md-content class="md-padding" ng-transclude></md-content>
+    </template>
 </angular-element>

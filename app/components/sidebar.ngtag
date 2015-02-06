@@ -1,14 +1,23 @@
 <angular-element name="sidebar">
-	<style>
-		sidebar {
-			display: block;
-			width: 12em;
-			margin: 2em 0 0 0;
-		}
-	</style>
 	<template layout="column">
-		<a href="#/" class="btn btn-block btn-margin show-sm">Home</a>
-		<a href="#/posts" class="btn btn-block btn-margin">Posts</a>
-		<a href="#/tags" class="btn btn-block btn-margin">Tags</a>
+		<md-toolbar layout="row" layout-align="start center">
+			<h1>&nbsp;Menu</h1>
+		</md-toolbar>
+		<nav>
+			<md-list>
+				<md-item ng-repeat="link in vm.links">
+					<md-item-content>
+						<md-button flex ng-href="{{link.url}}" ng-bind="link.label"></md-button>
+					</md-item-content>
+				</md-item>
+			</md-list>
+		</nav>
 	</template>
+	<script>
+		this.links = [
+			{url: '#/', label: 'Home'},
+			{url: '#/posts', label: 'Posts'},
+			{url: '#/tags', label: 'Tags'},
+		];
+	</script>
 </angular-element>

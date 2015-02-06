@@ -3,6 +3,7 @@
 
 	angular.module('drHome', [
 		'ngAnimate',
+		'ngMaterial',
 		'ngRoute',
 		'ngSanitize',
 		'ngtagsRuntime',

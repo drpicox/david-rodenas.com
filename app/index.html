@@ -2,9 +2,12 @@
 <html ng-app="drHome" ng-strict-di>
 <head>
 	<title>David Rodenas - @drpicox Home page</title>
+
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
 	
 	<!-- build:css(.tmp) styles.css -->
 	<link href="bower_components/highlightjs/styles/xcode.css" rel='stylesheet' type='text/css'></script>
+	<link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">
 	<link href="dr-home.css" rel='stylesheet' type='text/css'>
 	<!-- endbuild -->
 
@@ -14,34 +17,41 @@
 	  display: none !important;
 	}
 	body {
-		xbackground-image: url(images/grid.png);
+		background-image: url(images/grid.png);
 		background-repeat: repeat;
 		background-size: 1em 1em;
 	}
 	</style>
 </head>
-<body layout="column" ng-cloak>
+<body layout="row" ng-cloak>
 
-	<header>
-		<site-header></site-header>
-	</header>
+	<md-sidenav class="md-sidenav-left md-whiteframe-z2" 
+	md-component-id="sidebar" 
+	md-is-locked-open="$media('gt-sm')">
+		<sidebar></sidebar>
+	</md-sidenav>
 
-	<div flex scroll-x>
-		<div layout="row">
-			<nav class="hidden-sm">
-				<sidebar></sidebar>
-			</nav>
-			<main flex ng-view style="max-width: 50em"></main>
-		</div>
+	<div layout="column" flex>
+
+		<header>
+			<site-header></site-header>
+		</header>
+
+		<md-content flex md-scroll-y>
+			<main flex ng-view></main>
+
+			<footer>
+				<site-footer></site-footer>
+			</footer>
+		</md-content>
+
 	</div>
-
-	<footer>
-		<site-footer></site-footer>
-	</footer>
 
 	<!-- build:js(.) components.js -->
 	<script src="bower_components/angular/angular.js"></script>
 	<script src="bower_components/angular-animate/angular-animate.js"></script>
+	<script src="bower_components/angular-aria/angular-aria.js"></script>
+	<script src="bower_components/angular-material/angular-material.js"></script>
 	<script src="bower_components/angular-route/angular-route.js"></script>
 	<script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 	<script src="bower_components/highlightjs/highlight.pack.js"></script>
