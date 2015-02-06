@@ -1,13 +1,4 @@
 <angular-element name="site-footer">
-	<style> 
-
-		site-footer {		
-			display: flex;
-			padding: 0.5em 1em;
-			.scaffold-color(@primary-hue-3);
-		}
-	
-	</style>
 	<template layout="row" layout-align="center center">
 		<small>David Rodenas &copy; 2015</small>
 	</template>

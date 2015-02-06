@@ -3,6 +3,7 @@
 		<md-toolbar layout="row" layout-align="start center">
 			<h1>&nbsp;Menu</h1>
 		</md-toolbar>
+		<br>
 		<nav>
 			<md-list>
 				<md-item ng-repeat="link in vm.links">

@@ -1,23 +1,15 @@
 <angular-element name="tag-list" bindings="tagnames">
 	<style>
-		tag-list {
+		tag-list .md-button {
 			display: block;
-			line-height: 1;
-		}
-		tag-list > a {
-			display: inline-block;
-			text-decoration: none;
-			font-size: 0.5em;
-			line-height: 2;
-			margin: 0 1em 2em 0;
-			padding: 0 1em;
-			.scaffold-color(@primary);
+			margin: 0 .5em .5em 0;
 		}
 	</style>
-	<template layout="row">
-		<a ng-repeat="tagname in vm.tagnames"
+	<template layout="row" layout-wrap>
+		<md-button
+		ng-repeat="tagname in vm.tagnames"
 		ng-href="#/tags/{{tagname}}" 
 		ng-bind="tagname" 
-		></a>
+		></md-button>
 	</template>
 </angular-element>

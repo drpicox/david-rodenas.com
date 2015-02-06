@@ -1,51 +1,11 @@
-body,html {
-	margin: 0; padding: 0;
-	width: 100%;
-	height: 100%;
-}
-
 .layout(@infix: '') {
-
-	@flex: ~'[flex@{infix}]'; @{flex} {
-		flex: 1;
-	}
 
 	@overflow: ~'[overflow@{infix}]'; @{overflow} {
 		overflow: hidden;
 	}
 
-	@layout-column: ~'[layout@{infix}="column"]'; @{layout-column} {
-		display: flex;
-		flex-direction: column;
-	}
-
 	@layout-wrap: ~'[layout@{infix}-wrap]'; @{layout-wrap} {
 		flex-wrap: wrap;
-	}
-
-	@layout-row: ~'[layout@{infix}="row"]'; @{layout-row} {
-		display: flex;
-		flex-direction: row;
-	}
-
-	@layout-align-center: ~'[layout@{infix}-align^="center"]'; @{layout-align-center} {
-		justify-content: center;
-	}
-
-	@layout-align-end: ~'[layout@{infix}-align^="end"]'; @{layout-align-end} {
-		justify-content: flex-end;
-	}
-
-	@layout-align--baseline: ~'[layout@{infix}-align$=" baseline"]'; @{layout-align--baseline} {
-		align-items: baseline;
-	}
-
-	@layout-align--center: ~'[layout@{infix}-align$=" center"]'; @{layout-align--center} {
-		align-items: center;
-	}
-
-	@layout-align--start: ~'[layout@{infix}-align$=" start"]'; @{layout-align--start} {
-		align-items: flex-start;
 	}
 
 	@scroll-y: ~'[scroll@{infix}-y]'; @{scroll-y} {
@@ -60,16 +20,4 @@ body,html {
 .layout();
 @media (max-width: @screen-sm) {
 	.layout('-sm');
-}
-
-.container {
-	max-width: 50em;
-	margin: 0 auto;
-}
-
-.padding {
-	padding: 2em 1em;
-}
-.margin {
-	margin: 2em 1em;
 }
