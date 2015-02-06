@@ -1,5 +1,12 @@
 <angular-element name="sidebar">
-	<template layout="column" class="margin">
+	<style>
+		sidebar {
+			display: block;
+			width: 12em;
+			margin: 2em 0 0 0;
+		}
+	</style>
+	<template layout="column">
 		<a href="#/" class="btn btn-block btn-margin show-sm">Home</a>
 		<a href="#/posts" class="btn btn-block btn-margin">Posts</a>
 		<a href="#/tags" class="btn btn-block btn-margin">Tags</a>

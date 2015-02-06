@@ -1,14 +1,16 @@
 <angular-element name="post-view" bindings="post">
 	<style>
+		post-view > div {
+			margin-top: -.45em;
+		}
 		post-view h2, h3 {
-			margin-top: 2em;
-			margin-bottom: 0;
+			margin: 1.55em 0 -0.25em;
 		}
 	</style>
 	</style>
 	<template>
 		<!-- <h2 ng-bind="vm.post.title"></h2> -->
 		<tag-list tagnames="vm.post.tags"></tag-list>
-		<div ng-bind-html="vm.post.body"></div>
+		<div ng-bind-html="vm.post.body" layout="column"></div>
 	</template>
 </angular-element>

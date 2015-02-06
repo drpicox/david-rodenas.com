@@ -13,6 +13,11 @@
 	[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	  display: none !important;
 	}
+	body {
+		xbackground-image: url(images/grid.png);
+		background-repeat: repeat;
+		background-size: 1em 1em;
+	}
 	</style>
 </head>
 <body layout="column" ng-cloak>
@@ -21,14 +26,14 @@
 		<site-header></site-header>
 	</header>
 
-	<main flex scroll-x>
-		<div class="container" layout="row">
-			<div class="hidden-sm">
+	<div flex scroll-x>
+		<div layout="row">
+			<nav class="hidden-sm">
 				<sidebar></sidebar>
-			</div>
-			<div ng-view flex></div>
+			</nav>
+			<main flex ng-view style="max-width: 50em"></main>
 		</div>
-	</main>
+	</div>
 
 	<footer>
 		<site-footer></site-footer>

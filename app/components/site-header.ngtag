@@ -1,27 +1,25 @@
 <angular-element name="site-header">
 	<style> 
-		site-header {	
-			display: flex;
-			.scaffold-color(@primary);
-			padding: 1.333em 1em;
+		site-header .brand {
+			width: 11em;
+			background: rgba(0,0,0,0.2);
 		}
-
+		site-header .img {
+			display: block;
+			height: 4em;
+			width: 4em;
+			background-image: url(images/david.jpg);
+			background-size: cover;
+		}
+		site-header .title {
+			margin: 0 0 0 1em;
+			padding: 0 1em;
+			.scaffold-color(@primary);
+		}
 		site-header h1 {
 			margin: 0;
 			color: contrast(@primary);
 		}
-
-		site-header a {	
-			color: inherit;
-		}
-
-		site-header img {
-			margin: -1em 1em -1em 0;
-			max-height: 3em;
-			max-width: 100%;
-			border-radius: 100%;
-		}
-
 		site-header .ellipsis {
 			white-space: nowrap;
 			overflow: hidden;
@@ -29,9 +27,13 @@
 		}
 	</style>
 	<template layout="row" layout-align="start center">
-		<a href="#/"><img src="images/david.jpg"></a>
-		<h1 class="visible-sm" ng-hide="vm.isHome()"><a href="#/">Home</a>&nbsp;/&nbsp;</h1>
-		<h1 ng-bind="vm.title" class="ellipsis"></h1>
+		<div class="brand" layout="row" layout-align="end center">
+			<a href="#/" class="img"></a>
+		</div>
+		<div class="title" flex layout="row">
+			<h1 class="visible-sm" ng-hide="vm.isHome()"><a href="#/">Home</a>&nbsp;/&nbsp;</h1>
+			<h1 ng-bind="vm.title" class="ellipsis"></h1>
+		</div>
 	</template>
 	<script inject="$location,$route,$scope">
 		var vm = this;

@@ -1,11 +1,16 @@
 code {
 	background: fadeout(@primary, 93.5%);
-	font-size: 100% / @font-factor;	
+	font-family: @font-family-monospace;
+	xfont-size: 1em;	
+}
+pre {
+	margin: 0.4em 0 0.6em;
 }
 pre code {
-	margin: 2em 0;
-	padding: 1em 2em;
+	padding: 1.25em 2em;
 	border-left: solid 6px @primary;
 	overflow-y: auto;
 	display: block;
+	line-height: 1.25em;//(1 / 0.80);
+	font-size: 0.8em;
 }

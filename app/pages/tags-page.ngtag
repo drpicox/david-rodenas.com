@@ -1,8 +1,8 @@
 <angular-page name="/tags">
 	<template>
-		<div class="margin">
+		<site-content>
 			<tag-cloud tags="vm.tags"></tag-cloud>
-		</div>
+		</site-content>
 	</template>
 	<resolve>
 		<script name="tags" inject="tagsService">

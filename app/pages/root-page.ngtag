@@ -1,6 +1,6 @@
 <angular-page name="/">
 	<template>
-		<div class="margin">
+		<site-content>
 			<h1>Hi!</h1>
 			<p>
 				I'm David Rodenas, a computer enthusiastic (also doctor and engineer).
@@ -60,6 +60,6 @@
 			<br><br>
 			<small>Note: this page is still in working progress.</small>
 
-		</div>
+		</site-content>
 	</template>
 </angular-page>

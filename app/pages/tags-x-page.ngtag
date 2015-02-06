@@ -1,8 +1,8 @@
 <angular-page name="/tags/:tagname">
 	<template>
-		<div class="margin">
+		<site-content>
 			<post-list posts="vm.posts"></post-list>
-		</div>
+		</site-content>
 	</template>
 	<resolve>
 		<script name="posts" params="tagname" inject="tagsService">

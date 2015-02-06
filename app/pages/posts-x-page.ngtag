@@ -1,8 +1,8 @@
 <angular-page name="/posts/:basename">
 	<template>
-		<div class="margin posts-x">
+		<site-content>
 			<post-view post="vm.post"></post-view>
-		</div>
+		</site-content>
 	</template>
 	<resolve>
 		<script name="post" params="basename" inject="postsService">

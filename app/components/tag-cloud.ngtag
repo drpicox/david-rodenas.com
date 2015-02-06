@@ -2,17 +2,28 @@
 	<style>
 		tag-cloud {
 			text-decoration: none;
-			font-size: 100%; /* / pow(@font-factor,4); */
+			xfont-size: 1em; /* / pow(@font-factor,4); */
 		}
 		tag-cloud a {
-			padding: 0.3em 1em;
-			margin: 0.3em 1em 0.3em 0;
+			display: block;
+			margin: -0.35em 1em 0.35em 0;
 		}
 	</style>
-	<template>
+	<template layout="row" layout-wrap>
 		<a ng-repeat="tag in vm.tags"
 		ng-href="#/tags/{{tag.tagname}}" 
 		ng-bind="tag.tagname"
-		ng-style="{fontSize: tag.weight*100 +'%'}"></a>
+		ng-style="{fontSize: tag.weight*100 +'%', fontWeight: vm.fontWeight(tag)}"></a>
 	</template>
+	<script>
+		this.fontWeight = function(tag) {
+			if (tag.weight < 0.5) {
+				return 100;
+			} else if (tag.weight > 2) {
+				return 900;
+			} else {
+				return 400;
+			}
+		};
+	</script>
 </angular-element>

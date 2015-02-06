@@ -19,6 +19,10 @@ body,html {
 		flex-direction: column;
 	}
 
+	@layout-wrap: ~'[layout@{infix}-wrap]'; @{layout-wrap} {
+		flex-wrap: wrap;
+	}
+
 	@layout-row: ~'[layout@{infix}="row"]'; @{layout-row} {
 		display: flex;
 		flex-direction: row;
@@ -26,6 +30,10 @@ body,html {
 
 	@layout-align-center: ~'[layout@{infix}-align^="center"]'; @{layout-align-center} {
 		justify-content: center;
+	}
+
+	@layout-align-end: ~'[layout@{infix}-align^="end"]'; @{layout-align-end} {
+		justify-content: flex-end;
 	}
 
 	@layout-align--baseline: ~'[layout@{infix}-align$=" baseline"]'; @{layout-align--baseline} {
