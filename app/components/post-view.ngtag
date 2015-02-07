@@ -1,14 +1,5 @@
 <angular-element name="post-view" bindings="post">
 	<style>
-		post-view > .post {
-			max-width: 50em;
-			margin: auto;
-		}
-		post-view > .post > h1 {			
-			color: @accent;
-			text-align: center;
-			text-transform: uppercase;
-		}
 		post-view h2, h3 {
 			margin: 1.55em 0 -0.25em;
 		}

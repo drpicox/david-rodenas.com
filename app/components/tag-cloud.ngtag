@@ -2,7 +2,6 @@
 	<style>
 		tag-cloud {
 			text-decoration: none;
-			xfont-size: 1em; /* / pow(@font-factor,4); */
 		}
 		tag-cloud a {
 			display: block;

@@ -3,11 +3,15 @@
 		post-list > div > h2 {
 			margin-bottom: 0;
 		}
+		post-list .preview {
+			color: rgba(0,0,0,0.54);
+			margin-left: 2px;
+		}
 	</style>
 	<template>
 		<div ng-repeat="post in vm.posts">
 			<h2><a ng-href="#/posts/{{post.basename}}" ng-bind="post.title"></a></h2>
-			<span ng-bind="post.preview"></span><br>
+			<div ng-bind="post.preview" class="preview"></div>
 			<tag-list tagnames="post.tags"></tag-list>
 		</div>
 	</template>

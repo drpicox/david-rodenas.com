@@ -1,4 +1,15 @@
 <angular-element name="site-content">
+	<style>
+		site-content {
+			display: block;
+			max-width: 50em;
+			margin: auto;
+		}
+		site-content h1 {			
+			color: @accent;
+			text-align: center;
+			text-transform: uppercase;
+		}	</style>
     <template>
     	<md-content class="md-padding" ng-transclude></md-content>
     </template>
