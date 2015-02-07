@@ -1,7 +1,9 @@
 <angular-page name="/tags">
 	<template>
 		<site-content>
-			<tag-cloud tags="vm.tags"></tag-cloud>
+			<br>
+			<tag-cloud tags="vm.tags" layout-align="center"></tag-cloud>
+			<br>
 		</site-content>
 	</template>
 	<resolve>

@@ -1,5 +1,6 @@
 /*
 	markdownTool:
+		-element(md): jqLite element
 		-html(md): html
 		-text(md): text
 
@@ -15,20 +16,32 @@
 
 	function markdownToolFactory  () {
 		var tool = {
-			html: html,		// (md)
-			text: text,		// (md)
+			element:element,	// (md)
+			html:html,			// (md)
+			text: text,			// (md)
 		};
 
-		function html(body) {
+		function element(body) {
 			body = stripYaml(body);
 			body = marked(body);
+
+			var div = angular.element('<div>');
+			div.html(body);
+			angular.forEach(div[0].querySelectorAll('a[href^=http]'), function(a) {
+				a.setAttribute('target','_blank');
+			});
+
+			return div;
+		}
+
+		function html(body) {
+			var element = tool.element(body);
+			body = element.html();
 			return body;
 		}
 
 		function text(body) {
-			var div = angular.element('<div>');
-			body = tool.html(body);
-			div.html(body);
+			var div = tool.element(body);
 			body = div.text();
 			return body;
 		}
