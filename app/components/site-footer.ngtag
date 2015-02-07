@@ -1,5 +1,6 @@
 <angular-element name="site-footer">
 	<template layout="row" layout-align="center center">
+		<br>
 		<small>David Rodenas &copy; 2015</small>
 	</template>
 </angular-element>

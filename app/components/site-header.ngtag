@@ -7,6 +7,7 @@
 			margin: 0 1em 0 0.5em;
 			background-image: url(images/david.jpg);
 			background-size: cover;
+			background-position: center center;
 			border-radius: 100%;
 		}
 		site-header .ellipsis {
