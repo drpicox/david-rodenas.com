@@ -1,21 +1,15 @@
-.code() {
-	@primary: #e91e63;
-
-
-	code {
-		background: fadeout(@primary, 93.5%);
-		font-family: @font-family-monospace;
-	}
-	pre {
-		margin: 0.4em 0 0.6em;
-	}
-	pre code {
-		padding: 1em 2em;
-		border-left: solid 6px @primary;
-		overflow-y: auto;
-		display: block;
-		line-height: 1.25em;
-		font-size: 0.9em;
-	}
+code {
+	background: fadeout(@accent, 93.5%);
+	font-family: @font-family-monospace;
 }
-.code();
+pre {
+	margin: 0.4em 0 0.6em;
+}
+pre code {
+	padding: 1em 2em;
+	border-left: solid 6px @accent;
+	overflow-y: auto;
+	display: block;
+	line-height: 1.25em;
+	font-size: 0.9em;
+}

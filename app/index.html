@@ -26,10 +26,11 @@
 <body layout="row" ng-cloak>
 
 	<md-sidenav class="md-sidenav-left md-whiteframe-z2" 
-	md-component-id="sidebar" 
-	md-is-locked-open="$media('gt-sm')"
-	style="width: 224px; min-width:224px;">
-		<sidebar></sidebar>
+	drpx-toggle="sidenavLgSm as sidenavLgSm" 
+	md-component-id="sidenav" 
+	md-is-locked-open="$media('gt-sm') && sidenavLgSm.isOpen()"
+	style="xwidth: 224px; xmin-width:224px;">
+		<sidenav></sidenav>
 	</md-sidenav>
 
 	<div layout="column" flex>
@@ -58,6 +59,7 @@
 	<script src="bower_components/highlightjs/highlight.pack.js"></script>
 	<script src="bower_components/marked/lib/marked.js"></script>
 	<script src="bower_components/drpx-otherwisehome/drpx-otherwisehome.js"></script>
+	<script src="bower_components/drpx-toggle/drpx-toggle.js"></script>
 	<script src="node_modules/grunt-ngtags/node_modules/ngtags/runtime/ngtags-runtime.js"></script>
 	<!-- endbuild -->
 

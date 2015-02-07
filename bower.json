@@ -24,6 +24,8 @@
     "fontawesome": "~4.3.0",
     "marked": "~0.3.3",
     "highlightjs": "~8.4.0",
-    "angular-material": "~0.7.1"
+    "angular-material": "~0.7.1",
+    "drpx-otherwisehome": "~0.0.1",
+    "drpx-toggle": "~0.0.1"
   }
 }

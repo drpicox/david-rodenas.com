@@ -10,6 +10,7 @@
 		ng-repeat="tagname in vm.tagnames"
 		ng-href="#/tags/{{tagname}}" 
 		ng-bind="tagname" 
+		aria-label="tag {{tagname}}"
 		></md-button>
 	</template>
 </angular-element>

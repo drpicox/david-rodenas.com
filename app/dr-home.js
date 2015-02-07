@@ -8,6 +8,7 @@
 		'ngSanitize',
 		'ngtagsRuntime',
 		'drpxOtherwiseHome',
+		'drpxToggle',
 	]);
 
 })(angular);

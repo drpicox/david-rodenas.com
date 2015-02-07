@@ -1,7 +1,13 @@
 <angular-page name="/">
+	<style>
+		h1.home {
+			color: @accent;
+			text-align: center;
+		}
+	</style>
 	<template>
 		<site-content>
-			<h1>Hi!</h1>
+			<h1 class="home">Hi!</h1>
 			<p>
 				I'm David Rodenas, a computer enthusiastic (also doctor and engineer).
 				I love to innovate and extract all potential to this <em>yount<em> 

@@ -1,4 +1,4 @@
-<angular-element name="sidebar">
+<angular-element name="sidenav">
 	<template layout="column">
 		<md-toolbar layout="row" layout-align="start center">
 			<h1>&nbsp;Menu</h1>
@@ -8,7 +8,10 @@
 			<md-list>
 				<md-item ng-repeat="link in vm.links">
 					<md-item-content>
-						<md-button flex ng-href="{{link.url}}" ng-bind="link.label"></md-button>
+						<md-button flex 
+						ng-href="{{link.url}}" 
+						ng-bind="link.label"
+						aria-label="{{link.label}}"></md-button>
 					</md-item-content>
 				</md-item>
 			</md-list>

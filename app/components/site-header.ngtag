@@ -14,12 +14,20 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
+		site-header .sidenavLgSm {
+			margin-left: 0.5em;
+		}
 	</style>
 	<template>
 		<md-toolbar layout="row" layout-align="start center">
-			<button ng-click="vm.toggleSidebar()" hide-gt-sm class="menuBtn">
+			<button ng-click="vm.toggleSidenav()" hide-gt-sm class="menuBtn">
 				<span class="visuallyhidden">Menu</span>
 			</button>
+			<md-button hide-sm aria-label="open menu"
+			drpx-toggle="sidenavLgSm as sidenavLgSm" 
+			ng-click="sidenavLgSm.toggle()" class="sidenavLgSm">
+				&nbsp;<i class="fa fa-bars"></i>&nbsp;
+			</md-button>
 			<a href="#/" class="homeBtn"></a>
 			<h1 ng-bind="vm.title" class="ellipsis"></h1>
 		</md-toolbar>
@@ -28,7 +36,7 @@
 		var vm = this;
 
 		vm.title = '';
-		vm.toggleSidebar = toggleSidebar;
+		vm.toggleSidenav = toggleSidenav;
 
 		$scope.$watch(function() {
 			return $route.current && $route.current.title;
@@ -36,9 +44,9 @@
 
 		updateTitle();
 
-		function toggleSidebar() {
+		function toggleSidenav() {
 			console.log('toogggle');
-			$mdSidenav('sidebar').toggle();
+			$mdSidenav('sidenav').toggle();
 		}
 
 		function updateTitle() {
