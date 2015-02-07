@@ -45,7 +45,6 @@
 		updateTitle();
 
 		function toggleSidenav() {
-			console.log('toogggle');
 			$mdSidenav('sidenav').toggle();
 		}
 
