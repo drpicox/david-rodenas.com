@@ -84,7 +84,7 @@ module.exports = (grunt) ->
 			grunt: files: ['Gruntfile.coffee']
 			js: files: ['app/{*/,}*.js' ], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less' ], tasks: ['less','autoprefixer']
-			md: files: ['app/{*/,}*.md' ], tasks: ['m2j']
+			md: files: ['app/{*/,}*.ymd' ], tasks: ['m2j']
 			ngtags: files: ['app/{components,pages}/*.ngtag'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 
