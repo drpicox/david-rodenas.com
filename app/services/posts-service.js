@@ -45,7 +45,7 @@
 				post = data.then(function(map) {
 					return map[basename];
 				}).then(function(post) {
-					return $http.get('posts/'+basename+'._md').then(function(result) {
+					return $http.get('posts/'+basename+'.ymd').then(function(result) {
 						post.body = markdownTool.html(result.data);
 						return post;
 					});
