@@ -40,7 +40,7 @@ module.exports = (grunt) ->
 				expand: true,
 				cwd: 'app',
 				dest: 'dist',
-				src: '**/*.md'
+				src: '**/*._md'
 
 		jshint:
 			options: jshintrc: '.jshintrc'
@@ -57,7 +57,7 @@ module.exports = (grunt) ->
 
 		m2j: build:
 			options: width: 300
-			files: '.tmp/posts.json': ['app/posts/*.md']
+			files: '.tmp/posts.json': ['app/posts/*._md']
 
 		ngtags:
 			options: module: 'drHome', autoprefix: false
