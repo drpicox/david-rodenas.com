@@ -1,6 +1,6 @@
 <angular-element name="sidenav">
 	<template layout="column">
-		<md-toolbar layout="row" layout-align="start center">
+		<md-toolbar layout="row" layout-align="start center" md-swipe-left="vm.close()">
 			<h1>&nbsp;Menu</h1>
 		</md-toolbar>
 		<br>
@@ -11,17 +11,22 @@
 						<md-button flex 
 						ng-href="{{link.url}}" 
 						ng-bind="link.label"
+						ng-click="vm.close()"
 						aria-label="{{link.label}}"></md-button>
 					</md-item-content>
 				</md-item>
 			</md-list>
 		</nav>
 	</template>
-	<script>
+	<script inject="$mdSidenav">
 		this.links = [
 			{url: '#/', label: 'Home'},
 			{url: '#/posts', label: 'Posts'},
 			{url: '#/tags', label: 'Tags'},
 		];
+
+		this.close = function() {
+			$mdSidenav('sidenav').close();
+		};
 	</script>
 </angular-element>
