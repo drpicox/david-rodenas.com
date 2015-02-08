@@ -15,18 +15,18 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 		}
-		site-header .sidenavLgSm {
+		site-header .sidenavLg {
 			margin-left: 0.5em;
 		}
 	</style>
 	<template>
 		<md-toolbar layout="row" layout-align="start center">
-			<button ng-click="vm.toggleSidenav()" hide-gt-sm class="menuBtn">
+			<button ng-click="vm.toggleSidenav()" hide-gt-lg class="menuBtn">
 				<span class="visuallyhidden">Menu</span>
 			</button>
-			<md-button hide-sm aria-label="open menu"
-			drpx-toggle="sidenavLgSm as sidenavLgSm" 
-			ng-click="sidenavLgSm.toggle()" class="sidenavLgSm">
+			<md-button hide-sm hide-md hide-lg aria-label="open menu"
+			drpx-toggle="sidenavLg as sidenavLg" 
+			ng-click="sidenavLg.toggle()" class="sidenavLg">
 				&nbsp;<i class="fa fa-bars"></i>&nbsp;
 			</md-button>
 			<a href="#/" class="homeBtn"></a>

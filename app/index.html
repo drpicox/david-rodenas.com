@@ -4,7 +4,12 @@
 	<title>David Rodenas - @drpicox Home page</title>
 
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-	
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="application-name" content="@drpicox Home">
+	<meta name="apple-mobile-web-app-title" content="@drpicox Home">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
 	<!-- build:css({.tmp,.}) styles.css -->
 	<link href="bower_components/highlightjs/styles/xcode.css" rel='stylesheet' type='text/css'>
 	<link href="/bower_components/angular-material/angular-material.css" rel="stylesheet" >
@@ -26,9 +31,9 @@
 <body layout="row" ng-cloak>
 
 	<md-sidenav class="md-sidenav-left md-whiteframe-z2" 
-	drpx-toggle="sidenavLgSm as sidenavLgSm" 
+	drpx-toggle="sidenavLg as sidenavLg" 
 	md-component-id="sidenav" 
-	md-is-locked-open="$media('gt-sm') && sidenavLgSm.isOpen()"
+	md-is-locked-open="$media('gt-lg') && sidenavLg.isOpen()"
 	style="xwidth: 224px; xmin-width:224px;">
 		<sidenav></sidenav>
 	</md-sidenav>
