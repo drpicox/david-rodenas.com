@@ -25,6 +25,14 @@
 			postList = data.then(function(map) {
 				return Object.keys(map).map(function(basename) {
 					return map[basename];
+				}).sort(function(a,b) {
+					if (a.date < b.date) {
+						return 1;
+					} else if (a.date > b.date) {
+						return -1;
+					} else {
+						return 0;
+					}
 				});
 			});
 			// compile previews
