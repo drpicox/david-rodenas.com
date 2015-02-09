@@ -31,7 +31,7 @@
     "grunt-contrib-less": "^1.0.0",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
-    "grunt-frontmatter": "0.0.1",
+    "grunt-frontmatter": "0.0.2",
     "grunt-ngtags": "0.0.3",
     "grunt-usemin": "^3.0.0",
     "time-grunt": "^1.0.0"
