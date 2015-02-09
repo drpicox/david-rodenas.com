@@ -1,7 +1,7 @@
 <angular-element name="post-view" bindings="post">
 	<style>
 		post-view h2, h3 {
-			margin: 1.55em 0 -0.25em;
+			margin: 2.5em 0 -0.3em;
 		}
 	</style>
 	</style>
