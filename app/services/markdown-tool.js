@@ -47,7 +47,17 @@
 		}
 
 		function stripYaml(body) {
-			return body.replace(/^---(.|\n)+---\n/, '');
+			var end = 0;
+			body = body.split('\n');
+			if (body[0] === '---') {
+				end++;
+			}
+			while (body[end] !== '---' && body[end] !== body[-1]) {
+				end++;
+			}
+
+			body = body.slice(end+1).join('\n');
+			return body;
 		}
 
 		return tool;
@@ -57,6 +67,7 @@
 		highlight: function(code, lang) {
 			return hljs.highlight(lang, code).value;
 		},
+		sanitize: false,
 	});
 
 })(angular);

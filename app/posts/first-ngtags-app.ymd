@@ -10,9 +10,7 @@ tags:
 date: 2015-02-05
 ---
 
-<rep style="background:red">
 [Ngtags](http://ngtags.org) objective is to simplify the creation of [AngularJS](https://angularjs.org) apps. Instead of creating complex _directive_ and _routes_ structure definitions it allows to create them through an `html` like tags self explained and contained. Say hello:
-</rep>
 
 ```html
 <angular-element name="say-hello">
@@ -27,6 +25,7 @@ See examples:
 - [Count cliks](https://github.com/ngtags/ngtags/blob/master/examples/example-count-clicks.md)
 - [More examples](https://github.com/ngtags/ngtags/blob/master/examples/index.md)
 - [Start example](https://github.com/ngtags/grunt-ngtags-example)
+
 
 
 ## First app

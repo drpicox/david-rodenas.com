@@ -42,6 +42,10 @@ module.exports = (grunt) ->
 				dest: 'dist',
 				src: '**/*.ymd'
 
+		frontmatter: build:
+			options: width: 300
+			files: '.tmp/posts.json': ['app/posts/*.ymd']
+
 		jshint:
 			options: jshintrc: '.jshintrc'
 			build: [ '{app,.tmp}/{*/,}/*.js','!.tmp/concat/*.js' ]
@@ -54,10 +58,6 @@ module.exports = (grunt) ->
 				yuicompress: false
 				dumpLineNumbers: 'comments'
 				optimization: 0
-
-		m2j: build:
-			options: width: 300
-			files: '.tmp/posts.json': ['app/posts/*.ymd']
 
 		ngtags:
 			options: module: 'drHome', autoprefix: false
@@ -84,7 +84,7 @@ module.exports = (grunt) ->
 			grunt: files: ['Gruntfile.coffee']
 			js: files: ['app/{*/,}*.js' ], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less' ], tasks: ['less','autoprefixer']
-			md: files: ['app/{*/,}*.ymd' ], tasks: ['m2j']
+			md: files: ['app/{*/,}*.ymd' ], tasks: ['frontmatter']
 			ngtags: files: ['app/{components,pages}/*.ngtag'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 
@@ -105,7 +105,7 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-markdown-to-json');
+	grunt.loadNpmTasks('grunt-frontmatter');
 	grunt.loadNpmTasks('grunt-ngtags');
 	grunt.loadNpmTasks('grunt-usemin');
 
@@ -118,7 +118,7 @@ module.exports = (grunt) ->
 		'jshint'
 		'less'
 		'autoprefixer'
-		'm2j'
+		'frontmatter'
 	]
 
 	grunt.registerTask 'build', [ 
