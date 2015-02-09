@@ -47,16 +47,17 @@
 		}
 
 		function stripYaml(body) {
+			var lines = body.split('\n');
+
 			var end = 0;
-			body = body.split('\n');
-			if (body[0] === '---') {
-				end++;
-			}
-			while (body[end] !== '---' && body[end] !== body[-1]) {
-				end++;
+			if (lines[0] === '---') {
+				end = 1;
+				while (lines[end] !== '---' && lines[end] !== lines[-1]) {
+					end++;
+				}
+				body = lines.slice(end+1).join('\n');
 			}
 
-			body = body.slice(end+1).join('\n');
 			return body;
 		}
 
