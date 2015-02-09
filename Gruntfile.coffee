@@ -43,7 +43,7 @@ module.exports = (grunt) ->
 				src: '**/*.ymd'
 
 		frontmatter: build:
-			options: width: 300
+			options: width: 350
 			files: '.tmp/posts.json': ['app/posts/*.ymd']
 
 		jshint:
