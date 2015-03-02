@@ -1,7 +1,16 @@
 <angular-element name="post-list" bindings="posts">
 	<style>
 		post-list > div > h2 {
-			margin-bottom: 0;
+			margin-top: 1.5em;
+			margin-bottom: 0.2em;
+
+			a, a:visited {
+				color: @accent;
+			}
+			small {
+				font-size: 50%;
+				color: rgba(0,0,0,0.54);
+			}
 		}
 		post-list .preview {
 			color: rgba(0,0,0,0.54);
@@ -10,7 +19,7 @@
 	</style>
 	<template>
 		<div ng-repeat="post in vm.posts">
-			<h2><a ng-href="#/posts/{{post.basename}}" ng-bind="post.title"></a></h2>
+			<h2><a ng-href="#/posts/{{post.basename}}" ng-bind="post.title"></a> <small>{{post.date | date}}</small></h2>
 			<div ng-bind="post.preview" class="preview"></div>
 			<tag-list tagnames="post.tags"></tag-list>
 		</div>

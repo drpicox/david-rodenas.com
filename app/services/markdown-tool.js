@@ -30,6 +30,10 @@
 			angular.forEach(div[0].querySelectorAll('a[href^=http]'), function(a) {
 				a.setAttribute('target','_blank');
 			});
+			angular.forEach(div[0].querySelectorAll('img'), function(a) {
+				a.setAttribute('class','img-responsive');
+				a.parentElement.setAttribute('class','img-container');
+			});
 
 			return div;
 		}
