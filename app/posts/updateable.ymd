@@ -122,6 +122,7 @@ And you can listen for it in your **reacter** controller as follows:
     function YourController  ( yourService , $scope ) {
         var vm = this;
         $scope.$on('yourUpdate', update);
+        update();
 
         function update() {
             vm.data = yourService.data;            
