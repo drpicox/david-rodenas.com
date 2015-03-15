@@ -20,9 +20,9 @@
 	</template>
 	<script inject="$mdSidenav">
 		this.links = [
-			{url: '#/', label: 'Home'},
-			{url: '#/posts', label: 'Posts'},
-			{url: '#/tags', label: 'Tags'},
+			{url: '#!/', label: 'Home'},
+			{url: '#!/posts', label: 'Posts'},
+			{url: '#!/tags', label: 'Tags'},
 		];
 
 		this.close = function() {

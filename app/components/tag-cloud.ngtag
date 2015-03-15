@@ -10,7 +10,7 @@
 	</style>
 	<template layout="row" layout-wrap>
 		<a ng-repeat="tag in vm.tags"
-		ng-href="#/tags/{{tag.tagname}}" 
+		ng-href="#!/tags/{{tag.tagname}}" 
 		ng-bind="tag.tagname"
 		ng-style="{fontSize: tag.weight*100 +'%', fontWeight: vm.fontWeight(tag)}"></a>
 	</template>

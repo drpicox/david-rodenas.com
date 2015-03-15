@@ -29,7 +29,7 @@
 			ng-click="sidenavLg.toggle()" class="sidenavLg">
 				&nbsp;<i class="fa fa-bars"></i>&nbsp;
 			</md-button>
-			<a href="#/" class="homeBtn"></a>
+			<a href="#!/" class="homeBtn"></a>
 			<h1 ng-bind="vm.title" class="ellipsis"></h1>
 		</md-toolbar>
 	</template>

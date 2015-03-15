@@ -22,8 +22,8 @@
 				See:
 			</p>
 			<ul>
-				<li><a href="#/posts">Posts</a></li>
-				<li><a href="#/tags">Tags</a></li>
+				<li><a href="#!/posts">Posts</a></li>
+				<li><a href="#!/tags">Tags</a></li>
 			</ul>
 
 			<h3>Interesting links</h3>

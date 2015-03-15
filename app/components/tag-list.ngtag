@@ -8,7 +8,7 @@
 	<template layout="row" layout-wrap>
 		<md-button
 		ng-repeat="tagname in vm.tagnames"
-		ng-href="#/tags/{{tagname}}" 
+		ng-href="#!/tags/{{tagname}}" 
 		ng-bind="tagname" 
 		aria-label="tag {{tagname}}"
 		></md-button>
