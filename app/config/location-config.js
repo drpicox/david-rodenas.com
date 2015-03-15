@@ -3,10 +3,10 @@
 
 	angular
 		.module('drHome')
-		.config(LocationConfig);
+		.config(locationConfig);
 
-	LocationConfig.$inject = ['$locationProvider'];
-	function LocationConfig  ( $locationProvider ) {
+	locationConfig.$inject = ['$locationProvider'];
+	function locationConfig  ( $locationProvider ) {
 		$locationProvider.hashPrefix('!');
 	}
 
