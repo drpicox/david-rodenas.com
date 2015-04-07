@@ -11,5 +11,7 @@
 	</resolve>
 	<script inject="$route">
 		$route.current.title = post.title;
+		$route.current.description = post.preview;
+		$route.current.keywords = post.tags.concat('post');
 	</script>
 </angular-page>

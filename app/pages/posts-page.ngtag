@@ -11,5 +11,7 @@
 	</resolve>
 	<script inject="$route">
 		$route.current.title = 'Posts';
+		$route.current.description = 'List of posts of David Rodenas';
+		$route.current.keywords = ['posts','list'];
 	</script>
 </angular-page>

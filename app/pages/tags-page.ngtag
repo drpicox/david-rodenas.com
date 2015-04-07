@@ -13,5 +13,7 @@
 	</resolve>
 	<script inject="$route">
 		$route.current.title = 'Tag cloud';
+		$route.current.description = 'Lists of tags used in posts';
+		$route.current.keywords = ['tags','list'];
 	</script>
 </angular-page>

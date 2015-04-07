@@ -1,0 +1,14 @@
+<angular-attribute name="head-description-be">
+	<script inject="$element,$route,$scope">
+		var defs = $element.attr('content');
+
+		$scope.$watch(function() {
+			return $route.current && $route.current.description;
+		}, update);
+
+		function update(newDescription) {
+			newDescription = newDescription || defs;
+			$element.attr('content', newDescription);
+		}
+	</script>
+</angular-attribute>

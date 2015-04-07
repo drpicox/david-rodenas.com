@@ -13,5 +13,7 @@
 	</resolve>
 	<script inject="$route">
 		$route.current.title = 'Posts with '+$route.current.params.tagname;
+		$route.current.description = 'Detailed list of related posts to tag '+$route.current.params.tagname;
+		$route.current.keywords = [$route.current.params.tagname,'tags','posts','list'];
 	</script>
 </angular-page>
