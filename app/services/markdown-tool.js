@@ -6,7 +6,7 @@
 
 */
 /* global marked: false */
-/* global hljs: false */
+/* global Prism: false */
 ;(function(angular) {
 	'use strict';
 
@@ -30,9 +30,12 @@
 			angular.forEach(div[0].querySelectorAll('a[href^=http]'), function(a) {
 				a.setAttribute('target','_blank');
 			});
-			angular.forEach(div[0].querySelectorAll('img'), function(a) {
-				a.setAttribute('class','img-responsive');
-				a.parentElement.setAttribute('class','img-container');
+			angular.forEach(div[0].querySelectorAll('code[class^=lang-]'), function(code) {
+				code.className = 'language-' + code.className.slice(5);
+			});
+			angular.forEach(div[0].querySelectorAll('img'), function(img) {
+				img.setAttribute('class','img-responsive');
+				img.parentElement.setAttribute('class','img-container');
 			});
 
 			return div;
@@ -71,12 +74,25 @@
 	marked.setOptions({
 		highlight: function(code, lang) {
 			if (lang) {
-				return hljs.highlight(lang, code).value;
+				if (lang === 'xml' || lang === 'html') { lang = 'markup'; }
+				code = '<code class="language-'+lang+'">'+escapeHtml(code)+'</code>';
+				code = angular.element(code);
+				Prism.highlightElement(code[0]);
+				return code.html();
 			} else {
-				return hljs.highlightAuto(code).value;
+				return lang;
 			}
 		},
 		sanitize: false,
 	});
+
+	function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, '&amp;')
+         .replace(/</g, '&lt;')
+         .replace(/>/g, '&gt;')
+         .replace(/"/g, '&quot;')
+         .replace(/'/g, '&#039;');
+ 	}
 
 })(angular);

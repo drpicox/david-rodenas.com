@@ -6,6 +6,7 @@
 		}
 	</style>
 	<template>
+		<!--
 		<site-content>
 			<h1 class="home">Hi!</h1>
 			<p>
@@ -67,5 +68,12 @@
 			<small>Note: this page is still in working progress.</small>
 
 		</site-content>
+		-->
+		<posts-cards posts="vm.posts"></posts-cards>
 	</template>
+	<resolve>
+		<script name="posts" inject="postsService">
+			return postsService.list();
+		</script>
+	</resolve>
 </angular-page>

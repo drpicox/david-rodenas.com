@@ -1,11 +1,45 @@
 .layout(@infix: '') {
 
+	@flex: ~'[flex@{infix}]'; @{flex} {
+		flex: 1;
+	}
+
 	@overflow: ~'[overflow@{infix}]'; @{overflow} {
 		overflow: hidden;
 	}
 
+	@layout-column: ~'[layout@{infix}="column"]'; @{layout-column} {
+		display: flex;
+		flex-direction: column;
+	}
+
 	@layout-wrap: ~'[layout@{infix}-wrap]'; @{layout-wrap} {
 		flex-wrap: wrap;
+	}
+
+	@layout-row: ~'[layout@{infix}="row"]'; @{layout-row} {
+		display: flex;
+		flex-direction: row;
+	}
+
+	@layout-align-center: ~'[layout@{infix}-align^="center"]'; @{layout-align-center} {
+		justify-content: center;
+	}
+
+	@layout-align-end: ~'[layout@{infix}-align^="end"]'; @{layout-align-end} {
+		justify-content: flex-end;
+	}
+
+	@layout-align--baseline: ~'[layout@{infix}-align$=" baseline"]'; @{layout-align--baseline} {
+		align-items: baseline;
+	}
+
+	@layout-align--center: ~'[layout@{infix}-align$=" center"]'; @{layout-align--center} {
+		align-items: center;
+	}
+
+	@layout-align--start: ~'[layout@{infix}-align$=" start"]'; @{layout-align--start} {
+		align-items: flex-start;
 	}
 
 	@scroll-y: ~'[scroll@{infix}-y]'; @{scroll-y} {
@@ -21,3 +55,4 @@
 @media (max-width: @screen-sm) {
 	.layout('-sm');
 }
+

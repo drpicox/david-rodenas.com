@@ -1,7 +1,12 @@
 <angular-page name="/tags/:tagname">
+	<prop name="title">Posts with {{tagname}}</prop>
+	<prop name="description">List of posts for the tag {{tagname}}</prop>
+	<prop name="keywords">{{tagname}},list,posts,{{original}}</prop>
 	<template>
 		<site-content>
-			<post-list posts="vm.posts"></post-list>
+			<h1>Posts with {{vm.tagname}}</h1>
+			<br>
+			<posts-list posts="vm.posts"></posts-list>
 		</site-content>
 	</template>
 	<resolve>
@@ -10,10 +15,8 @@
 				return tag.posts;
 			});
 		</script>
+		<script name="tagname" params="tagname">
+			return tagname;
+		</script>
 	</resolve>
-	<script inject="$route">
-		$route.current.title = 'Posts with '+$route.current.params.tagname;
-		$route.current.description = 'Detailed list of related posts to tag '+$route.current.params.tagname;
-		$route.current.keywords = [$route.current.params.tagname,'tags','posts','list'];
-	</script>
 </angular-page>

@@ -2,15 +2,13 @@
 	<style>
 		site-content {
 			display: block;
-			max-width: 50em;
-			margin: auto;
-		}
-		site-content h1 {			
-			color: @accent;
-			text-align: center;
-			text-transform: uppercase;
-		}	</style>
+
+			h1 {			
+				text-align: center;
+			}
+		}	
+	</style>
     <template>
-    	<md-content class="md-padding" ng-transclude></md-content>
+    	<div class="container card whiteframe-z1" ng-transclude></div>
     </template>
 </angular-element>

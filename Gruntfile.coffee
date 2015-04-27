@@ -17,6 +17,10 @@ module.exports = (grunt) ->
 			www: files: [ dot: true, src: [ 'dist/*','!dist/.git' ], ]
 			tmp: files: [ dot: true, src: [ '.tmp' ], ]
 
+		coffee:
+			options: join: true, sourceMap: true, 
+			scripts: '.tmp/coffees.js': ['app/*/*.coffee']
+
 		connect:
 			options: hostname: '0.0.0.0', port: 9302, livereload: 19302
 			livereload:	options: base: [ '.tmp','app','.' ]
@@ -43,7 +47,7 @@ module.exports = (grunt) ->
 				src: '**/*.ymd'
 
 		frontmatter: build:
-			options: width: 350
+			options: width: '2s'
 			files: '.tmp/posts.json': ['app/posts/*.ymd']
 
 		jshint:
@@ -82,6 +86,7 @@ module.exports = (grunt) ->
 
 		watch:
 			grunt: files: ['Gruntfile.coffee']
+			coffee: files: ['app/{*/,}*.coffee' ], tasks: ['coffee']
 			js: files: ['app/{*/,}*.js' ], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less' ], tasks: ['less','autoprefixer']
 			md: files: ['app/{*/,}*.ymd' ], tasks: ['frontmatter']
@@ -97,6 +102,7 @@ module.exports = (grunt) ->
 	# (L) Load here grunt plugins with tasks
 	grunt.loadNpmTasks('grunt-autoprefixer');
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-coffee');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-connect');
 	grunt.loadNpmTasks('grunt-contrib-copy');
@@ -116,6 +122,7 @@ module.exports = (grunt) ->
 	grunt.registerTask 'build-dev', [ 
 		'ngtags'
 		'jshint'
+		'coffee'
 		'less'
 		'autoprefixer'
 		'frontmatter'

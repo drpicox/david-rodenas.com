@@ -1,0 +1,16 @@
+<angular-element name="posts-list" bindings="posts">
+	<style>
+		posts-list {
+			small {
+				font-size: 50%;
+				color: rgba(0,0,0,0.54);
+			}
+		}
+	</style>
+	<template>
+		<h2 ng-repeat="post in vm.posts">
+			<a ng-href="#!/posts/{{post.basename}}" ng-bind="::post.title"></a>
+			<small>{{::post.date | date}}</small>
+		</h2>
+	</template>
+</angular-element>

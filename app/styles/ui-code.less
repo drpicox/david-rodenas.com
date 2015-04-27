@@ -1,15 +1,37 @@
+pre code {
+	background: rgba(0,0,0,5%);
+	box-shadow: inset 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+	display: block;
+	padding: 1em 2em;
+	overflow-y: auto;
+	font-size: 0.9em;
+
+	.token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
+		background: none;
+	}
+}
+
+/*
 code {
-	background: fadeout(@accent, 93.5%);
 	font-family: @font-family-monospace;
 }
+
 pre {
 	margin: 0.4em 0 0.6em;
 }
 pre code {
+	background: rgba(0,0,0,5%);
 	padding: 1em 2em;
-	border-left: solid 6px @accent;
+	xborder-left: solid 6px @accent;
 	overflow-y: auto;
 	display: block;
 	line-height: 1.25em;
 	font-size: 0.9em;
 }
+
+code {
+	.token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
+		background: none;
+	}
+}
+*/

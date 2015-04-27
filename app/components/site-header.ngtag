@@ -1,56 +1,56 @@
 <angular-element name="site-header">
-	<style> 
-		site-header .homeBtn {
+	<style>
+		site-header {
+
+			background: white !important;
 			display: block;
-			height: 2em;
-			width: 2em;
-			margin: 0 1em 0 0.5em;
-			background-image: url(images/david.jpg);
-			background-size: cover;
-			background-position: center center;
-			border-radius: 100%;
-		}
-		site-header .ellipsis {
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		site-header .sidenavLg {
-			margin-left: 0.5em;
+			@media (min-width: @screen-md-min) {
+				padding: 1em 0;
+			}
+
+			.homeBtn {
+				display: block;
+				height: 2em;
+				width: 2em;
+				margin: 0;
+				background-image: url(images/david.jpg);
+				background-size: cover;
+				background-position: center center;
+				border-radius: 100%;
+				@media (min-width: @screen-md-min) {
+					height: 3em;
+					width: 3em;
+				}
+			}
+
+			a, a:visited {
+				color: inherit;
+				display: inline-block;
+				margin: 0 0 0 1em;
+			}
+
+			a:hover, a:active {
+				color: black;
+				text-decoration: underline;
+			}
 		}
 	</style>
-	<template>
-		<md-toolbar layout="row" layout-align="start center">
-			<button ng-click="vm.toggleSidenav()" hide-gt-lg class="menuBtn">
-				<span class="visuallyhidden">Menu</span>
-			</button>
-			<md-button hide-sm hide-md hide-lg aria-label="open menu"
-			drpx-toggle="sidenavLg as sidenavLg" 
-			ng-click="sidenavLg.toggle()" class="sidenavLg">
-				&nbsp;<i class="fa fa-bars"></i>&nbsp;
-			</md-button>
+	<template flex>
+		<nav layout="row" layout-align="start center" class="container">
 			<a href="#!/" class="homeBtn"></a>
 			<h1 ng-bind="vm.title" class="ellipsis"></h1>
-		</md-toolbar>
+			<a ng-repeat="link in vm.links" ng-href="{{link.url}}" ng-bind="link.label"></a>
+			<div flex></div>
+			<a ng-href="https://twitter.com/drpicox" target="_blank" class="btn">Contact</a>
+		</nav>
 	</template>
-	<script inject="$mdSidenav,$route,$scope">
+	<script>
 		var vm = this;
 
-		vm.title = '';
-		vm.toggleSidenav = toggleSidenav;
-
-		$scope.$watch(function() {
-			return $route.current && $route.current.title;
-		}, updateTitle);
-
-		updateTitle();
-
-		function toggleSidenav() {
-			$mdSidenav('sidenav').toggle();
-		}
-
-		function updateTitle() {
-			vm.title = $route.current && $route.current.title || 'David Rodenas';
-		}
+		vm.links = [
+			{url: '#!/', label: 'Home'},
+			//{url: '#!/posts', label: 'Posts'},
+			//{url: '#!/tags', label: 'Tags'},
+		];
 	</script>
 </angular-element>

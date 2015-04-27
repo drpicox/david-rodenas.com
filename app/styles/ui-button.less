@@ -1,10 +1,15 @@
-.btn {
+.btn, a.btn {
 	display: inline-block;
-	padding: 0em 1em;
-	.scaffold-color(@primary);
+	padding: 0.4em 1em;
+	border: solid 1px #444;
+	color: #444;
+	text-transform: uppercase;
+	//.scaffold-color(@primary);
 }
 .btn:hover,.btn:active {
-	.scaffold-color(@primary-hue-1);	
+	text-decoration: none;
+	background: #e5e5e5;
+	color: black;
 }
 .btn-block {
 	display: block;

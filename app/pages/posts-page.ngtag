@@ -1,7 +1,7 @@
 <angular-page name="/posts">
 	<template>
 		<site-content>
-			<post-list posts="vm.posts"></post-list>
+			<posts-list posts="vm.posts"></posts-list>
 		</site-content>
 	</template>
 	<resolve>
@@ -9,9 +9,4 @@
 			return postsService.list();
 		</script>
 	</resolve>
-	<script inject="$route">
-		$route.current.title = 'Posts';
-		$route.current.description = 'List of posts of David Rodenas';
-		$route.current.keywords = ['posts','list'];
-	</script>
 </angular-page>

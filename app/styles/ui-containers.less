@@ -1,0 +1,32 @@
+@container-width: 40em;
+@container-padding: 3em;
+
+.container {
+	max-width: @container-width;
+	margin: auto;
+	padding: 0 @container-padding;
+	@media (max-width: @screen-sm) {
+		padding: 1em 0.2em;
+	}
+}
+
+.card {
+	background: white;
+	padding: @container-padding * 9/16 @container-padding;
+	margin: @container-padding * 9/16 auto;
+	:first-child {
+		xmargin-top: 0;
+	}
+}
+
+.whiteframe-z1 {
+	box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.whiteframe-z2 {
+	box-shadow: 0px 8px 17px rgba(0, 0, 0, 0.2);
+}
+
+.whiteframe-z3 {
+	box-shadow: 0px 17px 50px rgba(0, 0, 0, 0.19);
+}

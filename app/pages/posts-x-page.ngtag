@@ -1,4 +1,7 @@
 <angular-page name="/posts/:basename">
+	<prop name="title">{{post.title}}</prop>
+	<prop name="description">{{post.abstract || post.preview}}</prop>
+	<prop name="keywords">{{post.tags.join(',')}},post,{{original}}</prop>
 	<template>
 		<site-content>
 			<post-view post="vm.post"></post-view>
@@ -9,9 +12,4 @@
 			return postsService.get(basename);
 		</script>
 	</resolve>
-	<script inject="$route">
-		$route.current.title = post.title;
-		$route.current.description = post.preview;
-		$route.current.keywords = post.tags.concat('post');
-	</script>
 </angular-page>
