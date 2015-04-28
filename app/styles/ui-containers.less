@@ -1,21 +1,23 @@
 @container-width: 40em;
 @container-padding: 3em;
+@container-padding-sm: 0.5em;
 
 .container {
 	max-width: @container-width;
 	margin: auto;
-	padding: 0 @container-padding;
+	padding: 0 @container-padding * 1.5;
 	@media (max-width: @screen-sm) {
-		padding: 1em 0.2em;
+		padding: 0 @container-padding-sm * 1.5;
 	}
 }
 
 .card {
 	background: white;
 	padding: @container-padding * 9/16 @container-padding;
-	margin: @container-padding * 9/16 auto;
-	:first-child {
-		xmargin-top: 0;
+	margin: @container-padding * 9/16 (-@container-padding);
+	@media (max-width: @screen-sm) {
+		padding: @container-padding-sm * 9/16 @container-padding-sm;
+		margin: @container-padding-sm * 9/16 (-@container-padding-sm);
 	}
 }
 

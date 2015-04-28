@@ -8,7 +8,7 @@
 			}
 		}	
 	</style>
-    <template>
-    	<div class="container card whiteframe-z1" ng-transclude></div>
+    <template class="container">
+    	<div class="card whiteframe-z1" ng-transclude></div>
     </template>
 </angular-element>

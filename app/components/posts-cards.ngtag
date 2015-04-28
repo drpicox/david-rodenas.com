@@ -15,12 +15,14 @@
 		}
 	</style>
 	<template>
-		<div ng-repeat="post in ::vm.posts" class="card container whiteframe-z1">
-			<h2><a ng-href="#!/posts/{{::post.basename}}" ng-bind="::post.title"></a> <small>{{::post.date | date}}</small></h2>
-			<div ng-bind="::post.abstract || post.preview" class="preview"></div>
-			<a ng-href="#!/posts/{{::post.basename}}" class="preview">View full post →</a>
-			<br><br>
-			<tags-list tagnames="::post.tags"></tags-list>
+		<div class="container">
+			<div ng-repeat="post in ::vm.posts" class="card whiteframe-z1">
+				<h2><a ng-href="#!/posts/{{::post.basename}}" ng-bind="::post.title"></a> <small>{{::post.date | date}}</small></h2>
+				<div ng-bind="::post.abstract || post.preview" class="preview"></div>
+				<a ng-href="#!/posts/{{::post.basename}}" class="preview">View full post →</a>
+				<br><br>
+				<tags-list tagnames="::post.tags"></tags-list>
+			</div>
 		</div>
 	</template>
 </angular-element>
