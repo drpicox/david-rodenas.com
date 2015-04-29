@@ -9,7 +9,7 @@ tags:
   - pattern
   - updateable
 date: 2015-03-02
-abstract: >
+preview: >
   This last year Flux had become highly popular, but how it can be applied to Angular? Here I present an alternative mechanism more in line with Angular philosophy.
 ---
 

@@ -1,5 +1,10 @@
 <angular-element name="post-view" bindings="post">
 	<style>
+		post-view .abstract {
+			color: #666;
+			font-style: italic;
+			font-weight: lighter;
+		}
 		post-view h2, h3 {
 			margin: 2.5em 0 -0.3em;
 		}
@@ -56,8 +61,9 @@
 		<div class="post">
 			<br hide-sm>
 			<br>
-			<h1 ng-bind="vm.post.title"></h1>
-			<tag-list tagnames="vm.post.tags" layout-align="center"></tag-list>
+			<h1 class="title" ng-bind="vm.post.title"></h1>
+			<p class="abstract" ng-if="vm.post.abstract" ng-bind="vm.post.abstract"></p>
+			<tags-list tagnames="vm.post.tags" layout-align="{{!vm.post.abstract && 'center'}}"></tags-list>
 			<br hide-sm>
 			<br>
 			<div ng-bind-html="vm.post.body"></div>

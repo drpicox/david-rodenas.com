@@ -1,10 +1,15 @@
+Esmoquin = require('esmoquin').Esmoquin
+
+esmoquin = new Esmoquin()
+esmoquin.minimatch '**/*.md', Esmoquin.proxy host:'david-rodenas.com'
+
 module.exports = (grunt) ->
 
 	grunt.initConfig
 		pkg: grunt.file.readJSON 'package.json'
 
 		# (C) Tasks configurations here
-		autoprefixer: 
+		autoprefixer:
 			options: ['> 5%']
 			build: files: [
 				expand: true
@@ -22,7 +27,9 @@ module.exports = (grunt) ->
 			scripts: '.tmp/coffees.js': ['app/*/*.coffee']
 
 		connect:
-			options: hostname: '0.0.0.0', port: 9302, livereload: 19302
+			options:
+				hostname: '0.0.0.0', port: 9302, livereload: 19302
+				middleware: esmoquin.middleware
 			livereload:	options: base: [ '.tmp','app','.' ]
 
 		copy:

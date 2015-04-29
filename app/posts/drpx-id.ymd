@@ -1,0 +1,19 @@
+---
+title: "drpx-id: reference your children"
+tags:
+  - angular
+  - app
+  - javascript
+  - html
+  - module
+date: 2015-04-25
+abstract: >
+    Angular lets you to reference your parent controllers with require in
+    directive definition, but does not have support to reference children.
+    Here I present a small module that leverages in John Papa styleguide
+    to allow parents to access children components in similar fashion that
+    Angular 2.0 does.
+append: "/drpx-id/README.md"
+hideTitle: true
+---
+

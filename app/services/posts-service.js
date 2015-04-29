@@ -51,12 +51,23 @@
 			post = posts[basename];
 			if (!post) {
 				post = data.then(function(map) {
-					return map[basename];
-				}).then(function(post) {
+					return {post: map[basename]};
+				}).then(function(ctx) {
 					return $http.get('posts/'+basename+'.ymd').then(function(result) {
-						post.body = markdownTool.html(result.data);
-						return post;
+						ctx.body = result.data;
+						return ctx;
 					});
+				}).then(function(ctx) {
+					if (!ctx.post.append) {
+						return ctx;
+					}
+					return $http.get(ctx.post.append).then(function(result) {
+						ctx.body += result.data;
+						return ctx;
+					});
+				}).then(function(ctx) {
+					ctx.post.body = markdownTool.html(ctx.body);
+					return ctx.post;
 				});
 
 				posts[basename] = post;
