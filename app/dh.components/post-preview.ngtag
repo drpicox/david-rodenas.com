@@ -1,0 +1,68 @@
+<angular-element name="post-preview" bindings="post">
+	<style>
+		post-preview {
+			display: block;
+
+			> a {
+				color: @gray-dark;
+				&:hover,
+				&:focus {
+					text-decoration: none;
+					color: @brand-primary;
+				}
+				> .post-title {
+					font-size: 30px;
+					margin-top: 30px;
+					margin-bottom: 10px;
+				}
+				> .post-subtitle {
+					margin: 0;
+					font-weight: 300;
+					margin-bottom: 10px;
+				}
+				> .post-abstract {					
+				}
+			}
+			> post-meta {
+				color: @gray;
+				font-size: 18px;
+				font-style: italic;
+				margin-top: 0;
+				> a {
+					text-decoration: none;
+					color: @gray-dark;
+					&:hover,
+					&:focus {
+						color: @brand-primary;
+						text-decoration: underline;
+					}
+				}
+			}
+			@media only screen and (min-width: 768px) {
+				> a {
+					> .post-title {
+						font-size: 36px;
+					}
+				}
+			}
+		}
+	</style>
+	<template>
+
+		<a ng-href="#!/posts/{{::vm.post.basename}}">
+			<h2 class="post-title">
+				{{::vm.post.title}}
+			</h2>
+			<h3 class="post-subtitle">
+				{{::vm.post.subtitle}}
+			</h3>
+		</a>
+		<p class="post-abstract">
+			{{::vm.post.abstract || vm.post.preview}}<br>
+			<a ng-href="#!/posts/{{::vm.post.basename}}" class="preview">View full post →</a>
+		</p>
+		<post-meta post="vm.post"></post-meta>
+		<hr>
+
+	</template>
+</angular-element>

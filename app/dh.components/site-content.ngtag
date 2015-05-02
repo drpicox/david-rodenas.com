@@ -1,0 +1,7 @@
+<angular-element name="site-content">
+	<style>
+	</style>
+    <template>
+    	<main class="container" ng-transclude></main>
+    </template>
+</angular-element>

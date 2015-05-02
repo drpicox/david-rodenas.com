@@ -1,0 +1,28 @@
+<angular-page name="/posts/:basename">
+	<prop name="title">{{post.title}}</prop>
+	<prop name="description">{{post.abstract || post.preview}}</prop>
+	<prop name="keywords">{{post.tags.join(',')}},post,{{original}}</prop>
+	<template>
+		<intro-header style="background-image: url('{{::vm.image}}')">
+			<div class="post-heading">
+				<h1>{{::vm.post.title}}</h1>
+				<h2 class="subheading">{{::vm.post.subtitle}}</h2>
+				<post-meta post="vm.post"></post-meta>
+			</div>
+		</intro-header>
+		<site-content>
+			<post-view post="vm.post"></post-view>
+		</site-content>
+	</template>
+	<resolve>
+		<script name="post" params="basename" inject="postsService">
+			return postsService.get(basename);
+		</script>
+		<script name="image" params="basename" inject="imagesService,postsService">
+			return postsService.get(basename).then(function(post) {
+				// TODO: create a post model
+				return post.image || 'dh.images/'+post.tags[0]+'.jpg';
+			}).then(imagesService.preload);
+		</script>
+	</resolve>
+</angular-page>

@@ -55,7 +55,7 @@ module.exports = (grunt) ->
 
 		frontmatter: build:
 			options: width: '2s'
-			files: '.tmp/posts.json': ['app/posts/*.ymd']
+			files: '.tmp/posts.json': ['app/dh.posts/*.ymd']
 
 		jshint:
 			options: jshintrc: '.jshintrc'
@@ -74,12 +74,12 @@ module.exports = (grunt) ->
 			options: module: 'drHome', autoprefix: false
 
 			scripts:
-				src: 'app/{components,pages}/*.ngtag'
+				src: 'app/dh.{components,pages}/*.ngtag'
 				dest: '.tmp/ngtags.js'
 				options: excludeStyle: true
 
 			styles:
-				src: 'app/{components,pages}/*.ngtag'
+				src: 'app/dh.{components,pages}/*.ngtag'
 				dest: '.tmp/ngtags.less'
 				options: generateStyle: true
 
@@ -93,11 +93,11 @@ module.exports = (grunt) ->
 
 		watch:
 			grunt: files: ['Gruntfile.coffee']
-			coffee: files: ['app/{*/,}*.coffee' ], tasks: ['coffee']
-			js: files: ['app/{*/,}*.js' ], tasks: ['jshint']
-			less: files: ['app/{*/,}*.less' ], tasks: ['less','autoprefixer']
-			md: files: ['app/{*/,}*.ymd' ], tasks: ['frontmatter']
-			ngtags: files: ['app/{components,pages}/*.ngtag'], tasks: ['ngtags','jshint','less','autoprefixer']
+			coffee: files: ['app/{*/,}*.coffee'], tasks: ['coffee']
+			js: files: ['app/{*/,}*.js'], tasks: ['jshint']
+			less: files: ['app/{*/,}*.less'], tasks: ['less','autoprefixer']
+			md: files: ['app/{*/,}*.ymd'], tasks: ['frontmatter']
+			ngtags: files: ['app/dh.{components,pages}/*.ngtag'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 
 				options: livereload: '<%= connect.options.livereload %>'

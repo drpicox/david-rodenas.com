@@ -1,0 +1,13 @@
+<angular-element name="photo-credits">
+	<template>
+	
+		<a href="http://www.flickr.com/photos/26082117@N07/9335917742">Luynes (Indre-et-Loire)</a> via <a href="http://photopin.com">photopin</a> <a href="https://creativecommons.org/licenses/by/2.0/">(license)</a>
+
+		<a href="http://www.flickr.com/photos/44321394@N00/14284372144">Im Wildpark - Wildschweine</a> via <a href="http://photopin.com">photopin</a> <a href="https://creativecommons.org/licenses/by-nd/2.0/">(license)</a>
+
+		 <a href="http://www.flickr.com/photos/23501684@N00/14234078307">P1040868</a> via <a href="http://photopin.com">photopin</a> <a href="https://creativecommons.org/licenses/by/2.0/">(license)</a>
+
+		  <a href="http://www.flickr.com/photos/50693818@N08/5928388144">Grand Canyon: Desert View Wayside Structure 7912</a> via <a href="http://photopin.com">photopin</a> <a href="https://creativecommons.org/licenses/by/2.0/">(license)</a>
+
+	</template>
+</angular-element>

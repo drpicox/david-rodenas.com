@@ -1,0 +1,11 @@
+<angular-element name="posts-previews" bindings="posts">
+	<style>
+	</style>
+	<template>
+		<div class="row">
+            <div ng-repeat="post in ::vm.posts" class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            	<post-preview data-post="post"></post-preview>
+			</div>
+		</div>
+	</template>
+</angular-element>

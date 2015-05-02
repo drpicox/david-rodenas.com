@@ -1,0 +1,9 @@
+<angular-element name="tags-list" bindings="tagnames">
+	<style>
+	</style>	
+	<template>
+		<span ng-repeat="tagname in ::vm.tagnames">
+			<a ng-href="#!/tags/{{::tagname}}">{{::tagname}}</a>{{::$last?'':', '}}
+		</span>
+	</template>
+</angular-element>

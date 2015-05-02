@@ -1,0 +1,11 @@
+<angular-element name="post-meta" bindings="post">
+	<style>
+	</style>
+	<template>
+		<p>
+			Posted by <a href="javascript:false">David Rodenas</a> 
+			on {{::vm.post.date | date}}
+			(<tags-list tagnames="::vm.post.tags"></tags-list>)
+		</p>
+	</template>
+</angular-element>

@@ -1,0 +1,90 @@
+<angular-element name="post-view" bindings="post">
+	<style>
+		post-view {
+			.abstract {
+				font-style: italic;
+				padding-left: 60px;
+				margin-bottom: 60px;
+				color: @gray-light;
+				border-left: 10px solid @gray-lighter;
+			}
+
+			h2,h3,h4,h5 {
+				margin: 2em 0 1em;
+			}
+
+			blockquote {
+				margin: 2em 0;
+
+				:first-child {
+					margin-top: 0;
+				}
+			}
+
+			.img-container img {
+				display: block;
+				text-align: center;
+				margin: 2em auto;
+			}
+
+			a[href*=youtube].img-container {
+				display: block;
+				position: relative;
+			}
+
+			a[href*=youtube].img-container:after {
+				.fa;
+				content: "\f16a";
+				display: block;
+				font-size: 5em;
+				width: 1em;
+				height: 1em;
+				color: rgba(255, 255, 255, 0.54);
+				text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.54);
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-top: -0.5em;
+				margin-left: -0.5em;
+			}
+			a[href*=youtube].img-container:hover:after {
+				color: rgba(255, 255, 255, 0.82);
+			}
+
+		}
+		/*
+		post-view .img-container {
+			display: block;
+			margin: 2em;
+			text-align: center;
+			position: relative;
+		}
+		post-view a[href*=youtube].img-container:after {
+			.fa;
+			content: "\f16a";
+			display: block;
+			font-size: 5em;
+			width: 1em;
+			height: 1em;
+			color: rgba(255, 255, 255, 0.54);
+			text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.54);
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-top: -0.5em;
+			margin-left: -0.5em;
+		}
+		post-view a[href*=youtube].img-container:hover:after {
+			color: rgba(255, 255, 255, 0.82);
+		}
+		*/
+	</style>
+	<template>
+		<div class="row">
+			<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+				<p class="abstract" ng-if="vm.post.abstract" ng-bind="vm.post.abstract"></p>
+				<div ng-bind-html="vm.post.body"></div>
+			</div>
+		</div>
+	</template>
+</angular-element>

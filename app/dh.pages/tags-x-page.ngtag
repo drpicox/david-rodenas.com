@@ -1,0 +1,29 @@
+<angular-page name="/tags/:tagname">
+	<prop name="title">Posts with {{tagname}}</prop>
+	<prop name="description">List of posts for the tag {{tagname}}</prop>
+	<prop name="keywords">{{tagname}},list,posts,{{original}}</prop>
+	<template>
+		<intro-header style="background-image: url('{{::vm.image}}')">
+			<div class="page-heading">
+				<h1>{{::vm.tagname}}</h1>
+			</div>
+		</intro-header>
+		<site-content>
+			<posts-previews posts="vm.posts"></posts-previews>
+		</site-content>
+	</template>
+	<resolve>
+		<script name="posts" params="tagname" inject="tagsService">
+			return tagsService.get(tagname).then(function(tag) {
+				return tag.posts;
+			});
+		</script>
+		<script name="tagname" params="tagname">
+			return tagname;
+		</script>
+		<script name="image" params="tagname" inject="imagesService">
+			var url = 'dh.images/'+tagname+'.jpg';
+			return imagesService.preload(url);
+		</script>
+	</resolve>
+</angular-page>
