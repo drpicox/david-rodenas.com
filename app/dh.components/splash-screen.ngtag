@@ -1,0 +1,23 @@
+<angular-element name="splash-screen">
+	<style>
+		splash-screen {
+			display: block;
+		}
+	</style>
+	<template>
+		<div ng-if="vm.active">
+			<div ng-transclude></div>
+		</div>
+	</template>
+	<script inject="$rootScope">
+		var vm = this;
+		vm.active = true;
+
+		var unreg = $rootScope.$on('$viewContentLoaded', onready);
+
+		function onready() {
+			vm.active = false;
+			unreg();
+		}
+	</script>
+</angular-element>
