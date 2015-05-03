@@ -42,7 +42,7 @@
 
 	<site-footer ng-if="!$.splash.active"></site-footer>
 
-	<loading-view></loading-view>
+	<loading-view ng-if="!$.splash.active"></loading-view>
 	
 	<!-- build:js(.) components.js -->
 	<script src="bower_components/jquery/dist/jquery.js"></script>
