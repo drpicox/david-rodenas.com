@@ -7,6 +7,11 @@
 				margin-bottom: 60px;
 				color: @gray-light;
 				border-left: 10px solid @gray-lighter;
+
+				@media (max-width: @screen-xs-max) {
+					border: none;
+					padding: 0 30px;
+				}
 			}
 
 			h2,h3,h4,h5 {
