@@ -1,0 +1,48 @@
+<angular-element name="loading-view">
+	<style>
+		loading-view {
+			display: block;
+			position: fixed;
+			bottom: 0;
+			z-index: 1000;
+
+			background: white;
+			color: @gray-light;
+			font-size: 20px;
+			padding: 0.5em 2em;
+			.sans-serif;
+
+			transition: all 0.5s;
+			transition-delay: 0.5s;
+			opacity: 0;
+			right: -100%;
+
+			&.active {
+				opacity: 1;
+				right: 0%;
+			}
+		}
+	</style>
+	<template>
+		<div ng-if="vm.active">
+			<i class="fa fa-spinner fa-pulse"></i> Loading...
+		</div>
+	</template>
+	<script inject="$element,$rootScope">
+		var vm = this;
+		vm.active = true;
+
+		$rootScope.$on('$routeChangeStart', onrloading);
+		$rootScope.$on('$routeChangeSuccess', onready);
+		$rootScope.$on('$routeChangeError', onready);
+
+		function onrloading() {
+			vm.active = true;
+			$element.addClass('active');
+		}
+		function onready() {
+			vm.active = false;
+			$element.removeClass('active');
+		}
+	</script>
+</angular-element>
