@@ -35,10 +35,11 @@
 					}
 				});
 			});
-			// compile previews
+			// compile previews and snippets
 			postList.then(function(posts) {
 				posts.forEach(function(post) {
 					post.preview = markdownTool.text(post.preview);
+					post.snippet = post.snippet && markdownTool.html(post.snippet);
 				});
 			});
 			posts = {};

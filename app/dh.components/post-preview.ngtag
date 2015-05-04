@@ -20,8 +20,11 @@
 					font-weight: 300;
 					margin-bottom: 10px;
 				}
-				> .post-abstract {					
-				}
+			}
+			> .post-snippet {
+				margin: 30px 0;
+			}
+			> .post-abstract {
 			}
 			> post-meta {
 				color: @gray;
@@ -57,10 +60,14 @@
 				{{::vm.post.subtitle}}
 			</h3>
 		</a>
+
+		<div class="post-snippet" ng-if="!!vm.post.snippet" ng-bind-html="vm.post.snippet"></div>
+
 		<p class="post-abstract">
 			{{::vm.post.abstract || vm.post.preview}}<br>
 			<a ng-href="#!/posts/{{::vm.post.basename}}" class="preview">View full post →</a>
 		</p>
+
 		<post-meta post="vm.post"></post-meta>
 		<hr>
 

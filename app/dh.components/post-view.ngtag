@@ -87,7 +87,19 @@
 	<template>
 		<div class="row">
 			<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
 				<p class="abstract" ng-if="vm.post.abstract" ng-bind="vm.post.abstract"></p>
+
+				<div ng-if="!!vm.post.snippet">
+					<h3>Example</h3>
+					<div ng-bind-html="vm.post.snippet"></div>
+				</div>
+
+				<p ng-if="vm.post.source">
+					Source available at: <a ng-href="{{vm.post.source}}" ng-bind="vm.post.source"></a>
+					<br><br>
+				</p>
+
 				<div ng-bind-html="vm.post.body"></div>
 			</div>
 		</div>
