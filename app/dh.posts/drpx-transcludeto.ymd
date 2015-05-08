@@ -13,7 +13,7 @@ abstract: >
     it allows you to create directives like lists with custom header
     items and footers, higly configurable dialogs, ...
 snippet: |
-    ```javascript
+    ```html
     <list-pager list="vm.people">
         <h1 target-to="header">People</h1>
         <person-detail person="$container.item" target-to="item"></person-detail>

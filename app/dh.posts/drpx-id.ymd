@@ -12,7 +12,7 @@ abstract: >
     which allows parents to access children components in similar fashion that
     Angular 2.0 does.
 snippet: |
-    ```javascript
+    ```html
     <!-- yourComponent.tpl.html -->
     <toggle id="theToggle"></toggle>
     <button ng-click="theToggle.toggle()">Toggle</button>
@@ -20,7 +20,6 @@ snippet: |
     ```
 source: https://github.com/drpicox/drpx-id
 append: "/drpx-id/README.md"
-hideTitle: true
 ---
 
 
