@@ -146,9 +146,9 @@ module.exports = Cart;
 
 Some notes about this code:
 
-- It almost declarative, it seems really close to angularjs, we _"do not"_ instance components, but we wire dependencies,  
+- It is almost declarative, it seems really close to angularjs, we _"do not"_ instance components, but we wire dependencies,  
 
-- In only creates required instances,
+- It only creates required instances,
 
 - Modules are basically directory routes,
 
