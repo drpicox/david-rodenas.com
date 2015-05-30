@@ -22,7 +22,32 @@
 		};
 
 		function element(body) {
-			body = stripYaml(body);
+			var div = angular.element('<div>');
+			var lines = body.split('\n');
+			lines = stripYaml(lines);
+
+			var ii, i = 0, l = lines.length, elem;
+			while (i < l) {
+				ii = i;
+				i = skipMarkdown(i, l, lines);
+				if (ii !== i) {
+					body = lines.slice(ii, i).join('\n');
+					elem = elementMarkdown(body);
+					div.html(div.html() + elem.html());
+				}
+				ii = i;
+				i = skipAngular(i, l, lines);
+				if (ii !== i) {
+					body = lines.slice(ii, i).join('\n');
+					elem = elementAngular(body);
+					div.html(div.html() + elem.html());
+				}
+			}
+
+			return div;
+		}
+
+		function elementMarkdown(body) {
 			body = marked(body);
 
 			var div = angular.element('<div>');
@@ -36,6 +61,19 @@
 			angular.forEach(div[0].querySelectorAll('img'), function(img) {
 				img.setAttribute('class','img-responsive');
 				img.parentElement.setAttribute('class','img-container');
+			});
+
+			return div;			
+		}
+
+		function elementAngular(body) {
+			var div = angular.element('<div>');
+			div.html(body);
+			
+			angular.forEach(div[0].querySelectorAll('[markdown="1"]'), function(dom) {
+				var body = dom.innerHTML;
+				var elem = element(body);
+				dom.innerHTML = elem.html();
 			});
 
 			return div;
@@ -53,19 +91,56 @@
 			return body;
 		}
 
-		function stripYaml(body) {
-			var lines = body.split('\n');
+		var tagRe = /^<[\w:-]+/;
+		var tagEndRe = /^<\/[\w:-]+/;
 
+		function skipMarkdown(i, l, lines) {
+			var code = false, line;
+
+			while (i < l) {
+				line = lines[i];
+				if (code) {
+					if (line[0] === '`' && line[1] === '`' && line[2] === '`' ) {
+						code = false;
+					}
+				} else {
+					if (line[0] === '`' && line[1] === '`' && line[2] === '`' ) {
+						code = true;
+					} else if (line[0] === '<' && line.match(tagRe)) {
+						break;
+					}
+				}
+				i++;
+			}
+
+			return i;
+		}
+
+		function skipAngular(i, l, lines) {
+			var line;
+
+			while (i < l) {
+				line = lines[i];
+				if (line[0] === '<' && line[1] === '/' && line.match(tagEndRe)) {
+					break;
+				}
+				i++;
+			}
+
+			return i;
+		}
+
+		function stripYaml(lines) {
 			var end = 0;
 			if (lines[0] === '---') {
 				end = 1;
 				while (lines[end] !== '---' && lines[end] !== lines[-1]) {
 					end++;
 				}
-				body = lines.slice(end+1).join('\n');
+				lines = lines.slice(end+1);
 			}
 
-			return body;
+			return lines;
 		}
 
 		return tool;

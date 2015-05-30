@@ -1,0 +1,20 @@
+<angular-element name="codepen-button" attributes="lang">
+	<template>
+		<form action="http://codepen.io/pen/define" method="POST" target="_blank" ng-submit="vm.setData()"> 
+    	<input type="hidden" name="data" value=""> 
+    	<input type="image" src="http://s.cdpn.io/3/cp-arrow-right.svg" width="40" height="40" value="Create New Pen with Prefilled Data" class="codepen-mover-button">
+  		</form>
+	</template>
+	<script require="^editOnCodepen" injects="$element">
+		this.setData = setData;
+
+		function setData() {
+			var data = JSON.stringify(editOnCodepen.data);
+			data = data.replace(/"/g, '&​quot;');
+			data = data.replace(/'/g, '&apos;');
+
+			$element.find('input').attr('value', data);
+			return true;
+		}
+	</script>
+</angular-element>

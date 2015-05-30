@@ -100,7 +100,7 @@
 					<br><br>
 				</p>
 
-				<div ng-bind-html="vm.post.body"></div>
+				<div drpx-bind-angular="vm.post.body"></div>
 			</div>
 		</div>
 	</template>

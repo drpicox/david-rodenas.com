@@ -1,0 +1,12 @@
+<angular-element name="codepen-content" attributes="key">
+	<script require="^editOnCodepen" inject="$element">
+		var vm = this;
+
+		// more info here: http://blog.codepen.io/documentation/api/prefill/
+		this.activate = activate;
+
+		function activate() {
+			editOnCodepen.data[vm.key] = $element.text();
+		}
+	</script>
+</angular-element>

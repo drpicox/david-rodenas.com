@@ -74,12 +74,12 @@ module.exports = (grunt) ->
 			options: module: 'drHome', autoprefix: false
 
 			scripts:
-				src: 'app/dh.{components,pages}/*.ngtag'
+				src: 'app/{cp,dh}.{components,pages}/*.ngtag'
 				dest: '.tmp/ngtags.js'
 				options: excludeStyle: true
 
 			styles:
-				src: 'app/dh.{components,pages}/*.ngtag'
+				src: '<%= ngtags.scripts.src %>'
 				dest: '.tmp/ngtags.less'
 				options: generateStyle: true
 
@@ -97,7 +97,7 @@ module.exports = (grunt) ->
 			js: files: ['app/{*/,}*.js'], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less'], tasks: ['less','autoprefixer']
 			md: files: ['app/{*/,}*.ymd'], tasks: ['frontmatter']
-			ngtags: files: ['app/dh.{components,pages}/*.ngtag'], tasks: ['ngtags','jshint','less','autoprefixer']
+			ngtags: files: ['<%= ngtags.scripts.src %>'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 
 				options: livereload: '<%= connect.options.livereload %>'

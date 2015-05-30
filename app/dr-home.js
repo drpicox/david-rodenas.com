@@ -9,6 +9,7 @@
 		'drpxSeo',
 		'drpxOtherwiseHome',
 		'drpxToggle',
+		'drpxBindAngular',
 	]);
 
 })(angular);

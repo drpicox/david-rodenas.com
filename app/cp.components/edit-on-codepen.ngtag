@@ -1,0 +1,15 @@
+<angular-element name="edit-on-codepen" attributes="title">
+	<template>
+  		<ng-transclude></ng-transclude>
+	</template>
+	<script>
+		var vm = this;
+
+		vm.data = {
+			title: vm.title,
+			js: '',
+			css: '',
+			html: '',
+		};
+	</script>
+</angular-element>
