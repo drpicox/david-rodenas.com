@@ -26,6 +26,7 @@
     "fontawesome": "~4.3.0",
     "marked": "~0.3.3",
     "prism": "*",
-    "drpx-seo": "~1.0.0"
+    "drpx-seo": "~1.0.0",
+    "bootstrap": "~3.3.5"
   }
 }
