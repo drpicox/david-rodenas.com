@@ -49,13 +49,13 @@ module.exports = (grunt) ->
 				src: '*.json'
 			md:
 				expand: true,
-				cwd: 'app',
+				cwd: '.',
 				dest: 'dist',
-				src: '**/*.ymd'
+				src: 'posts/*.ymd'
 
 		frontmatter: build:
 			options: width: '2s'
-			files: '.tmp/posts.json': ['app/dh.posts/*.ymd']
+			files: '.tmp/posts.json': ['posts/*.ymd']
 
 		jshint:
 			options: jshintrc: '.jshintrc'
