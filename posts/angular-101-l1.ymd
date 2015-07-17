@@ -52,7 +52,12 @@ Follow it step by step and you will the most basic angular app running.
 	```
 
 4. Open index.html with your browser (example: double click or drag the file to the browser).
+
+  ![button unpressed](posts/images/angular-101-l1-ch1-4.png)
+
 5. You will see a button, click on it.
+
+  ![button pressed](posts/images/angular-101-l1-ch1-5.png)
 
 Congratulations! You have done your first angular app!
 
@@ -111,6 +116,9 @@ So please, follow the next steps.
 6. Open http://localhost:8080/ in your browser.
 
 7. Click in hello world.
+
+  ![button pressed on web](posts/images/angular-101-l1-ch2-7.png)
+
 
 Congratulations! Now you have your angular app running in your own node web server!
 
@@ -282,6 +290,8 @@ And now, start using it!
 
 4. Open http://localhost:8080 in your browser
 
+  ![button pressed on web](posts/images/angular-101-l1-ch4-4.png)
+
 
 Nice! Much better now, right? And with very little effort!
 
@@ -317,24 +327,24 @@ The source code of all examples is here:
 
 Do you have any question? Tweet me and I'll try to append here the answer.
 
-  - Q. Did you see this error?
+  - Q. Do you see this error?
 
-		```bash
-		$ http-server -c-1 -p 8080
-		events.js:85
-		      throw er; // Unhandled 'error' event
-		            ^
-		Error: listen EADDRINUSE
-		    at exports._errnoException (util.js:746:11)
-		    at Server._listen2 (net.js:1129:14)
-		    at listen (net.js:1155:10)
-		    at net.js:1253:9
-		    at dns.js:85:18
-		    at process._tickCallback (node.js:355:11)
-		    at Function.Module.runMain (module.js:503:11)
-		    at startup (node.js:129:16)
-		    at node.js:814:3
-		```
+	```bash
+	$ http-server -c-1 -p 8080
+	events.js:85
+	      throw er; // Unhandled 'error' event
+	            ^
+	Error: listen EADDRINUSE
+	    at exports._errnoException (util.js:746:11)
+	    at Server._listen2 (net.js:1129:14)
+	    at listen (net.js:1155:10)
+	    at net.js:1253:9
+	    at dns.js:85:18
+	    at process._tickCallback (node.js:355:11)
+	    at Function.Module.runMain (module.js:503:11)
+	    at startup (node.js:129:16)
+	    at node.js:814:3
+	```
 
 	That means that you have the http-server is already running.
 
@@ -345,4 +355,46 @@ Do you have any question? Tweet me and I'll try to append here the answer.
 	greater than 2000 until it works. Keep in mind that
 	instead of using http://localhost:8080/ you should
 	use http://localhost:2000/ where 2000 is your new number.
+
+  - Q. Do you see strange brackets?
+
+    ![button pressed on web](posts/images/angular-101-l1-Q-A.png)
+
+    That probably means that angular is not properly loaded.
+    Use your browser developer tools (F12, `Ctrl+Shit+I`, `Cmd+Alt+I` on Mac)
+    to see what is going on network.
+
+    If you see something like these:
+
+    ![button pressed on web](posts/images/angular-101-l1-Q-B.png)
+
+    ![button pressed on web](posts/images/angular-101-l1-Q-C.png)
+
+    you probably do not have internet connection.
+    Check it, if everything goes well you should see something like:
+
+    ![button pressed on web](posts/images/angular-101-l1-Q-D.png)
+
+    ![button pressed on web](posts/images/angular-101-l1-Q-E.png)
+
+  - Q. Do you used IE?
+
+  	Bad idea. Try to use Chrome, Firefox or Chromium.
+
+  - Q. Do you have problems with npm and you are stuck?
+
+    Just try with Firefox.
+    It can work with chapter 4 without an http-server.
+
+    Anyway, I strongly recommend to have npm tools installed,
+    so try to figure up what is going on. 
+    Do you have a firewall?
+    Do you have a proxy?
+
+  - Q. Nothing works?
+
+    Download the repository from https://github.com/drpicox/angular-101-l1
+    and start it opening index.html with Firefox.
+
+
 

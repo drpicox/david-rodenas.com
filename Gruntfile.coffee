@@ -47,11 +47,11 @@ module.exports = (grunt) ->
 				cwd: '.tmp',
 				dest: 'dist',
 				src: '*.json'
-			md:
+			posts:
 				expand: true,
 				cwd: '.',
 				dest: 'dist',
-				src: 'posts/*.ymd'
+				src: ['posts/**/*']
 
 		frontmatter: build:
 			options: width: '2s'
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
 			livereload: 
 				options: livereload: '<%= connect.options.livereload %>'
 				files: [
-					'{app,.tmp}/{*/,}*.{html,js,css,json,md}'
+					'{app,.tmp,posts}/{*/,}*.{html,js,css,json,md,png}'
 				]
 
 
