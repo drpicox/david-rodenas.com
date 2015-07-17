@@ -96,7 +96,7 @@ module.exports = (grunt) ->
 			coffee: files: ['app/{*/,}*.coffee'], tasks: ['coffee']
 			js: files: ['app/{*/,}*.js'], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less'], tasks: ['less','autoprefixer']
-			md: files: ['app/{*/,}*.ymd'], tasks: ['frontmatter']
+			md: files: ['posts/{*/,}*.ymd'], tasks: ['frontmatter']
 			ngtags: files: ['<%= ngtags.scripts.src %>'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 
