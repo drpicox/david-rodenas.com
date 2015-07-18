@@ -1,6 +1,6 @@
 ---
 title: "Unboxing Dependency Injection"
-subtitle: "...or how I realised how much work saves dependency injection"
+subtitle: "...or how I realised how much work saves automatic dependency injection"
 tags:
   - discussion
   - angular
@@ -14,26 +14,26 @@ abstract: >
 snippet: |
     ```javascript
     app.factory('Customer', function CustomerFactory() { ... });
-    app.factory('CustomersState', function CustomersStateFactory(Customer,State) { ... });
+    app.factory('customersState', function customersStateFactory(Customer,State) { ... });
     app.factory('Product', function ProductFactory() { ... });
-    app.factory('ProductsState', function ProductsStateFactory(Product,State) { ... });
-    app.factory('Cart', function CartFactory(CustomersState,ProductsState) { ... });
+    app.factory('productsState', function productsStateFactory(Product,State) { ... });
+    app.factory('Cart', function CartFactory(customersState,productsState) { ... });
 
     // vs
 
     app.Customer = (function CustomerFactory() { ... })();
-    app.CustomersState = (function CustomersStateFactory(Customer,State) { ... })(app.Customer,tools.State);
+    app.customersState = (function customersStateFactory(Customer,State) { ... })(app.Customer,tools.State);
     app.Product = (function ProductFactory() { ... })(Product,State);
-    app.ProductsState = (function ProductsStateFactory() { ... })(app.Product,tools.State);
-    app.Cart = (function CartFactory(CustomersState,ProductsState) { ... })(app.CustomersState,app.ProductsState);
+    app.productsState = (function productsStateFactory() { ... })(app.Product,tools.State);
+    app.Cart = (function CartFactory(customersState,productsState) { ... })(app.customersState,app.productsState);
     ```
 ---
 
 The opening example illustrates a simplified case of an app that has three main types of entities: Customer, Product and Cart. Additionally, it also considers two special _"controllers"_ that are supposed to be a kind of dictionary.
 
 
-Modules with dependency injection
----------------------------------
+Modules with automatic dependency injection
+-------------------------------------------
 
 If you are creating modules for your application, for example a module for customers, another for products and another for the cart, you may change your creation to something like:
 
@@ -43,14 +43,14 @@ var app = angular.module('app', ['app.customers','app.products','app.cart','tool
 
 var customers = angular.module('app.customers', []);
 customers.factory('Customer', function CustomerFactory() { ... });
-customers.factory('CustomersState', function CustomersStateFactory(Customer,State) { ... });
+customers.factory('customersState', function customersStateFactory(Customer,State) { ... });
 
 var products = angular.module('app.products', []);
 products.factory('Product', function ProductFactory() { ... });
-products.factory('ProductsState', function ProductsStateFactory(Product,State) { ... });
+products.factory('productsState', function productsStateFactory(Product,State) { ... });
 
 var cart = angular.module('app.cart', []);
-cart.factory('Cart', function CartFactory(CustomersState,ProductsState) { ... });
+cart.factory('Cart', function CartFactory(customersState,productsState) { ... });
 ```
 
 
@@ -66,7 +66,7 @@ Some thoughts about this code:
 
 - Although _customers_ and _products_ modules requires a _State_ component instance to be injected, they do not define it, and they do not require any module which could define it, so they are _"abstract"_ (incomplete),
 
-- Although _cart_ uses _CostumersState_ and _ProductsState_ instance, there is no definition neither other module requirement to fulfill that, so it is an _"abstract"_ (incomplete) module,
+- Although _cart_ uses _CostumersState_ and _productsState_ instance, there is no definition neither other module requirement to fulfill that, so it is an _"abstract"_ (incomplete) module,
 
 - Parent modules can redefine or decorate components if they need,
 
@@ -75,8 +75,8 @@ Note about _"abstract"_ modules: they are completed/configured by parent modules
 
 
 
-Modules without dependency injection
-------------------------------------
+Modules with manual dependency injection
+----------------------------------------
 
 How we would created the same example without dependency injection? In this case, we need to manually create and reference modules similar as follows:
 
@@ -86,14 +86,14 @@ var app = {};
 
 app.customers = {};
 app.customers.Customer = (function CustomerFactory() { ... })();
-app.customers.CustomersState = (function CustomersStateFactory(Customer,State) { ... })(app.customers.Customer,tools.State);
+app.customers.customersState = (function customersStateFactory(Customer,State) { ... })(app.customers.Customer,tools.State);
 
 app.products = {};
 app.products.Product = (function ProductFactory() { ... })();
-app.products.ProductsState = (function ProductsStateFactory(Product,State) { ... })(app.products.Product,tools.State);
+app.products.productsState = (function productsStateFactory(Product,State) { ... })(app.products.Product,tools.State);
 
 app.cart = {};
-app.cart.Cart = (function CartFactory(CustomersState,ProductsState) { ... })(app.customers.CustomersState,app.products.ProductsState);
+app.cart.Cart = (function CartFactory(customersState,productsState) { ... })(app.customers.customersState,app.products.productsState);
 ```
 
 In this code we can find that:
@@ -121,7 +121,7 @@ What if we use _requirejs_, _browserify_, or similar to modularize our code?, As
 module.exports = Customer;
 // ...
 
-/* app/customers/CustomersState.js */
+/* app/customers/customersState.js */
 var Customer = require('./Customer');
 var State = require('tools/state/State');
 module.exports = new State(Customer);
@@ -131,15 +131,15 @@ module.exports = new State(Customer);
 module.exports = Product;
 // ...
 
-/* app/products/ProductsState.js */
+/* app/products/productsState.js */
 var Product = require('./Product');
 var State = require('tools/state/State');
 module.exports = new State(Product);
 // ...
 
 /* app/cart/Cart.js */
-var CustomersState = require('../customers/CustomersState')
-var ProductsState = require('../products/ProductsState')
+var customersState = require('../customers/customersState')
+var productsState = require('../products/productsState')
 module.exports = Cart;
 // ...
 ```
@@ -174,5 +174,12 @@ I have presented three ways of doing dependency injection:
 It usually happens that AngularJS developers get for granted automatic dependency injection, but they do not know why it is here or which are the strong points.
 
 With this three examples I want to show how it helps, in small scale, but just multiply for large applications: each automatic help saves lots of hours of development and debugging time.
+
+Learn more
+----------
+
+[![Dependency Injection - Don't Look for Things!](http://img.youtube.com/vi/RlfLCWKxHJ0/0.jpg)](http://www.youtube.com/watch?v=RlfLCWKxHJ0)
+
+http://misko.hevery.com/2008/11/11/clean-code-talks-dependency-injection/
 
 
