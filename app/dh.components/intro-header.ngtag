@@ -38,7 +38,7 @@
 				}
 				.subheading {
 					font-size: 24px;
-					line-height: 1.1;
+					line-height: 1.2;
 					display: block;
 					.sans-serif;
 					font-weight: 300;
@@ -56,7 +56,7 @@
 				}
 				.subheading,
 				post-meta {
-					line-height: 1.1;
+					line-height: 1.2;
 					display: block;
 				}
 				.subheading {
