@@ -53,6 +53,8 @@ module.exports = (grunt) ->
 				dest: 'dist',
 				src: ['posts/**/*']
 
+		filerev: build: src: 'dist/*.{js,css}'
+
 		frontmatter: build:
 			options: width: '2s'
 			files: '.tmp/posts.json': ['posts/*.ymd']
@@ -107,20 +109,10 @@ module.exports = (grunt) ->
 
 
 	# (L) Load here grunt plugins with tasks
-	grunt.loadNpmTasks('grunt-autoprefixer');
-	grunt.loadNpmTasks('grunt-contrib-clean');
-	grunt.loadNpmTasks('grunt-contrib-coffee');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-connect');
-	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-frontmatter');
-	grunt.loadNpmTasks('grunt-ngtags');
-	grunt.loadNpmTasks('grunt-usemin');
+	require('jit-grunt')(grunt, {
+		ngtemplates: 'grunt-angular-templates'
+		useminPrepare: 'grunt-usemin'
+	})
 
 	# measures the time each task takes
 	require('time-grunt')(grunt);
@@ -143,6 +135,7 @@ module.exports = (grunt) ->
     	'concat'
     	'uglify'
     	'cssmin'
+    	'filerev'
     	'usemin'
     ]
 
