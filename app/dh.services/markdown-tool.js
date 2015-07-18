@@ -57,6 +57,7 @@
 			});
 			angular.forEach(div[0].querySelectorAll('code[class^=lang-]'), function(code) {
 				code.className = 'language-' + code.className.slice(5);
+				code.setAttribute('ng-non-bindable','');
 			});
 			angular.forEach(div[0].querySelectorAll('img'), function(img) {
 				img.setAttribute('class','img-responsive');
