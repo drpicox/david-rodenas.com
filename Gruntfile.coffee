@@ -58,7 +58,7 @@ module.exports = (grunt) ->
 
 		frontmatter: build:
 			options: width: '2s'
-			files: '.tmp/posts.json': ['posts/*.post']
+			files: '.tmp/posts.json': ['posts/*.md']
 
 		jshint:
 			options: jshintrc: '.jshintrc'
@@ -99,7 +99,7 @@ module.exports = (grunt) ->
 			coffee: files: ['app/{*/,}*.coffee'], tasks: ['coffee']
 			js: files: ['app/{*/,}*.js'], tasks: ['jshint']
 			less: files: ['app/{*/,}*.less'], tasks: ['less','autoprefixer']
-			md: files: ['posts/{*/,}*.post'], tasks: ['frontmatter']
+			md: files: ['posts/{*/,}*.md'], tasks: ['frontmatter']
 			ngtags: files: ['<%= ngtags.scripts.src %>'], tasks: ['ngtags','jshint','less','autoprefixer']
 
 			livereload: 

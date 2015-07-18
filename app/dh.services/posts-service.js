@@ -54,7 +54,7 @@
 				post = data.then(function(map) {
 					return {post: map[basename]};
 				}).then(function(ctx) {
-					return $http.get('posts/'+basename+'.post').then(function(result) {
+					return $http.get('posts/'+basename+'.md').then(function(result) {
 						ctx.body = result.data;
 						return ctx;
 					});
