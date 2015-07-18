@@ -165,7 +165,7 @@ to create a larger app.
 	angular.module('helloApp', []);
 	```
 
-4. Create the helloApp hello directive (<ha-hello>) inside `HelloDirective.js`:
+4. Create the helloApp hello directive (&lt;ha-hello>) inside `HelloDirective.js`:
 
 	```javascript
 	(function() {
@@ -187,8 +187,8 @@ to create a larger app.
 			return directive;
 		}
 
-		HelloController.$inject = ['helloState'];
-		function HelloController  ( helloState ) {
+		HelloController.$inject = [];
+		function HelloController  () {
 			var vm = this;
 
 			vm.hello = '';
