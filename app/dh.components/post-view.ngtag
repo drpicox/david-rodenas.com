@@ -56,6 +56,10 @@
 				color: rgba(255, 255, 255, 0.82);
 			}
 
+			a {
+				text-decoration: underline;
+			}
+
 		}
 		/*
 		post-view .img-container {
