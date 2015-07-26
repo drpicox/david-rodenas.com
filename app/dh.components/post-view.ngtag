@@ -92,6 +92,8 @@
 		<div class="row">
 			<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
 
+				<post-pager data-post="vm.post"></post-pager>
+
 				<p class="abstract" ng-if="vm.post.abstract" ng-bind="vm.post.abstract"></p>
 
 				<div ng-if="!!vm.post.snippet">
@@ -105,6 +107,8 @@
 				</p>
 
 				<div drpx-bind-angular="vm.post.body"></div>
+
+				<post-pager data-post="vm.post"></post-pager>
 			</div>
 		</div>
 	</template>

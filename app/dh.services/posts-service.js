@@ -13,8 +13,9 @@
 	postsServiceFactory.$inject = ['markdownTool','$http'];
 	function postsServiceFactory  ( markdownTool , $http ) {
 		var service = {
-			get: get,		// (basename)
-			list: list,		// ()
+			get: get,            // (basename): *post
+			getEntry: getEntry,  // (basename): *postEntry
+			list: list,          // (): *[]
 		};
 
 		var data, posts, postList;
@@ -75,6 +76,12 @@
 			}
 
 			return post;
+		}
+
+		function getEntry(basename) {
+			return data.then(function(postMap) {
+				return postMap[basename];
+			});
 		}
 
 		function list() {

@@ -1,0 +1,41 @@
+<angular-element name="post-pager" bindings="post">
+	<style>
+		post-meta {
+			ul {
+				margin-top: -1em;
+				font-size: 90%;
+				font-family: @font-family-sans-serif;
+				font-style: normal;
+				a {
+					text-decoration: underline;
+				}
+			}
+		}
+	</style>
+	<template>
+		<nav>
+			<ul class="pager">
+				<li ng-if="vm.prevTitle" class="previous">
+					<a ng-href="#!/posts/{{vm.post.prev}}">&larr; {{vm.prevTitle}}</a>
+				</li>
+				<li ng-if="vm.nextTitle" class="next">
+					<a ng-href="#!/posts/{{vm.post.next}}">{{vm.nextTitle}} &rarr;</a>
+				</li>
+			</ul>
+		</nav>
+	</template>
+	<script inject="postsService">
+		var vm = this;
+
+		if (vm.post.prev) {
+			postsService.getEntry(vm.post.prev).then(function(postEntry) {
+				vm.prevTitle = postEntry.title;
+			});
+		}
+		if (vm.post.next) {
+			postsService.getEntry(vm.post.next).then(function(postEntry) {
+				vm.nextTitle = postEntry.title;
+			});
+		}
+	</script>
+</angular-element>
