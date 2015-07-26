@@ -20,6 +20,7 @@ snippet: |
     <button ng-click="vm.sayHello()">Say hello</button>
     <div>{{vm.hello}}</div>
     ```
+next: angular-101-l2
 ---
 
 ## Chapter 1: First angular app
@@ -168,7 +169,7 @@ to create a larger app.
 4. Create the helloApp hello directive (&lt;ha-hello>) inside `HelloDirective.js`:
 
 	```javascript
-	(function() {
+	;(function() {
 		'use strict';
 
 		angular
@@ -322,6 +323,12 @@ The source code of all examples is here:
 
 - https://github.com/drpicox/angular-101-l1
 
+## Did you know that...
+
+- You can see the example running [here](http://david-rodenas.com/angular-101-l1)
+
+- ['angular.module'](https://docs.angularjs.org/guide/module) encapsulates parts of your code app that serves one purpose, modules can even use other modules, and your app is also a module; if you know java, they are like packages
+- [`ng-app`](https://docs.angularjs.org/api/ng/directive/ngApp) is an Angular directive that enables Angular in the web?
 
 ## Questions?
 
