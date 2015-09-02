@@ -18,13 +18,13 @@ snippet: |
         this.log = function(msg) { console.log(msg); };
     }
     // ..choose..
-    module.value('Logger', new Logger());
+    module.value('logger', new Logger());
     // ..or..
-    module.service('Logger', Logger);
+    module.service('logger', Logger);
     // ..or..
-    module.factory('Logger', function() { return new Logger(); });
+    module.factory('logger', function() { return new Logger(); });
     // ..or..
-    module.provider('Logger', function() {
+    module.provider('logger', function() {
         this.$get = function() { return new Logger(); };
     });
     ```
@@ -34,7 +34,7 @@ All this four example does exactly the same, and Yes, almost all components in A
 
 ### What the example does?
 
-Let's look carefully to the introduction example. It proposes many ways to create and injectable Logger. First, it defines a constructor called Logger (builds an object with one method, log). Next, you can choose which way do you prefer to create an injectable Logger. It does not matter how you have defined the `Logger`, use it just as simple as follows:
+Let's look carefully to the introduction example. It proposes many ways to create and injectable logger. First, it defines a constructor called Logger (builds an object with one method, log). Next, you can choose which way do you prefer to create an injectable logger. It does not matter how you have defined the `logger`, use it just as simple as follows:
 
 ```javascript
     module.controller('LoggyController', function(Logger) {
@@ -80,7 +80,7 @@ Probably _factory_ is the most common one.
 A resounding yes. The most important part of providers is that they can be configured. For example:
 
 ```javascript
-module.provider('Logger', function() {
+module.provider('logger', function() {
     var config = this.config = {
         endpoint: '/api/logs',
     };
@@ -100,14 +100,14 @@ module.provider('Logger', function() {
 and the configuration:
 
 ```javascript
-module.config(function('LoggerProvider') {
+module.config(function('loggerProvider') {
     LoggerProvider.config.endpoint = '/services/v2/log'; 
 });
 ```
 
 Note that:
 - angular automatically appends `Provider` to the service name,
-- the `Logger` can still be used following the previous example,
+- the `logger` can still be used following the previous example,
 - config functions only can receive _Provider_s, nothing else.
 
 All _config_ functions take place before any other service uses defined services, so it helps to ensure that everything would be properly configured before it is been used. For example, never (I repeat, never) would be any kind of _post_ method to _/api/logs_ path, because there is a configuration function that overwrites it before Logger is used.
