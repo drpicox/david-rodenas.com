@@ -2,7 +2,7 @@
 title: "Links"
 subtitle: "Some interesting things"
 tags:
-  - discussion
+  - links
 date: 2015-09-15
 abstract: >
     Here you will find some of the resources that I found interesting to share.
