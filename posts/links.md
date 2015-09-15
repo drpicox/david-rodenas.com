@@ -23,6 +23,7 @@ snippet: |
 ## My AngularJS Components
 
 * [drpx-bind-angular](https://github.com/drpicox/drpx-bind-angular): bind angular string templates like ng-bind does with text
+* [drpx-class-route](https://github.com/drpicox/drpx-class-route) / [demo](http://david-rodenas.com/drpx-class-route/demo.html): add classes depending the route
 * [drpx-id](https://github.com/drpicox/drpx-id): access to components controllers from templates
 * [drpx-seo](https://github.com/drpicox/drpx-seo): enable SEO to your SPA AngularJS apps without serverside support
 * [drpx-storage](https://github.com/drpicox/drpx-storage) / [mock](https://github.com/drpicox/drpx-storage-mocks): angular wrapper for [mozilla localForage](https://github.com/mozilla/localForage)
