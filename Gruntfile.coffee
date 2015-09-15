@@ -2,7 +2,7 @@ Esmoquin = require('esmoquin').Esmoquin
 
 esmoquin = new Esmoquin()
 esmoquin.minimatch '/posts/*.md', Esmoquin.local path:'<%= path() %>'
-esmoquin.minimatch '/**/*.md', Esmoquin.proxy host:'david-rodenas.com'
+esmoquin.minimatch '/{!posts/}**/*.md', Esmoquin.proxy host:'david-rodenas.com'
 
 module.exports = (grunt) ->
 

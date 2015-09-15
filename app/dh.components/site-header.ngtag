@@ -47,6 +47,9 @@
 						</li>
 						-->
 						<li>
+							<a href="#!/posts/links">Links</a>
+						</li>
+						<li>
 							<a href="#!/contact">Contact</a>
 						</li>
 					</ul>
