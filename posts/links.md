@@ -37,6 +37,16 @@ snippet: |
 * [Promises v1](http://david-rodenas.com/tutorial-promises-v1): first tutorial, it should be improved
 * [Grunt v1](http://david-rodenas.com/tutorial-gruntjs-v1/#/grunt): small tutorial for grunt (quite old!)
 
+## Browserify
+
+[Browserify](http://browserify.org/) is a very powerful tool to create javascript bundles.
+It accepts transforms in order to build an application. Here are some of my selected transforms (si [broather list](https://github.com/substack/node-browserify/wiki/list-of-transforms)):
+
+* [envify](https://github.com/hughsk/envify): `npm i -D envify`, `if (process.env.ENVVAR) { ... }`
+* [stringify](https://github.com/JohnPostlethwait/stringify): `npm i -D stringify`, `"stringify": { "extensions": [ ".html" ],`
+
+`"browserify": { "transform": [ ... ] }`
+
 ## Styles
 
 * [Solved by Flexbox](http://philipwalton.github.io/solved-by-flexbox/): for IE10 or better, or how to keep design simple with flexbox
