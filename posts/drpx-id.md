@@ -20,25 +20,26 @@ snippet: |
     ```
 source: https://github.com/drpicox/drpx-id
 append: "/drpx-id/README.md"
+unused: |
+  <div>
+    **Test**
+  </div>
+  <div>
+  <edit-on-codepen>
+    <codepen-button></codepen-button>
+    <codepen-content key="js" markdown="1">
+  ```javascript
+  function(){ lo; }
+  ```
+    </codepen-content>
+    <codepen-content key="html" markdown="1" class="nghide">
+  ```html
+      <script src="http://sdfds.fs">    
+      <hola>Hola</hola>
+  ```
+    </codepen-content>
+  </edit-on-codepen>
+  </div>
 ---
 
-<div>
-  **Test**
-</div>
-
-<div>
-<edit-on-codepen>
-  <codepen-button></codepen-button>
-  <codepen-content key="js" markdown="1">
-```javascript
-function(){ lo; }
-```
-  </codepen-content>
-  <codepen-content key="html" markdown="1" class="nghide">
-```html
-    <script src="http://sdfds.fs">    
-    <hola>Hola</hola>
-```
-  </codepen-content>
-</edit-on-codepen>
-</div>
+See [asDirective](#!/posts/asDirective).
