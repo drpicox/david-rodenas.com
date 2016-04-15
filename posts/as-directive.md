@@ -23,10 +23,10 @@ snippet: |
 source: https://github.com/angular/angular.js/pull/14080
 ---
 
-## A new propossal: `asDirective`
+## A new proposal: `asDirective`
 
 See https://github.com/angular/angular.js/pull/14080
-for details, current status of the propossal, and feel free to comment.
+for details, current status of the proposal, and feel free to comment.
 
 Here I propose a new Directive: the `asDirective`. 
 This directive publishes the current controller into the scope.

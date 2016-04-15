@@ -22,7 +22,7 @@
 		activate();
 
 		function activate() {
-			data = $http.get('posts.json').then(function(result) { return result.data; });
+			data = $http.get('posts.json?v=$VERSION$').then(function(result) { return result.data; });
 			postList = data.then(function(map) {
 				return Object.keys(map).map(function(basename) {
 					return map[basename];
@@ -55,7 +55,7 @@
 				post = data.then(function(map) {
 					return {post: map[basename]};
 				}).then(function(ctx) {
-					return $http.get('posts/'+basename+'.md').then(function(result) {
+					return $http.get('posts/'+basename+'.md?v=$VERSION$').then(function(result) {
 						ctx.body = result.data;
 						return ctx;
 					});

@@ -87,6 +87,12 @@ module.exports = (grunt) ->
 				dest: '.tmp/ngtags.less'
 				options: generateStyle: true
 
+		replace:
+			options: patterns: [
+				match: /\$VERSION\$/g, replacement: '<%= pkg.version %>'
+			]
+			dist: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
+
 		useminPrepare:
 			html: 'app/index.html'
 			options: dest: 'dist'
@@ -135,6 +141,7 @@ module.exports = (grunt) ->
     	'copy'
     	'useminPrepare' 
     	'concat'
+    	'replace'
     	'uglify'
     	'cssmin'
     	'filerev'
