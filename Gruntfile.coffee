@@ -36,6 +36,7 @@ module.exports = (grunt) ->
 		copy:
 			options: onlyIf: 'modified'
 			cname: src: 'app/CNAME', dest: 'dist/CNAME'
+			favicon: src: 'app/favicon.ico', dest: 'dist/favicon.ico'
 			nojekyll: src: 'app/.nojekyll', dest: 'dist/.nojekyll'
 			fonts: src: 'bower_components/*/fonts/*', dest: 'dist/'
 			images:
