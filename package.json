@@ -40,5 +40,8 @@
     "grunt-usemin": "^3.0.0",
     "jit-grunt": "^0.9.1",
     "time-grunt": "^1.0.0"
+  },
+  "dependencies": {
+    "ngtags": "0.0.20"
   }
 }
