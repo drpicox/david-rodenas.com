@@ -3,7 +3,7 @@ title: "Links"
 subtitle: "Some interesting things"
 tags:
   - links
-date: 2016-03-04
+date: 2016-06-02
 abstract: >
     Here you will find some of the resources that I found interesting to share.
     Some of them are some of my libraries, 
@@ -50,6 +50,12 @@ snippet: |
 * [Angular for designers v1](https://github.com/drpicox/tutorial-angulardesigners-v1) / [demo](http://david-rodenas.com/tutorial-angulardesigners-v1/): small examples tutorial
 * [Promises v1](http://david-rodenas.com/tutorial-promises-v1): first tutorial, it should be improved
 * [Grunt v1](http://david-rodenas.com/tutorial-gruntjs-v1/#/grunt): small tutorial for grunt (quite old!)
+
+## Web Apps Resources
+
+* [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/): what are? how to make one? what are the strengths?
+* [Service Worker Toolbos](https://github.com/GoogleChrome/sw-toolbox): A toolbox to create service workers
+* [Google I/O 2016 Courses](https://codelabs.developers.google.com/io2016): Lot's of tutorials of the Google I/O 2016 workshops
 
 ## Browserify
 
