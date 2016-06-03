@@ -18,7 +18,6 @@ snippet: |
                .then(function() { console.log("Service Worker Registered"); });
     }
     ```
-prev: angular-101-l1
 ---
 
 Progressive Web App is a Web App that can work as an App inside a Mobile phone but at the same time as a Web App in any other browser. For this reason the web app must be able to have instant loading, be able to be added to home screen, may receive push notifications, be fast and secure, and be responsive.
