@@ -51,6 +51,10 @@ snippet: |
 * [Promises v1](http://david-rodenas.com/tutorial-promises-v1): first tutorial, it should be improved
 * [Grunt v1](http://david-rodenas.com/tutorial-gruntjs-v1/#/grunt): small tutorial for grunt (quite old!)
 
+## Angular
+
+* [Misko Hevery: AngularJS](https://www.youtube.com/watch?v=khk_vEF95Jk): Misko talking about AngularJS in 2011 and explaining the whys of angular
+
 ## Web Apps Resources
 
 * [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/): what are? how to make one? what are the strengths?
