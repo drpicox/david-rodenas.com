@@ -20,7 +20,7 @@ module.exports = (grunt) ->
 			]
 
 		clean:
-			www: files: [ dot: true, src: [ 'dist/*','!dist/.git' ], ]
+			www: files: [ dot: true, src: [ 'www/*','!www/.git' ], ]
 			tmp: files: [ dot: true, src: [ '.tmp' ], ]
 
 		coffee:
@@ -35,28 +35,28 @@ module.exports = (grunt) ->
 
 		copy:
 			options: onlyIf: 'modified'
-			cname: src: 'app/CNAME', dest: 'dist/CNAME'
-			favicon: src: 'app/favicon.ico', dest: 'dist/favicon.ico'
-			nojekyll: src: 'app/.nojekyll', dest: 'dist/.nojekyll'
-			fonts: src: 'bower_components/*/fonts/*', dest: 'dist/'
+			cname: src: 'app/CNAME', dest: 'www/CNAME'
+			favicon: src: 'app/favicon.ico', dest: 'www/favicon.ico'
+			nojekyll: src: 'app/.nojekyll', dest: 'www/.nojekyll'
+			fonts: src: 'bower_components/*/fonts/*', dest: 'www/'
 			images:
 				expand: true,
 				cwd: 'app',
-				dest: 'dist',
+				dest: 'www',
 				src: '**/*.{png,gif,jpg,svg}'
-			index: src: 'app/index.html', dest: 'dist/index.html'
+			index: src: 'app/index.html', dest: 'www/index.html'
 			json:
 				expand: true,
 				cwd: '.tmp',
-				dest: 'dist',
+				dest: 'www',
 				src: '*.json'
 			posts:
 				expand: true,
 				cwd: '.',
-				dest: 'dist',
+				dest: 'www',
 				src: ['posts/**/*']
 
-		filerev: build: src: 'dist/*.{js,css}'
+		filerev: build: src: 'www/*.{js,css}'
 
 		frontmatter: build:
 			options: width: '2s'
@@ -92,15 +92,15 @@ module.exports = (grunt) ->
 			options: patterns: [
 				match: /\$VERSION\$/g, replacement: '<%= pkg.version %>'
 			]
-			dist: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
+			www: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
 
 		useminPrepare:
 			html: 'app/index.html'
-			options: dest: 'dist'
+			options: dest: 'www'
 
 		usemin:
-			html: [ 'dist/index.html' ]
-			options: dirs: ['dist']
+			html: [ 'www/index.html' ]
+			options: dirs: ['www']
 
 		watch:
 			grunt: files: ['Gruntfile.coffee']
