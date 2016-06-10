@@ -3,7 +3,7 @@ title: "Links"
 subtitle: "Some interesting things"
 tags:
   - links
-date: 2016-06-02
+date: 2016-06-10
 abstract: >
     Here you will find some of the resources that I found interesting to share.
     Some of them are some of my libraries, 
