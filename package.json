@@ -33,6 +33,7 @@
     "grunt-contrib-less": "^1.0.0",
     "grunt-contrib-uglify": "^0.7.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-embed": "^0.2.1",
     "grunt-filerev": "^2.3.1",
     "grunt-frontmatter": "~1.0.1",
     "grunt-inline": "^0.3.6",

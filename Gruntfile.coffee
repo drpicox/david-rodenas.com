@@ -62,10 +62,9 @@ module.exports = (grunt) ->
 			options: width: '2s'
 			files: '.tmp/posts.json': ['posts/*.md']
 
-		inline: perf: 
-			options: tag: ''
-			src: 'www/index.html'
-			dist: 'www/index.html'
+		embed: perf: 
+			options: threshold: '3000KB'
+			files: 'www/index.html':'www/index.html'
 
 		jshint:
 			options: jshintrc: '.jshintrc'
@@ -138,7 +137,7 @@ module.exports = (grunt) ->
 		grunt.file.write('.tmp/posts.json.js', text)
 
 	grunt.registerTask 'perf-inline', [
-		'inline'
+		'embed'
 	]
 
 	# (T) Add here your task(s)
