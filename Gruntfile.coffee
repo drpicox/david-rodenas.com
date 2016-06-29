@@ -62,6 +62,11 @@ module.exports = (grunt) ->
 			options: width: '2s'
 			files: '.tmp/posts.json': ['posts/*.md']
 
+		inline: perf: 
+			options: tag: ''
+			src: 'www/index.html'
+			dist: 'www/index.html'
+
 		jshint:
 			options: jshintrc: '.jshintrc'
 			build: [ '{app,.tmp}/{*/,}/*.js','!.tmp/concat/*.js' ]
@@ -126,6 +131,16 @@ module.exports = (grunt) ->
 	# measures the time each task takes
 	require('time-grunt')(grunt);
 
+	# custom tags
+	grunt.registerTask 'pref-posts-json-script', () ->
+		posts = require('./.tmp/posts.json')
+		text = 'window.postsJson=' + JSON.stringify(posts) + ';'
+		grunt.file.write('.tmp/posts.json.js', text)
+
+	grunt.registerTask 'perf-inline', [
+		'inline'
+	]
+
 	# (T) Add here your task(s)
 	grunt.registerTask 'build-dev', [ 
 		'ngtags'
@@ -139,6 +154,7 @@ module.exports = (grunt) ->
 	grunt.registerTask 'build', [ 
 		'clean'
     	'build-dev'
+    	'pref-posts-json-script'
     	'copy'
     	'useminPrepare' 
     	'concat'
@@ -147,6 +163,7 @@ module.exports = (grunt) ->
     	'cssmin'
     	'filerev'
     	'usemin'
+    	'perf-inline'
     ]
 
 	grunt.registerTask 'serve', [ 
