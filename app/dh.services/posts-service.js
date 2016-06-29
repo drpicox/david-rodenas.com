@@ -10,8 +10,8 @@
 		.module('drHome')
 		.factory('postsService', postsServiceFactory);
 
-	postsServiceFactory.$inject = ['markdownTool','$http'];
-	function postsServiceFactory  ( markdownTool , $http ) {
+	postsServiceFactory.$inject = ['markdownTool','$http','$q','$window'];
+	function postsServiceFactory  ( markdownTool , $http , $q , $window ) {
 		var service = {
 			get: get,            // (basename): *post
 			getEntry: getEntry,  // (basename): *postEntry
@@ -22,7 +22,11 @@
 		activate();
 
 		function activate() {
-			data = $http.get('posts.json?v=$VERSION$').then(function(result) { return result.data; });
+			if ($window.postsJson) {
+				data = $q.when($window.postsJson);
+			} else {
+				data = $http.get('posts.json?v=$VERSION$').then(function(result) { return result.data; });
+			}
 			postList = data.then(function(map) {
 				return Object.keys(map).map(function(basename) {
 					return map[basename];

@@ -69,7 +69,7 @@ module.exports = (grunt) ->
 
 		jshint:
 			options: jshintrc: '.jshintrc'
-			build: [ '{app,.tmp}/{*/,}/*.js','!.tmp/concat/*.js' ]
+			build: [ '{app,.tmp}/{*/,}/*.js','!.tmp/concat/*.js','!.tmp/*.json.js' ]
 
 		less: build:
 			files: '.tmp/dr-home.css': 'app/dr-home.less'
