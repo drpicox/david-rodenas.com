@@ -1,0 +1,30 @@
+.zone-white, .zone-gray {
+  h1, h2, h3, a, a:visited, a:focus, a:hover {
+    color: @primary;
+  }
+  .highlight {
+    border-left-color: @primary;
+  }
+}
+
+.zone-white {
+  background: white;
+}
+
+.zone-gray {
+  background: @gray;
+}
+
+.zone-primary {
+  background: @primary;
+
+  h1, h2, h3 {
+    color: white;
+  }
+  a, a:visited, a:focus, a:hover {
+    color: invert(@text);
+  }
+  .highlight {
+    border-left-color: invert(@text);
+  }
+}

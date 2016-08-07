@@ -1,0 +1,35 @@
+a.btn {
+  display: inline-block;
+  padding: 0.8em 1em;
+  border-radius: 4px;
+  background: white;
+  color: @primary;
+  text-decoration: none;
+  line-height: 1;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  text-transform: uppercase;
+}
+a.btn:hover, a.btn:focus, a.btn.active {
+  color: @primary;
+  background: #fefefe;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+a.btn.btn-gray {
+  background: @gray;
+  color: @text;
+}
+a.btn.btn-gray:hover, a.btn.btn-gray:focus, a.btn.btn-gray.active {
+  color: @text;
+}
+
+a.btn.btn-primary {
+  background: @primary;
+  color: white;
+}
+a.btn.btn-primary:hover, a.btn.btn-primary:focus, a.btn.btn-primary.active {
+  background: adjust-hue(@primary, 3);
+  color: white;
+}
