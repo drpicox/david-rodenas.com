@@ -1,5 +1,5 @@
 ---
-title: "Speedup your Angular 1.5 application"
+title: "Speedup your Angular 1.5.9 application"
 subtitle: "You can make your apps faster with one just simple configuration"
 tags:
   - angular
