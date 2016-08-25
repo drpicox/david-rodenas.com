@@ -30,7 +30,7 @@ p {
   hyphens: auto;
 }
 
-a, a:visited, a:focus, a:hover {
+a, a:focus, a:hover {
   color: @primary;
 }
 
@@ -45,4 +45,27 @@ main {
 a.rel-link {
   color: @text;
   text-decoration: none;
+}
+
+pre {
+  border-left: solid 4px @primary;
+  border-radius: 4px;
+  padding: 6px 18px;
+  overflow: auto;
+  line-height: 1.2;
+  background: fadeout(@primary, 95%);
+  code, pre {
+    font-family: courier, monaco, consolas, monospace;
+    font-size: 14px;
+    font-weight: 300;    
+  }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 36px;
+  }
+  pre {
+    font-size: 10px;
+  }
 }

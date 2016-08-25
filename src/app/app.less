@@ -1,0 +1,35 @@
+app-root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+ng-view {
+  display: block;
+  transition: transform 1s;
+  transform-origin: top;
+  transform: rotateX(0deg);
+
+  &.ng-enter, &.ng-leave {
+    transform: rotateX(90deg);
+  }
+  &.ng-enter-active {
+    transform: rotateX(0deg);
+  }
+}
+
+[drpx-class-route-loading] {
+  opacity: 1;
+  transition: opacity 0.3s;
+  &.drpx-route-loading {
+    opacity: 0.5;
+  }
+}
+
+[drpx-remove-on-route-success] {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  color: @mute;
+}

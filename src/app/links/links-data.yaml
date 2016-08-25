@@ -1,0 +1,157 @@
+- title: Barcelona Tech Meetups
+  links:
+    - title: AngularBeers
+      url: https://twitter.com/ngbeers
+      text: One-off meetup for networking, beers and socializing.
+    - title: AngularCamp
+      url: http://angularcamp.org/
+      text: Recurrent casual community Angular meetup.
+
+- title: My contributions inside Angular
+  links:
+    - title: "perf($compile): optionally collect EA directives"
+      url: https://github.com/angular/angular.js/pull/14850
+      text: Allows to class and comment directives for faster compilation
+    - title: "perf($compile): try/catch"
+      url: https://github.com/angular/angular.js/pull/14848
+      text: Wrap try/catch of collect comment directives into a function to avoid V8 deopt.
+    - title: fix(ngClass)
+      url: https://github.com/angular/angular.js/pull/14405
+      text: Solves a bug for `ng-class="['orange', rgb]"` in which rgb is an object.
+    - title: feat($componentController)
+      url: https://github.com/angular/angular.js/commit/72b96ef57a28743e2dfed523701cc2e88e3b473b
+      text: Implementation of a utility for testing components.
+    - title: Proposal for $componentController
+      url: https://github.com/angular/angular.js/issues/13683#issuecomment-169417606
+      text: My proposal proposal for the creation of `$componentController`.
+
+- title: My current proposals inside Angular
+  links:
+    - title: All my proposals
+      url: https://github.com/angular/angular.js/pulls/drpicox
+      text: See all my pending contributions for AngularJS.
+    - title: feat(asDirective)
+      url: https://github.com/angular/angular.js/pull/14080
+      text: A directive to access component controllers.
+    - title: feat(ngTranscludeLocals)
+      url: https://github.com/angular/angular.js/pull/14386
+      text: An update to `ng-transclude` directive to allow pass values to transcluded elements.
+    - title: perf(ngClass)
+      url: https://github.com/angular/angular.js/pull/14404
+      text: Optimization to avoid unnecessary copies of potentially big objects.
+
+- title: My AngularJS Components
+  links:
+    - title: drpx-bind-angular
+      url: https://github.com/drpicox/drpx-bind-angular
+      text: Bind angular string templates like ng-bind does with text.
+    - title: drpx-class-route
+      url: https://github.com/drpicox/drpx-class-route
+      text: Add classes depending the route
+    - title: drpx-id
+      url: https://github.com/drpicox/drpx-id
+      text: Access to components controllers from templates; _deprecated in favor of `as` directive_.
+    - title: drpx-seo
+      url: https://github.com/drpicox/drpx-seo
+      text: Enable SEO to your SPA AngularJS apps without serverside support.
+    - title: drpx-storage
+      url: https://github.com/drpicox/drpx-storage
+      text: Angular wrapper for mozilla localForage.
+    - title: drpx-transcludeto
+      url: https://github.com/drpicox/drpx-transcludeto
+      text: Multitransclussion for angular; _deprecated in favor of ngTransclude 1.5_.
+    - title: drpx-updateable
+      url: https://github.com/drpicox/drpx-updateable
+      text: Lazy compute derived data; _deprecated in favor of Observable_.
+
+- title: Teaching
+  links:
+      - title: MVC Models
+        url: http://david-rodenas.com/assets/resources/Mvc%20-%20Model,%20the%20great%20forgotten.pdf
+        text: A step by step presentation showing what models are for.
+      - title: JSpatterns v1
+        url: http://david-rodenas.com/tutorial-jspatterns-v1/
+        text: Stop messing with dom and use software patterns.
+      - title: Angular for designers v1
+        url: https://github.com/drpicox/tutorial-angulardesigners-v1
+        text: Tutorial for designers about how to use angular based in examples.
+      - title: Promises v1
+        url: http://david-rodenas.com/tutorial-promises-v1
+        text: A very introductory tutorial/presentation about promises.
+      - title: Grunt v1
+        url: http://david-rodenas.com/tutorial-gruntjs-v1/#/grunt
+        text: Small tutorial/presentation about grunt (quite old!)
+
+- title: Angular
+  links:
+      - title: "Misko Hevery: AngularJS"
+        url: https://www.youtube.com/watch?v=khk_vEF95Jk
+        text: Misko talking about AngularJS in 2011 and explaining the whys of Angular.
+
+- title: Web Apps Resources
+  links:
+      - title: Progressive Web Apps
+        url: https://developers.google.com/web/progressive-web-apps/
+        text: What are progressive web apps? How to make one? What are their strengths?
+      - title: Service Worker Toolbox
+        url: https://github.com/GoogleChrome/sw-toolbox
+        text: A toolbox to create service workers.
+      - title: Google I/O 2016 Courses
+        url: https://codelabs.developers.google.com/io2016
+        text: Lot's of tutorials of the Google I/O 2016 workshops.
+
+- title: Styles
+  links:
+      - title: Solved by Flexbox
+        url: http://philipwalton.github.io/solved-by-flexbox/
+        text: For IE10 or better, or how to keep design simple with flexbox.
+
+- title: Browserify
+  links:
+      - title: Browserify
+        url: http://browserify.org/
+        text: A very powerful tool to create javascript bundles. It accepts transforms in order to build an application.
+      - title: Browserify transforms
+        url: https://github.com/substack/node-browserify/wiki/list-of-transforms
+        text: List of the many of the transforms available for browserify
+      - title: babelify
+        url: https://github.com/babel/babelify
+        text: |
+          Use ES2015 (aka ES6).
+
+          ```          
+          $ npm i -D babelify babel-preset-es2015
+          transforms.push(['babelify', {sourceMap: true, presets: ['es2015']}])
+          [1,2,3].filter(x => x > 2);
+          ```
+      - title: browserify-ngannotate
+        url: https://github.com/omsmith/browserify-ngannotate
+        text: |
+          Automatically annotate AngularJS injections.
+
+          ```          
+          $ npm i -D browserify-ngannotate babel-preset-es2015
+          transforms.push('browserify-ngannotate')
+          /* @ngInject */ function(myService) { ... }
+          ```
+      - title: envify
+        url: https://github.com/hughsk/envify
+        text: |
+          Use compile time ENVIRONMENT VARIABLES.
+
+
+          ```
+          $ npm i -D envify
+          transforms.push('envify')
+          if (process.env.ENVVAR) { ... }
+          ```
+      - title: stringify
+        url: https://github.com/JohnPostlethwait/stringify
+        text: |
+          Require any html templates as strings in the same bundle.
+
+          ```          
+          $ npm i -D stringify
+          transforms.push(['stringify', {'extensions': [ '.html' ], "minify": true}])
+          var tpl = require('./my.tpl.html');
+          ```

@@ -5,14 +5,15 @@ module.exports = (grunt) ->
 
 		# (C) Tasks configurations here
 		browserify:
-			dev: files: '.tmp/app.js': [ '.tmp/rollup.js' ]
-			options: 
+			dev: files: '.tmp/app.js': [ 'src/main.ts' ]
+			options:
 				watch: true
 				browserifyOptions: debug: true
 				transform: [
-					#[ 'stringify', 'extensions': [ '.html' ], "minify": true, ]
-					'envify'
+          'yamlify'
+					[ 'stringify', 'extensions': [ '.html' ], "minify": true, ]
 				]
+				plugin: [ 'tsify' ]
 
 		clean:
 			www: files: [ dot: true, src: [ 'www/*','!www/.git' ], ]
@@ -25,23 +26,18 @@ module.exports = (grunt) ->
 
 		copy:
 			options: onlyIf: 'modified'
-			cname: src: 'app/CNAME', dest: 'www/CNAME'
-			favicon: src: 'app/favicon.ico', dest: 'www/favicon.ico'
-			nojekyll: src: 'app/.nojekyll', dest: 'www/.nojekyll'
+			cname: src: 'src/CNAME', dest: 'www/CNAME'
+			favicon: src: 'src/favicon.ico', dest: 'www/favicon.ico'
+			nojekyll: src: 'src/.nojekyll', dest: 'www/.nojekyll'
 			images:
 				expand: true,
-				cwd: 'app',
+				cwd: 'src',
 				dest: 'www',
 				src: '**/*.{png,gif,jpg,svg}'
-			index: src: 'app/index.html', dest: 'www/index.html'
-			json:
-				expand: true,
-				cwd: '.tmp',
-				dest: 'www',
-				src: '*.json'
+			index: src: 'src/index.html', dest: 'www/index.html'
 			posts:
 				expand: true,
-				cwd: 'src/posts',
+				cwd: 'src',
 				dest: 'www',
 				src: ['posts/**/*']
 
@@ -73,18 +69,8 @@ module.exports = (grunt) ->
 			]
 			www: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
 
-		rollup:
-			files: dest:'.tmp/rollup.js', src:'src/main.ts'
-			options: 
-				sourceMap: 'inline'
-				plugins: [                     
-                    require('rollup-plugin-string')(include: '**/*.tpl.html')
-                    require('rollup-plugin-typescript')()
-                    require('rollup-plugin-browserify-transform')(require('stringify'), 'extensions': [ '.html' ], "minify": true,)
-                ]
-
 		useminPrepare:
-			html: 'app/index.html'
+			html: 'src/index.html'
 			options: dest: 'www'
 
 		usemin:
@@ -95,12 +81,12 @@ module.exports = (grunt) ->
 			grunt: files: ['Gruntfile.coffee']
 			less: files: ['src/**/*.less'], tasks: ['less']
 			md: files: ['src/posts/*.md'], tasks: ['frontmatter']
-			rollup: files: ['src/**/*.ts'], tasks: ['rollup']
 
 			livereload: 
 				options: livereload: '<%= connect.options.livereload %>'
 				files: [
-					'{src,.tmp}/**/*.{html,js,css,json,md,png}'
+					'src/**/*.{md,png,jpg}'
+          '.tmp/*'
 				]
 
 
@@ -115,10 +101,7 @@ module.exports = (grunt) ->
 	# (T) Add here your task(s)
 	grunt.registerTask 'flag-prod', () => 
 		grunt.config.data.browserify.options.browserifyOptions.debug = false;
-		grunt.config.data.browserify.options.transform.push(
-			'browserify-ngannotate',
-			'uglifyify'
-		)
+		grunt.config.data.browserify.options.configure = (b) => 0
 
 	grunt.registerTask 'perf-inline', [
 		'embed'
@@ -127,27 +110,24 @@ module.exports = (grunt) ->
 	grunt.registerTask 'build-dev', [ 
 		'less'
 		'frontmatter'
-		'rollup'
 		'browserify'
-		#'autoprefixer'
-		#'frontmatter'
 	]
 
 	grunt.registerTask 'build', [ 
 		'clean'
 		'flag-prod'
-    	'build-dev'
-    	'ngAnnotate'
-    	'copy'
-    	'useminPrepare' 
-    	'concat'
-    	'replace'
-    	'uglify'
-    	'cssmin'
-    	'filerev'
-    	'usemin'
-    	'perf-inline'
-    ]
+    'build-dev'
+    'ngAnnotate'
+    'copy'
+    'useminPrepare' 
+    'concat'
+    #'replace'
+    'uglify'
+    'cssmin'
+    'filerev'
+    'usemin'
+    'perf-inline'
+  ]
 
 	grunt.registerTask 'serve', [ 
 		'build-dev'

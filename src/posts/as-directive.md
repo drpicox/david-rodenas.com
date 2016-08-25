@@ -5,7 +5,7 @@ subtitle: "A directive to rule them all component controllers"
 categories: angular
 tags:
   - angular
-  - modules
+  - contribution
 date: 2016-03-04
 abstract: >
     Large part of the effort of building Angular applications

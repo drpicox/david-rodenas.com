@@ -11,10 +11,17 @@ tags:
 date: 2015-02-09
 ---
 
-Here I present a new grunt task (yep, another grunt task), the idea of these task is to extract YAML front-matter from files and put them all into one single JSON file.
+Here I present a new grunt task (yep, another grunt task), 
+the idea of these task is to extract YAML front-matter from files 
+and put them all into one single JSON file.
 
-For long time I have been using [grunt-markdown-to-json](https://www.npmjs.com/package/grunt-markdown-to-json) in my developments (two examples: one was this web page, another is [Wenode](http://wenode.barcelonajs.org)). The idea of using this grunt task is to generate JSON data to index files and their metadata so it can be loaded statically by a web app. Example:
+For long time I have been using [grunt-markdown-to-json](https://www.npmjs.com/package/grunt-markdown-to-json) 
+in my developments (two examples: one was this web page, another is [Wenode](http://wenode.barcelonajs.org)). 
+The idea of using this grunt task is to generate JSON data to index files 
+and their metadata so it can be loaded statically by a web app. 
+Example:
 
+```
     .
     ├── Gruntfile.coffee
     ├── package.json
@@ -26,6 +33,7 @@ For long time I have been using [grunt-markdown-to-json](https://www.npmjs.com/p
         ├── index.html
         ├── styles.css
         └── app.js
+```
 
 so it generates a new file like this:
 
@@ -42,15 +50,15 @@ so it generates a new file like this:
 Last few years front-matter is becomming more popular (specially thanks to tools like Jekyll and Assemble). Front-matter is a ipso-facto standarized way to add metadata to a text file by using [YAML](http://www.yaml.org/). An example of front-matter would be the following markdown:
 
 ```markdown
----
-title: Example
-tags:
-    - example
-    - has_frontmatter
----
-# This is an Example
+  ---
+  title: Example
+  tags:
+      - example
+      - has_frontmatter
+  ---
+  # This is an Example
 
-And metadata is above
+  And metadata is above
 ```
 
 In this case, the metadata for this text file is the following JSON:

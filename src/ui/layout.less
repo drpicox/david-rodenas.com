@@ -1,16 +1,17 @@
 body, html {
   min-height: 100vh;
+  margin: 0; padding: 0;
 }
 
 
 .layout-row, .layout-column {
-	@include flexbox();	
+	display: flex;
 }
 
 .layout-column {
-	@include flex-direction(column);
+	flex-direction: column;
 }
 
 .flex {
-	@include flex();
+	flex: 1;
 }
