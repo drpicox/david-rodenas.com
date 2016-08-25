@@ -47,7 +47,7 @@ export function ContactRouteConfig($routeProvider) {
 
 <section class="section">
   <main class="container" role="main">
-    <a href="{{ site.baseurl }}/">← Back to Home</a>
+    <a href="#!/">← Back to Home</a>
   </main>
 </section>
       `,

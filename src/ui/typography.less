@@ -4,23 +4,25 @@ body {
   font-size: 16px;
   line-height: 28px;
 
-  font-family: 'Lato', sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; //'Lato', sans-serif;
   font-weight: 400;
 }
 
 h1, h2, h3 {
   line-height: 1;
-  margin-top: 1em;
+  margin-top: 1.8em;
   margin-bottom: 0.5em;
   font-weight: 700;
-  color: @primary;
 }
 
 h1 {
   font-size: 56px;
+  color: @primary;
 }
 h2 {
   font-size: 28px;
+  border-bottom: solid 1px @mute;
+  padding-bottom: 4px;
 }
 h3 {
   font-size: 21px;
@@ -53,12 +55,13 @@ pre {
   padding: 6px 18px;
   overflow: auto;
   line-height: 1.2;
-  background: fadeout(@primary, 95%);
-  code, pre {
-    font-family: courier, monaco, consolas, monospace;
-    font-size: 14px;
-    font-weight: 300;    
-  }
+  font-size: 14px;
+}
+
+code, pre {
+  font-family: courier, monaco, consolas, monospace;
+  font-weight: 300;  
+  background: mix(@primary, white, 5%);  
 }
 
 @media (max-width: 600px) {
