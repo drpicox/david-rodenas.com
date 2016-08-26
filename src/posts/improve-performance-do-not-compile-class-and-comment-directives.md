@@ -1,5 +1,5 @@
 ---
-title: "Improve boostrap and compile performance in Angular 1.5.9"
+title: "Improve performance: do not compile class and comment directives"
 subtitle: "Disable css class and comment directives to improve your app performance"
 tags:
   - angular
