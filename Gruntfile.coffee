@@ -15,7 +15,7 @@ module.exports = (grunt) ->
         ]
         plugin: [ 'tsify' ]
         configure: (b) => 
-          b.transform('browserify-ngannotate', x: ['.js','.ts','.json'])
+          b.transform('browserify-ngannotate', x: ['.js','.ts'])
           b.transform('./lib/template-min')
 
     clean:

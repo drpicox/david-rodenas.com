@@ -9,5 +9,8 @@ export function ClassRouteLoadingDirective() {
     scope.$on('$routeChangeSuccess', () => {
       element.removeClass('drpx-route-loading')
     });
+    scope.$on('$routeChangeError', () => {
+      element.removeClass('drpx-route-loading')
+    });
   }
 }

@@ -6,6 +6,7 @@ import { PostsRelatedsComponent } from './components/posts-relateds.component';
 import { HomeRouteConfig } from './routes/home-route.config';
 import { PostsXRouteConfig } from './routes/posts-x-route.config';
 import { PostsService } from './services/posts.service';
+import { PostsBodiesService } from './services/posts-bodies.service';
 import { RelatedPostsService } from './services/related-posts.service';
 
 export const PostsModule = angular
@@ -13,6 +14,7 @@ export const PostsModule = angular
   .config(HomeRouteConfig)
 	.config(PostsXRouteConfig)
   .service('postsService', PostsService)
+  .service('postsBodiesService', PostsBodiesService)
   .service('relatedPostsService', RelatedPostsService)
   .component('appHome', HomeComponent)
 	.component('appPostPrevnext', PostPrevNextComponent)

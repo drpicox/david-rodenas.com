@@ -7,6 +7,7 @@ export class Post {
   prev: Post;
   next: Post;
   tags: [string];
+  md5: string;
 
   constructor(dto) {
     angular.extend(this, dto);

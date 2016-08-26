@@ -36,7 +36,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-embed": "^0.2.1",
     "grunt-filerev": "^2.3.1",
-    "grunt-frontmatter": "^1.0.3",
+    "grunt-frontmatter": "^1.1.1",
     "grunt-usemin": "^3.1.1",
     "html-minifier": "^3.0.2",
     "jit-grunt": "^0.10.0",

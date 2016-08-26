@@ -24,17 +24,6 @@ export class PostsService {
   getAll() {
     return this.list;
   }
-
-  getBody(basename: string): angular.IPromise<string> {
-    let body = this.bodies[basename];
-    if (!body) {
-      body = this.$http
-        .get(`./posts/${basename}.md`)
-        .then((response) => response.data);
-      this.bodies[basename] = body;
-    }
-    return body;
-  }
 }
 
 function sortPosts(posts: Post[]) {
@@ -53,5 +42,5 @@ function computeNextPrev(posts: Post[]) {
   posts.forEach((p: Post, i: number, posts: Post[]) => {
     p.next = posts[i - 1];
     p.prev = posts[i + 1];
-  })
+  });
 }
