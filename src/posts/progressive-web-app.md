@@ -1,8 +1,5 @@
 ---
-layout: post
-categories: angular
 title: "Progressive Web Apps"
-subtitle: "Webs that behaves like Apps"
 tags:
   - teaching
   - angular

@@ -1,18 +1,15 @@
 ---
-layout: post
-categories: angular
 title: "Updateable pattern or flux-for-angular"
-subtitle: "Clean and safe method to keep computed values up to date"
 tags:
   - angular
   - flux
   - patterns
 date: 2015-03-02
-preview: >
+abstract: >
   This last year Flux had become highly popular, but how it can be applied to Angular? Here I present an alternative mechanism more in line with Angular philosophy.
 ---
 
-This last year Flux had become highly popular, the main reason: an architecture that allows to create large and maintainable applications. In the following video Facebook people explains how and why they developed it:
+The main reason because Flux became highly popular is the following: an architecture that allows to create large and maintainable applications. In the following video Facebook people explains how and why they developed it:
 
 [![Why FLUX](http://img.youtube.com/vi/nYkdrAPrdcw/0.jpg)](https://www.youtube.com/watch?v=nYkdrAPrdcw&list=PLb0IAmt7-GS188xDYE-u1ShQmFFGbrk0v#t=621)
 

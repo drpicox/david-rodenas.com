@@ -1,8 +1,5 @@
 ---
-layout: post
-categories: node
 title: "grunt-frontmatter: extracting yaml"
-subtitle: "Automatize metadata extraction in your Grunt process"
 tags:
   - node
   - grunt

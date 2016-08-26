@@ -39,7 +39,7 @@ export function ContactRouteConfig($routeProvider) {
   </div>
 </section>
 
-<iframe height="400" width="100%"
+<iframe height="500" width="100%"
   sandbox="allow-scripts allow-same-origin"
   src="https://drpicox.typeform.com/to/vWt79f"
   frameborder="0">

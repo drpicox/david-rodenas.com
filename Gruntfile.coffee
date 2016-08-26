@@ -14,6 +14,9 @@ module.exports = (grunt) ->
           [ 'stringify', 'extensions': [ '.html' ], "minify": true, ]
         ]
         plugin: [ 'tsify' ]
+        configure: (b) => 
+          b.transform('browserify-ngannotate', x: ['.js','.ts','.json'])
+          b.transform('./lib/template-min')
 
     clean:
       www: files: [ dot: true, src: [ 'www/*','!www/.git' ], ]
@@ -42,15 +45,26 @@ module.exports = (grunt) ->
         dest: 'www',
         src: ['posts/**/*']
 
-    filerev: build: src: 'www/*.{js,css}'
-
-    frontmatter: build:
-      options: width: '2s'
-      files: '.tmp/posts.json': ['src/posts/*.md']
-
     embed: perf: 
       options: threshold: '3000KB'
       files: 'www/index.html':'www/index.html'
+
+    filerev: build: src: 'www/*.{js,css}'
+
+    frontmatter: build:
+      options: width: 0
+      files: '.tmp/posts.json': ['src/posts/*.md']
+
+    htmlmin:
+      www: files: 'www/index.html': 'www/index.html'
+      options:
+        collapseWhitespace: true
+        removeAttributeQuotes: true
+        removeComments: true
+        sortAttributes: true
+        sortClassName: true
+        minifyJS: true
+        minifyCSS: true
 
     less: build:
       files: '.tmp/styles.css': ['src/main.less']
@@ -60,9 +74,6 @@ module.exports = (grunt) ->
         ieCompat: false
         sourceMap: true
         sourceMapFileInline: true
-
-    ngAnnotate: build:
-      files: '.tmp/app.js': '.tmp/app.js'
 
     replace:
       options: patterns: [
@@ -102,7 +113,11 @@ module.exports = (grunt) ->
   # (T) Add here your task(s)
   grunt.registerTask 'flag-prod', () => 
     grunt.config.data.browserify.options.browserifyOptions.debug = false;
-    grunt.config.data.browserify.options.configure = (b) => 0
+    grunt.config.data.browserify.options.configure = (b) => 
+      b.transform('browserify-ngannotate', x: ['.js','.ts'])
+      b.transform('./lib/template-min')
+      b.transform({global: true}, 'uglifyify', x: ['.js','.ts','.json'])
+      b.plugin('bundle-collapser/plugin')
 
   grunt.registerTask 'perf-inline', [
     'embed'
@@ -118,17 +133,16 @@ module.exports = (grunt) ->
     'clean'
     'flag-prod'
     'build-dev'
-    'ngAnnotate'
     'copy'
     'useminPrepare' 
     'concat'
-    #'replace'
     'uglify'
     'cssmin'
     'filerev'
     'usemin'
     'perf-inline'
     'clean:inline'
+    'htmlmin'
   ]
 
   grunt.registerTask 'serve', [ 

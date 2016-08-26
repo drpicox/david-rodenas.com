@@ -1,8 +1,5 @@
 ---
-layout: post
-categories: angular
 title: "Unboxing Dependency Injection"
-subtitle: "...or how I realised how much work saves automatic dependency injection"
 tags:
   - discussion
   - angular
