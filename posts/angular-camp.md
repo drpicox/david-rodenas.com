@@ -1,9 +1,5 @@
 ---
-layout: post
 title: "AngularCamp talks"
-subtitle: "Resources for the AngularCamp talks"
-categories:
-  - teaching
 tags:
   - teaching
   - angular

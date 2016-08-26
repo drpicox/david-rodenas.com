@@ -1,8 +1,5 @@
 ---
-layout: post
-categories: angular
 title: "drpx-transcludeto: multi-transclude"
-subtitle: "Improve your directives modularity"
 tags:
   - angular
   - modules

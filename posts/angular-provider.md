@@ -1,8 +1,5 @@
 ---
-layout: post
 title: "Angular providers"
-categories: angular
-subtitle: "providers, factories, services, values, constants"
 tags:
   - teaching
   - angular

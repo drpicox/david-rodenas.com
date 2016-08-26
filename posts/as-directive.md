@@ -1,8 +1,5 @@
 ---
-layout: post
 title: "My proposal for as Directive"
-subtitle: "A directive to rule them all component controllers"
-categories: angular
 tags:
   - angular
   - contribution
