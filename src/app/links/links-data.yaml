@@ -1,12 +1,3 @@
-- title: Barcelona Tech Meetups
-  links:
-    - title: AngularBeers
-      url: https://twitter.com/ngbeers
-      text: One-off meetup for networking, beers and socializing.
-    - title: AngularCamp
-      url: http://angularcamp.org/
-      text: Recurrent casual community Angular meetup.
-
 - title: My contributions inside Angular
   links:
     - title: "perf($compile): optionally collect EA directives"
@@ -81,6 +72,15 @@
       - title: Grunt v1
         url: http://david-rodenas.com/tutorial-gruntjs-v1/#/grunt
         text: Small tutorial/presentation about grunt (quite old!)
+
+- title: Barcelona Tech Meetups
+  links:
+    - title: AngularBeers
+      url: https://twitter.com/ngbeers
+      text: One-off meetup for networking, beers and socializing.
+    - title: AngularCamp
+      url: http://angularcamp.org/
+      text: Recurrent casual community Angular meetup.
 
 - title: Angular
   links:
