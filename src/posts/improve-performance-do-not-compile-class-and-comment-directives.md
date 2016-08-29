@@ -63,8 +63,8 @@ That means that Angular look inside classes (and comments) trying
 to find directives, even if we are not using them in our application.
 
 
-Improve performance: do not compile class and comment directives
-----------------------------------------------------------------
+Improve performance: <br>Do not compile class and comment directives
+--------------------------------------------------------------------
 
 In this scenario the performance improvement is simple: 
 just hint angular to not compile class and comment directives.
@@ -129,7 +129,7 @@ directives default `restrict` changed from `'EAC'` to
 `'EA'`.
 
 
-Be a pro: replicate benchmarks in your browser
+Be a pro: <br>Replicate benchmarks in your browser
 ----------------------------------------------
 
 Claims in performance gains here presented are 

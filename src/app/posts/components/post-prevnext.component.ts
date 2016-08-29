@@ -18,7 +18,7 @@ export class PostPrevNextComponent {
           <span class="flex justify-right">{{$ctrl.post.next.title}}</span>
           <span>&nbsp;→</span>
       </a> 
-      <a ng-if="!$ctrl.post.next" class="rel-link flex" href="#!/"><i class="fa fa-home"></i> HOME</a> 
+      <a ng-if="!$ctrl.post.next" class="rel-link flex justify-right" href="#!/"><i class="fa fa-home"></i> HOME</a> 
     </div>
   `;
   static controller = PostPrevNextComponent;
