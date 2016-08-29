@@ -27,7 +27,7 @@ I have found the following message from the browser hundreds of times:
 What this message mean?
 -----------------------
 
-This message is the browser telling to us, 
+This message is the browser telling to us
 that there is a function that he thinks that have to be optimized
 but it cannot optimize it.
 
@@ -38,19 +38,19 @@ inside a function and it prevents optimizations.
 Does it really affects so much?
 -------------------------------
 
-If this message is triggered possibly yes, 
-because it is only shown when the browser thinks that a function should be optimized.
+If this message is triggered possibly yes.
+It is only shown when the browser thinks that a function should be optimized.
 
-In the case of angular, in one of my application the timing weight was the following:
+An unoptimized function means that it cannot be compiled in assemble,
+the fastest language possible. That means that such function will be between 10 and 1000
+times slower.
+
+In the case of angular, in one of my applications the profiling shows the following:
 
 ![boostrap time](assets/images/angular-1_5_7-boostrap-time.png)
 
-It says that the cost of execution the function is near an 
-8.5% of the cost of whole application boostrap.
-
-At the same time, an unoptimized function means that it cannot be compiled in assemble,
-the fastest language possible. That means that such function will be between 10 and 1000
-times slower.
+It says that the cost of execution the function is near the 
+8.5% of the cost of whole application.
 
 In this case, allowing the browser to optimize this function, 
 it would mean that it will cost from 8.5% to less than 1%, which is near
@@ -113,10 +113,10 @@ This refactor removes the _try/catch_ statement from the main function
 and only when a comment is found the try/catch and unoptimized function is executed. 
 
 
-Is it bad for performance use _try/catch_?
-------------------------------------------
+Is _try/catch_ bad for performance?
+-----------------------------------
 
-There is nothing wrong to add a _try/catch_, 
+There is nothing wrong with _try/catch_, 
 but you should use it wisely and carefully. 
 
 As a general rule, 
@@ -159,8 +159,9 @@ requestAnimationFrame(function() {
 ```
 
 In this second implementation the main loop is executed by 
-callFrames, that has no _try/catch_ expression, and the parent function
-it only executes once, so probably no optimization is required. 
+callFrames, that has no _try/catch_ expression and it can be optimized. 
+The parent function it only executes once, 
+so probably no optimization is required. 
 
 
 Learn more
