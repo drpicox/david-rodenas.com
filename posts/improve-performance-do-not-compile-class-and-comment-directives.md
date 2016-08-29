@@ -6,7 +6,7 @@ tags:
   - production
   - contribution
   - benchpress
-date: 2016-08-25
+date: 2016-08-29
 abstract: >
     Since Angular 1.5.9 it is possible to instruct angular to ignore
     css class and comment directives.
