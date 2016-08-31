@@ -81,6 +81,8 @@ module.exports = (grunt) ->
       ]
       www: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
 
+    uglify: options: screwIE8: true
+
     useminPrepare:
       html: 'src/index.html'
       options: dest: 'www'
