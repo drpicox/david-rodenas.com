@@ -14,11 +14,21 @@ export class RelatedPostsService {
     if (!this.relateds[post.basename]) {
       const posts = this.postsService.getAll();
       const idx = posts.indexOf(post);
-      const prev = this.getClosers(posts.slice(idx + 2), post).slice(0, 3);
-      const next = this.getClosers(posts.slice(0, Math.max(0, idx - 2)), post).slice(0, 2);
+      const prev = this.getClosers(posts.slice(idx + 1), post).slice(0, 4);      
+      const next = this.getClosers(posts.slice(0, Math.max(0, idx)), post).slice(0, 3);
       this.relateds[post.basename] = prev.concat(next);
     }
     return this.relateds[post.basename];
+  }
+
+  private computeDistance(a: Post, b: Post): number {
+    const tagWeights = this.getTagWeights();
+    return a.tags.reduce((distance: number, tag: string) => {
+      if (b.hasTag(tag)) {
+        distance += tagWeights[tag];
+      }
+      return distance;
+    }, 0)
   }
 
   private getClosers(posts: Post[], post: Post): Post[] {
@@ -39,13 +49,7 @@ export class RelatedPostsService {
     }
     const ab = a.basename +'#'+ b.basename;
     if (!this.postDistances[ab]) {
-      const tagWeights = this.getTagWeights();
-      this.postDistances[ab] = a.tags.reduce((distance: number, tag: string) => {
-        if (b.hasTag(tag)) {
-          distance += tagWeights[tag];
-        }
-        return distance;
-      }, 0);
+      this.postDistances[ab] = this.computeDistance(a, b) + this.computeDistance(b, a);
     }
     return this.postDistances[ab];
   }
