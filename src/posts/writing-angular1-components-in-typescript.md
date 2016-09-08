@@ -41,7 +41,7 @@ services are classes,
 components are classes,
 even modules are classes.
 It makes apps homogeneous and isotropic:
-the same techniques works in across the code,
+the same techniques works across all code,
 and no surprises for new programmers.
 
 This guide leverages in ES2015 classes and static properties
