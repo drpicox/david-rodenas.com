@@ -8,7 +8,7 @@
       text: Wrap try/catch of collect comment directives into a function to avoid V8 deopt.
     - title: fix(ngClass)
       url: https://github.com/angular/angular.js/pull/14405
-      text: Solves a bug for `ng-class="['orange', rgb]"` in which rgb is an object.
+      text: "Solves a bug for `ng-class=\"['orange', rgb]\"` in which rgb is an object."
     - title: feat($componentController)
       url: https://github.com/angular/angular.js/commit/72b96ef57a28743e2dfed523701cc2e88e3b473b
       text: Implementation of a utility for testing components.
@@ -30,6 +30,12 @@
     - title: perf(ngClass)
       url: https://github.com/angular/angular.js/pull/14404
       text: Optimization to avoid unnecessary copies of potentially big objects.
+    - title: "feat($compileProvider): component and class"
+      url: https://github.com/angular/angular.js/pull/15112
+      text: |
+        Allows to use a class as controller and component config object at the same time, 
+        so only class is exported.
+        Currently is discarded.
 
 - title: My AngularJS Components
   links:
