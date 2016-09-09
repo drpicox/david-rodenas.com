@@ -1,5 +1,5 @@
 ---
-title: "Writing Angular1 components in Typescript"
+title: "Writing Angular1 components in Typescript (class form)"
 tags:
   - angular
   - typescript
@@ -11,7 +11,7 @@ date: 2016-09-08
 abstract: >
     Shows how to write Angular1 components
     using the new .component syntax of Angular 1.5,
-    and typescript.
+    and typescript just using classes.
     It leverages in ES2015 classes and modules, 
     Typescript typing
     and Angular2 styleguide.
@@ -54,10 +54,11 @@ Implementation overview
 ```javascript
 // counter.component.ts
 export class CounterComponent {
+  static controller = CounterComponent;
+
   static bindings = {
     initialCount: '<',
   };
-  static controller = CounterComponent;
   
   static template = `
     <p>
@@ -92,8 +93,8 @@ export class CounterComponent {
 // app.module.ts
 import { CounterComponent } from './counter.component';
 
-export const MyModule = angular
-  .module('myApp', [])
+export const AppModule = angular
+  .module('AppModule', [])
   .component('myCounter', CounterComponent)
   .name;
 ```
@@ -104,61 +105,67 @@ Step by step explanation
 
 ### Component declaration and registration
 
+Create the component as a class and register it.
+
 ```javascript
+// counter.component.ts
 export class CounterComponent {
+  // ...
+}
 ```
 
-It defines and exports the component class.
+Import the component in the module and register it.
 
 ```javascript
+// app.module.ts
 import { CounterComponent } from './counter.component';
-...
-  .component('myCounter', CounterComponent)
-```
 
-It imports the component and registers it inside the Angular1 module.
+export const AppModule = angular
+  .module('AppModule', [])
+  .component('myCounter', CounterComponent)
+  .name;
+```
 
 
 ### Component definition
 
+Define component 
+[configuration](https://docs.angularjs.org/guide/component#comparison-between-directive-definition-and-component-definition)
+as _static_ properties of the class.
+
 ```javascript
-  static bindings = { ... };
+export class CounterComponent {
+  static bindings = { /* ... */ };
+  static template = `...`;
+  // ...
+}
 ```
 
-All component definition properties must be declared with static.
-Available properties are described 
-[here](https://docs.angularjs.org/guide/component#comparison-between-directive-definition-and-component-definition).
+Now you have to tell that your class is in fact the controller:
 
 ```javascript
-  static template = `
-    <p>
-      <button ng-click="$ctrl.increment()">+</button>
-      <button ng-click="$ctrl.decrement()">-</button>
-      Count: {{$ctrl.count}}
-    </p>
-  `;
-```
-
-You can use the new multi-line string form in ES2015 or any of the traditional forms.
-
-```javascript
+export class CounterComponent {
   static controller = CounterComponent;
+  ...
+}
 ```
 
-The controller of the component is the current class.
-We need to explain it to angular setting the `controller` property.
 
-### Component controller fields
+### Component controller properties
+
+Add as instance properties bindings and other controller state properties. 
 
 ```javascript
   initialCount: number;  
   salute: string;
 ```
 
-Add bindings and requires to class fields. 
-Typescript will help you with better auto-complete and checking.
 
 ### Component controller constructor
+
+The constructor for the component.
+Usually it defines injections, add `/* @ngInject */ comment 
+so _ngannotate_ can do its work. 
 
 ```javascript
   /* @ngInject */
@@ -166,23 +173,10 @@ Typescript will help you with better auto-complete and checking.
   }
 ```
 
-The constructor for the component.
-Usually it defines injections, add `/* @ngInject */ comment 
-so _ngannotate_ can do its work. 
-  
-
-### Component hooks
-
-```javascript
-  $onInit() {
-    this.count = this.initialCount;
-  }
-```
-
-Define the lifecycle hooks as class methods.
-More information about lifecycle hooks [here](https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks).  
 
 ### Component controller methods
+
+Define all your component logic as methods.
 
 ```javascript
   increment() {
@@ -194,7 +188,20 @@ More information about lifecycle hooks [here](https://docs.angularjs.org/api/ng/
   }
 ```
 
-Define your component methods.
+
+### Component hooks
+
+Declare you component hooks as methods of the class.
+
+```javascript
+  $onInit() {
+    this.count = this.initialCount;
+  }
+```
+
+More information about lifecycle hooks [here](https://docs.angularjs.org/api/ng/service/$compile#life-cycle-hooks).
+
+
 
 
 How to make injections
@@ -207,11 +214,10 @@ You can leverage in Typescript to have injections with type checking and auto-co
 import { SaluteService } from './salute.service';
 
 export class HelloWorldComponent {
+  static controller = HelloWorldComponent;
   static bindings = {
     name: '<',
   };
-  static controller = HelloWorldComponent;
-  
   static template = `
     <h1>{{$ctrl.salute}}</h1>
   `;
@@ -242,12 +248,72 @@ service matches exactly with the string defined in the module.
 import { SaluteService } from './salute.service';
 import { HelloWorldComponent } from './hello-world.component';
 
-export const MyAppModule = angular
-  .module('myApp', [])
+export const AppModule = angular
+  .module('AppModule', [])
   .service('saluteService', SaluteService)
   .component('myHelloWorld', HelloWorldComponent)
   .name;
 ```
+
+
+ES2015
+------
+
+Everything is supported in ES2015 but types and 
+[class properties](http://kangax.github.io/compat-table/esnext/#test-class_properties).
+Static class properties can be replaced by getters, 
+instance properties are created with the constructor
+and types are removed.
+
+This is the same code with ES2015:
+
+```javascript
+// counter.component.ts
+export class HelloWorldComponent {
+  static get controller() { 
+    return HelloWorldComponent; 
+  }
+  static get bindings() {
+    return {
+      name: '<',
+    };
+  };
+  static get template() { 
+    return `
+      <h1>{{$ctrl.salute}}</h1>
+    `;
+  }
+
+  /* @ngInject */
+  constructor() {
+  }
+  
+  $onInit() {
+    this.count = this.initialCount;
+  }
+  
+  increment() {
+    this.count++;
+  }
+  
+  decrement() {
+    this.count--;
+  }
+}
+```
+
+```javascript
+// app.module.ts
+import { CounterComponent } from './counter.component';
+
+export const AppModule = angular
+  .module('AppModule', [])
+  .component('myCounter', CounterComponent)
+  .name;
+```
+
+
+
 
 More information
 ----------------
