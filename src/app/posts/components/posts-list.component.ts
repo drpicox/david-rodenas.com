@@ -1,7 +1,10 @@
 import { Post } from '../services/post';
 
-export class PostsListComponent {
-  static template = `
+export const PostsListComponent = {
+  bindings: {
+    posts: '<',
+  },
+  template: `
     <article ng-repeat="post in $ctrl.posts track by post.basename" itemscope itemtype="http://schema.org/BlogPosting" role="article">
       <a ng-href="#!/posts/{{post.basename}}" itemprop="url">
         <div class="icon"><i class="fa fa-file-text-o"></i></div>
@@ -11,9 +14,8 @@ export class PostsListComponent {
         </small>
       </a>
     </article>
-  `;
-  static bindings = {
-    posts: '<',
-  };
-  static controller = PostsListComponent;
+  `,
+  controller: class PostsListController {
+    posts: Post[];
+  },
 };

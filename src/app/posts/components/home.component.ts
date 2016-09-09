@@ -1,19 +1,18 @@
 import { Post } from '../services/post';
 
-export class HomeComponent {
-  static bindings = {
+export const HomeComponent = {
+  bindings: {
     posts: '<',
-  };
-  static template = `
+  },
+  template: `
     <section class="section">
       <main class="container" role="main">
         <h1>Latest blog posts</h1>
         <app-posts-list posts="$ctrl.posts"></app-posts-list>
       </main>
     </section>
-  `;
-  static controller = HomeComponent;
-  posts: Post[];
-  constructor() {
+  `,
+  controller: class HomeController {
+    posts: Post[];
   }
 };

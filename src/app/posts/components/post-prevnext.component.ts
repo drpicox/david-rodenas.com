@@ -1,10 +1,10 @@
 import { Post } from '../services/post';
 
-export class PostPrevNextComponent {
-  static bindings = {
+export const PostPrevNextComponent = {
+  bindings: {
     post: '<',
-  };
-  static template = `
+  },
+  template: `
     <div class="layout-row">
       <a ng-if=" $ctrl.post.prev" href="#!/posts/{{$ctrl.post.prev.basename}}"
         class="rel-link layout-row flex">
@@ -20,9 +20,10 @@ export class PostPrevNextComponent {
       </a> 
       <a ng-if="!$ctrl.post.next" class="rel-link flex justify-right" href="#!/"><i class="fa fa-home"></i> HOME</a> 
     </div>
-  `;
-  static controller = PostPrevNextComponent;
-  post: Post;
-  constructor() {
+  `,
+  controller: class PostPrevNextController {
+    post: Post;
+    constructor() {
+    }
   }
 };

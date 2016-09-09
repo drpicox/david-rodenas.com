@@ -1,7 +1,10 @@
 import { Post } from '../services/post';
 
-export class PostsRelatedsComponent {
-  static template = `
+export const PostsRelatedsComponent = {
+  bindings: {
+    relateds: '<',
+  },
+  template: `
     <h3>You might find interesting...</h3>
     <ul>
       <li ng-repeat="post in $ctrl.relateds track by post.basename">
@@ -9,9 +12,8 @@ export class PostsRelatedsComponent {
       </li>
       <li><a href="#!/">See all →</a></li>
     </ul>
-  `;
-  static bindings = {
-    relateds: '<',
-  };
-  static controller = PostsRelatedsComponent;
+  `,
+  controller: class PostsRelatedsComponent {
+    relateds: Post[];
+  }
 };
