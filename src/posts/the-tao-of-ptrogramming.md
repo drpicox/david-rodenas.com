@@ -1,5 +1,5 @@
 ---
-title: _"The Tao of Programming"_
+title: "The Tao of Programming"
 tags:
   - programming
   - teaching
