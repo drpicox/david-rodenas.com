@@ -5,7 +5,7 @@ tags:
   - teaching
   - books
   - tao
-  - fun
+  - ludic
 date: 2016-09-13
 abstract: >
     Few guidelines and a story about how to write good code.
