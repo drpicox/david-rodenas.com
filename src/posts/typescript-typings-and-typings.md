@@ -37,14 +37,14 @@ By adding them to our project we have full type information
 exactly like as the library was written in Typescript.
 
 
-### The `typings` tools   
+## _Typings_ tools   
 
 The [typings](https://github.com/typings/typings) 
 allows to manage typings files (`.d.ts`).
 It is like `npm` but for type annotation.
 
 
-### Install `typings`
+### Install _typings_
 
 Install it as npm package:
 

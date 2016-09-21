@@ -1,4 +1,4 @@
-import { LocalStorageFactory } from './local-storage.factory.ts';
+import { LocalStorageFactory } from './local-storage.factory';
 import { ClassRouteLoadingDirective } from './class-route-loading.directive';
 import { RemoveOnRouteSuccessDirective } from './remove-on-route-success.directive';
 
