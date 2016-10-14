@@ -1,6 +1,6 @@
 {
   "name": "david-rodenas.com",
-  "version": "5.10.0",
+  "version": "5.10.1",
   "description": "Dr. David Rodenas (drpicox) home page",
   "main": "index.js",
   "scripts": {
