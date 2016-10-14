@@ -3,3 +3,4 @@ Gruntfile.js
 www
 .tmp
 typings
+.vscode

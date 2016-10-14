@@ -7,6 +7,7 @@ tags:
   - es2015
   - rollup
   - webpack
+  - scope-hoisting
   - tree-shaking
 date: 2016-09-22
 abstract: >
@@ -22,7 +23,7 @@ snippet: |
     ```
 ---
 
-Tree-shaking is a technique based in ES2015 definition modules
+Tree-shaking is lukig a technique based in ES2015 definition modules
 that allows to remove everything that it is not used from the module.
 
 Given the following example:
@@ -190,108 +191,9 @@ function(n, t, r) {
 ```
 
 
-### Constants
+### Comparison
 
-It is common to export constants.
-They have many uses and are opened for many optimizations,
-both from minimization and from jit compiling.
-
-Given the following example:
-
-```javascript
-// entry.js
-import { nextPage, currentPage, pageCount, getDocumentSize } from './barrel';
-
-if (pageCount > 10) {
-	console.log('document size:', getDocumentSize());
-}
-
-console.log('before:', currentPage);
-nextPage();
-console.log('after:', currentPage);
-```
-
-```javascript
-// barrel.js
-export * from './pager';
-```
-
-```javascript
-// pager.js
-export const pageCount = 4;
-export var currentPage = 0;
-
-export function getDocumentSize() {
-	return pageCount * 80 * 60;
-}
-
-export function nextPage() {
-	currentPage++;
-}
-
-export function prevPage() {
-	currentPage--;
-}
-```
-
-Note that because `pageCount` is `4`
-it will always less than 10 and all
-new code is never executed.
-
-The rollup generated and minimized code
-is exactly the same as before.
-Minimization process realizes that the condition
-is always false, removes the code,
-and then realises that `getDocumentSize`
-is never used and removes them. 
-
-The webpack generated and minimized code changes,
-it is the following:
-
-```javascript
-! function(n) {
-    // .. omitted webpack loader ..
-}([function(n, t, r) {
-    "use strict";
-    var e = r(1);
-    r.d(t, "a", function() {
-        return e.a
-    }), r.d(t, "b", function() {
-        return e.b
-    }), r.d(t, "c", function() {
-        return e.c
-    }), r.d(t, "d", function() {
-        return e.d
-    })
-}, function(n, t, r) {
-    "use strict";
-
-    function e() {
-        return 19200
-    }
-
-    function o() { c++ }
-    r.d(t, "c", function() {
-        return c
-    }), t.b = e, t.d = o;
-    const u = 4;
-    t.a = u;
-    var c = 0
-}, function(n, t, r) {
-    "use strict";
-    var e = r(0);
-    e.a > 10 && console.log("document size:", r.i(e.b)()), console.log("before:", e.c), r.i(e.d)(), console.log("after:", e.c)
-}]);
-```
-
-It is unable to minimize the code because the value of the constant
-is returned by a computed property inside an object.
-Because of it tree-shaking and dead code elimination cannot remove 
-`getDocumentSize` function.
-
-### Conclusion and Review
-
-The initial version gave the following numbers:
+In overall, output sizes results are the following:
 
 | Tool     | minimized | gzipped   |
 | -------- | --------: | --------: |
@@ -299,32 +201,41 @@ The initial version gave the following numbers:
 | Webpack  | 793 bytes | 393 bytes |
 | Webpack (without loader) | 325 bytes | 177 bytes |
 
-A version without loader has been constructed manually because
-the overhead of the loader is constant regardless the size of the bundle.
-Although both tools perform the same basic optimization,
-rollup **scope hoisting gives an important improvement** 
-in the bundle size. 
+Webpack loader size is constant regardless the size of the bundle,
+that means that it is an overhead that does not worth to consider.
 
-Considering the version using constants the difference gets larger,
-but it is because the strategy of webpack does not allows to perform
-extra optimization.
+Although there are important differences in bundle sizes 
+(rollup generated size is almost a half from the best of webpack)
+there are other important points:
 
-| Tool     | minimized | gzipped   |
-| -------- | --------: | --------: |
-| RollupJS | 108 bytes |  94 bytes |
-| Webpack  | 958 bytes | 454 bytes |
-| Webpack (without loader) | 490 bytes | 238 bytes |
+- getters: webpack creates a getter for each variable export,
+  that means, that we, programmers, are
+  penalised for each export that we build, larger export chain
+  larger number of getters and more functions to execute each time
+  that we get a value,
 
-Something important that has to be also considered is the use of 
-_computed properties_ by webpack for exported variables or constants. 
-Using this exported symbols my cause an overhead in runtime execution time:
-each time that they are accessed they are accessed through an object
-and a function.
+- barrels: barrels are just "syntax sugar" for the programmer,
+  we use them to make the code easier to manage, 
+  they have no meaning by themselves in the application bundle,
+  but webpack creates a closure and export object for each one,
+  which penalizes us, as programmers, for using them.
+
+
+### Conclusion and Review
+
+_Scope-hoisting_ strategy of rollup gives a very good results: it
+makes barrels disappear completely and it requires no getters to 
+implement the ES2015 semantics when exporting variables.
+
+As overall although webpack 2 implements tree-shaking it fails
+implementing the objective of doing tree-shaking: 
+remove all unused code and let the programmer express itself
+as it needs to have a maintainable code.
+
 
 
 ### More information
 
 See:
 - Code example: https://github.com/drpicox/rollup-vs-webpack/tree/basic
-- Code example with constants: https://github.com/drpicox/rollup-vs-webpack/tree/with-constants
 - Barrel: https://angular.io/docs/ts/latest/guide/glossary.html#!#barrel 
