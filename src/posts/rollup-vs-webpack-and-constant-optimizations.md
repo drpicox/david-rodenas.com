@@ -287,17 +287,13 @@ The comparison of bundle sizes is the following:
 | Webpack  | 958 bytes | 454 bytes |
 | Webpack (without loader) | 490 bytes | 238 bytes |
 
-Webpack 2 bundle size is more than twice as large
-as the rollup bundle. 
-It is unable to minimize the code because the value of the constant
-is returned by a computed property inside an object.
-This computed property is introduced by webpack 2 itself, 
-it did not exist before.
-Because of it, tree-shaking is not complete and
-webpack 2 is not removing all unused functions.
+Webpack 2 bundle size is more than twice as large as the rollup bundle. 
+It is unable to minimize the code because a computed property 
+inside an object returns the constant. 
+Webpack 2 creates his computed property by itself, it did not exist before. 
+Because of it, tree-shaking is not complete in webpack 2: it is not removing all unused functions. 
 
-Because of it tree-shaking and dead code elimination cannot remove 
-`getDocumentSize` function.
+Here webpack2 dead code elimination cannot remove `getDocumentSize` function.
 
 
 ### Conclusion

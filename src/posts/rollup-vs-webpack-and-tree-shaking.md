@@ -67,7 +67,7 @@ and removes all symbols that are unused.
 In this case _prevPage_ dissapears from the bundle.
 
 
-### Rollup
+## Rollup
 
 Rollup not only does tree-shaking, 
 but also hoists all modules into a single scope.
@@ -98,7 +98,7 @@ console.log("before:", n), o(), console.log("after:", n)
 ```
 
 
-### Webpack
+## Webpack
 
 Webpack uses the traditional approach of
 giving a closure function to each module
@@ -134,7 +134,7 @@ The code through _webpack_ including minimization looks like the following:
 ```
 
 
-### Variables
+## Variables
 
 Variables defined inside modules and exported must have consistent values
 across all imports.
@@ -163,7 +163,7 @@ r.d(t, "a", function() {
 ```
 
 
-### Barrels
+## Barrels
 
 Barrels are aggregators of functionalities of one package or library.
 It makes possible to export all symbols through one single point.
@@ -191,7 +191,7 @@ function(n, t, r) {
 ```
 
 
-### Comparison
+## Comparison
 
 In overall, output sizes results are the following:
 
@@ -221,7 +221,7 @@ there are other important points:
   which penalizes us, as programmers, for using them.
 
 
-### Conclusion and Review
+## Conclusion
 
 _Scope-hoisting_ strategy of rollup gives a very good results: it
 makes barrels disappear completely and it requires no getters to 
@@ -234,7 +234,7 @@ as it needs to have a maintainable code.
 
 
 
-### More information
+## More information
 
 See:
 - Code example: https://github.com/drpicox/rollup-vs-webpack/tree/basic
