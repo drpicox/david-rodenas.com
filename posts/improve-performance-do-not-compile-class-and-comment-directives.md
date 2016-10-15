@@ -63,8 +63,7 @@ That means that Angular look inside classes (and comments) trying
 to find directives, even if we are not using them in our application.
 
 
-Improve performance: <br>Do not compile class and comment directives
---------------------------------------------------------------------
+### Improve performance: <br>Do not compile class and comment directives
 
 In this scenario the performance improvement is simple: 
 just hint angular to not compile class and comment directives.
