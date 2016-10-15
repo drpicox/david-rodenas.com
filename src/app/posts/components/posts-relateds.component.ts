@@ -5,7 +5,7 @@ export const PostsRelatedsComponent = {
     relateds: '<',
   },
   template: `
-    <h3>You might find interesting...</h3>
+    <h2>You might find interesting...</h2>
     <ul>
       <li ng-repeat="post in $ctrl.relateds track by post.basename">
         <a class="rel-link" ng-href="#!/posts/{{post.basename}}">{{post.title}}</a>

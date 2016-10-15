@@ -1,37 +1,48 @@
 body {
   color: @text;
 
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 21px;
 
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; //'Lato', sans-serif;
+  font-family: @textfont; 
+  //proxima-nova, "Helvetica Neue", Helvetica, Arial, sans-serif; //'Lato', sans-serif;
   font-weight: 400;
 }
 
 h1, h2, h3 {
-  line-height: 1;
-  margin-top: 1.8em;
-  margin-bottom: 0.5em;
-  font-weight: 700;
+  line-height: 1.25;
+  margin: 12px 0;
+  font-weight: bold;
+  word-wrap: break-word;
+  text-rendering: optimizeLegibility;
 }
 
 h1 {
-  font-size: 56px;
+  font-size: 38px;
   color: @primary;
 }
 h2 {
-  font-size: 28px;
+  font-size: 30px;
 }
 h3 {
-  font-size: 21px;
+  font-size: 24px;
+  font-weight: 200;
 }
-
+hr {
+  border: none;
+  border-top: solid 1px @mute;
+}
 p {
-  hyphens: auto;
+  margin: 10px 0;
+}
+p, pre {
+  & + h1, & + h2, & + h3 {
+    margin-top: 1.2em;
+  }
 }
 
 a, a:focus, a:hover {
-  color: @primary;
+  color: @link;
 }
 
 main {
@@ -43,28 +54,44 @@ main {
 }
 
 a.rel-link {
-  color: @text;
+  color: mix(@link, @text, 30%);
   text-decoration: none;
 
   &:hover, &:focus {
-    //font-weight: bold;
-    color: black;
+    color: @link;
   }
 }
 
 pre, pre[class*="language-"] {
-  margin: 2em;  
+  margin: 2em 0;  
   border-radius: 4px;
-  padding: 6px 18px;
   overflow: auto;
   line-height: 1.2;
   font-size: 14px;
+  padding: 6px 18px;
+  padding-top: 21px;
+  position: relative;
+
+  &:before {
+    display: block;
+    content: "Code";
+    color: @mute;
+    background: mix(@primary, white, 15%);
+    padding: 3px;
+    font-family: @textfont;
+    font-size: 10px;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
 }
 
 code, pre {
-  font-family: courier, monaco, consolas, monospace;
+  font-family: @codefont;
   font-weight: 300;  
   background: mix(@primary, white, 5%);  
+}
+pre, pre code {
+  font-family: @prefont;
 }
 
 @media (max-width: 600px) {
