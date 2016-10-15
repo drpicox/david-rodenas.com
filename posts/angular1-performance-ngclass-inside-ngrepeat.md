@@ -11,7 +11,8 @@ date: 2016-10-14
 abstract: >
   I present a little trick that improves 
   digest loop performance 10 times 
-  in our applications when we are using 
+  in our applications.
+  It is very useful when we use 
   ngClass directives inside ngRepeat.
 snippet: |
     ```html
