@@ -51,7 +51,7 @@ Object notation is the most common notation widely accepted.
 _ngClass_ receives a string or a false value.
 If the expression evaluates to a string
 _ngClass_ adds the resultant css class.
-If the expression evaluates a false 
+If the expression evaluates false 
 _ngClass_ does nothing or removes the css class added.
 
 String notation is rarely used and it looks like a hack.
