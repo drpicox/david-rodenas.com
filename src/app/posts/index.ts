@@ -1,5 +1,6 @@
 import { HomeComponent } from './components/home.component';
 import { PostPrevNextComponent } from './components/post-prevnext.component';
+import { PostTocComponent } from './components/post-toc.component';
 import { PostComponent } from './components/post.component';
 import { PostsListComponent } from './components/posts-list.component';
 import { PostsRelatedsComponent } from './components/posts-relateds.component';
@@ -18,6 +19,7 @@ export const PostsModule = angular
   .service('relatedPostsService', RelatedPostsService)
   .component('appHome', HomeComponent)
 	.component('appPostPrevnext', PostPrevNextComponent)
+	.component('appPostToc', PostTocComponent)
 	.component('appPost', PostComponent)
 	.component('appPostsList', PostsListComponent)
 	.component('appPostsRelateds', PostsRelatedsComponent)

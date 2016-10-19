@@ -368,8 +368,8 @@ if any is missing, just add it.
 
 
 
-Be a pro: <br>Replicate benchmarks in your browser
-----------------------------------------------
+Replicate benchmarks
+--------------------
 
 Performance times are obtained using benchpress.
 

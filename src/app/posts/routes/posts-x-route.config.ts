@@ -7,7 +7,7 @@ export function PostsXRouteConfig($routeProvider) {
   $routeProvider.when('/posts/:basename', {
     template: `
   <section class="section">
-    <main class="container" role="main">
+    <main class="large-container" role="main">
       <app-post body="$resolve.body" post="$resolve.post"></app-post>
       <br>
       <app-post-prevnext post="$resolve.post"></app-post-prevnext>  

@@ -1,0 +1,27 @@
+app-post-toc {
+  
+  display: block;
+  background: mix(@primary, white, 10%);
+  padding: 1em;
+  line-height: 1.5;
+  
+
+  .post-toc-title {
+    font-weight: 500;
+    font-size: 16px;
+    color: mix(black, @text);
+    text-transform: uppercase;
+    cursor: pointer;
+
+    small {
+      color: @mute;
+      font-size: 10px;
+      text-transform: lowercase;
+    }
+  }
+
+  app-markdown-toc {
+    margin-top: 10px;
+  }
+
+}

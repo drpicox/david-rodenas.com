@@ -130,8 +130,8 @@ Using string notation is easy to keep digest-loop times
 under 1ms.
 
 
-Be a pro: <br>Replicate benchmarks in your browser
---------------------------------------------------
+Replicate benchmarks
+--------------------
 
 Performance times are obtained using benchpress.
 

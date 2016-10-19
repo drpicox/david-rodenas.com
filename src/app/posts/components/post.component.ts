@@ -13,6 +13,8 @@ export const PostComponent = {
     <div app-bind-markdown="$ctrl.post.snippet"></div>
     <hr>
     <br>
+    <app-post-toc body="$ctrl.body"></app-post-toc>
+    <br>
     <div app-bind-markdown="$ctrl.body"></div>
   `,
   controller: class PostController {

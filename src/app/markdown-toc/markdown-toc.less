@@ -1,0 +1,26 @@
+app-markdown-toc {
+
+  display: block;
+
+  .toc-heading {
+    cursor: pointer;
+    padding-left: 1em;
+    font-weight: 200;
+  }
+
+  .toc-heading:hover {
+    text-decoration: underline;
+  }
+
+  .level-2, .level-1 {
+    font-size: 115%;
+    padding-left: 0em;
+    color: @primary;
+    font-weight: normal;
+  }
+  .level-3 + .level-2, .level-3 + .level-1 {
+    margin-top: 0.5em;
+  }
+  
+
+}

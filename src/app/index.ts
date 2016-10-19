@@ -1,6 +1,8 @@
 import { ContactModule } from './contact';
 import { LinksModule } from './links';
+import { HighlightModule } from './highlight';
 import { MarkdownModule } from './markdown';
+import { MarkdownTocModule } from './markdown-toc';
 import { PostsModule } from './posts';
 import { SiteModule } from './site';
 import { ToolsModule } from './tools';
@@ -13,7 +15,9 @@ export const DhModule = angular
     'drpxOtherwiseHome',
     ContactModule,
     LinksModule,
+    HighlightModule,
     MarkdownModule,
+    MarkdownTocModule,
     PostsModule,
     SiteModule,
     ToolsModule,
