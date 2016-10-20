@@ -1,26 +1,29 @@
-const marked = require('marked');
-
+import { MarkdownService } from '../markdown';
 import { Toc } from './';
+
 
 export class MarkdownTocService {
 
   /* @ngInject */
-  constructor() {}
+  constructor(
+    private markdownService: MarkdownService
+  ) {}
 
-  toToc(text: string): Toc {
-    let toc = new Toc();
+  toToc(text: string): angular.IPromise<Toc> {
+    return this.markdownService.getRenderer().then((Renderer) => {
+      let toc = new Toc();
 
-    let renderer = new marked.Renderer();
-    Object.keys(marked.Renderer.prototype).forEach(k => renderer[k] = s => '');
-    renderer.heading = (text, level, raw) => {
-      let hash = raw.toLowerCase().replace(/[^\w]+/g, '-');
-      toc.headings.push({text: raw, level, hash});
-    }
+      let renderer = new Renderer();
+      Object.keys(Renderer.prototype).forEach(k => renderer[k] = s => '');
+      renderer.heading = (text, level, raw) => {
+        let hash = raw.toLowerCase().replace(/[^\w]+/g, '-');
+        toc.headings.push({text: raw, level, hash});
+      }
 
-    let x = marked(text, {renderer});
-    console.log(x);
-    
-    return toc;
+      return this.markdownService.
+        toHtml(text, {renderer}).
+        then(() => toc);
+    });
   }
 
 }

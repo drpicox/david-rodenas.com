@@ -1,3 +1,5 @@
+md5 = require('md5')
+
 module.exports = (grunt) ->
 
   grunt.initConfig
@@ -81,7 +83,9 @@ module.exports = (grunt) ->
       ]
       www: files: [ expand:true, cwd:'.tmp', src:['**/*.js'], dest:'.tmp/' ]
 
-    uglify: options: screwIE8: true
+    uglify: 
+      options: screwIE8: true
+      'async-scripts': files: './www/assets/async-scripts.js': ['./.tmp/assets/async-scripts.js']
 
     useminPrepare:
       html: 'src/index.html'
@@ -121,6 +125,13 @@ module.exports = (grunt) ->
       b.transform({global: true}, 'uglifyify', x: ['.js','.ts','.json'])
       b.plugin('bundle-collapser/plugin')
 
+  grunt.registerTask 'async-scripts', () =>
+    asyncScripts = require('./async-scripts-files')
+    scripts = (grunt.file.read path for path in asyncScripts).join('')
+    scriptsMd5 = md5 scripts
+    grunt.file.write './.tmp/async-scripts.json', JSON.stringify({md5:scriptsMd5, files:asyncScripts})
+    grunt.file.write './.tmp/assets/async-scripts.js', scripts
+
   grunt.registerTask 'perf-inline', [
     'embed'
   ]
@@ -128,6 +139,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-dev', [ 
     'less'
     'frontmatter'
+    'async-scripts'
     'browserify'
   ]
 

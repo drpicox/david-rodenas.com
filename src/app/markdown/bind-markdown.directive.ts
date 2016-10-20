@@ -8,11 +8,19 @@ export function BindMarkdownDirective(markdownService: MarkdownService) {
   };
 
   function link(scope, element, attrs) {
-    scope.$watch(attrs.appBindMarkdown, function(newText) {
-      var html = markdownService.toHtml(newText || '');
+    var currentRequest;
 
-      element.empty();
-      element.html(html);
+    scope.$watch(attrs.appBindMarkdown, function(newText) {
+      
+      currentRequest = markdownService.toHtml(newText || '');
+      var myRequest = currentRequest;
+      
+      myRequest.then((html) => {
+        if (currentRequest !== myRequest) { return; }
+
+        element.empty();
+        element.html(html);
+      });
     });
   }
 }

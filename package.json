@@ -41,6 +41,7 @@
     "html-minifier": "^3.0.2",
     "jit-grunt": "^0.10.0",
     "less-plugin-autoprefix": "^1.5.1",
+    "md5": "^2.2.1",
     "stringify": "^5.1.0",
     "time-grunt": "^1.4.0",
     "tsify": "^1.0.5",

@@ -14,6 +14,7 @@ export const MarkdownTocComponent = {
   `,
   controller: class MarkdownTocController {
     private toc: Toc;
+    private currentRequest;
 
     /* @ngInject */
     constructor(
@@ -23,13 +24,24 @@ export const MarkdownTocComponent = {
 
     $onChanges(changesObj) {
       if (changesObj.markdown && changesObj.markdown.currentValue) {
-        this.toc = this.markdownTocService.toToc(changesObj.markdown.currentValue);
+        this.setToc(changesObj.markdown.currentValue);
       }
     }
 
     scrollTo(hash: string) {
       console.log(hash);
       this.$anchorScroll(hash);
+    }
+
+    private setToc(markdown) {
+      this.currentRequest = this.markdownTocService.toToc(markdown);
+      let myRequest = this.currentRequest;
+
+      myRequest.then((toc: Toc) => {
+        if (this.currentRequest === myRequest) {
+          this.toc = toc;
+        }
+      });
     }
   }
 };
