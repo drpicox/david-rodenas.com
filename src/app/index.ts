@@ -1,6 +1,7 @@
 import { ContactModule } from './contact';
 import { LinksModule } from './links';
 import { HighlightModule } from './highlight';
+import { HighlightNomnomlModule } from './highlight-nomnoml';
 import { MarkdownModule } from './markdown';
 import { MarkdownTocModule } from './markdown-toc';
 import { PostsModule } from './posts';
@@ -16,6 +17,7 @@ export const DhModule = angular
     ContactModule,
     LinksModule,
     HighlightModule,
+    HighlightNomnomlModule,
     MarkdownModule,
     MarkdownTocModule,
     PostsModule,

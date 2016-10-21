@@ -112,6 +112,27 @@ Each user may have potentially other friends.
 [Six degrees of separation](https://en.wikipedia.org/wiki/Six_degrees_of_separation)
 theory tell us that we can reach all our users just following friends relationships.
 
+```nomnoml
+#direction: right
+
+[<actor>you]
+[you] - [<actor>friend1]
+[you] - [<actor>friend2]
+[you] - [<actor>friend ...]
+[you] - [<actor>friend4]
+[friend2] - [<actor>friendof1]
+[friend2] - [<actor>friendof2]
+[friend2] - [<actor>fof ...]
+[friend2] - [<actor>friendofn]
+[friendofn] - [<actor>friendofof1]
+[friendofn] - [<actor>friendofof2]
+[friendofn] - [<actor>fofof...]
+[friendofn] - [<actor>friendofofn]
+[friendofof1] - [<actor>friendofofof1]
+[friendofof1] - [<actor>friendofofof2]
+[friendofof1] - [<actor>fofofof ...]
+[friendofof1] - [<actor>friendofofofn]
+```
 
 ### Complex object copy
 

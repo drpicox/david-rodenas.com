@@ -1,3 +1,13 @@
 [
-  "node_modules/marked/lib/marked.js"
+  "node_modules/marked/lib/marked.js",
+  "node_modules/prismjs/prism.js",
+  "node_modules/prismjs/components/prism-bash.js",
+  "node_modules/prismjs/components/prism-java.js",
+  "node_modules/prismjs/components/prism-json.js",
+  "node_modules/prismjs/components/prism-less.js",
+  "node_modules/prismjs/components/prism-markdown.js",
+  "node_modules/prismjs/components/prism-scss.js",
+  "node_modules/prismjs/components/prism-typescript.js",
+  "node_modules/prismjs/components/prism-yaml.js",
+  "node_modules/nomnoml/nomnoml-dist.js"
 ]

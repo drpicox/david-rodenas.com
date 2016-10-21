@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "grunt build",
-    "serve": "grunt serve"
+    "serve": "grunt serve",
+    "postinstall": "browserify -r nomnoml -s nomnoml > node_modules/nomnoml/nomnoml-dist.js"
   },
   "repository": {
     "type": "git",
@@ -56,6 +57,7 @@
     "drpx-seo": "^1.0.0",
     "grunt-contrib-htmlmin": "^2.0.0",
     "marked": "^0.3.6",
+    "nomnoml": "0.0.4",
     "prismjs": "^1.5.1"
   }
 }

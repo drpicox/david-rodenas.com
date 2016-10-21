@@ -35,7 +35,7 @@ export class AsyncScriptsService {
     this.$timeout.cancel(this.timer);
     this.scripts = this.md5LoaderService.
       get('assets/async-scripts.js', asyncScripts.md5).
-      then((scripts) => eval('module = exports = undefined;'+scripts)).
+      then((scripts) => window['noStrictEval']('module = exports = require = undefined;'+scripts+'//# sourceURL=assets/async-scripts.js')).
       then(() => window);
     return this.scripts;
   }

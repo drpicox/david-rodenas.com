@@ -1,7 +1,7 @@
-import { HighlightService } from './highlight.service';
-export { HighlightService };
+import { HighlightService, HighlightServiceProvider } from './highlight.service';
+export { HighlightService, HighlightServiceProvider };
 
 export const HighlightModule = angular
 	.module('HighlightModule', [])
-    .service('highlightService', HighlightService)
+    .provider('highlightService', HighlightServiceProvider)
     .name;
