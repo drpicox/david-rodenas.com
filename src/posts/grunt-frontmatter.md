@@ -9,11 +9,12 @@ date: 2015-02-09
 abstract: >
   A grunt task able to extract YAML front-matter
   from files and integrate all into a single JSON file.
-snippet:
+snippet: |
   ```yaml
   ---
   layout: post
   title: Blogging Lika a Hacker
+  ---
   ```
 ---
 
