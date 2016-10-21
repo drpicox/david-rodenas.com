@@ -4,9 +4,23 @@ tags:
   - angular
   - flux
   - patterns
+  - architecture
 date: 2015-03-02
 abstract: >
-  This last year Flux had become highly popular, but how it can be applied to Angular? Here I present an alternative mechanism more in line with Angular philosophy.
+  This last year Flux had become highly popular, 
+  but how it can be applied to Angular? 
+  Here I present an alternative mechanism 
+  more in line with Angular philosophy.
+snippet: |
+    ```javascript
+    function YourState(drpxUpdateable) {
+      var $update = drpxUpdateable('yourUpdate');
+      this.change = function(...) {
+        ...
+        $update();
+      }
+    }
+    ```  
 ---
 
 The main reason because Flux became highly popular is the following: an architecture that allows to create large and maintainable applications. In the following video Facebook people explains how and why they developed it:

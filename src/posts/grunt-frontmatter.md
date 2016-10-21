@@ -6,6 +6,15 @@ tags:
   - yaml
   - front-matter
 date: 2015-02-09
+abstract: >
+  A grunt task able to extract YAML front-matter
+  from files and integrate all into a single JSON file.
+snippet:
+  ```yaml
+  ---
+  layout: post
+  title: Blogging Lika a Hacker
+  ```
 ---
 
 Here I present a new grunt task (yep, another grunt task), 

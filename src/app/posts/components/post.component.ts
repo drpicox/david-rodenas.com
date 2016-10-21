@@ -13,7 +13,7 @@ export const PostComponent = {
     <div app-bind-markdown="$ctrl.post.snippet"></div>
     <hr>
     <app-tag-ids-list ids="$ctrl.post.tags"></app-tag-ids-list>
-    <br><br><br>
+    <br><br>
 
     <app-post-toc body="$ctrl.body"></app-post-toc>
     <br>
