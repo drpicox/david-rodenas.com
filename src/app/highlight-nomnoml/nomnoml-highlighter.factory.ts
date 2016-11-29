@@ -1,5 +1,6 @@
 import { AsyncScriptsService } from '../tools';
 
+/* @ngInject */
 export function nomnomlHighlighterFactory(
   asyncScriptsService: AsyncScriptsService,
 ) {
