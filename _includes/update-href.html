@@ -1,0 +1,4 @@
+{% assign update = include.update %}
+
+<a href="{{ site.baseurl }}{{ update.url }}">{{ update.title }}</a>
+<small>({{ update.date | date:"%B %d, %Y" }})</small>

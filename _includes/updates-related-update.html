@@ -1,0 +1,23 @@
+{% assign record = include.record %}
+{% assign limit = 10 %}
+
+{% assign updates = '' | split:'' %}
+{% for tag in record.tags %}
+  {% for update in site.posts %}
+    {% assign update_main_tag = update.tags[0] %}
+    {% if update_main_tag == tag %}
+      {% assign updates = updates | push:update %}
+    {% endif %}
+  {% endfor %}
+
+  {% for update in site.posts %}
+    {% if update.tags contains tag %}
+      {% assign updates = updates | push:update %}
+    {% endif %}
+  {% endfor %}
+
+  {% assign updates = updates | unshift:page | uniq | shift %}
+  {% if updates.size >= limit %}{% break %}{% endif %}
+{% endfor %}
+
+{% include updates-li.html update=updates_with_tag limit=limit %}

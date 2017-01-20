@@ -1,0 +1,13 @@
+{% if page.image %}
+<div class="hidden-mobile">
+  {% include image.html image=page.image %}
+</div>
+{% endif %}
+{% if page.source or page.website or page.entry %}
+<h3>Information</h3>
+<p>
+  {% if page.entry %}<a href="/entries/{{ page.entry }}">Entry</a><br>{% endif %}
+  {% if page.website %}<a href="{{ page.website }}" target="_blank">Site</a><br>{% endif %}
+  {% if page.source %}<a href="{{ page.source }}" target="_blank">Source</a><br>{% endif %}
+</p>
+{% endif %}

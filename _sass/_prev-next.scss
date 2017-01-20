@@ -1,0 +1,17 @@
+.prev-next {
+  display: flex;
+  justify-content: space-between;
+
+  a { text-decoration: underline; }
+
+  & > div {
+    display: flex;
+    align-items: center;
+  }
+  & > div:nth-child(2) {
+    text-align: center;
+  }
+  & > div:last-child {
+    text-align: right;
+  }
+}

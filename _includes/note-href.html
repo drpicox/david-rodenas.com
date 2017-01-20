@@ -1,0 +1,4 @@
+{% assign note = include.note %}
+{% assign title = include.title | default:note.title %}
+
+<a href="{{ site.baseurl }}{{ note.url }}">{{ title }}</a>

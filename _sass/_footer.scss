@@ -1,0 +1,13 @@
+body > footer {
+  padding: 20px 0;
+  text-align: center;
+}
+
+html[amp-version] body {
+  background: $primary-light;
+}
+.default-content {
+  line-height: 1.5em;
+  padding-top: 1px;
+  background: white;
+}

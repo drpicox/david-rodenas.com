@@ -1,0 +1,22 @@
+table {
+  border: solid 3px black;
+  border-radius: 20px;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+th, td {
+  border: solid 1px black;
+  padding: 0.31em 0.62em;
+}
+
+th { 
+  border-top: none;
+  border-bottom-width: 2px;
+}
+td:first-child, th:first-child {
+  border-right-width: 2px;
+}
+tr:last-child td {
+  border-bottom: none;
+}

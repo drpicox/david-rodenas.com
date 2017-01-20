@@ -1,0 +1,87 @@
+---
+layout: default
+---
+{% assign main_tag = page.tags[0] %}
+{% assign main_note = site.notes | where:"slug",main_tag | first %}
+
+<article itemscope itemtype="http://schema.org/BlogPosting" role="article">
+  <header class="cover section">
+    <div class="container">
+      <h1 itemprop="name">{{ page.title }}</h1>
+      <meta itemprop="url" content="{{ site.baseurl }}{{ page.url }}" />
+      {% if page.description %}
+        <p itemprop="description">
+          {{ page.description | markdownify }}
+        </p>
+      {% else %}
+        <meta itemprop="description" content="default:page.excerpt | strip_html | strip_newlines" />
+      {% endif %}
+    </div>
+  </header>
+  <main class="section">
+    <div class="container">
+      <div class="page">
+        <div class="body" itemprop="articleBody">
+          {% include tags-list.html %}
+
+          {% assign direct_subnotes = site.notes | where_exp:"subnote","subnote.tags[0] == page.slug" %}
+          <div>
+          {% include notes-media.html notes=direct_subnotes %}
+          </div>
+
+          <div itemprop="articleBody">
+            {{ page.snippet | markdownify }}
+            {{ content }}
+          </div>
+
+          {% assign related_updates = site.posts | where_exp:"update","update.tags contains page.slug" %}
+          {% if related_updates.size > 0 %}
+          <h2>Related updates</h2>
+          <ul>
+            {% include updates-li.html updates=related_updates %}
+            <li><a href="{{ site.baseurl }}/updates">See all updates »</a></li>
+          </ul>
+          {% endif %}
+
+          {% assign indirect_subnotes = site.notes 
+              | where_exp:"subnote","subnote.tags contains page.slug" 
+              | where_exp:"subnote","subnote.tags[0] != page.slug" 
+              %}
+          {% if indirect_subnotes.size > 0 %}
+          <h2>Related notes</h2>
+          <ul>
+          {% include notes-li.html notes=direct_subnotes %}
+          </ul>
+          {% endif %}
+
+          <br>
+          {% include note-prev-next.html %}
+
+
+        </div>
+        <div class="aside">
+          {% include note--aside-info.html %}
+
+          {% assign random_note = site.notes | where_exp:"n","n != page" | sample %}
+          <h3>
+            <a href="{{ site.baseurl }}{{ random_note.url }}">Random Note</a>
+          </h3>
+
+          {% assign related_notes = site.notes
+              | where_exp:"note","note.tags contains main_tag" 
+              | where_exp:"note","note != page"
+              | sample:10 %}
+          {% if related_notes.size > 0 or main_note %}
+          <h3>See also</h3>
+          <p>
+            {% include notes-br.html notes=related_notes %}
+            {% if main_note %}
+            {% include note-href.html note=main_note title="See all »" %}<br>
+            {% endif %}
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </main>
+</article>

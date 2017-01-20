@@ -1,0 +1,19 @@
+.section {
+  padding: 1.5em 0 2.5em;
+}
+
+.section-light {
+  background: $primary-light;
+}
+
+.section-alt {
+  background: $alt;
+  color: rgba(white, 0.9);
+  a {
+    color: white;
+  }
+}
+
+.section-small {
+  padding: 1.5em 0;
+}

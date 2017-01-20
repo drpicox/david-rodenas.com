@@ -1,0 +1,21 @@
+{% assign tags = include.tags %}
+
+{% unless tags %}{% assign tags = page.tags %}{% endunless %}
+
+{% assign tag_notes = '' | split:'' %}
+{% for tag in tags %}
+  {% assign tag_note = site.notes | where:"slug",tag | first %}
+  {% if tag_note %}
+    {% assign tag_notes = tag_notes | push:tag_note %}
+  {% endif %}
+{% endfor %}
+
+{% if tag_notes.size > 0 %}
+<p>
+Tags:
+{% for tag_note in tag_notes %}
+<a href="{{ site.baseurl }}{{ tag_note.url }}">{{ tag_note.slug }}</a>{% unless forloop.last %},{% endunless %}
+{% endfor %}
+</p>
+{% endif %}
+

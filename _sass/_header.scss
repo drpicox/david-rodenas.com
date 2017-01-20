@@ -1,0 +1,27 @@
+body > header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: $primary-dark;//#d84528;
+  z-index: 20;
+
+  .large {
+    font-size: 20px;
+  } 
+  .separator {
+    flex: 1 0 auto;
+  } 
+}
+
+nav {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  a { color: white; }
+}
+
+body {
+  padding-top: 55px; // default content adds the missing 1px
+}
+

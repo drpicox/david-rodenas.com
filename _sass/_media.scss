@@ -1,0 +1,60 @@
+.media {
+  display: flex;
+  justify-content: space-between;
+  padding: 1em 2em;
+  background: rgba(black, 0.05);
+  border-bottom: solid 1px rgba(black, 0.1);
+
+  h3 {
+    margin: 0 0 0.3em;
+  }
+  p { 
+    margin: 0.3em 0;
+  }
+}
+.media:last-child {
+  border-bottom: none;
+}
+a.media {
+  color: inherit;
+  text-decoration: none;
+}
+a.media .more {
+  color: $primary;
+  text-decoration: underline;
+}
+a.media:hover {
+  background: rgba(black, 0.02);
+}
+
+@media (max-width: $mobile-max) {
+  .media {
+    padding: 1em 0.5em;
+  }
+}
+
+
+.media-figure {
+  flex: 0 0 25%;
+  flex: 0 0 calc(27% - .5em);
+  padding-top: 0em;
+}
+
+.media-body {
+  flex: 0 0 71%;
+  flex: 0 0 calc(73% - .5em);
+}
+
+
+
+@media (max-width: $mobile-max) {
+  html body .hidden-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: $desktop-min) {
+  html body .hidden-desktop {
+    display: none;
+  }
+}

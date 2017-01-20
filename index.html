@@ -1,0 +1,75 @@
+---
+layout: default
+---
+<div class="section cover">
+  <div class="container">
+    <h1>Welcome!</h1>
+    <br>
+    <p>
+    PhD., Engineer and Vicedean at the Official Catalan CS Society and CS enthusiastic who loves to innovate and extract all potential to this young technology.
+    </p>
+    <p>
+    I was born in Barcelona in 1978 and raised in Montgat, 
+    a small town near Barcelona. 
+    I started to write programs when I was 8 years old, 
+    with a ZX Spectrum and a book called "Basic para ni&ntilde;os".
+    Before the university I wrote some complex programs,
+    including a simple neuronal net, or a 3D raytracer.
+    The university was for me like an <em>all you can eat</em>,
+    full of rich concepts and challenges.
+    </p>
+    <p>
+    Nowadays I am a Freelance Code Architect, 
+    Vicedean of Professional Development at the Official Catalan CS Society
+    and an active member of many meetups. 
+    Inside meetup community I have a say:
+    <em>"If you have learned something interesting, make a speech and share it"</em>.
+    I am also a close follower of the Agile movement,
+    software quality, testing, ... and all those concepts that
+    just starts to define what is to be a good professional in CS.
+    </p>
+
+  </div>
+</div>
+
+<div class="section section-light">
+  <div class="container">
+
+    <h2>Latests updates</h2>
+    <p>
+      {% include updates-br.html limit=7 %}
+      <a href="{{ site.baseurl }}/updates">See all »</a><br>
+    </p>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="container">
+    
+    {% include home--note.html tag="projects" %}
+
+    {% comment %}
+    {% include tag-entries.html tag="projects" limit=10 title="<h2>Projects</h2>" %}
+    {% include tag-entries.html tag="teaching" limit=10 title="<h2>Teaching</h2>" %}
+    {% include tag-entries.html tag="talks" limit=10 title="<h2>Talks</h2>" %}
+    {% endcomment %}
+
+    <h2>Random notes</h2>
+    <p>
+    There are many more notes here. 
+    There is a sample list of all notes presents in this website.
+    </p>
+    <p>
+      {% assign random_notes = site.notes | sample:50 %}
+      {% for note in random_notes %}
+        {% capture random_note_href %}
+        {% include note-href.html note=note %}
+        {% endcapture %}
+        {{ random_note_href | rstrip }},
+      {% endfor %}
+      ...
+    </p>
+
+  </div>
+</div>

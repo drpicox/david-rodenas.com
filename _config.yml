@@ -1,0 +1,42 @@
+collections:
+  notes:
+      output: true
+      permalink: /notes/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: update
+  - scope:
+      path: ""
+      type: notes
+    values:
+      layout: note
+
+exclude: ['Gemfile','Gemfile.lock']
+
+gems:
+  - jekyll-feed
+  - jekyll-seo-tag
+#  - jekyll-paginate
+  - jekyll-sitemap
+
+google_site_verification: QfXW9ibW_gwrtsViUn9usf-eQqU5OT45JV1aBm-cMBE
+
+logo: /assets/images/david.jpg
+
+#paginate: 5
+#paginate_path: "/posts/page-:num/"
+
+permalink: /updates/:title
+
+social:
+    name: David Rodenas
+    links:
+      - https://twitter.com/drpicox
+      - https://github.com/drpicox
+
+twitter:
+  username: drpicox

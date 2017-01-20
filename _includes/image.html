@@ -1,0 +1,20 @@
+{% assign src = include.image.src %}
+{% assign width = include.image.width %}
+{% assign height = include.image.height %}
+
+{% assign protocol = src | slice: 0,4 %}
+{% assign double = src | slice: 0,2 %}
+
+{% if protocol == "http" or double == "//" %}
+  {% assign full_src = src %}
+{% else %}
+  {% capture full_src %}{{ site.baseurl }}{{ src }}{% endcapture %}
+{% endif %}
+
+<amp-img src="{{ full_src }}" 
+    width="{{ width }}" height="{{ height }}"
+    layout="responsive"
+    {% comment %}
+    sizes="(min-width: {{ width }}px) {{ width }}px, 100vw"
+    {% endcomment %}
+    ></amp-img>

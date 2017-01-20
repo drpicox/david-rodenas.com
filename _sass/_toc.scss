@@ -1,0 +1,20 @@
+#markdown-toc {
+  margin-bottom: 2em;
+  padding-left: 1em;
+  line-height: 1.4;
+}
+#markdown-toc:before {
+  display: block;
+  content: "Table of contents";
+  font-size: 1.16em;
+  font-weight: bolder;
+  margin: 1.5em 0 0.5em -1em;
+  color: black;
+}
+#markdown-toc li li {
+  font-size: 0.9em;
+  margin-left: -0.5em;
+}
+#markdown-toc li li li {
+  display: none;
+}

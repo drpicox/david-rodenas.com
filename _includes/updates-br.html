@@ -1,0 +1,8 @@
+{% assign updates = include.updates %}
+{% assign limit = include.limit %}
+
+{% unless updates %}{% assign updates = site.posts %}{% endunless %}
+
+{% for update in updates limit:limit %}
+{% include update-href.html update=update %}<br>
+{% endfor %}

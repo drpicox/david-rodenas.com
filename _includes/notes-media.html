@@ -1,0 +1,23 @@
+{% assign notes = include.notes %}
+{% assign limit = include.limit %}
+
+{% for note in notes limit:limit %}
+  <a class="media" href="{{ site.baseurl }}{{ note.url }}">
+  {% if note.image %}
+    <div class="media-figure">
+      {% include image.html image=note.image %}
+    </div>
+    <div class="media-body">
+      <h3>{{ note.title }}</h3>
+      {{ note.description | default:note.excerpt | markdownify }}
+      <p><span class="more">Read more »</span></p>
+    </div>
+  {% else %}
+    <div>
+      <h3>{{ note.title }}</h3>
+      {{ note.description | default:note.excerpt | markdownify }}
+      <p><span class="more">Read more »</span></p>
+    </div>
+  {% endif %}
+  </a>
+{% endfor %}

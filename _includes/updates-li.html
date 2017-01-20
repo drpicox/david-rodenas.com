@@ -1,0 +1,6 @@
+{% assign updates = include.updates %}
+{% assign limit = include.limit %}
+
+{% for update in updates limit:limit %}
+<li>{% include update-href.html update=update %}</li>
+{% endfor %}

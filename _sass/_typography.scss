@@ -1,0 +1,48 @@
+body {
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  color: rgba(black, 0.82);
+}
+
+h1,h2,h3 {
+  color: black;
+}
+h1 {
+  font-size: 2em;
+  line-height: 1;
+}
+h1,h2,h3,h4,h5,h6 {
+  margin-top: 1.5em;
+}
+
+
+a {
+  color: $primary;
+  text-decoration: none;
+}
+p a, li a {
+  text-decoration: underline;
+
+  &[target=_blank]:after {
+    display: inline;
+    content: " ↗";
+  }
+}
+
+li > p:first-child {
+  margin-top: 0;
+}
+li > p:last-child {
+  margin-bottom: 0;
+}
+
+small {
+  color: rgba(black, 0.45);
+}
+
+blockquote {
+  border-left: solid 3px $primary-light;
+  color: rgba(black, 0.45);
+  padding-left: 1em;
+}

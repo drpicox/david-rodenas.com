@@ -1,0 +1,10 @@
+.article-img {
+  display: flex;
+  justify-content: space-around;
+}
+
+@media (max-width: $mobile-max) {
+  main {
+    display: block;
+  }
+}

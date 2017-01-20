@@ -1,0 +1,6 @@
+{% assign notes = include.notes %}
+{% assign limit = include.limit %}
+
+{% for note in notes limit:limit %}
+{% include note-href.html note=note %}<br>
+{% endfor %}

@@ -1,0 +1,5 @@
+---
+generate: true
+---
+{% capture styles_scss %}{% include styles.scss %}{% endcapture %}
+{{ styles_scss | scssify }}
