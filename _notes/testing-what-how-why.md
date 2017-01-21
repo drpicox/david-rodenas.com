@@ -27,7 +27,24 @@ What is important to test?
 What is not important to test? 
 How to do testing? 
 
-There some examples in plnker just to see each step, and many surprises. 
+There some examples in plnker just to see each step, and many surprises.
+
+<amp-img src="{{ site.baseurl }}/assets/images/coding-cost.jpg" width="638" height="479" layout="responsive"></amp-img>
+
+```javascript
+describe(‘calculator’, () => {
+  it(‘should do sums’, () => {
+    let calculator = new Calculator();
+    calculator.input(2);
+    calculator.plus();
+    calculator.input(4);
+    calculator.equal();
+    
+    let result = calculator.get();
+    expect(result).toBe(6);
+  });
+});
+```
 
 This talk also compares what people learned in the 
 Computer Sciences and Engineering degrees and what people does in testing. 
