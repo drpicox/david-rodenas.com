@@ -1,5 +1,5 @@
 ---
-title: Testing: What, how and why
+title: "Testing: What, how and why"
 image:
   src: /assets/images/coding-cost.jpg
   width: 638
