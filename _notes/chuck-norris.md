@@ -4,7 +4,7 @@ image:
   width: 100
   height: 100
   src: /assets/images/chuck-norris.jpg
-abstract: El entorno de pruebas es para mariquitas.
+description: El entorno de pruebas es para mariquitas.
 url: "http://www.chucknorris.com/"
 tags:
   - people
