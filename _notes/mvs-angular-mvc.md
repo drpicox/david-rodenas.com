@@ -1,5 +1,5 @@
 ---
-title: MVS: An Angular MVC
+title: "MVS: An Angular MVC"
 tags:
   - talks
   - angularjs
