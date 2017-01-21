@@ -11,6 +11,7 @@ description: >
   javascript architectures: Flux, Redux, 
   Backbone, MobX.
   Here I present a simpler one, 
+  an architecture 
   that covers most of possible usecases,
   and leverages in Angular capacities
   to simplify it.
