@@ -5,6 +5,7 @@ tags:
   - angularjs
   - mvc
   - flux
+  - updateable
 website: http://www.slideshare.net/DavidRdenasPic/mvs-an-angular-mvc
 description: >
   Nowadays there are many solutions for front
