@@ -23,6 +23,7 @@ description: >
   It also have lots of examples and are 
   a very good starting point for those who
   want to understand patterns.
+website: http://david-rodenas.com/tutorial-jspatterns-v1/
 ---
 
 In 2014 I have been working in lots of Javascript
