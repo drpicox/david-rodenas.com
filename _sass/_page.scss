@@ -19,7 +19,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: block;
 }
+.aside p br { display: none; }
 
 @media (max-width: $mobile-max) {
   .page {
