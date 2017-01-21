@@ -19,6 +19,7 @@ image:
   width: 739
   height: 528
 ---
+
 Previously I have presented MVC - Model: the great forgotten, 
 in which I have explained what models were for. 
 
