@@ -29,7 +29,7 @@ How to do testing?
 
 There some examples in plnker just to see each step, and many surprises.
 
-<amp-img src="{{ site.baseurl }}/assets/images/coding-cost.jpg" width="638" height="479" layout="responsive"></amp-img>
+<amp-img src="{{ site.baseurl }}/assets/images/calculator-test.jpg" width="638" height="479" layout="responsive"></amp-img>
 
 ```javascript
 describe('calculator', () => {
