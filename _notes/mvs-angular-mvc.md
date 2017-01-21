@@ -14,6 +14,10 @@ description: >
   that covers most of possible usecases,
   and leverages in Angular capacities
   to simplify it.
+image:
+  src: /assets/images/mvs-architecture.jpg
+  width: 739
+  height: 528
 ---
 Previously I have presented MVC - Model: the great forgotten, 
 in which I have explained what models were for. 
