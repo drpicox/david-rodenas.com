@@ -15,6 +15,12 @@
   min-width: 0;
 }
 
+.aside a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media (max-width: $mobile-max) {
   .page {
     display: block;
