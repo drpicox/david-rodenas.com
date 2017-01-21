@@ -32,8 +32,8 @@ There some examples in plnker just to see each step, and many surprises.
 <amp-img src="{{ site.baseurl }}/assets/images/coding-cost.jpg" width="638" height="479" layout="responsive"></amp-img>
 
 ```javascript
-describe(‘calculator’, () => {
-  it(‘should do sums’, () => {
+describe('calculator', () => {
+  it('should do sums', () => {
     let calculator = new Calculator();
     calculator.input(2);
     calculator.plus();
