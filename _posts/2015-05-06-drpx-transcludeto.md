@@ -10,7 +10,7 @@ abstract: >
     Unfortunately, angular is limited by one single translcussion.
     Here I present a small module that allows multiple transclussion,
     it allows you to create directives like lists with custom header
-    items and footers, higly configurable dialogs, ...
+    items and footers, highly configurable dialogs, ...
 snippet: |
     ```html
     <list-pager list="vm.people">

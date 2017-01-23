@@ -5,10 +5,14 @@ tags:
   - angular
 date: 2015-05-29
 abstract: >
-    AngularJS dependency injection saves a lot of work, and this feature comes out of the box.
-    Beginners are usually puzzled by this feature, many times misunderstood, but it saves
-    a lot of time and simplifies drastically the maintenance of large applications.
-    Here I show few small examples that illustrate how much work is saved by dependency injection
+    AngularJS dependency injection saves a lot of work, 
+    and this feature comes out of the box.
+    Beginners are usually puzzled by this feature, 
+    many times misunderstood, but it saves
+    a lot of time and simplifies drastically 
+    the maintenance of large applications.
+    Here I show few small examples that 
+    illustrate how much work is saved by dependency injection
     and how it simplifies the maintenance of complex developments.
 snippet: |
     ```javascript
@@ -173,6 +177,7 @@ I have presented three ways of doing dependency injection:
 It usually happens that AngularJS developers get for granted automatic dependency injection, but they do not know why it is here or which are the strong points.
 
 With this three examples I want to show how it helps, in small scale, but just multiply for large applications: each automatic help saves lots of hours of development and debugging time.
+
 
 Learn more
 ----------

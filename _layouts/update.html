@@ -36,6 +36,7 @@ layout: default
     <div class="container" itemprop="articleBody">
       {{ page.snippet | markdownify }}
       {{ content }}
+      <br>{% include tags-list.html %}
     </div>
   </main>
 </article>

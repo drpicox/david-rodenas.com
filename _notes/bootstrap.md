@@ -30,7 +30,7 @@ Twitter Bootstrap gives a large list
 of utilities and components
 that helps to create high quality designs.
 
-Twitter Boostratp is written in lesscss,
+Twitter Bootstrap is written in lesscss,
 but it can be used directly as CSS3
 and there is also a SASS version available.
 Currently there are many pages and apps using it,

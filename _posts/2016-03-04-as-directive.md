@@ -1,7 +1,8 @@
 ---
 title: "My proposal for as Directive"
 tags:
-  - angular
+  - as-directive
+  - angularjs
   - contribution
 date: 2016-03-04
 abstract: >
