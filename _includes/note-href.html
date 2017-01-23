@@ -1,4 +1,4 @@
-{% assign note = include.note %}
-{% assign title = include.title | default:note.title %}
+{% assign _note = include.note %}
+{% assign _title = include.title | default:_note.title %}
 
-<a href="{{ site.baseurl }}{{ note.url }}">{{ title }}</a>
+<a href="{{ site.baseurl }}{{ _note.url }}">{{ _title }}</a>

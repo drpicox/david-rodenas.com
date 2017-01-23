@@ -1,0 +1,19 @@
+{% assign _notes = include.notes %}
+{% unless _notes %}{% assign _notes = site.notes %}{% endunless %}
+{% assign _tag = include.tag %}
+{% unless _tag %}{% assign _tag = page.slug %}{% endunless %}
+
+{% assign _subnotes = _notes | where_exp:"subnote","subnote.tags[0] == _tag" %}
+
+{% assign _second_tags = '' | split:'' %}
+{% for _note in _subnotes %}
+  {% assign _second_tags = _second_tags | push:_note.tags[1] | sort | uniq %}
+{% endfor %}
+
+{% assign result = '' | split:'' %}
+{% for _second_tag in _second_tags %}
+  {% assign _second_notes = _subnotes | where_exp:"subnote","subnote.tags[1] == _second_tag" %}
+  {% for _note in _second_notes %}
+    {% assign result = result | push:_note %}
+  {% endfor %}
+{% endfor %}

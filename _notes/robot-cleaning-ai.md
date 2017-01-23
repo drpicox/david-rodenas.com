@@ -12,7 +12,6 @@ description: >
   reinforcement learning.
 tags:
   - projects
-  - java
   - .NET
   - research
   - ai

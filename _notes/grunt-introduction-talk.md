@@ -7,7 +7,7 @@ image:
   height: 568
 tags:
   - talks
-  - grunt
+  - gruntjs
   - performance
   - bcnjs
 description: > 

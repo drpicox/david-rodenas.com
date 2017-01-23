@@ -15,7 +15,10 @@
   min-width: 0;
 }
 
-.aside a {
+.aside ul {
+  padding-left: 0;
+}
+.aside li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

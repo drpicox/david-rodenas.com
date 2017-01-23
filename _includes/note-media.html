@@ -1,0 +1,21 @@
+{% assign _note = include.note %}
+
+<a class="media" href="{{ site.baseurl }}{{ _note.url }}">
+{% if _note.image %}
+  <div class="media-figure">
+    {% include image.html image=_note.image %}
+  </div>
+  <div class="media-body">
+    <h3>{{ _note.title }}</h3>
+    {{ _note.description | default:_note.excerpt | markdownify }}
+    <p><span class="more">Read more »</span></p>
+  </div>
+{% else %}
+  <div>
+    <h3>{{ _note.title }}</h3>
+    {{ _note.description | default:_note.excerpt | markdownify }}
+    <p><span class="more">Read more »</span></p>
+  </div>
+{% endif %}
+</a>
+

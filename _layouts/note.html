@@ -24,9 +24,24 @@ layout: default
         <div class="body" itemprop="articleBody">
           {% include tags-list.html %}
 
-          {% assign direct_subnotes = site.notes | where_exp:"subnote","subnote.tags[0] == page.slug" %}
+          {% include fn-tag_notes tag=page.slug %}{% assign direct_subnotes = result %}
           <div>
-          {% include notes-media.html notes=direct_subnotes %}
+          {% for note in direct_subnotes %}
+            {% if prev_second_tag != note.tags[1] %}
+              </div>
+              <h3> 
+                {% assign second_tag_note = site.notes | where:"slug",note.tags[1] | first %}
+                {% if second_tag_note %}
+                  {% include note-href.html note=second_tag_note %}
+                {% else %}
+                  {{ note.tags[1] | capitalize }}
+                {% endif %}
+              </h3>
+              <div>
+              {% assign prev_second_tag = note.tags[1] %}
+            {% endif %}
+            {% include note-media.html note=note %}
+          {% endfor %}
           </div>
 
           <div itemprop="articleBody">
@@ -50,7 +65,7 @@ layout: default
           {% if indirect_subnotes.size > 0 %}
           <h2>Related notes</h2>
           <ul>
-          {% include notes-li.html notes=direct_subnotes %}
+          {% include notes-li.html notes=indirect_subnotes %}
           </ul>
           {% endif %}
 
@@ -73,12 +88,12 @@ layout: default
               | sample:10 %}
           {% if related_notes.size > 0 or main_note %}
           <h3>See also</h3>
-          <p>
-            {% include notes-br.html notes=related_notes %}
+          <ul>
+            {% include notes-li.html notes=related_notes %}
             {% if main_note %}
-            {% include note-href.html note=main_note title="See all »" %}<br>
+              <li>{% include note-href.html note=main_note title="See all »" %}</li>
             {% endif %}
-          </p>
+          </ul>
           {% endif %}
         </div>
       </div>

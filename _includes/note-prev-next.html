@@ -1,1 +1,41 @@
-{% include record-prev-next.html %}
+{% if main_note %}
+  {% assign _note_m1 = main_note %}
+  {% assign _next = main_note %}
+  {% include fn-tag_notes tag=main_tag %}
+  {% assign _navigation_notes = result %}
+{% else %}
+  {% assign _orphans = '' | split:'' %}
+  {% for _note in site.notes %}
+    {% assign _note_main = site.notes | where:"slug",_note.tags[0] | first %}
+    {% unless _note_main %}
+      {% assign _orphans = _orphans | push:_note %}
+    {% endunless %}
+  {% endfor %}
+  {% assign _navigation_notes = _orphans %}
+{% endif %}
+
+{% for _note in _navigation_notes %}
+  {% if _note == page %}
+    {% assign _previous = _note_m1 %}
+  {% endif %}
+  {% if _note_m1 == page %}
+    {% assign _next = _note %}
+  {% endif %}
+
+  {% assign _note_m1 = _note %}
+{% endfor %}
+
+<div class="prev-next">
+  <div>
+    {% if _previous %}
+    <span>«&nbsp;</span>
+    <a href="{{ site.baseurl }}{{ _previous.url }}">{{_previous.title}}</a>
+    {% endif %}
+  </div>
+  <div>
+    {% if _next %}
+    <a href="{{ site.baseurl }}{{ _next.url }}">{{_next.title}}</a>
+    <span>&nbsp;»</span>
+    {% endif %}
+  </div>
+</div>

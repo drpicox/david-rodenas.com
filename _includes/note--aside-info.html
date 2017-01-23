@@ -5,9 +5,9 @@
 {% endif %}
 {% if page.source or page.website or page.entry %}
 <h3>Information</h3>
-<p>
-  {% if page.entry %}<a href="/entries/{{ page.entry }}">Entry</a><br>{% endif %}
-  {% if page.website %}<a href="{{ page.website }}" target="_blank">Site</a><br>{% endif %}
-  {% if page.source %}<a href="{{ page.source }}" target="_blank">Source</a><br>{% endif %}
-</p>
+<ul>
+  {% if page.entry %}<li><a href="/entries/{{ page.entry }}">Entry</a></li>{% endif %}
+  {% if page.website %}<li><a href="{{ page.website }}" target="_blank">Site</a></li>{% endif %}
+  {% if page.source %}<li><a href="{{ page.source }}" target="_blank">Source</a></li>{% endif %}
+</ul>
 {% endif %}
