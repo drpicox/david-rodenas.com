@@ -1,8 +1,8 @@
 ---
 title: OpenMP
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 72
   src: /assets/images/openmp.png
 url: http://openmp.org/
 description: >

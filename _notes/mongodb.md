@@ -1,8 +1,8 @@
 ---
 title: mongoDB
 image: 
-  width: 100
-  height: 100
+  width: 90
+  height: 200
   src: /assets/images/mongodb.png
 relevance: 2
 url: http://www.mongodb.org/

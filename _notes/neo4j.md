@@ -1,8 +1,8 @@
 ---
 title: Neo4j
 image: 
-  width: 100
-  height: 100
+  width: 163
+  height: 162
   src: /assets/images/neo4j.png
 url: http://www.neo4j.org/
 source: https://github.com/neo4j/neo4j

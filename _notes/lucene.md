@@ -1,8 +1,8 @@
 ---
 title: Lucene
 image: 
-  width: 100
-  height: 100
+  width: 64
+  height: 84
   src: /assets/images/lucene.png
 url: http://lucene.apache.org/
 description: >

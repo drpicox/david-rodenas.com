@@ -1,8 +1,8 @@
 ---
 title: Hadoop
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 153
   src: /assets/images/hadoop.png
 url: http://hadoop.apache.org/
 description: >

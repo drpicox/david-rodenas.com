@@ -1,8 +1,8 @@
 ---
 title: nVIDIA CUDA
 image: 
-  width: 100
-  height: 100
+  width: 143
+  height: 132
   src: /assets/images/cuda.png
 url: http://www.nvidia.com/object/cuda_home_new.html
 description: >

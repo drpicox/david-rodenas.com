@@ -1,8 +1,12 @@
 ---
 title: Douglas Crockford
-image: images/people/douglas-crockford.jpg
+image: 
+  src: /assets/images/douglas-crockford.jpg
+  width: 200
+  height: 200
 url: "http://crockford.com/"
 tags:
+  - people
   - guru
 ---
 Douglas Crockford also called 

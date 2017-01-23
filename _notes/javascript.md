@@ -1,8 +1,8 @@
 ---
 title: Javascript
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 200
   src: /assets/images/javascript.png
 description: >
   Javascript is the current

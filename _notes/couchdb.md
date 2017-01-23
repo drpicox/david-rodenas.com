@@ -1,8 +1,8 @@
 ---
 title: CouchDB
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 129
   src: /assets/images/couchdb.png
 url: http://couchdb.apache.org
 description: >

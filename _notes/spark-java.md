@@ -1,7 +1,7 @@
 ---
 image: 
-  width: 100
-  height: 100
+  width: 334
+  height: 271
   src: /assets/images/spark-java.png
 title: Sparkjava
 tags:

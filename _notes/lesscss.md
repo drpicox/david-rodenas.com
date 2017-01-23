@@ -1,8 +1,8 @@
 ---
 title: LessCSS
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 90
   src: /assets/images/lesscss.png
 url: http://lesscss.org/
 source: https://github.com/less/less.js

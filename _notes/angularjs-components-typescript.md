@@ -16,7 +16,7 @@ description: >
 snippet: |
     ```javascript
     export const HelloWorldComponent = {
-      template: `Hello {{ "{{$ctrl.name"}}}}`,
+      template: `Hello {{ $ctrl.name }}`,
       controller: class HelloWorldController {
         constructor() {
           this.name = 'World';

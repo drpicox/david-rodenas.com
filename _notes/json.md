@@ -1,8 +1,8 @@
 ---
 title: JSON
 image: 
-  width: 100
-  height: 100
+  width: 160
+  height: 160
   src: /assets/images/json.png
 url: http://json.org/
 description: >

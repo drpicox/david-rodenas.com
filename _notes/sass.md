@@ -1,8 +1,8 @@
 ---
 title: SASS
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 150
   src: /assets/images/sass.png
 url: http://sass-lang.com/
 source: https://github.com/nex3/sass

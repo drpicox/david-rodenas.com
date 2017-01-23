@@ -62,7 +62,7 @@ layout: default
     There is a sample list of all notes presents in this website.
     </p>
     <p>
-      {% assign random_notes = site.notes | sample:50 %}
+      {% assign random_notes = site.notes | sample:50 | sort:"title" %}
       {% for note in random_notes %}
         {% capture random_note_href %}
         {% include note-href.html note=note %}

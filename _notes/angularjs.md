@@ -5,8 +5,8 @@ image:
   height: 100
   src: /assets/images/angularjs.png
 image: 
-  width: 100
-  height: 100
+  width: 93
+  height: 99
   src: /assets/images/angularjs.png
 relevance: 3
 url: http://angularjs.org/

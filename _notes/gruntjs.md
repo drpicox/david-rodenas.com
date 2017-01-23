@@ -1,8 +1,8 @@
 ---
 title: GruntJS
 image: 
-  width: 100
-  height: 100
+  width: 153
+  height: 200
   src: /assets/images/gruntjs.png
 description: >
   GruntJS is an utility

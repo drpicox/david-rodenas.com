@@ -1,5 +1,5 @@
 ---
-title: "Angular providers"
+title: "AngularJS providers"
 tags:
   - teaching
   - angularjs

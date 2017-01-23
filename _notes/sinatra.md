@@ -1,8 +1,8 @@
 ---
 title: Sinatra
 image: 
-  width: 100
-  height: 100
+  width: 156
+  height: 108
   src: /assets/images/sinatra.png
 relevance: 3
 url: http://sinatrarb.com/

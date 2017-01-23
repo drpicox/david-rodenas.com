@@ -1,8 +1,8 @@
 ---
 title: Chuck Norris
 image: 
-  width: 100
-  height: 100
+  width: 200
+  height: 200
   src: /assets/images/chuck-norris.jpg
 description: El entorno de pruebas es para mariquitas.
 url: "http://www.chucknorris.com/"

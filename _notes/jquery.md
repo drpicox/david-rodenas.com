@@ -1,8 +1,8 @@
 ---
 title: jQuery
 image: 
-  width: 100
-  height: 100
+  width: 220
+  height: 220
   src: /assets/images/jquery.png
 tags:
   - apps

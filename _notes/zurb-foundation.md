@@ -1,8 +1,8 @@
 ---
 title: Zurb Foundation
 image: 
-  width: 100
-  height: 100
+  width: 157
+  height: 200
   src: /assets/images/zurb-foundation.png
 url: http://foundation.zurb.com
 source: https://github.com/zurb/foundation
