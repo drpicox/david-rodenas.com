@@ -33,7 +33,7 @@ In the previous talk I gave some hints, but not all, and the audience asked for 
 This presentation explains the whole MVS, and adaptation of MVC leveraging in Angular capacities.
 
 It should be presented in the Angular Camp of July 2016, 
-but unfortunately their organizers forgot about it in the votations 
+but unfortunately their organizers forgot about it in the voting 
 and a different set of talks were selected from the same author.
 
 This talk has been presented to some of my customers in private sessions.

@@ -25,7 +25,7 @@ HTML and CSS3 have many options
 to create great designs,
 but, start from scratch or
 build designs for all devices,
-is dificult and requires a great effort.
+is difficult and requires a great effort.
 Twitter Bootstrap gives a large list
 of utilities and components
 that helps to create high quality designs.

@@ -19,14 +19,14 @@ website: https://github.com/drpicox/promises-against-callbacks
 ---
 
 This talk was presented in the Angular Camp of January 2016. 
-It was really wellcomed.
+It was really welcomed.
 
 Its format is an interactive coding session in which I 
 challenge the audience to realize the problems of doing
 a callback implementation step by step.
 
 Each step is saved in a different branch and can 
-be easilly followed.
+be easily followed.
 
 Initial code:
 

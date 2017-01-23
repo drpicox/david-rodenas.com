@@ -15,10 +15,10 @@ tags:
   
 ---
 PostgreSQL is designed to be 
-a full compilant ACID SQL database
+a full compliant ACID SQL database
 and has support for PL/SQL language.
 
-PostgreSQL is one of the first opensource database
+PostgreSQL is one of the first open-source database
 and has a large developer community.
 It has all advances and optimizations 
 available in commercial databases 

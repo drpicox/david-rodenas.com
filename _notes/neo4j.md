@@ -13,7 +13,7 @@ tags:
   - apps  
 ---
 Neo4j stores data as a graph
-instead of tables as most of databases engies does.
+instead of tables as most of databases engines does.
 The key point is that while most of 
 databases are fast listing values but slow making joins,
 graph databases are fast following joins but not so fast

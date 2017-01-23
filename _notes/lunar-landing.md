@@ -16,7 +16,7 @@ tags:
   - html
   
 ---
-Usuarlly web games are implemented through canvas.
+Usually web games are implemented through canvas.
 This project is a small game of lunar landing
 implemented directly with the html DOM, without
 using canvas or any image.

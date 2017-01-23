@@ -15,13 +15,13 @@ tags:
 To describe REST or how it came is a little bit complex.
 Like 
 <resource-link basename="json"></resource-link>
-was a technology that was from the beggining just in
+was a technology that was from the beginning just in
 front of us and just one day hit us.
 
 It is based in the 
 [HTTP](http://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol),
 the protocol used to send web pages to your browser,
-but it have been slighly extended to send data between 
+but it have been slightly extended to send data between 
 applications and services rather from servers to people.
 
 ## URL and resources
@@ -90,11 +90,11 @@ including its id.
 - `PUT` replaces an existing object
 in a collection.
 In this case the URL should point
-to the object, and consecuently
+to the object, and consequently
 the id must be known by the app. 
 If the object does not exists
 the server can create it, but
-this behaviour is optionally.
+this behavior is optionally.
 - `DELETE` deletes an object, 
 or many objects from a collection.
 It can be used with query params.
@@ -135,7 +135,7 @@ but I'm waiting a good library to ease the whole coding
 
 Because REST is executed over HTTP
 it is difficult to ensure that all
-petitions are corretcly received 
+petitions are correctly received 
 and processed. 
 If you execute a method, 
 and you do not receive an answer,
@@ -188,7 +188,7 @@ answer. Just like that.
 
 I recommend to use [curl](http://en.wikipedia.org/wiki/CURL)
 it is already installed on MacOS environments, 
-and it can be easilly installed in linux through your
+and it can be easily installed in linux through your
 favorite package manager:
 
 ```bash

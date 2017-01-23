@@ -31,7 +31,7 @@ Promises helps to re-structure all calls and callbacks
 and gives better control over exception handling.
 The idea is that the function returns an special value,
 which eventually will have a value (a promise).
-It makes the code easier to understand and mantain.
+It makes the code easier to understand and maintain.
 
 ```javascript
 	Q.fcall(step1)

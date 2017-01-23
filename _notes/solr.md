@@ -21,6 +21,6 @@ Solr can store data and allow queries through
 advanced queries and patterns.
 It is specialized in text search,
 including approximated search and
-support for many languajes.
+support for many languages.
 
 It can be used as a SaaS.

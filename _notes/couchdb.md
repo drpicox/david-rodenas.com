@@ -21,5 +21,5 @@ Its interface is exposed through REST operations,
 where it stores and queries saved documents 
 through REST operations and URL accesses.
 
-CouchDB is a scalable database with direct itegration with memcached.
+CouchDB is a scalable database with direct integration with memcached.
 It also has map/reduce operations for advanced queries.

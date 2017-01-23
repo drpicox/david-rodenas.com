@@ -21,7 +21,7 @@ description: >
 Cassandra is designed to work as a big-data in cluster nodes.
 Cassandra design is focused in fast writes
 (like a event/visit/... log) and at the same time to offer
-all the capacities of replication and fail tolarance.
+all the capacities of replication and fail tolerance.
 It has eventual consistency and has
 operations of map/reduce for complex queries.
 

@@ -2,7 +2,7 @@
 tags:
   - yaml
 ---
-Front-matter is a ipso-facto standarized way to add metadata to a text file by using [YAML](http://www.yaml.org/) in the beginning of the file delimited by two sets of `---`. 
+Front-matter is a ipso-facto standardized way to add metadata to a text file by using [YAML](http://www.yaml.org/) in the beginning of the file delimited by two sets of `---`. 
 
 Example:
 

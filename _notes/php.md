@@ -24,8 +24,8 @@ Wordpress, el Magento, Drupal, Facebook, ...
 Although it is very easy to find
 skilled programmers in PHP
 nowadays PHP is considered to be going out of favor
-because it is designed to build web pages in serverside
-instead of browserside
+because it is designed to build web pages in server-side
+instead of browser-side
 (it makes loading times and browsing slower).
 
 ```php

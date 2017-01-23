@@ -25,7 +25,7 @@ to create a new AI for a cleaning robot.
 This project was implemented and experiments ran by 
 Marina Gispert as part of her final project
 of a Master's degree in Automatic Control and Robotics.
-Implementation and documentation is aviable in Catalan
+Implementation and documentation is available in Catalan
 [here](http://hdl.handle.net/2099.1/13129).
 
 * Replace this with ToC
@@ -37,10 +37,10 @@ This project was initiated due to the poor performance
 of a cleaning robot.
 The idea was to found a simple AI with low requirements
 of sensors that could outperform the original AI.
-For this reason, the robot should be equiped with the follow
+For this reason, the robot should be equipped with the follow
 sensors:
-- collision: simple interruptors to detect walls,
-- accelometers: to detect real robot movement,
+- collision: simple interrupters to detect walls,
+- accelerometers: to detect real robot movement,
 - distance: to detect the distance to a close obstacle given an angle,
 - dirtiness: to detect if dust is aspired
 This last sensor is not typical but it is easy to implement (could work the same hardware of any optical mouse) and it is very important to allow automatic learning. Dirty sensor is used to generate *rewards* to the robot for a good job done.
@@ -76,7 +76,7 @@ in order to evaluate the simulator and compare to a real environment
 is to implement the original robot algorithm as described 
 by the manufacturer.
 
-Many tests and many executions are perfomed. 
+Many tests and many executions are performed. 
 Performance results for 50, 100 and 500 are presented in the following
 graphic. Vertical is the performance, horizontal is the number of steps.
 
@@ -91,10 +91,10 @@ is close to the real robot.
 As a reference test, 
 I decide to implement an AI which behavior is random:
 at any step it chooses one random action to perform.
-The initial intentaion was to find a worst case scenario
+The initial intention was to find a worst case scenario
 to compare behaviors.
 
-Many tests and many executions are perfomed. 
+Many tests and many executions are performed. 
 Performance results for 50, 100 and 500 are presented in the following
 graphic. Vertical is the performance, horizontal is the number of steps.
 
@@ -108,7 +108,7 @@ worst than random AI in the average performance.
 
 ### Genetic Algorithm AI
 
-I have designed an artificial inteligence based in a control matix.
+I have designed an artificial intelligence based in a control matrix.
 Each column describes one sensor input and each row an action.
 Each matrix value is a weight assigned for that combination.
 AI controller decides which action is performed by 
@@ -133,7 +133,7 @@ So it cannot be used for a commercial robot.
 
 ### Reinforcement Learning AI
 
-Reinforcement learning is a AI thechnique designed to allow
+Reinforcement learning is a AI technique designed to allow
 an AI to learn from its success. 
 It defines for each combination of inputs and for each action 
 a success index. If given a combination of inputs (state)
@@ -165,11 +165,11 @@ local optimum states and previous results conditionates next learnings.
 
 ### Improved Reinforcement Learning AI 
 
-Once previous results are analysed, 
+Once previous results are analyzed, 
 and with a close deadline, 
-I have decided to improve the reinforcement learnin adding one concept:
-instead of execute the action wich was the best in the past,
-execute a random action ponderated by its result in the past.
+I have decided to improve the reinforcement learning adding one concept:
+instead of execute the action which was the best in the past,
+execute a random action pondered by its result in the past.
 The idea of this change is to force to explore all actions
 and learn from all actions, even if in the past they were no
 so good: if you o always the same, you always have
@@ -178,15 +178,15 @@ clear idea about a past improvement, keep your mind open.
 
 It has been tested with multiple individuals executed separately.
 Each individual is tested 14 times (days) with the same room and the same
-dust and 500 steps. Each individual remembers what was learnt from
+dust and 500 steps. Each individual remembers what was learn from
 previous day. 
 Lines are individuals, vertical is performance, horizontal are days.
 
 <amp-img layout="responsive" width="1228" height="427" src="{{ site.baseurl }}/assets/images/robot-cleaning-ai_rl-improved.png" alt="Performance Improved Reinforcement Learning AI"></amp-img>
 
-Algorithm performance seems a little bit caotic, but it performs really
+Algorithm performance seems a little bit chaotic, but it performs really
 good. All individuals outperforms the manufacturer and random algorithm
-from the first day, and have a cloose behavior to the best genetic algorithm
+from the first day, and have a close behavior to the best genetic algorithm
 in just few days. 
 There is an oscillation in results performance (which should be studied
 carefully in the future) but eventually (every 4 or 5 days) it

@@ -37,7 +37,7 @@ degree of integration with jQuery.
 The strong point of 
 Zurb Foundation is that it can
 be configured quickly
-to create a coporative image
+to create a corporative image
 in no time. It also can be
 personalized through graphic
-resuable components.
+re-suable components.

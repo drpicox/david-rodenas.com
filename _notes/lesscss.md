@@ -17,7 +17,7 @@ description: >
   
 ---
 CSS3 has many options but 
-it has a low degree of reusability.
+it has a low degree of re-usability.
 LessCSS is a language designed
 to replace/complement CSS3.
 

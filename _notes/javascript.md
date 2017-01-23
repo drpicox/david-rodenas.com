@@ -109,7 +109,7 @@ It may work, but probably you will break your program
 sooner o later.
 But this is not as strange at it seems,
 nowadays I started to programming java using the same
-filosophy, one example is:
+philosophy, one example is:
 
 ```java
 /* The same example in java */

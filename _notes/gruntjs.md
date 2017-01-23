@@ -21,7 +21,7 @@ tags:
 Usually web apps and web pages
 are composed of many files.
 Although create many files is good
-to obtain a high degree of reusability 
+to obtain a high degree of re-usability 
 and ease of maintenance,
 it works against loading time and latency.
 GruntJS, once configured,
@@ -37,7 +37,7 @@ GruntJS also is ready to do other tasks like:
 - creation of timestamps to improve cache performance,
 - automatic creation of mobile app manifest,
 - real time code review,
-- execution of tests in realtime
+- execution of tests in real-time
 - ...
 
 You can find a tutorial here:

@@ -17,7 +17,7 @@ description: >
 ---
 Reading data from a database is a slow operation
 (it has to read from hard disk which is slow).
-Memcached offsers a shared memory space service where 
+Memcached offers a shared memory space service where 
 multiple apps can store temporal results,
 and reuse them later 
 (saving time).

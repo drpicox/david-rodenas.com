@@ -25,7 +25,7 @@ correct management of the memory available in each core,
 common memory is too slow.
 Used correctly, in the correct app,
 it can speed up a program 100 times just spending 80€ in a GPU.
-If more power is required, better GPUs can be adquired,
+If more power is required, better GPUs can be acquired,
 or more GPUs can be used simultaneously.
 
 ```c

@@ -16,23 +16,23 @@ description: >
 
 ---
 Databases uses their own languages, and many times,
-even SQLs, their oen idioms.
+even SQLs, their own idioms.
 In addition, 
 their use require to prepare correctly a schema
-and perform the addient operations just for get it fresh.
+and perform the exact operations just for get it fresh.
 When an app is built, 
 it is required to make the code connect to the database.
 
 DataMapper connects automatically 
 classes and methods against any database.
-It use adaptors that abstracts the access to a database
+It use adapters that abstracts the access to a database
 (so database can be changed without changing code)
 and it adds a lot of functionalities that
 build queries and updates automatically.
 
 The strong point of DataMapper is that it offers
 a very high degree of productivity 
-and it requires a very low level of speicialization
+and it requires a very low level of specialization
 (and almost no configuration).
 
 ```ruby
@@ -105,7 +105,7 @@ end
 ```
 
 In this case it is assumed that your
-production environemtn has a PostgreSQL
+production environment has a PostgreSQL
 and your development environment uses 
 a SQLite.
 
@@ -129,7 +129,7 @@ require 'data_mapper'
 DataMapper connects to the database using
 the database connection URL 
 and the `DataMapper.setup` method.
-Add the follwing code to your `app.rb`:
+Add the following code to your `app.rb`:
 
 ```ruby
 DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/local.db")
@@ -297,8 +297,8 @@ name = nyc.name
 <div class="alert alert-info">	
 This framework that it writes the SQL 
 sentence for you (if you are using a SQL database).
-It uses lazy criterias and do not perform any
-SQL call until it is really necessari. And,
+It uses lazy criteria and do not perform any
+SQL call until it is really necessary. And,
 when it does happens, it combines all steps into
 one single and efficient SQL sentence.
 </div>
@@ -339,7 +339,7 @@ By default,
 when a problem is found or a query is not possible
 it returns false instead of a valid object.
 In order to avoid to add extra code just to check it,
-request to raise an exeption when save fails:
+request to raise an exception when save fails:
 
 ```ruby
 DataMapper::Model.raise_on_save_failure = true

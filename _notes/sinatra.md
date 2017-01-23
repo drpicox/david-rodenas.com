@@ -64,7 +64,7 @@ Now you have your app running at `http://localhost:4567`.
 
 Sinatra is a routing library,
 you specify routes and how to handle it. 
-Sinatra itslef (automatically) relies in a Ruby webserver 
+Sinatra itself (automatically) relies in a Ruby web-server 
 library to start the service,
 they recommend to install `gem install thin` 
 as an alternative for [Rack](http://rack.github.io/).

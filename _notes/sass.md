@@ -17,10 +17,10 @@ description: >
   
 ---
 CSS3 have many options and features,
-but it has a low degree of reusability.
+but it has a low degree of re-usability.
 SASS is designed as a language
 designed to ease and improve
-CSS3 writting.
+CSS3 writing.
 
 SASS is a Ruby program that
 given SASS files

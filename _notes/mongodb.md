@@ -37,7 +37,7 @@ Most relevant features:
   - fast writing,
   - complex indexing,
   - geolocation indexing,
-  - queues suport structures,
+  - queues support structures,
   - map/reduce for complex queries
 
 

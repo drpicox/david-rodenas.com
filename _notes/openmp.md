@@ -17,7 +17,7 @@ OpenMP is designed to build high performance programs,
 usually with a heavy numerical load,
 that need to take advantage of all resources available in a machine.
 
-The idea behind OpenMP is to convert an eisting program
+The idea behind OpenMP is to convert an existing program
 (C, C++, Fortran)
 into a parallel program
 (which works in multiple cores and processors)

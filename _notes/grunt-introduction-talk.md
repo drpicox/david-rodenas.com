@@ -34,7 +34,7 @@ _If you have learned something interesting, make a speech and share it_
 I make an speech and presented it in the BarcelonaJS
 meetup that existed in these time.
 
-It has around 100 atendees, and it was very well received.
+It has around 100 attendees, and it was very well received.
 The presentation was divided in three parts:
 
 - one explaining what is grunt

@@ -36,7 +36,7 @@ to focus in the visualization
 and create the best presentation for each part and component.
 And at the same time programmers can write 
 and test their code effectively without worry about nothing else but code.
-AngularJS creates automatically a bidirectial 
+AngularJS creates automatically a bidirectional 
 bridge between both parts.
 
 AngularJS is designed to be modular,
@@ -50,7 +50,7 @@ AngularJS is used to create web pages
 but also mobile apps.
 
 Nowadays, some libraries so populars like jQuery,
-are being replaced by AngularJS. Making them almos obsolete.
+are being replaced by AngularJS. Making them almost obsolete.
 
 ```html
 <!doctype html>
@@ -77,13 +77,13 @@ frameworks to develop web applications.
 It ties HTML code to Javascript data structures.
 The best of it is that it works
 like magic (of course, no magic involved, only
-lots of comparissons).
+lots of comparisons).
 
 ## Works like a game engine
 
 AngularJS works like a game engine:
 it has a engine loop that updates and draws
-everithing.
+everything.
 
 Data to be displayed in HTML is kept in a special
 environment variables called

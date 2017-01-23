@@ -58,7 +58,7 @@ Basic data types of JSON are:
 	null
 ```
 
-Objects can contain arrays as value, and viceversa.
+Objects can contain arrays as value, and vice-versa.
 Spaces and new lines are not significant if they
 are outside of an string.
 
@@ -174,7 +174,7 @@ JSON was *discovered* to replace XML.
 The strong points are: it is lighter, 
 it is faster, it is easier to read.
 But the main difference is not this,
-the main diference is that `JSON`
+the main difference is that `JSON`
 describes a data structure (such the
 one that we may have in any program)
 and `XML` describes a document.
@@ -187,7 +187,7 @@ some tricky or invalid data
 can be easily written. 
 `JSON` only allows to encode
 data structures. An example
-of a valid `XML` and imposible
+of a valid `XML` and impossible
 `JSON` (you must find another
 way to write the same thing) is:
 
@@ -199,7 +199,7 @@ way to write the same thing) is:
 ```
 
 Anyway, both are textual data
-transmision formats.
+transmission formats.
 
 
 

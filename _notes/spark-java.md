@@ -60,7 +60,7 @@ to retrieve and generate
 results. 
 In this library, by default, JSON objects are converted
 into Java Maps, and arrays into Java Lists. 
-And viceversa, Maps will be converted into JSON objects,
+And vice-versa, Maps will be converted into JSON objects,
 and arrays, Lists and Sets, into JSON arrays.
 An example:
 
