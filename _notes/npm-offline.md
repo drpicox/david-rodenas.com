@@ -1,11 +1,12 @@
 ---
 title: "Install npm packages offline"
 tags:
+  - teaching
   - npm
   - node
   - offline
 date: 2016-09-01
-abstract: >
+description: >
     If you have no internet connection or 
     you have a slow and no reliable connection
     you can do npm install from cache.
@@ -14,6 +15,8 @@ snippet: |
     $ npm --cache-min 9999999 install
     ```
 ---
+
+## Motivation
 
 May be you are working in a plane, 
 or in a train, 
@@ -29,10 +32,12 @@ Probably you already have all packages
 and you do not care about updates.
 
 
+## How it works?
+
 ### Shortcut in your `.bashrc`
 
-If you are using bash (Mac or Linux), 
-add an alias for offline npm support:
+Add an alias for offline npm support
+if you are using bash (Mac or Linux), :
 
 ```bash
 alias npm-offline="npm --cache-min 9999999 "
@@ -45,7 +50,7 @@ $ npm-offline install
 ```
 
 
-### Deployment environments
+## Deployment environments
 
 Use always `--cache-min` flag to ensure faster
 deployments.
@@ -55,7 +60,7 @@ alias npm="npm --cache-min 9999999 "
 ```
 
 
-### More information
+## More information
 
 See:
 - https://github.com/npm/npm/issues/2568#issuecomment-6595842

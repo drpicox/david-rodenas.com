@@ -1,6 +1,7 @@
 ---
 title: "Writing Angular1 components in Typescript (class form)"
 tags:
+  - teaching
   - angular
   - typescript
   - es2015
@@ -8,7 +9,7 @@ tags:
   - styleguide
   - howto
 date: 2016-09-08
-abstract: >
+description: >
     Shows how to write Angular1 components
     using the new .component syntax of Angular 1.5,
     and typescript just using classes.

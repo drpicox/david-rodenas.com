@@ -1,6 +1,7 @@
 ---
 title: "Update package.json dependencies versions"
 tags:
+  - teaching
   - npm
   - node
   - package
@@ -9,8 +10,8 @@ tags:
   - update
   - security
 date: 2016-09-04
-abstract: >
-    Usually the package.json dependencies is large
+description: >
+    Usually the package.json dependencies count is large
     and many times their dependencies become old.
     Use npm-check-dependencies to update them.
 snippet: |
@@ -20,19 +21,21 @@ snippet: |
     ```
 ---
 
+## Overview
+
 Keep dependencies up to date is a very good practice:
 you have less bugs and [better security](https://www.owasp.org/index.php/OWASP_Dependency_Check).
 
 The problem is that the number of dependencies is large
 and check updates one by one is a time consuming task.
 
-### Use `npm-check-dependencies`
+## `npm-check-dependencies`
 
 It is a node utility that you run in the same
 directory that you have your `package.json`
 and it checks for all updates available for you packages.
 
-### How to use it
+## How to use it
 
 Install the tool if you do not have installed it before:
 
@@ -87,7 +90,7 @@ Upgraded /Users/drodenas/Projects/drpicox/angular1-scaffold/package.json
 $ npm install
 ```
 
-### Warning: better with _git_
+## Warning: better with _git_
 
 Before commit just check if everything works as expected.
 Some times it is possible that an update break your code.
@@ -97,7 +100,7 @@ make a copy before execute it,
 or keep track of the changes. 
 
 
-### More information
+## More information
 
 See:
 - https://www.npmjs.com/package/npm-check-updates

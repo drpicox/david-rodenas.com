@@ -1,13 +1,13 @@
 ---
 title: "Improve performance: do not compile class and comment directives"
 tags:
-  - angular
+  - angularjs
   - performance
   - production
-  - contribution
+  - contributions
   - benchpress
 date: 2016-08-28
-abstract: >
+description: >
     Since Angular 1.5.9 it is possible to instruct angular to ignore
     css class and comment directives.
     By doing this you can achieve better performance in the application

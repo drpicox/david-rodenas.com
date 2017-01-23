@@ -3,7 +3,7 @@ title: "Angular providers"
 tags:
   - teaching
   - angularjs
-abstract: >
+description: >
     One of the most difficult parts to angular newcomers is to
     understand the concept of factories, services, and the hardest
     one are provider. Nevertheless they are quite simple and, 

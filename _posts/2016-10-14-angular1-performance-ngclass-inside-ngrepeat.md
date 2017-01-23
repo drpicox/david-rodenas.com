@@ -3,12 +3,12 @@ title: "Angular1 Performance: ngClass inside ngRepeat"
 tags:
   - angular1
   - performance
-  - contribution
+  - contributions
   - benchpress
   - ngClass
   - digest-loop
 date: 2016-10-14
-abstract: >
+description: >
   I present a little trick that improves 
   digest loop performance 10 times 
   in our applications.

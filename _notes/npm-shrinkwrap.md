@@ -1,12 +1,13 @@
 ---
 title: "Installing node packages in production environments"
 tags:
+  - teaching
   - npm
   - package
   - dependencies
   - production
 date: 2016-09-21
-abstract: >
+description: >
     Production environments must be stable and replicable.
     Using npm-shrinkwrap we can ensure that installed 
     versions of our dependencies are exactly the ones
@@ -17,6 +18,8 @@ snippet: |
     $ npm install
     ```
 ---
+
+## Motivation
 
 Each time that we execute `npm install` 
 it looks for compatible versions and installs them.
@@ -42,6 +45,8 @@ This is the reason why we need to use _npm-shrinkwrap_ in our projects.
 It will create a file named `npm-shrinkwrap.json` 
 that we can push to our git and it contains all explicit dependencies.
 
+
+## How it works?
 
 ### Setup your project
 
@@ -69,7 +74,7 @@ $ git push
 ```
 
 
-### Installing dependencies 
+### Install dependencies 
 
 Create a clone of the branch that you want to install:
 
@@ -91,7 +96,7 @@ knowing that you have the exact same version of all dependencies.
 
 ### Adding new dependencies
 
-Just install your dependency with --save or --save-dev and
+Install your dependency with --save or --save-dev and
 _npm-shrinkwrap.json_ will be updated.
 
 ```bash
@@ -101,9 +106,14 @@ $ git commit
 $ git push
 ```
 
+## Other recommendations
 
-### More information
+It is also recommended to use the offline install for production
+environments, see [npm-offline](./npm-offline).
+
+
+## More information
 
 See:
-- https://github.com/drpicox/david-rodenas.com/blob/master/npm-shrinkwrap.json
+- https://github.com/drpicox/david-rodenas.com/blob/release/v5/npm-shrinkwrap.json
 - https://docs.npmjs.com/cli/shrinkwrap

@@ -4,7 +4,7 @@ tags:
   - angular
   - modules
 date: 2015-05-06
-abstract: >
+description: >
     Angular lets you to transclude html templates into your directives,
     in other words, parametrize a directive with one template.
     Unfortunately, angular is limited by one single translcussion.

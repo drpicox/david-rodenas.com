@@ -1,11 +1,11 @@
 ---
 title: "Improved performance in Angular 1.5.8"
 tags:
-  - angular
+  - angularjs
   - performance
-  - contribution
+  - contributions
 date: 2016-08-25
-abstract: >
+description: >
     Angular 1.5.8 improves the performance around
     a 5~10%.
     You can achieve better performance in the application

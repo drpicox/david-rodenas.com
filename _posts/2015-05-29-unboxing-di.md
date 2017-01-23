@@ -4,7 +4,7 @@ tags:
   - discussion
   - angular
 date: 2015-05-29
-abstract: >
+description: >
     AngularJS dependency injection saves a lot of work, 
     and this feature comes out of the box.
     Beginners are usually puzzled by this feature, 

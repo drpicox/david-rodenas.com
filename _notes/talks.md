@@ -9,7 +9,7 @@ description: >
   them and any can consult them.
   Now I will have a easy answer to the typical
   question: Where are the slides uploaded?
-url: "http://www.slideshare.net/DavidRdenasPic"
+website: "http://www.slideshare.net/DavidRdenasPic"
 tags:
   - root
 ---

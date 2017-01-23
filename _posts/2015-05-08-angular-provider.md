@@ -5,7 +5,7 @@ tags:
   - teaching
   - angularjs
 date: 2015-05-08
-abstract: >
+description: >
     One of the most difficult parts to AngularJS newcomers 
     is now in Teaching section.
 snippet: |

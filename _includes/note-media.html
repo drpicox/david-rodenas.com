@@ -14,6 +14,9 @@
   <div>
     <h3>{{ _note.title }}</h3>
     {{ _note.description | default:_note.excerpt | markdownify }}
+    {% if _note.snippet %}
+    {{ _note.snippet | markdownify }}
+    {% endif %}
     <p><span class="more">Read more »</span></p>
   </div>
 {% endif %}

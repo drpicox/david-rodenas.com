@@ -10,7 +10,7 @@ tags:
   - scope-hoisting
   - tree-shaking
 date: 2016-09-22
-abstract: >
+description: >
     Rollup introduced tree-shaking in the bundle creation process.
     Recently, webpack 2 added tree shanking to its bundle generation.
     But both processes are substantially different.

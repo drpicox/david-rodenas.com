@@ -29,7 +29,7 @@ layout: default
           {% for note in direct_subnotes %}
             {% if prev_second_tag != note.tags[1] %}
               </div>
-              <h3> 
+              <h3 id="hdr-{{ note.tags[1] | slugify }}"> 
                 {% assign second_tag_note = site.notes | where:"slug",note.tags[1] | first %}
                 {% if second_tag_note %}
                   {% include note-href.html note=second_tag_note %}
@@ -100,3 +100,4 @@ layout: default
     </div>
   </main>
 </article>
+

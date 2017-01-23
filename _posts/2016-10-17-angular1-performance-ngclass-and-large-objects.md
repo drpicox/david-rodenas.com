@@ -3,12 +3,12 @@ title: "Angular1 Performance: ngClass and large objects"
 tags:
   - angular1
   - performance
-  - contribution
+  - contributions
   - benchpress
   - ngClass
   - $watch
 date: 2016-10-17
-abstract: >
+description: >
     Some times the performance of Angular1 applications
     suddenly drops. 
     Many times it is due to ngClass,

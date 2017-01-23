@@ -1,5 +1,5 @@
 ---
-title: WeNode
+title: We Node!
 website: http://wenode.barcelonajs.org
 source: https://github.com/drpicox/wenode
 image:

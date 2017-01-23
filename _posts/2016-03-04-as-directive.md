@@ -3,9 +3,9 @@ title: "My proposal for as Directive"
 tags:
   - as-directive
   - angularjs
-  - contribution
+  - contributions
 date: 2016-03-04
-abstract: >
+description: >
     Large part of the effort of building Angular applications
     is to connect components.
     Using bindings we can pass arguments, trigger updates,

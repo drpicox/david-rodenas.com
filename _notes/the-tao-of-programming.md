@@ -1,31 +1,21 @@
 ---
 title: "The Tao of Programming"
 tags:
-  - programming
+  - ludic
   - teaching
+  - programming
   - books
   - tao
-  - ludic
 date: 2016-09-13
-abstract: >
-    Few guidelines and a story about how to write good code.
+website: http://www.mit.edu/~xela/tao.html
+description: >
+    An ancient story about how to write good code.
 snippet: |
     ```javascript
-    do { small() && beautiful() } while (code());
+    while (master.speaks) { listen(); }
+    while (master.awaits) { ask(); }
     ```
 ---
-
-* **Small** is beautiful.
-* Make each artifact **do one thing** well.
-* **Beautiful** is better than ugly. 
-* **Declarative** better than Imperative.
-* **Explicit** is better than implicit.
-* **Simple** is better than complex.
-* Complex is better than complicated.
-* **Flat** is better than nested.
-* **Sparse** is better than dense.
-* Big things out of small things
-
 
 # The Tao of Programming
 

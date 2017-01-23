@@ -1,7 +1,7 @@
 ---
 title: "Updateable pattern or flux-for-angular"
 tags:
-  - angular
+  - angularjs
   - flux
   - patterns
   - architecture

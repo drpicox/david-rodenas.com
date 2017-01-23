@@ -1,13 +1,14 @@
 ---
 title: "Typescript typings and typings"
 tags:
+  - teaching
   - typescript
   - npm
   - package
   - dependencies
   - types
 date: 2016-09-15
-abstract: >
+description: >
     Typings is a tool that allows to add
     type information to existing
     Javascript library so you can leverage
@@ -20,6 +21,11 @@ snippet: |
     # Use `typings/index.d.ts` (in `tsconfig.json` or as a `///` reference). 
     ```
 ---
+
+* toc
+{:toc}
+
+## Overview
 
 Typescript is just a ES6 Javascript transpiler 
 that allows to add type annotations to our sourcecode.

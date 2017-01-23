@@ -1,10 +1,11 @@
 ---
 title: "AngularCamp talks"
 tags:
+  - talks
   - teaching
-  - angular
+  - angularjs
 date: 2016-01-31
-abstract: >
+description: >
     AngularCamp take place at January 30-31 of 2016
     in Barcelona. 
     During the event, I proposed few talks, and I

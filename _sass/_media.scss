@@ -11,6 +11,9 @@
   p { 
     margin: 0.3em 0;
   }
+  > div {
+    min-width: 0;
+  }
 }
 .media:last-child {
   border-bottom: none;

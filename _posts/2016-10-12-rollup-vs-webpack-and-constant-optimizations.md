@@ -12,7 +12,7 @@ tags:
   - constant-propagation
   - compilers
 date: 2016-10-12
-abstract: >
+description: >
     There are substantial differences in the strategy of
     tree-shaking and bundle generation between rollup and webpack 2.
     Here I analyse how it affects to constant propagation
