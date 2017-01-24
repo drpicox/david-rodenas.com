@@ -34,7 +34,12 @@ snippet: |
     ```
 ---
 
-## Motivation
+
+## Motivation
+
+Make AngularJS SPA apps crawable by Google.
+
+<amp-img src="{{ site.baseurl }}/assets/images/david-rodenas-spa-seo.jpg" width="986" height="659" layout="responsive"></amp-img>
 
 AnuglarJS single page applications are mostly running in 
 the browser. 
