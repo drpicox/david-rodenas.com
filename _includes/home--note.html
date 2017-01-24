@@ -1,7 +1,7 @@
 {% assign tag = include.tag %}
 
 {% assign tag_note = site.notes | where:"slug",tag | first %}
-{% assign subnotes = site.notes | where_exp:"subnote","subnote.tags contains tag" | sample:10 | sort:"title" %}
+{% assign subnotes = site.notes | where_exp:"subnote","subnote.tags[0] == tag" | sample:10 | sort:"title" %}
 
 <h2>{{ tag_note.title }}</h2>
 <p>{{ tag_note.description | default:tag_note.excerpt | markdownify }}

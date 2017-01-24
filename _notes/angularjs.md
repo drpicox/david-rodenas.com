@@ -1,8 +1,8 @@
 ---
 title: AngularJS
 image: 
-  width: 100
-  height: 100
+  width: 93
+  height: 99
   src: /assets/images/angularjs.png
 image: 
   width: 93

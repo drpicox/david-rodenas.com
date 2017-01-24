@@ -85,13 +85,14 @@ layout: default
           {% assign related_notes = site.notes
               | where_exp:"note","note.tags contains main_tag" 
               | where_exp:"note","note != page"
-              | sample:10 %}
+              | sample:10 
+              | sort:"title" %}
           {% if related_notes.size > 0 or main_note %}
           <h3>See also</h3>
           <ul>
             {% include notes-li.html notes=related_notes %}
             {% if main_note %}
-              <li>{% include note-href.html note=main_note title="See all »" %}</li>
+              <li>{% include note-href.html note=main_note title="See more »" %}</li>
             {% endif %}
           </ul>
           {% endif %}

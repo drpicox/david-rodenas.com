@@ -5,6 +5,7 @@ tags:
   - flux
   - patterns
   - architecture
+  - updateable
 date: 2015-03-02
 description: >
   This last year Flux had become highly popular, 

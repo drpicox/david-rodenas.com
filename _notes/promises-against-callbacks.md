@@ -7,6 +7,8 @@ image:
 tags:
   - talks
   - promises
+  - javascript
+  - teaching
   - angularcamp
 description: >
   Many times I have discussions about 
