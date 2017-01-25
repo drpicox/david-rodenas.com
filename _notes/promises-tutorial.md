@@ -74,6 +74,6 @@ var activityNames = getCurrentUser().
 ```
 
 Also now I have strong 
-[arguments in favor of promises](./promises-against-callbacks).
+[arguments in favor of promises](../promises-against-callbacks).
 For a long time, promises vs callbacks seemed to be 
 a holy war, just like emacs vs vim.
