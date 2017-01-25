@@ -8,5 +8,5 @@ How to run
 ----------
 
 ```bash
-$ rm -fr _site ; jekyll s -H 0.0.0.0 -w --incremental --baseurl ""
+$ rm -fr _site/; bundle exec jekyll s -H 0.0.0.0 --incremental  --baseurl '' -P 4001
 ```
