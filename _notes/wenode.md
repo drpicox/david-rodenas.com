@@ -1,5 +1,5 @@
 ---
-title: We Node!
+title: We Node! the Conference
 website: http://wenode.barcelonajs.org
 source: https://github.com/drpicox/wenode
 image:
@@ -7,7 +7,7 @@ image:
   width: 500
   height: 500
 tags:
-  - community
+  - talks
   - nodejs
   - javascript
 description: >

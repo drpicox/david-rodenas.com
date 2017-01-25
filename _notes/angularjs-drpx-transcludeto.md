@@ -8,6 +8,7 @@ tags:
   - component
   - npm
   - bower
+  - contributions
 date: 2015-03-08
 source: https://github.com/drpicox/drpx-transcludeto
 description: >

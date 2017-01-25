@@ -9,6 +9,7 @@ tags:
   - component
   - npm
   - bower
+  - contributions
 date: 2015-09-15
 source: https://github.com/drpicox/drpx-class-route
 description: >

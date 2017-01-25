@@ -9,6 +9,7 @@ tags:
   - component
   - npm
   - bower
+  - contributions
 date: 2015-02-12
 source: https://github.com/drpicox/drpx-updateable
 description: >

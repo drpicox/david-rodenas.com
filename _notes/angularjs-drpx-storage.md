@@ -12,6 +12,7 @@ tags:
   - component
   - npm
   - bower
+  - contributions
 date: 2015-06-04
 source: https://github.com/drpicox/drpx-storage
 description: >

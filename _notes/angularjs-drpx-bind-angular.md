@@ -8,6 +8,7 @@ tags:
   - component
   - npm
   - bower
+  - contributions
 date: 2015-09-04
 source: https://github.com/drpicox/drpx-bind-angular
 description: >
