@@ -1,11 +1,11 @@
 module.exports = {
   plugins: [
     `gatsby-plugin-emotion`,
-    `gatsby-drpicox-wiki`,
+    // `gatsby-drpicox-wiki`,
     {
-      resolve: `gatsby-transformer-remark`,
+      resolve: "gatsby-plugin-page-creator",
       options: {
-        plugins: [`gatsby-remark-drpicox-wiki-link`],
+        path: `${__dirname}/wiki`,
       },
     },
     {
@@ -13,6 +13,18 @@ module.exports = {
       options: {
         name: `wiki`,
         path: `${__dirname}/wiki`,
+      },
+    },
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        defaultLayouts: {
+          wiki: require.resolve(`./src/layouts/WikiLayout.js`),
+          default: require.resolve(`./src/layouts/BasicLayout.js`),
+        },
+        gatsbyRemarkPlugins: [
+          require.resolve("./plugins/gatsby-remark-drpicox-wiki-link"),
+        ],
       },
     },
   ],

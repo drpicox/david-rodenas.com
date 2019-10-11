@@ -1,6 +1,6 @@
 import React from "react"
 import { css } from "@emotion/core"
-import Header from "./Header"
+import Header from "../components/Header"
 
 const layoutCss = css`
   display: grid;
@@ -10,7 +10,7 @@ const layoutCss = css`
     "footer footer footer";
 `
 
-export default function Layout({ children }) {
+export default function BasicLayout({ children }) {
   return (
     <div css={layoutCss}>
       <Header />

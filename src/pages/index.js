@@ -1,4 +1,4 @@
 import React from "react"
-import Layout from "../components/Layout"
+import BasicLayout from "../layouts/BasicLayout"
 
-export default () => <Layout>Hello world!</Layout>
+export default () => <BasicLayout>Hello world!</BasicLayout>
