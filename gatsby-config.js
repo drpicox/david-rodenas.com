@@ -1,7 +1,7 @@
 module.exports = {
   plugins: [
     `gatsby-plugin-emotion`,
-    // `gatsby-drpicox-wiki`,
+    `gatsby-drpicox-wiki-redirect-home`,
     {
       resolve: "gatsby-plugin-page-creator",
       options: {
