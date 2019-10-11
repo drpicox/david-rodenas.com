@@ -23,6 +23,7 @@ module.exports = {
           default: require.resolve(`./src/layouts/BasicLayout.js`),
         },
         gatsbyRemarkPlugins: [
+          "gatsby-remark-external-links",
           require.resolve("./plugins/gatsby-remark-drpicox-wiki-link"),
         ],
       },

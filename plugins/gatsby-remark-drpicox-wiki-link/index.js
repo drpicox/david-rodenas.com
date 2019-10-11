@@ -16,12 +16,7 @@ module.exports = ({ markdownAST, makrdownNode, files }) => {
       if (existingTopics.includes(label)) {
         node.url = `./${label}`
       } else {
-        console.log(node)
         node.url = `https://github.com/drpicox/drpicox.github.io/new/master?filename=_entries/${label}.md`
-        node.properties = {
-          target: "_blank",
-          rel: "noopener noreferrer",
-        }
       }
     }
   })
