@@ -24,6 +24,7 @@ module.exports = {
         },
         gatsbyRemarkPlugins: [
           "gatsby-remark-external-links",
+          "gatsby-remark-prismjs",
           require.resolve("./plugins/gatsby-remark-drpicox-wiki-link"),
         ],
       },

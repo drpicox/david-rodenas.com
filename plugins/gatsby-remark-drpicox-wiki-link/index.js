@@ -16,20 +16,27 @@ function transformNewTopicNode(node) {
   node.url = `https://github.com/drpicox/drpicox.github.io/new/master?filename=_entries/${label}.md`
 }
 
-module.exports = ({ markdownAST, makrdownNode, files }) => {
+module.exports = args => {
+  const { markdownAST, files, markdownNode } = args
   const existingTopics = files
     .filter(f => f.sourceInstanceName === "wiki")
     .map(f => f.name)
+
+  markdownNode.references = []
 
   visit(markdownAST, "linkReference", node => {
     const { label } = node
     if (IS_WIKI.test(label)) {
       if (existingTopics.includes(label)) {
         transformExistingTopicNode(node)
+        markdownNode.references.push(label)
       } else {
         transformNewTopicNode(node)
       }
     }
   })
+
+  markdownNode.references.sort()
+
   return markdownAST
 }
