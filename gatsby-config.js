@@ -2,7 +2,14 @@ module.exports = {
   siteMetadata: {
     siteUrl: "http://david-rodenas.com",
   },
+
   plugins: [
+    {
+      resolve: `gatsby-plugin-google-analytics`,
+      options: {
+        trackingId: "UA-41300908-1",
+      },
+    },
     `gatsby-plugin-sitemap`,
     `gatsby-plugin-emotion`,
     `gatsby-drpicox-wiki-redirect-home`,
