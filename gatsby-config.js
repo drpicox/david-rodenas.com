@@ -1,8 +1,13 @@
 module.exports = {
+  siteMetadata: {
+    siteUrl: "http://david-rodenas.com",
+  },
   plugins: [
+    `gatsby-plugin-sitemap`,
     `gatsby-plugin-emotion`,
     `gatsby-drpicox-wiki-redirect-home`,
     `gatsby-drpicox-wiki-topics`,
+    `gatsby-drpicox-blog-posts`,
     {
       resolve: "gatsby-plugin-page-creator",
       options: {
@@ -17,9 +22,17 @@ module.exports = {
       },
     },
     {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `blog`,
+        path: `${__dirname}/blog`,
+      },
+    },
+    {
       resolve: `gatsby-plugin-mdx`,
       options: {
         defaultLayouts: {
+          blog: require.resolve(`./src/layouts/PostLayout.js`),
           wiki: require.resolve(`./src/layouts/WikiLayout.js`),
           default: require.resolve(`./src/layouts/BasicLayout.js`),
         },

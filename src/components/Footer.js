@@ -23,7 +23,30 @@ export default function Footer() {
       <div css={footerCss}>
         <Row>
           Copyright © {new Date().getFullYear()} David Rodenas
-          <Col></Col>T
+          <Col></Col>
+          <a
+            href="https://github.com/drpicox"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            G
+          </a>
+          {" · "}
+          <a
+            href="https://twitter.com/drpicox"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            T
+          </a>
+          {" · "}
+          <a
+            href="https://medium.com/@drpicox"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >
+            M
+          </a>
         </Row>
       </div>
     </Container>
