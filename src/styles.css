@@ -1,5 +1,20 @@
 html, body {
-    margin: 0
+    margin: 0;
+    font-family: 'Avenir', 'Helvetica Neue', 'Helvetica', 'Verdana', sans-serif;
+    line-height: 1.5;
+}
+
+blockquote {
+    color: gray;
+    font-family: cursive;
+}
+blockquote p:first-child::before {
+    content: "«";
+    display: inline;
+}
+blockquote p:last-child::after {
+    content: "»";
+    display: inline;
 }
 
 .gatsby-highlight {
