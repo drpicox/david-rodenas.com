@@ -19,8 +19,8 @@ const toEdit = pn => {
 }
 
 function EditMe() {
-  const pathname = useLocation().pathname
-  const editPath = useMemo(() => toEdit(pathname), [pathname])
+  const { pathname } = useLocation() || {}
+  const editPath = useMemo(() => pathname && toEdit(pathname), [pathname])
 
   return (
     <a
