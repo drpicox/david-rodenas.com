@@ -1,0 +1,28 @@
+{% assign _sorted_entries = site.entries | sort:"url" %}
+{% for _entry in _sorted_entries %}
+  {% if _entry == page %}
+    {% assign _prev = _entry_m1 %}
+  {% endif %}
+  {% if _entry_m1 == page %}
+    {% assign _next = _entry %}
+    {% break %}
+  {% endif %}
+  {% assign _entry_m1 = _entry %}
+{% endfor %}
+
+<div class="prev-next">
+  <div>
+    <span>«&nbsp;</span>
+    {% if _prev %}
+    <a href="{{ site.baseurl }}{{ _prev.url }}">{{_prev.title}}</a>
+    {% else %}
+    <a href="{{ site.baseurl }}/">HOME</a>
+    {% endif %}
+  </div>
+  <div>
+    {% if _next %}
+    <a href="{{ site.baseurl }}{{ _next.url }}">{{_next.title}}</a>
+    <span>&nbsp;»</span>
+    {% endif %}
+  </div>
+</div>

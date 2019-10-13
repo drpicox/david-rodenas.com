@@ -1,0 +1,27 @@
+<amp-sidebar id="sidebar" layout="nodisplay" side="left">
+  <div class="text-right">
+    <i class="material-icons cursor-pointer flex cursor-pointer" on="tap:sidebar.close">close</i>
+  </div>
+  <div class="indent">
+    {% include sidenav.html %}
+  </div>
+</amp-sidebar>
+
+<header class="toolbar tint-dark">
+  <span class="hidden-desktop">&nbsp;</span>
+  <i class="material-icons cursor-pointer hidden-desktop" on="tap:sidebar.toggle">menu</i>
+
+  &nbsp;
+  <amp-img src="{{ site.baseurl }}/assets/images/david.jpg" alt="Welcome" height="48" width="48" class="img-circle "></amp-img>
+  &nbsp;&nbsp;
+  <a href="{{ site.baseurl }}/" class="large">
+    David<strong>Rodenas</strong>
+  </a>
+
+  <div class="separator"></div>
+
+  <a href="{{ site.baseurl }}/contact" class="btn">
+    CONTACT
+  </a>
+  &nbsp;
+</header>

@@ -1,0 +1,10 @@
+<ul class="entries-breadcrumb">
+  <li><a href="{{ site.baseurl }}/">Home</a></li>
+  {% for _entry in site.entries %}
+    {% if page.url contains _entry.url and _entry != page %}
+      <li>
+        <a href="{{ site.baseurl }}{{ _entry.url }}">{{ _entry.title }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

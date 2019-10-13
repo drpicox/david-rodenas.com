@@ -1,0 +1,44 @@
+{% assign _id = include.id %}
+
+{% capture infobox_content %}
+
+  {% if page.image %}
+    <p class="layout-row justify-center">
+    {% include image.html entry=page not_expand=true %}
+    </p>
+    <meta itemprop="image" content="{{ site.url }}{{ site.baseurl }}{{ page.image.src }}">
+    {% assign has_infobox = true %}
+  {% endif %}
+
+  {% if page.website %}
+    <a href="{{ page.website }}" target="_blank" class="more">Website</a><br>
+    {% assign has_infobox = true %}
+  {% endif %}
+  {% if page.example %}
+    <a href="{{ page.example }}" target="_blank" class="more">Example</a><br>
+    {% assign has_infobox = true %}
+  {% endif %}
+  {% if page.source %}
+    <a href="{{ page.source }}" target="_blank" class="more">Source</a><br>
+    {% assign has_infobox = true %}
+  {% endif %}
+
+  {% capture entry_disambiguation_content %}
+  {% include entry-disambiguation.html id=_id %}
+  {% endcapture %}
+  {% assign entry_disambiguation_content = entry_disambiguation_content | normalize_whitespace | lstrip %}
+  {% if entry_disambiguation_content != "" %}
+    {{ entry_disambiguation_content }}
+    {% assign has_infobox = true %}
+  {% endif %}
+
+
+{% endcapture %}
+
+{% if has_infobox %}
+<div class="entry-infobox">
+  <div class="well tint-light no-margin">
+    {{ infobox_content }}
+  </div>
+</div>
+{% endif %}

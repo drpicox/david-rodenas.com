@@ -1,0 +1,10 @@
+{% assign _page_path = page.id | split:'/' %}
+{% assign _page_level_p1 = _page_path.size | plus:1 %}
+
+{% include fn-entry-children.jk entry=page %}
+{% assign result = result | sort:"title" %}
+<div class="clear-both">
+{% for _entry in result %}
+  {% include entry-media.html entry=_entry %}
+{% endfor %}
+</div>

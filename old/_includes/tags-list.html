@@ -1,0 +1,19 @@
+{% assign _tags = page.tags %}
+
+{% assign _tag_definitions = '' | split:'' %}
+{% for _tag in _tags %}
+{%   include fn-tag-entry.jk tag=_tag %}
+{%   if result %}
+{%     assign _tag_definitions = _tag_definitions | push:result  %}
+{%   endif %}
+{% endfor %}
+
+{% if _tag_definitions.size > 0 %}
+<p class="tags">
+Tags:
+{% for _tag_definition in _tag_definitions %}
+<a href="{{ site.baseurl }}{{ _tag_definition.url }}">{{ _tag_definition.slug }}</a>{% unless forloop.last %},{% endunless %}
+{% endfor %}
+</p>
+{% endif %}
+

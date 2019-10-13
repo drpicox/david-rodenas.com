@@ -1,0 +1,21 @@
+{% assign src = include.entry.image %}
+{% assign width = include.entry.image_width %}
+{% assign height = include.entry.image_height %}
+{% assign not_expand = include.not_expand %}
+
+{% assign protocol = src | slice: 0,4 %}
+{% assign double = src | slice: 0,2 %}
+
+{% if protocol == "http" or double == "//" %}
+  {% assign full_src = src %}
+{% else %}
+  {% capture full_src %}{{ site.baseurl }}{{ src }}{% endcapture %}
+{% endif %}
+
+<amp-img src="{{ full_src }}" 
+    width="{{ width }}" height="{{ height }}"
+    layout="responsive"
+    {% if not_expand %}
+    sizes="(min-width: {{ width | plus:width }}px) {{ width | plus:width }}px, 100vw"
+    {% endif %}
+    ></amp-img>

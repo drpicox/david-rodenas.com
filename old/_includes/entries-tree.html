@@ -1,0 +1,36 @@
+{% unless entries_tree_html__content %}
+{% capture entries_tree_html__content %}
+{% assign _sorted_entries = site.entries | sort:"url" %}
+<ul class="entries-tree">
+  {% for _entry in _sorted_entries %}    
+    {% assign _next_entry = _sorted_entries[forloop.index] %}
+    {% assign _dirpath = _entry.path | split:'/' | pop %}
+    {% assign _dirname = _dirpath | join:'/' %}
+    {% assign _dirlevel = _dirpath.size %}
+    {% if page.refs contains _entry.id %}{% assign _isref = true %}{% else %}{% assign _isref = false %}{% endif %}
+    {% if page.path contains _dirname or _isref or _dirname == '_entries' %}
+      <li class="level-{{ _dirlevel }} {% if page == _entry %}active{% endif %} {% if _isref %}ref{% endif %}">
+        {% if _next_entry.url contains _entry.url %}
+          {% if page.url contains _entry.url %}
+            <i class="material-icons">expand_more</i>
+          {% else %}
+            <i class="material-icons">chevron_right</i>
+          {% endif %}
+          {% comment %}folder folder_open{% endcomment %}
+        {% else %}
+          <i class="material-icons">•</i>
+          {% comment %}crop_portrait insert_drive_file short_text{% endcomment %}
+        {% endif %}
+
+        {% if page == _entry %}
+          {{ _entry.title }}
+        {% else %}
+          <a href="{{ site.baseurl }}{{ _entry.url }}">{{ _entry.title }}</a>
+        {% endif %}
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
+{% endcapture %}
+{% endunless %}
+{{ entries_tree_html__content }}

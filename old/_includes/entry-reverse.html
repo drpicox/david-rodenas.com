@@ -1,0 +1,27 @@
+{% assign g_id = g_id | plus:1 %}
+
+{% assign _reverse_entries = site.entries 
+    | where_exp:"entry","entry.tags contains page.slug"
+    | where_exp:"entry","entry != page" 
+    | sort:"url"
+    %}
+
+{% if _reverse_entries.size > 0 %}
+<ul class="entries-tree">
+  <input type="checkbox" id="reverse{{ g_id }}" class="toggle">
+  <label for="reverse{{ g_id }}">REVERSE REFERENCES <i class="material-icons"></i></label>
+  
+  <div class="toggle-content">
+  {% for _reverse_entry in _reverse_entries %}
+    <li>
+      <a href="{{ site.baseurl }}{{ _reverse_entry.url }}" class="more">
+        {{ _reverse_entry.title }}</a>
+      {% include fn-entry-parents.jk entry=_reverse_entry %}
+      {% if result.size > 0 %}
+        ({{ result | map:"title" | join:'/' }})
+      {% endif %}
+    </li>
+  {% endfor %}
+  </div>
+</ul>
+{% endif %}

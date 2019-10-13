@@ -1,0 +1,17 @@
+---
+layout: default
+---
+{% unless g_id %}{% assign g_id = 1 %}{% endunless %}
+
+<div class="layout-row">
+  <div class="flex-1 hidden-mobile tint-light small">
+    <div class="indent-small">
+      {% include sidenav.html %}
+    </div>
+  </div>
+  <div class="flex-3">
+    <div class="indent-large indent-m-small">
+      {{ content }}
+    </div>
+  </div>
+</div>

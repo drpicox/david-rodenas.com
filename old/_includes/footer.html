@@ -1,0 +1,18 @@
+<footer>
+  <a href="{{ site.baseurl }}/">Home</a> |
+  <a href="https://github.com/drpicox" target="_blank">GitHub</a> |
+  <a href="https://twitter.com/drpicox" target="_blank">Twitter</a> |
+  <a href="https://github.com/drpicox/drpicox.github.io/edit/master/{{ page.path }}"
+    target="_blank">Edit Me</a>
+  {% if page.layout == "entry" or page.layout == "post" %}
+{% capture file_value %}---
+tags:
+  - {{ page.slug }}{% for tag in page.tags reverse %}
+  - {{ tag }}{% endfor %}
+---
+{% endcapture %}
+  |
+  <a href="https://github.com/drpicox/drpicox.github.io/new/master/{{ page.path | split:'.' | pop | join:'.' }}?&value={{ file_value | truncate: 4096 | url_encode }}"
+    target="_blank">New Entry</a>
+  {% endif %}
+</footer>

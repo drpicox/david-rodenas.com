@@ -1,0 +1,15 @@
+{% assign __entry = include.entry %}
+{% assign __entry_path = __entry.id | split:'/' %}
+
+{% assign result = '' | split:'' %}
+{% for __parent in site.entries %}
+{%  if __entry.id contains __parent.id %}
+{%    assign __parent_path = __parent.id | split:'/' %}
+{%    assign __parent_level = __parent_path.size %}
+{%    if __parent_path.size < __entry_path.size %}
+{%      assign result = result | push:__parent %}
+{%    endif %}
+{%  endif %}
+{% endfor %}
+
+{% assign result = result | sort:"url" %}

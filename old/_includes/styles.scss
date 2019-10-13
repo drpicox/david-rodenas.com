@@ -1,0 +1,42 @@
+$primary: #0c377b;
+$alt: #d84528;
+$primary-dark: darken(desaturate($primary, 10%),10%);
+$primary-light: desaturate(mix($primary, white, 10%), 50%);
+$primary-lighter: mix($primary-light, white);
+
+$text-primary: rgba(black, 0.87);
+$text-secondary: rgba(black, 0.54);
+$text-hint: rgba(black, 0.38);
+
+$text-white-primary: white;
+$text-white-secondary: rgba(white, 0.70);
+$text-white-hint: rgba(white, 0.50);
+
+$desktop-min: 800px;
+$mobile-max: $desktop-min - 1px;
+
+
+
+@import "typography";
+@import "typography-highlight";
+@import "typography-table";
+@import "typography-toc";
+
+@import "container";
+@import "grid";
+@import "hidden";
+@import "img";
+@import "indent";
+@import "prev-next";
+@import "tint";
+@import "toggle";
+@import "toolbar";
+@import "well";
+
+@import "footer";
+@import "header";
+@import "main";
+
+@import "entries-breadcrumb";
+@import "entries-tree";
+@import "entry-infobox";

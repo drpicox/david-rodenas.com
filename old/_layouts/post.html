@@ -1,0 +1,129 @@
+---
+layout: default
+---
+{% for tag in page.tags %}
+{% include fn-tag-entry.jk tag=tag %}
+{% if result %}
+<a href="{{ site.baseurl }}{{ result.url }}">
+  <div class="well tint-alt no-margin">
+    <strong>Main article</strong>: {{ result.title }} »
+  </div>
+</a>
+{% break %}
+{% endif %}
+{% endfor %}
+
+<article itemscope itemtype="http://schema.org/BlogPosting" role="article">
+
+  <header class="well tint-light no-margin">
+    <h1 itemprop="name" class="text-center">
+      {{ page.title }}
+    </h1>
+    <div class="container">
+      <meta itemprop="url" content="{{ site.baseurl }}{{ page.url }}" />
+      <p>
+        {{ page.date | date: "%B %d, %Y" }}
+      </p>
+      {% if page.description %}
+        <p itemprop="description">
+          {{ page.description | markdownify }}
+        </p>
+      {% else %}
+        <meta itemprop="description" content="default:page.excerpt | strip_html | strip_newlines" />
+      {% endif %}
+      {% include tags-list.html %}
+      <br>
+    </div>
+  </header>
+
+  <div class="well"> 
+    <div class="prev-next">
+      <div>
+        <span>«&nbsp;</span>
+        {% if page.previous %}
+        <a href="{{ site.baseurl }}{{ page.previous.url }}" class="more">{{page.previous.title}}</a>
+        {% endif %}
+      </div>
+      <div>
+        {% if page.next %}
+        <a href="{{ site.baseurl }}{{ page.next.url }}" class="more">{{page.next.title}}</a>
+        <span>&nbsp;»</span>
+        {% endif %}
+      </div>
+    </div>
+    <br>
+  </div>
+
+  <main class="container" itemprop="articleBody">
+      {{ page.snippet | markdownify }}
+      {{ content }}
+      <br>
+  </main>
+
+</article>
+
+<a href="{{ site.baseurl }}/posts">
+<div class="well tint-light">
+  « <span class="more">Back to List</span>
+</div>
+</a>
+
+
+{% comment %}
+{ % assign main_tag = page.tags[0] %}
+{ % assign main_note = site.notes | where:"slug",main_tag | first %}
+{ % if main_note %}
+<a href="{{ site.baseurl }}{{ main_note.url }}">
+<div class="section section-alt section-small">
+  <div class="container">
+    <strong>Main article</strong>: {{ main_note.title }} »
+  </div>
+</div>
+</a>
+{ % endif %}
+
+<article itemscope itemtype="http://schema.org/BlogPosting" role="article">
+  <header class="section section-light">
+    <div class="container">
+      <h1 itemprop="name">{{ page.title }}</h1>
+      <meta itemprop="url" content="{{ site.baseurl }}{{ page.url }}" />
+      <p>
+        {{ page.date | date: "%B %d, %Y" }}
+      </p>
+      { % if page.description %}
+        <p itemprop="description">
+          {{ page.description | markdownify }}
+        </p>
+      { % else %}
+        <meta itemprop="description" content="default:page.excerpt | strip_html | strip_newlines" />
+      { % endif %}
+      { % include tags-list.html %}
+      { % include update-prev-next.html %}
+    </div>
+  </header>
+  <main class="section">
+    <div class="container" itemprop="articleBody">
+      {{ page.snippet | markdownify }}
+      {{ content }}
+      <br>{ % include tags-list.html %}
+    </div>
+  </main>
+</article>
+<div class="section">
+  <div class="container">
+    { % include update-prev-next.html %}
+  </div>
+</div>
+<div class="section">
+  <div class="container">
+    <h2>See also</h2>
+    <ul>
+      { % if main_note %}
+      <li><a href="{{ site.baseurl }}{{ main_note.url }}">Read the main article »</a></li>
+      { % endif %}
+      { % include updates-related-update.html record=page %}
+      <li><a href="{{ site.baseurl }}/updates">More updates »</a></li>
+    </ul>
+  </div>
+</div>
+{% endcomment %}

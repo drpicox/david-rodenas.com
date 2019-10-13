@@ -1,0 +1,17 @@
+{% assign _entry = include.entry %}
+
+<a class="well tint-light" href="{{ site.baseurl }}{{ _entry.url }}">
+  <div class="layout-row">
+    {% if _entry.image %}
+    <div class="flex-1">
+      {% include image.html entry=_entry %}
+    </div>
+    <div class="gap"></div>
+    {% endif %}
+    <div class="flex-3">
+      <h3 class="no-margin">{{ _entry.title }}</h3>
+      {{ _entry.description | default:_entry.excerpt | markdownify }}
+      <p><span class="more">Read more »</span></p>
+    </div>
+  </div>
+</a>

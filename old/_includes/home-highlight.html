@@ -1,0 +1,49 @@
+{% assign _entry = site.entries | where:"id",include.id | first %}
+
+<div class="indent">
+
+  <h2>
+    <a href="{{ site.baseurl }}{{ _entry.url }}">
+      {{ _entry.title }}
+    </a>
+  </h2>
+
+  <p class="overflow-hidden">
+    {% assign _height = _entry.image_height %}
+    {% assign _width = _entry.image_width | times:160 | divided_by:_height %}
+    {% if _width > 270 %}
+    {%   assign _width = 270 %}
+    {% endif %}
+    <a href="{{ site.baseurl }}{{ _entry.url }}">
+    <amp-img src="{{ site.baseurl }}{{ _entry.image }}" 
+      width="{{ _width }}" height="180"
+      layout="fixed"></amp-img>
+    </a>
+  </p>
+
+  <p>
+  {% include fn-entry-children.jk entry=_entry %}
+  {% assign result = result | sample:20 %}
+  {% assign _children = '' | split:'' %}
+  {% assign _length = 0 %}
+  {% for _child in result %}
+  {%   assign _size = _child.title | size %}
+  {%   assign _length = _length | plus:_size %}
+  {%   unless _length < 180 %}
+  {%     break %}
+  {%   endunless %}
+  {%   assign _children = _children | push:_child %}
+  {% endfor %}
+  {% assign _children = _children | sort:"title" %}
+  {% for _child in _children %}
+    <a href="{{ site.baseurl }}{{ _child.url }}" class="plain">
+      {{ _child.title }}</a>,{% endfor %}&nbsp;<a href="{{ site.baseurl }}{{ _entry.url }}" class="plain">...</a>
+  </p>
+
+  <p>
+    <a href="{{ site.baseurl }}{{ _entry.url }}">
+      View all »
+    </a>
+  </p>
+
+</div>

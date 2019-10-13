@@ -1,0 +1,25 @@
+{% assign g_id = g_id | plus:1 %}
+
+{% assign _conflicting_entries = site.entries 
+    | where:"slug",page.slug 
+    | where_exp:"entry","entry != page" 
+    | sort:"url"
+    %}
+
+{% if _conflicting_entries.size > 0 %}
+<p>
+  <input type="checkbox" id="disambiguation{{ g_id }}" class="toggle">
+  <label for="disambiguation{{ g_id }}">Disambiguation <i class="material-icons"></i></label>
+  <small class="toggle-content">
+  {% for _conflicting_entry in _conflicting_entries %}
+      <a href="{{ site.baseurl }}{{ _conflicting_entry.url }}" class="more">
+        {{ _conflicting_entry.title }}</a>
+      {% include fn-entry-parents.jk entry=_conflicting_entry %}
+      {% if result.size > 0 %}
+        ({{ result | map:"title" | join:'/' }})
+      {% endif %}
+      <br>
+  {% endfor %}
+  </small>
+</p>
+{% endif %}

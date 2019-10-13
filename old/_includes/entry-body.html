@@ -1,0 +1,24 @@
+<div class="hidden-mobile">{% include entry-infobox.html %}</div>
+
+<article itemscope itemtype="http://schema.org/BlogPosting" role="article" class="body">
+  <div class="body-title">
+    <div class="small">{% include entries-breadcrumb.html %}</div>
+    <h1 itemprop="name" class="no-margin">{{ page.title }}</h1>
+  </div>
+  <div class="body-meta">
+    <meta itemprop="url" content="{{ site.baseurl }}{{ page.url }}" />
+    <div class="small">{% include tags-list.html %}</div>
+    {% if page.description %}
+      <em itemprop="description">{{ page.description | markdownify }}</em>
+    {% else %}
+      <meta itemprop="description" content="{{ page.excerpt | strip_html | strip_newlines | replace:'"','\"' }}" />
+    {% endif %}
+    <br>
+  </div>
+  <div class="hidden-desktop">{% include entry-infobox.html %}</div>
+  <div class="body-content" itemprop="articleBody">
+    {{ page.snippet | markdownify }}
+    {{ content }}
+  </div>
+  <br>
+</article>

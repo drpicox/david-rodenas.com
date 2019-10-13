@@ -1,0 +1,24 @@
+{% assign g_id = g_id | plus:1 %}
+
+{% assign _related_posts = site.posts 
+    | where_exp:"post","post.tags contains page.slug"
+    | where_exp:"post","post != page" 
+    | sort:"url"
+    %}
+
+{% if _related_posts.size > 0 %}
+<ul class="entries-tree">
+  <input type="checkbox" id="related_posts{{ g_id }}" class="toggle">
+  <label for="related_posts{{ g_id }}">RELATED POSTS <i class="material-icons"></i></label>
+  
+  <div class="toggle-content">
+  {% for _reverse_post in _related_posts %}
+    <li>
+      <a href="{{ site.baseurl }}{{ _reverse_post.url }}" class="more">
+        {{ _reverse_post.title }}</a>
+      <small>({{ _reverse_post.date | date: "%B %d, %Y" }})</small>
+    </li>
+  {% endfor %}
+  </div>
+</ul>
+{% endif %}

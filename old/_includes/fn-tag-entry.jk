@@ -1,0 +1,12 @@
+{% assign __tag = include.tag %}
+
+{% assign result = site.entries | where:"defines",__tag | first %}
+{% unless result %}
+{%   assign __candidates = site.entries | where:"slug",__tag %}
+{%   assign result = __candidates | first %}
+{%   for __candidate in __candidates %}
+{%     if __candidate.url < result.url %}
+{%       assign result = __candidates | first %}
+{%     endif %}
+{%   endfor %}
+{% endunless %}
