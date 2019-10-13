@@ -10,6 +10,8 @@
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "gatsby clean; yarn develop",
     "serve": "gatsby serve",
+    "ldeploy": "gatsby build && gh-pages -d public -b master",
+    "deploy": "gatsby build && gh-pages -d public -b master -r https://$GH_TOKEN@github.com/drpicox/drpicox.github.io.git",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing \""
   },
   "dependencies": {
@@ -30,6 +32,7 @@
     "gatsby-remark-prismjs": "^3.3.18",
     "gatsby-source-filesystem": "^2.1.31",
     "gatsby-transformer-sharp": "^2.2.21",
+    "gh-pages": "^2.1.1",
     "prismjs": "^1.17.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
