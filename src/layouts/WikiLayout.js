@@ -1,22 +1,18 @@
 import React from "react"
-import { Link } from "gatsby"
 import { MDXProvider } from "@mdx-js/react"
-import Container from "../components/Container"
-import ListPosts from "../components/ListPosts"
 import Main from "../components/Main"
+import * as shared from "../shared"
 import BasicLayout from "./BasicLayout"
-
-const components = { Link, ListPosts }
 
 export default function WikiPage({ children, pageContext }) {
   return (
     <BasicLayout>
-      <MDXProvider components={components}>
+      <MDXProvider components={shared}>
         <Main>
-          <Container>
+          <shared.Container>
             <h1>{pageContext.frontmatter.title}</h1>
             {children}
-          </Container>
+          </shared.Container>
         </Main>
       </MDXProvider>
     </BasicLayout>

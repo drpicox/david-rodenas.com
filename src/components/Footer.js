@@ -1,9 +1,7 @@
 import React from "react"
 import { css } from "@emotion/core"
-import Container from "./Container"
-import Row from "./Row"
-import Col from "./Col"
 import EditMe from "./EditMe"
+import { Container, Row, Col } from "../shared"
 
 const footerCss = css`
   grid-area: header;

@@ -1,9 +1,7 @@
 import React from "react"
-import { Link } from "gatsby"
 import { css } from "@emotion/core"
-import Container from "./Container"
 import DavidImage from "./DavidImage"
-import Row from "./Row"
+import { Container, Row, Link } from "../shared"
 
 const headerCss = css`
   grid-area: header;
