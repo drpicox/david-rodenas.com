@@ -4,6 +4,11 @@ html, body {
     line-height: 1.5;
 }
 
+h2 {
+    margin-top: 1.5em;
+    border-bottom: .12em solid black;
+}
+
 blockquote {
     color: gray;
     font-family: cursive;
@@ -18,5 +23,9 @@ blockquote p:last-child::after {
 }
 
 .gatsby-highlight {
+    font-size: .7em;
+}
+
+:not(pre) > code[class*="language-"] {
     font-size: .7em;
 }

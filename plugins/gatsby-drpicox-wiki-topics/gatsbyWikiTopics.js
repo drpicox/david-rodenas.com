@@ -23,6 +23,7 @@ exports.onCreateNode = ({ node, actions, createNodeId }) => {
 
   const { createNodeField, createNode } = actions
   createNodeField({ node, name: "name", value: name })
+  createNodeField({ node, name: "path", value: `/${name}` })
   createNodeField({ node, name: "isTopic", value: true })
 
   createNode({

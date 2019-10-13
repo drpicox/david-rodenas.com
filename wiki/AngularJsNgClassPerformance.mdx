@@ -5,24 +5,25 @@ sections:
   - AngularJS
   - Performance
 date: 2016-04-10
-source: https://github.com/angular/angular.js/pull/14404
-test: |
-    ```javascript
-    it('should not copy verylargeobject', inject(function($rootScope, $compile) {
-      var getProp = jasmine.createSpy('getProp');
-      var verylargeobject = {};
-      Object.defineProperty(verylargeobject, 'prop', {
-        get: getProp,
-        enumerable: true
-      });
-      element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
-      $rootScope.verylargeobject = verylargeobject;
-      $rootScope.$digest();
-
-      expect(getProp).not.toHaveBeenCalled();
-    }));
-    ```
+source: 
 ---
+- **source**: https://github.com/angular/angular.js/pull/14404
+
+```javascript
+it('should not copy verylargeobject', inject(function($rootScope, $compile) {
+  var getProp = jasmine.createSpy('getProp');
+  var verylargeobject = {};
+  Object.defineProperty(verylargeobject, 'prop', {
+    get: getProp,
+    enumerable: true
+  });
+  element = $compile('<div ng-class="{foo: verylargeobject}"></div>')($rootScope);
+  $rootScope.verylargeobject = verylargeobject;
+  $rootScope.$digest();
+
+  expect(getProp).not.toHaveBeenCalled();
+}));
+```
 
 Although this PR was not accepted as it,
 @gkalpak (part of AngularJS core ) 

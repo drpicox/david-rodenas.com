@@ -6,7 +6,7 @@ import * as shared from "../shared"
 
 export default function WikiPage({ children, pageContext }) {
   return (
-    <BasicLayout>
+    <BasicLayout title={pageContext.frontmatter.title}>
       <MDXProvider components={shared}>
         <Main>
           <shared.Container>
