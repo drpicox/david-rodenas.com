@@ -13,9 +13,11 @@ const matchTopic = pn => pn.match(/^\/([A-Z][\w\d]+)\/?$/)
 const toEditBlog = ([, y, m, d, s]) => `/blog/${y}-${m}-${d}-${s}.mdx`
 const toEditTopic = ([, t]) => `/wiki/${t}.mdx`
 const toEdit = pn => {
-  const m = matchBlog(pn)
+  let m
+  m = matchBlog(pn)
   if (m) return toEditBlog(m)
-  return toEditTopic(matchTopic(pn))
+  m = matchTopic(pn)
+  return toEditTopic(m)
 }
 
 function EditMe() {
@@ -24,7 +26,7 @@ function EditMe() {
 
   return (
     <a
-      href={`https://github.com/drpicox/drpicox.github.io/edit/master${editPath}`}
+      href={`https://github.com/drpicox/david-rodenas.com/edit/master${editPath}`}
       css={linkCss}
       target="_blank"
       rel="nofollow noopener noreferrer"
