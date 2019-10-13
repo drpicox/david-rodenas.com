@@ -3,6 +3,7 @@ import { css } from "@emotion/core"
 import Container from "./Container"
 import Row from "./Row"
 import Col from "./Col"
+import EditMe from "./EditMe"
 
 const footerCss = css`
   grid-area: header;
@@ -46,7 +47,8 @@ export default function Footer() {
             rel="nofollow noopener noreferrer"
           >
             M
-          </a>
+          </a>{" "}
+          <EditMe />
         </Row>
       </div>
     </Container>

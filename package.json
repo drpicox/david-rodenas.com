@@ -34,6 +34,7 @@
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-helmet": "^5.2.1",
+    "react-use": "^12.4.0",
     "unist-util-visit": "^2.0.0"
   },
   "devDependencies": {
