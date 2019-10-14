@@ -49,6 +49,9 @@ export default function Header() {
               <Link to="/Blog" css={linkCss}>
                 BLOG
               </Link>
+              <Link to="/Teaching" css={linkCss}>
+                TEACHING
+              </Link>
             </div>
           </div>
         </Row>

@@ -1,0 +1,193 @@
+---
+title: Spring mock dice
+---
+How to mock a dice with Spring for testing?
+
+### Overview
+
+```mermaid
+graph LR
+    A[Square Rect] -- Link text --> B((Circle))
+    A --> C(Round Rect)
+    B --> D{Rhombus}
+    C --> D
+```
+
+```
+classDiagram
+
+Dice : roll()
+
+Dice <|-- DiceMock
+DiceMock : roll()
+DiceMock : mockRoll(n)
+```
+
+### The Dice
+
+First you need a dice:
+
+```java
+package game;
+
+import java.util.Random;
+import org.springframework.stereotype.Service;
+
+@Service
+public class Dice {
+    private Random random = new Random();
+
+    public int roll() {
+        return random.nextInt(6);
+    }
+}
+```
+
+### The DiceMock
+
+Now, inside the `test` directory, we need to 
+add a mock for the dice.
+
+```java
+package game.mocks;
+
+import java.util.List;
+import java.util.LinkedList;
+import org.springframework.stereotype.Service;
+import game.Dice;
+
+@Service
+public class DiceMock extends Dice {
+
+    private List<Integer> values = new LinkedList<Integer>();
+
+    @Override
+    public int roll() {
+        if (values.isEmpty()) return 6;
+
+        return values.remove();
+    }
+
+    public void mockRoll(int result) {
+        valorsRandom.add(result);
+    }
+}
+```
+
+Please note that this mock does not return random elements,
+but elements that can be added with mockRoll.
+
+### The DiceMock spring configuration
+
+Configure Spring so it returns the mock
+instead of the original dice when components
+injects them.
+
+```java
+package game.mocks;
+
+import game.Dice;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+
+@Profile("test")
+@Configuration
+public class DiceTestConfiguration {
+
+    private DiceMock diceMock;
+
+    public DiceTestConfiguration(DiceMock diceMock) {
+        this.diceMock = diceMock;
+    }
+
+    @Bean
+    @Primary
+    public Dice dice() {
+        return diceMock;
+    }
+}
+```
+
+### Use from code
+
+There is no change in the conventional code. 
+Just use the dice as always.
+
+```java
+package game;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class PassOrFail {
+
+    private Dice dice;
+
+    public PassOrFail(Dice dice) {
+        this.dice = dice;
+    }
+
+    public boolean passes() {
+        return dice.roll() <= 2;
+    }
+}
+```
+
+### Use from test
+
+You can inject either _Dice_ or _DiceMock_ in your test,
+but both will be the same instance.
+
+```java
+package com.drpicox.game;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+@ActiveProfiles("test")
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class PassOrFailTest {
+    @Autowired DiceMock diceMock;
+    @Autowired PassOrFail passOrFail;
+
+    @Test
+    public void testFail() {
+        var isPass = passOrFail.passess();
+        assertThat(isPass, is(false));
+    }
+
+    @Test
+    public void testDice2Passes() {
+        diceMock.mockRoll(2);
+        var isPass = passOrFail.passess();
+        assertThat(isPass, is(true));
+    }
+
+    @Test
+    public void testDice3Fails() {
+        diceMock.mockRoll(3);
+        var isPass = passOrFail.passess();
+        assertThat(isPass, is(true));
+    }
+
+    @Test
+    public void testDiceMany() {
+        diceMock.mockRoll(1);
+        diceMock.mockRoll(3);
+        var is1Pass = passOrFail.passess();
+        var is3Pass = passOrFail.passess();
+        assertThat(is1Pass, is(true));
+        assertThat(is3Pass, is(false));
+    }
+}
+```
