@@ -5,15 +5,15 @@ How to mock a dice with Spring for testing?
 
 ### Overview
 
-```mermaid
-graph LR
+<Mermaid>{`graph LR
     A[Square Rect] -- Link text --> B((Circle))
     A --> C(Round Rect)
     B --> D{Rhombus}
     C --> D
-```
+`}</Mermaid>
 
-```
+<!--
+<Mermaid>
 classDiagram
 
 Dice : roll()
@@ -21,7 +21,8 @@ Dice : roll()
 Dice <|-- DiceMock
 DiceMock : roll()
 DiceMock : mockRoll(n)
-```
+</Mermaid>
+-->
 
 ### The Dice
 

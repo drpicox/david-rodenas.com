@@ -1,0 +1,76 @@
+---
+title: Branching Strategy — Software Laboratory 2 — Tecnocampus
+---
+
+When many people are collaborating on the same project, 
+we need a way to cooperate and avoid conflicts. 
+In repositories like Git, we need a strategy 
+to work with everyone together.
+
+In this assignment, we use a development based on the root branch (called master), 
+but all changes are committed to other feature branches.
+
+This is the overview of the branches:
+
+```
+  master
+o------------------------[]----···
+ \                       / PR
+  \                     /
+   \ feature/10_title  /
+    ---o---o----o------
+```
+
+## New branch
+
+You have to create a branch when you start to develop one issue. 
+Create it always from the master. The branch name must follow this naming:
+`feature/${issue_number}_${issue_title}`.
+
+Work and frequently commit to that branch. 
+Because each one of you is working on a single issue, 
+there should be no new commits from other authors in that branch. 
+
+Push the branch regularly to the GitHub repository. 
+It would make a good backup of your work.
+
+## PR: Pull Request
+
+Once you have finished implementing your issue, 
+make sure that you have committed everything, 
+push your branch to GitHub. 
+
+Enter into your project in GitHub, 
+push the button to create a new Pull Request. 
+The Pull Request is from your branch towards the master branch. 
+
+Create the Pull Request and write the description. 
+The description text must contain the following text: `Implements #${issue_numer}`. 
+Example: "Implements #10". You also can add some details.
+
+Review your commit, look to your changes. 
+If you find anything that you want to improve or fix, 
+do it, commit it, and push again. 
+The Pull Request will reflect all changes.
+When it looks good, mode your Issue card in the Board to Review.
+
+Before the daily, 
+review all of your Pull Requests and resolve all the comments that you might have.
+
+## Conflicts!
+
+Conflicts appear when someone else merges a code that changes the same parts that you have changed.
+
+If your Pull Request conflicts with the master branch, 
+you must solve it. 
+GitHub will report that and will prevent the Pull Request to finish.
+
+Go to your code, open the repository, 
+fetch all new commits. Be sure that you bring the changes to the master branch.
+
+Merge the branch master —with the changes— to your branch, 
+solve the conflicts, and push it again to GitHub. 
+If you did it ok, the conflict message of GitHub would disappear from the Pull Request.  
+
+Notify it to your team members.
+
