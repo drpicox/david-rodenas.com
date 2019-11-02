@@ -10,6 +10,9 @@ const headerCss = css`
 `
 const indentCss = css`
   width: 5em;
+  @media (max-width: 40em) {
+    width: 0em;
+  }
 `
 const spaceCss = css`
   width: 1em;
