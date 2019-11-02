@@ -12,6 +12,7 @@ module.exports = {
     },
     `gatsby-plugin-sitemap`,
     `gatsby-plugin-emotion`,
+    `gatsby-drpicox-analytics`,
     `gatsby-drpicox-wiki-alias`,
     `gatsby-drpicox-wiki-redirect-home`,
     `gatsby-drpicox-wiki-topics`,
