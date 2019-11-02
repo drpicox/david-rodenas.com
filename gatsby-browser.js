@@ -5,7 +5,7 @@ import mermaid from "mermaid"
 global.mermaid = mermaid
 mermaid.mermaidAPI.initialize({
   startOnLoad: false,
-  logLevel: 1,
-  securityLevel: "loose",
-  htmlLabels: false,
+  logLevel: 5,
+  // securityLevel: "loose",
+  // htmlLabels: false,
 })

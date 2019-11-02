@@ -5,24 +5,34 @@ How to mock a dice with Spring for testing?
 
 ### Overview
 
-<Mermaid>{`graph LR
-    A[Square Rect] -- Link text --> B((Circle))
-    A --> C(Round Rect)
-    B --> D{Rhombus}
-    C --> D
+<Mermaid>{`classDiagram
+    class Dice {
+        +int roll()
+    }
+    class LuckGame {
+        +bool play()
+    }
+    Dice <-- LuckGame : dice
+    class DiceMock {
+        +int roll()
+        +void mockRoll(value)
+    }
+    Dice <|-- DiceMock
+    class DiceTestConfiguration {
+        <<Configuration>>
+        +Dice dice()
+    }
+    DiceMock <-- DiceTestConfiguration : diceMock
+    class LuckGameTest {
+        <<Test>>
+        +void testLoose()
+        +void testDice2Win()
+        +void testDice3Loose()
+        +void testDiceMany()
+    }
+    LuckGame <-- LuckGameTest : new
+    DiceMock <-- LuckGameTest : diceMock
 `}</Mermaid>
-
-<!--
-<Mermaid>
-classDiagram
-
-Dice : roll()
-
-Dice <|-- DiceMock
-DiceMock : roll()
-DiceMock : mockRoll(n)
-</Mermaid>
--->
 
 ### The Dice
 
@@ -69,8 +79,8 @@ public class DiceMock extends Dice {
         return values.remove();
     }
 
-    public void mockRoll(int result) {
-        valorsRandom.add(result);
+    public void mockRoll(int value) {
+        valorsRandom.add(value);
     }
 }
 ```
@@ -122,15 +132,15 @@ package game;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PassOrFail {
+public class LuckGame {
 
     private Dice dice;
 
-    public PassOrFail(Dice dice) {
+    public LuckGame(Dice dice) {
         this.dice = dice;
     }
 
-    public boolean passes() {
+    public boolean play() {
         return dice.roll() <= 2;
     }
 }
@@ -157,38 +167,38 @@ import static org.hamcrest.Matchers.is;
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PassOrFailTest {
+public class LuckGameTest {
     @Autowired DiceMock diceMock;
-    @Autowired PassOrFail passOrFail;
+    @Autowired LuckGame luckGame;
 
     @Test
-    public void testFail() {
-        var isPass = passOrFail.passess();
-        assertThat(isPass, is(false));
+    public void testLoose() {
+        var isWin = luckGame.plays();
+        assertThat(isWin, is(false));
     }
 
     @Test
-    public void testDice2Passes() {
+    public void testDice2Win() {
         diceMock.mockRoll(2);
-        var isPass = passOrFail.passess();
-        assertThat(isPass, is(true));
+        var isWin = luckGame.plays();
+        assertThat(isWin, is(true));
     }
 
     @Test
-    public void testDice3Fails() {
+    public void testDice3Loose() {
         diceMock.mockRoll(3);
-        var isPass = passOrFail.passess();
-        assertThat(isPass, is(true));
+        var isWin = luckGame.plays();
+        assertThat(isWin, is(true));
     }
 
     @Test
     public void testDiceMany() {
         diceMock.mockRoll(1);
         diceMock.mockRoll(3);
-        var is1Pass = passOrFail.passess();
-        var is3Pass = passOrFail.passess();
-        assertThat(is1Pass, is(true));
-        assertThat(is3Pass, is(false));
+        var is1Win = luckGame.plays();
+        var is3Win = luckGame.plays();
+        assertThat(is1Win, is(true));
+        assertThat(is3Win, is(false));
     }
 }
 ```

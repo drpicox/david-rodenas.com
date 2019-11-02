@@ -1,25 +1,16 @@
-import React, { useState, useEffect } from "react"
+import React, { useMemo } from "react"
 
-const { mermaidAPI } = global.mermaid || {
-  mermaidAPI: {
-    render: () => {},
-  },
-}
+const mermaid = global.mermaid || { render: () => {} }
+
+let num = 1
 
 export default function Mermaid({ name, children } = { name: "diagram" }) {
-  console.log({ children })
-  console.log({ childrenTS: children.toString() })
-  const [html, setHtml] = useState("")
-  console.log(children)
-  useEffect(() => {
-    children && mermaidAPI.render(name, children.toString(), setHtml)
-  }, [children, setHtml, name])
-
-  console.log(html)
+  const html = useMemo(
+    () => mermaid.render(name || "mermaid-svg-" + num++, "" + children),
+    [children, name]
+  )
 
   return (
-    <div className="mermaid" id={name}>
-      <svg dangerouslySetInnerHTML={{ __html: html }}></svg>
-    </div>
+    <div className="mermaid" dangerouslySetInnerHTML={{ __html: html }}></div>
   )
 }
