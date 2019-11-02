@@ -1,0 +1,36 @@
+---
+title: Release Strategy — TcLs2
+---
+
+This article covers how to release the [TcLs2] project.
+It assumes that you have already a Heroku account and a repository created. 
+
+In this project, there is one release for each feature. Each time that there is a Pull Request, it implies a release. 
+
+## Merging the Pull Request
+Given an approved Pull Request, you can start its release.
+The first step of the release is the merge of the Pull Request to the master branch. 
+
+To merge the Pull Request, you have the following steps:
+Download the branch to your development environment.
+Merge, in your development environment, the master branch.
+Run all tests and verify that they pass.
+Run the application and test that everything works.
+Merge the Pull Request: In GitHub, click the Merge button of the Pull Request. Make sure that it has the same commits that you have tested.
+
+## Run Deploy
+At this step, the master branch contains the changes in the Pull Request, but there is not release yet.
+
+To deploy run the following steps:
+Download the master branch into your environment,
+Create a deploy branch, ex: deploy/version
+Update version inside package.json
+Execute the script ./deploy.sh
+
+## Integrating deploy changes into master
+At this step, the master branch is released. However, deploy changes are not yet integrated into the master branch. 
+
+Create a Pull Request from the deploy branch to the master branch. 
+Share this Pull Request with the other team members so they can approve it, and it can be merged back to master.
+
+They must approve it if the release is done, and the package.json version is updated.
