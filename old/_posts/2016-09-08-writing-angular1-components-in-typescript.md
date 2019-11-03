@@ -19,7 +19,7 @@ description: >
 snippet: |
     ```typescript
     export class HelloWorldComponent {
-      static template = `Hello {{ "{{$ctrl.name"}}}}`;
+      static template = `Hello {{$ctrl.name}}`;
       static controller = HelloWorldComponent;
       constructor() {
         this.name = 'World';
@@ -65,7 +65,7 @@ export class CounterComponent {
     <p>
       <button ng-click="$ctrl.increment()">+</button>
       <button ng-click="$ctrl.decrement()">-</button>
-      Count: {{ "{{$ctrl.count"}}}}
+      Count: {{$ctrl.count}}
     </p>
   `;
 
@@ -220,7 +220,7 @@ export class HelloWorldComponent {
     name: '<',
   };
   static template = `
-    <h1>{{ "{{$ctrl.salute"}}}}</h1>
+    <h1>{{$ctrl.salute}}</h1>
   `;
   
   name: string;
@@ -282,7 +282,7 @@ export class HelloWorldComponent {
   };
   static get template() { 
     return `
-      <h1>{{ "{{$ctrl.salute"}}}}</h1>
+      <h1>{{$ctrl.salute}}</h1>
     `;
   }
 

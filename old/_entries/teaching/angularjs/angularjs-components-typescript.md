@@ -39,7 +39,7 @@ export const CounterComponent = {
     <p>
       <button ng-click="$ctrl.increment()">+</button>
       <button ng-click="$ctrl.decrement()">-</button>
-      Count: {{ "{{$ctrl.count"}}}}
+      Count: {{$ctrl.count}}
     </p>
   `;
   controller: class CounterController {
@@ -209,7 +209,7 @@ export const HelloWorldComponent = {
     name: '<',
   },
   template: `
-    <h1>{{ "{{$ctrl.salute"}}}}</h1>
+    <h1>{{$ctrl.salute}}</h1>
   `,
   controller: class HelloWorldController {
     name: string;

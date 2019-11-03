@@ -36,7 +36,7 @@ export const HelloWorldComponent = {
     name: '<',
   },
   template: `
-    <h1>{{ "{{$ctrl.salute"}}}}</h1>
+    <h1>{{$ctrl.salute}}</h1>
   `,
   controller: class HelloWorldController {
     /* @ngInject */
