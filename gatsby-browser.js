@@ -1,6 +1,6 @@
-import "prismjs/themes/prism-dark.css"
+// import "prismjs/themes/prism-dark.css"
 // import "prismjs/themes/prism-solarizedlight.css"
-// import "prism-themes/themes/prism-hopscotch.css"
+import "prism-themes/themes/prism-atom-dark.css"
 import "./src/styles.css"
 import mermaid from "mermaid"
 
