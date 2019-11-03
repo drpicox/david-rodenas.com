@@ -3,6 +3,12 @@ import { css } from "@emotion/core"
 import DavidImage from "./DavidImage"
 import { Container, Row, Link } from "../shared"
 
+const hideSmallCss = css`
+  @media (max-width: 30em) {
+    display: none;
+  }
+`
+
 const headerCss = css`
   grid-area: header;
   padding: 1em 0;
@@ -23,6 +29,10 @@ const linkCss = css`
   text-decoration: none;
   &:hover {
     text-decoration: underline;
+  }
+  &[aria-current] {
+    color: gray;
+    text-decoration: none;
   }
 `
 const titleCss = css`
@@ -52,8 +62,11 @@ export default function Header() {
               <Link to="/Blog" css={linkCss}>
                 BLOG
               </Link>
+              <Link to="/Testing" css={linkCss}>
+                TEST<span css={hideSmallCss}>ING</span>
+              </Link>
               <Link to="/Teaching" css={linkCss}>
-                TEACHING
+                TEACH<span css={hideSmallCss}>ING</span>
               </Link>
             </div>
           </div>

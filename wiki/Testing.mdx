@@ -1,0 +1,50 @@
+---
+title: Testing
+---
+
+Testing is amazing.
+I cannot figure out how I was able to sleep comfortably before Testing.
+I was great coding, I loved to do [DefensiveCoding], 
+I was proud of my work, but once I understood Testing, 
+I realized that I was not a fraction as good that I am today.
+
+I was a great detractor of Testing. 
+I was reading a lot of Testing, I thought that 
+I learned a lot about it, but almost everything was 
+contradictory or did not make sense. 
+But one day I realized that it was not my fault, 
+neither fault of Testing: almost every 
+How to Test on the internet at that time was awful. 
+Luckily it has changed.
+
+If you have to start Testing today I have some advice:
+
+- **Learning to test properly is as complicated as programming**. 
+  It is a new skill that you have to learn. 
+  But it is worthy; once you mastered Testing, 
+  you will be faster (and safer) with tests that without them.
+
+- **Testing is your best documentation**. 
+  Tests should be easy to understand and ready to copy-paste. 
+  They have to explain which functionalities your code has, and how to use them. 
+
+- **Write about functionalities, not functions**. 
+  Do not let the word Unit deceive you: you are not testing methods, 
+  classes, or modules. You are testing functionalities. 
+  Write a test for each possible case, and later, 
+  in its section, exceptional cases, exception, and regression tests.
+
+- **Never test _private_ representations**. 
+  Never. You are testing how to use it; if you use internal structures, 
+  you will not be able to refactor.
+
+- **Refactor and refactor your test until it is easy to understand**. 
+  Do it in green and as many times as you need. 
+  Do not be afraid of creating auxiliary code, structures, 
+  and artifacts to simplify your Testing. Readability and maintainability are key.
+
+- **Get rid of mocks**. 
+  The only mocks that you need are for the real user. 
+  Mocks destroy the confidence in tests and make future refactors harder. 
+  As Kent C. Dodds express 
+  [The more your tests resemble the way your software is used, the more confidence they can give you.](https://twitter.com/kentcdodds/status/977018512689455106)
