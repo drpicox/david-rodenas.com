@@ -19,7 +19,7 @@ Luckily it has changed.
 
 If you have to start Testing today I have some advice:
 
-- **Learning to test properly is as complicated as programming**. 
+- **Learning to test properly is as complicated as learing programming**. 
   It is a new skill that you have to learn. 
   But it is worthy; once you mastered Testing, 
   you will be faster (and safer) with tests that without them.
@@ -33,6 +33,8 @@ If you have to start Testing today I have some advice:
   classes, or modules. You are testing functionalities. 
   Write a test for each possible case, and later, 
   in its section, exceptional cases, exception, and regression tests.
+  
+  <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Write tests. Not too many. Mostly integration.<br />&mdash; Guillermo Rauch ▲ (@rauchg) <a href="https://twitter.com/rauchg/status/807626710350839808?ref_src=twsrc%5Etfw">December 10, 2016</a></p></blockquote>
 
 - **Never test _private_ representations**. 
   Never. You are testing how to use it; if you use internal structures, 
@@ -44,7 +46,7 @@ If you have to start Testing today I have some advice:
   and artifacts to simplify your Testing. Readability and maintainability are key.
 
 - **Get rid of mocks**. 
-  The only mocks that you need are for the real user. 
+  The only mocks that you need are for the real user, random, time, and external services.
   Mocks destroy the confidence in tests and make future refactors harder. 
-  As Kent C. Dodds express 
-  [The more your tests resemble the way your software is used, the more confidence they can give you.](https://twitter.com/kentcdodds/status/977018512689455106)
+
+  <blockquote class="twitter-tweet"><p lang="en" dir="ltr">The more your tests resemble the way your software is used, the more confidence they can give you.<br/>&mdash; Kent C. Dodds 🧢 (@kentcdodds) <a href="https://twitter.com/kentcdodds/status/977018512689455106?ref_src=twsrc%5Etfw">March 23, 2018</a></p></blockquote>
