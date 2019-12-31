@@ -1,12 +1,42 @@
+html {
+    --text-color: black;
+    --background-color: white;
+    --title-color: #black;
+    --link-color: #006;
+    --visited-color: #66a;
+}
+
+@media (prefers-color-scheme: dark) {
+    html {
+        --text-color: rgba(255,255,255,0.5);
+        --background-color: black;
+        --title-color: #88f;
+        --link-color: rgba(128,128,255,0.7);
+        --visited-color: rgba(96,96,128,0.5);
+    }
+}
+
 html, body {
     margin: 0;
     font-family: 'Avenir', 'Helvetica Neue', 'Helvetica', 'Verdana', sans-serif;
     line-height: 1.5;
+    background: var(--background-color);
+    color: var(--text-color);
 }
 
+a {
+    color: var(--link-color);
+}
+a:visited {
+    color: var(--visited-color);
+}
+
+h1,h2,h3,h4 {
+    color: var(--title-color);
+}
 h2 {
     margin-top: 1.5em;
-    border-bottom: .12em solid black;
+    border-bottom: .12em solid var(--title-color);
 }
 
 blockquote {
@@ -24,6 +54,7 @@ blockquote p:last-child::after {
 
 .gatsby-highlight {
     font-size: .7em;
+    margin: 16px 0;
 }
 
 :not(pre) > code[class*="language-"] {

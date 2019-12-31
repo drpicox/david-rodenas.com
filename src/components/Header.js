@@ -27,6 +27,9 @@ const linkCss = css`
   padding-right: 0.5em;
   color: inherit;
   text-decoration: none;
+  &:visited {
+    color: inherit;
+  }
   &:hover {
     text-decoration: underline;
   }
@@ -39,6 +42,10 @@ const titleCss = css`
   font-size: 2em;
   font-weight: bolder;
   text-decoration: none;
+  &:visited {
+    color: inherit;
+    color: var(--link-color);
+  }
 `
 
 export default function Header() {
