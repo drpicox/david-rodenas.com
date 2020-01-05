@@ -17,8 +17,9 @@ html {
 }
 
 html, body {
+    font-size: 1.1rem;
     margin: 0;
-    font-family: 'Avenir', 'Helvetica Neue', 'Helvetica', 'Verdana', sans-serif;
+    font-family: 'Avenir', 'Montserrat', 'Helvetica Neue', 'Helvetica', 'Verdana', sans-serif;
     line-height: 1.5;
     background: var(--background-color);
     color: var(--text-color);
@@ -33,23 +34,19 @@ a:visited {
 
 h1,h2,h3,h4 {
     color: var(--title-color);
+    margin-top: 1.5em;
+    margin-bottom: .75em;
+    line-height: 1.35;
 }
 h2 {
-    margin-top: 1.5em;
-    border-bottom: .12em solid var(--title-color);
+    margin-top: 1.5rem;
+    border-bottom: .12rem solid var(--title-color);
 }
 
 blockquote {
     color: gray;
-    font-family: cursive;
-}
-blockquote p:first-child::before {
-    content: "«";
-    display: inline;
-}
-blockquote p:last-child::after {
-    content: "»";
-    display: inline;
+    font-family: 'Times New Roman';
+    font-size: 1.5rem;
 }
 
 .gatsby-highlight {
@@ -58,5 +55,9 @@ blockquote p:last-child::after {
 }
 
 :not(pre) > code[class*="language-"] {
-    font-size: .7em;
+    font-size: .7rem;
+}
+
+.small {
+    font-size: 70%;
 }

@@ -1,0 +1,108 @@
+---
+title: The myth of 100% of code coverage
+canonical: https://medium.com/@drpicox/the-myth-of-100-of-code-coverage-8d465589a0f8
+---
+
+Some people say that 100% of code coverage is an impossible goal, that it is too expensive. They target to lower coverage ratios. On the other hand, there are people obsessed with code coverage, obsessed with having the highest possible ratio. Both views forget the point of testing.
+
+It is straightforward to achieve 100% of code coverage: make one test for each branch.
+
+Look to the following example:
+
+```javascript
+const factorial = (n) => {
+  if (n === 0) return 1
+  return n * factorial(n - 1)
+}
+
+describe('useless factorial test', () => {
+  it('has 100% of code coverage', () => {
+    factorial(2)
+  })
+})
+```
+
+This test has 100% of code coverage, and perversely it is an almost useless test.
+
+That is not new. Dijkstra said in the ’60s that “_Testing shows the presence, not the absence of bugs_”. Martin Fowler in https://martinfowler.com/bliki/TestCoverage.html told us that code coverage has the objective of finding untested parts, not to improve quality.
+
+
+### What we should do?
+
+Let’s start with the basics, let’s focus on TDD. How would the test look in TDD? Test after test we will write the definition of factorial.
+
+```javascript
+describe(‘factorial’, () => {
+  test(‘0 factorial is 1, according for an empty product’, () => {
+    expect(factorial(0)).toBe(1);
+  })
+  test(‘1 factorial is 1 because is 1 * 0 factorial’, () => {
+    expect(factorial(1)).toBe(1);
+  })
+  test(‘n factorial is n * (n-1) factorial’, () => {
+    expect(factorial(5)).toBe(120);
+  })
+})
+```
+
+In TDD we write test after test, and each test justifies each piece of code. Test after test TDD writes the definition of factorial.
+
+Tests have become the documentation. Just reading them, it is easy to understand what the code does and how we can use it.
+
+Code emerged from TDD is the only relevant code to satisfy them. Any additional code is meaningless and requires more tests to justify them. TDD achieves 100% of code coverage naturally, not because we are looking for the best code coverage, but because it aligns all developed code with tests themselves.
+
+### Uncontrolled cases?
+
+Look to the implementation presented before. You have seen it, right? What happens if n is negative?
+
+In the presented code a negative input produces a stack overflow error. This possibility annoys some developers: they do not like loose ends, they want to add extra code to handle correctly unexpected cases:
+
+```javascript
+const factorial = (n) => {
+  if (n < 0) return NaN;
+  if (n === 0) return 1
+  return n * factorial(n - 1)
+}
+```
+
+In the presented code a negative input produces a stack overflow error. This possibility annoys some developers: they do not like loose ends, they want to add extra code to handle correctly unexpected cases:
+
+This code covers the negative input, and it does not produce a stack overflow. However, this is a new code, and the developer has created this code without TDD. Moreover, Why it returns a NaN? Is it right? What says the mathematical definition about it?
+
+The developer is trying to imagine a new use case, a case that might be relevant in the future. A feature not yet defined. An edge case. Definitively a feature not well understood and not documented.
+
+### How do we deal with these untested codes?
+
+We have three options:
+
+1. _The obvious_: keep the code coverage below 100% and do nothing.
+
+2. _The 100% code coverage obsession_: add a new test to cover this case.
+
+3. _The not obvious_: **remove untested code**.
+
+The first option is not acceptable: it directly creates legacy code.
+
+Code that has no explanation. Code decided without a second thought. This code confuses that other developers that try to understand it.
+
+Second and third options are the only acceptable solutions, but the second one is usually poorly executed.
+
+The second solution has to be carefully executed. It implies the addition of new tests. Think about tests as documentation: we need to determine which new functionality are we adding to our code. Makes sense? How everything fit together? Is it a correct new and expected behavior? If we add the test, this is how it is expected to work from now on, a new use case, something expected and accepted. Given the factorial, the second solution means that we accept negative numbers, and NaN is the result because we can justify that by definition negative factorials are trying to divide by zero.
+
+Developers never consider the third solution. Remove the code, period. We developers are in love with our code; we do not want to throw them away. We managers do not waste resources; we do not want to throw away existing developed code. However, developers learn about our project by coding; and managers, as larger base code more expensive future developments. The code should be clean and beautiful. Remove a small piece of code may be hard for us, but it is the best in many cases. Given the factorial, the third solution means that we do not accept negative numbers, so no one should use that function with negative numbers as no one should divide by 0.
+
+
+### So, what we should do?
+
+Always start with tests. Make tests to explain and define what we want to solve. Do not think about the implementation, just in the documentation.
+
+If at any point of the development we detect code without coverage, stop and think. Try to understand this untested code exists. If it is because we have a poor implementation, a refactor removes it. If it is because there is a new behavior, not documented, and not tested, we think again about it. Try to guess if it is useful, and if it is meaningful, add the test. If not, remove the code.
+
+So think, document code with tests, and, remember: remove code is also a good solution.
+
+<br />
+
+Anything else to read? You might be interested in reading:
+
+- [Start writing tests as they were documentation](/blog/2018/02/09/why-you-should-start-writing-tests-as-they-were-documentation.html)
+- [A quick puzzle to understand testing and refactor](https://medium.com/@drpicox/simple-exercise-to-understand-testing-and-refactoring-9b3431afd333)

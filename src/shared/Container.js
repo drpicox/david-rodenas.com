@@ -3,8 +3,8 @@ import { css } from "@emotion/core"
 
 const containerCss = css`
   margin: 0 auto;
-  max-width: 40em;
-  padding: 0 0.5em;
+  max-width: 37rem;
+  padding: 0 0.5rem;
 `
 
 export default function Container({ children, className }) {

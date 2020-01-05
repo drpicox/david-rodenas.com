@@ -1,0 +1,121 @@
+---
+title: Start writing tests as they were documentation
+canonical: https://medium.com/@drpicox/start-writing-tests-as-they-were-documentation-73a356df3523
+---
+
+It is great to suggest people write tests. 
+It is indeed a good idea, but it is not enough.
+
+Writing tests is hard. 
+Not because it is difficult, but because of people. 
+People think that tests are pointless and consequently a waste of time.
+
+There are terrible testing practices, many of them harmful. 
+Worst practices occur when coders are forced to write tests 
+(big companies, test-obsessed coders, quality policies). 
+Many of them resulting from these practices are almost useless.
+They are just copies of production code or very rigid tests. 
+These tests lack many of the expected properties of a test.
+
+What should we expect from testing?
+
+> «But: program testing can be a very effective way 
+> to show the presence of bugs, 
+> but is hopelessly inadequate for 
+> showing their absence.»
+>
+> — Edsger W. Dijkstra, 1972
+
+Tests objective is not creating a bugs free system. 
+It is an impossible task. 
+Tests cannot effectively achieve that. 
+However, there are many other objectives which are valuable.
+
+### Main tests objective is to make legacy code disappear.
+
+Legacy code is any old unsupported code. 
+Moreover, it is any code difficult to change 
+because changing it may break our system. 
+It is that code that is too complex or too slow to update. 
+It is that code that anyone is afraid to change.
+
+The legacy code appears when we want to change or add some code, 
+but we cannot guarantee to do not break any functionality. 
+It can be because:
+
+1. There are no tests for such functionality.
+2. We need to alter many tests significantly.
+3. We do not know all supported functionalities.
+
+The first and second scenarios are the classic ones that we consider: there are lots of functionalities, and we do not have time to check each functionality manually. Adding more tests can solve these scenarios, but it is not that simple: tests are usually unit tests designed to check a set of functions —functions instead of functionalities— . Coders become obsessed in test every function, one by one, all possible cases, all input combinations, all ranges. They try to get the 100% code coverage regardless of its usefulness. All this effort reaches one single conclusion: rigid codes poorly covered.
+
+The third scenario has a subtle difference: we cannot ensure all functionalities because we do not know which are the expected functionalities. This third scenario happens more often than we usually consider. Proper documentation would solve this scenario, but it has a handicap: documentation does not evolve with the code. Eventually, inevitably, documentation and code differ making the documentation obsolete.
+
+Here good news comes. There is a simple trick to solve these two scenarios and avoid legacy code: “**testing is documentation**.”
+
+Let’s assume that tests are the documentation. As documentation they explain all the expected functionalities —functionalities instead of functions— , they describe what the code does, and they describe what we expect from them. We can understand and learn from it. As tests, they do not become obsolete. If something changes, tests fail, and update must happen.
+
+### An event listener testing example.
+
+Imagine that we want to implement an event listener. Also, imagine that we make some tests that cover 100% of the code:
+
+```javascript
+describe('addListener', () => {
+  it('should add a callback to the queue', () => {
+    dispatcher.addListener(cb);
+    expect(dispatcher._queue).toContain(cb);
+  })
+})
+
+describe('deliver', () => {
+  it(
+    'should invoke queue callbacks with the received argument', 
+    () => {
+      dispatcher._queue.push(cb)
+      dispatcher.deliver('message')
+      expect(cb).toHaveBeenCalledWith('message')
+    }
+  )
+})
+```
+
+These tests achieve 100% of code coverage, and at the same time, it is almost a useless testing code. Moreover, suppressing expectations in both tests, or replacing them by checking anything else —like checking that both methods return undefined— , they still achieve 100% of code coverage.
+
+These tests are checking something called “dispatcher.” Tests tell almost nothing about the purpose of the dispatcher. They are small pieces put apart and no explanation for how they work together. There is no whole picture. Adding more tests —cases like explaining what happens if the queue is empty— , do not provide for more insights about what dispatcher does.
+
+These tests also expose some data structures that meant to be internal or private —_queue in this case— . We should not use them in production code; therefore we should not use them in tests. Because we are exposing internal representation in tests, it is almost an impossible task refactor the code without changing the testing code.
+
+Stop. Take a breath. Clear your mind. Forget about the previous testing code example. Think about the dispatcher. What is the purpose of the dispatcher? What is it meant to do?
+
+A dispatcher is an object that delivers messages to listeners. When we want to receive a message we add a listener —which is callback function— . Use the method send to notify all listeners of a payload. After the send method, dispatcher invokes all listeners with the payload as an argument.
+
+That was the documentation of the dispatcher. We should write tests just like that documentation:
+
+```javascript
+it('delivers messages to listeners', () => {
+  dispatcher.addListener(cb)
+  dispatcher.deliver('message')
+  expect(cb).toHaveBeenCalledWith('message')
+})
+```
+
+It is simple, clean, easy to understand, it does not use internal representation, and it has 100% of code coverage. If we refactor the dispatcher, as long as the functionality and API are valid, there is no need to change tests. If we want to start using the dispatcher, we make a copy and paste to our new production code. That last point makes these test excellent documentation: they are working examples of usage.
+
+### Conclusion.
+
+Tests are documentation. We should write them as they were the documentation. Working with tests as they were documentation they create better and more effective testing code. It helps to start writing useful tests and start with TDD. They give a direction to follow.
+
+When we are coding tests we should satisfy the following rules:
+
+- Start writing a test for each main functionality.
+- Then their exceptions.
+- Refactor tests until they are easy to read and understand.
+- Never use “private” properties in testing code.
+- Verify that testing code should be copy-pasteable to new production code.
+- If some functionality works but has no test, do not use it.
+- Test functionalities, not functions/methods.
+- Tests should explain what the code does.
+
+Anything else to read? You might be interested in reading:
+- [The myth of the 100% code coverage](https://medium.com/@drpicox/the-myth-of-100-of-code-coverage-8d465589a0f8)
+- [A quick puzzle to understand testing and refactor](https://medium.com/@drpicox/simple-exercise-to-understand-testing-and-refactoring-9b3431afd333)

@@ -4,19 +4,19 @@ import DavidImage from "./DavidImage"
 import { Container, Row, Link } from "../shared"
 
 const hideSmallCss = css`
-  @media (max-width: 30em) {
+  @media (max-width: 30rem) {
     display: none;
   }
 `
 
 const headerCss = css`
   grid-area: header;
-  padding: 1em 0;
-  margin-bottom: 3em;
+  padding: 1rem 0;
+  margin-bottom: 3rem;
 `
 const indentCss = css`
-  width: 5em;
-  @media (max-width: 40em) {
+  width: 5rem;
+  @media (max-width: 35rem) {
     width: 0em;
   }
 `
@@ -24,7 +24,7 @@ const spaceCss = css`
   width: 1em;
 `
 const linkCss = css`
-  padding-right: 0.5em;
+  padding-right: 0.5rem;
   color: inherit;
   text-decoration: none;
   &:visited {
@@ -39,7 +39,7 @@ const linkCss = css`
   }
 `
 const titleCss = css`
-  font-size: 2em;
+  font-size: 2rem;
   font-weight: bolder;
   text-decoration: none;
   &:visited {
