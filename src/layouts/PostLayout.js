@@ -4,9 +4,11 @@ import Main from "../components/Main"
 import BasicLayout from "./BasicLayout"
 import * as shared from "../shared"
 
+const SOURCE = /\/\/(?:.*\.)?([^.]+\.[^./]+)\//
 function computeSource(canonical) {
-  if (canonical.startsWith("https://medium.com")) {
-    return "at medium"
+  const match = canonical.match(SOURCE)
+  if (match) {
+    return `at ${match[1]}`
   }
   return "here"
 }
