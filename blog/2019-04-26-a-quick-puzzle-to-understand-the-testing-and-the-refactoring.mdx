@@ -1,0 +1,116 @@
+---
+title: A quick puzzle to understand the testing and the refactoring
+canonical: https://medium.com/@drpicox/simple-exercise-to-understand-testing-and-refactoring-9b3431afd333
+---
+
+
+In July of 2015, The New York Times presented a quiz to test the ability for problem-solving of their readers. The idea is straightforward; there is a secret rule that readers have to guess. They present the sequence 2, 4, 8 that obeys one rule and they let them propose new sequences to guess the rule. It turns out that this simple game is amazingly useful to teach testing. Here I explain my last experience teaching introduction to test.
+
+## Fist is first
+
+I always start the introduction to testing with one sentence about testing. This sentence is 50 years old; still, it is impressively accurate and indispensable. It helps to break myths and expectations quite fast.
+
+> “Testing shows the presence, not the absence of bugs”  
+> — Edsger W. Dijkstra, 1969
+
+## The Exercise
+
+The exercise is to resolve the quiz. I present the sequence 2, 4, 8 and participants propose other sequences and for each, they try to guess which rule is it.
+
+I write on the board the sequence 2, 4, 8 and a checkmark of success.
+
+```
+  a,  b,  c  
+ --- --- ---
+  2,  4,  8  ✅
+```
+
+Then I ask to try to guess which rule by proposing three new numbers and hypothesize a new possible rule. The first suggestion, usually always first suggestion each time that I do that game, is 16, 32, 64, and the rule is that each number doubles the previous one.
+
+```
+  a,  b,  c  
+ --- --- ---
+  2,  4,  8  ✅
+ 16, 32, 64  ✅ # doubles the previous one?
+```
+
+It is not that rule. At this moment people usually realize that they have to be more original proposing sequences. Many suggestions and possible rules appear:
+
+```
+  a,  b,  c  
+ --- --- ---
+  2,  4,  8  ✅
+ 16, 32, 64  ✅ # doubles the previous one?
+ 12, 14, 18  ✅ # all pairs?
+  5, 10, 15  ✅ # all positive?
+```
+
+Some times people realize quickly about which rule might be, some times the list gets more extensive. The sooner they understand that new sequences must challenge past rule proposals the sooner the approach to the real one. Numbers 12,14,18 are breaking the doubles rule; numbers 5,10,15 are breaking all pairs rule.
+
+Sooner o later someone discovers the rule, and they propose a new sequence and the correct rule.
+
+```
+  a,  b,  c  
+ --- --- ---
+  2,  4,  8  ✅
+ 16, 32, 64  ✅ # doubles the previous one?
+ 12, 14, 18  ✅ # all pairs?
+  5, 10, 15  ✅ # all positive?
+  1,  2,  3  ✅ # ascending order!
+```
+
+The problem is that some times there are no counterexamples of the rule. Counterexamples give essential information about the problem; it is crucial that the audience realizes that. For that reason, I always use the following trick: ascending order can be a < b < c, or can be a ≤ b ≤ c, which one is the good one? At that moment they realize that they need to find negative cases.
+
+```
+  a,  b,  c  
+ --- --- ---
+  2,  4,  8  ✅
+ 16, 32, 64  ✅ # doubles the previous one?
+ 12, 14, 18  ✅ # all pairs?
+  5, 10, 15  ✅ # all positive?
+  1,  2,  3  ✅ # ascending order!
+  1,  1,  1  ❌ # but it might be a <= b < c
+  1,  2,  2  ❌ # or it might be a < b <= c
+  1,  1,  2  ❌ # it completes
+```
+
+With those last three cases, attendants are sure that the right rule is the strict ascending rule. It also creates a lasting memory of the necessity of having failing cases, indispensable to understand TDD.
+
+## The Refactor
+
+Now it is the moment to challenge even more the beliefs of the attendants; it is the moment to open their minds and look for new possibilities.
+
+Given the exercise solved until this moment, are there more rules that satisfy all of the previous cases? The answer is a resounding yes. There are infinite rules that satisfy all the previous cases.
+
+> Some alternative rules that satisfy all previous cases are:
+>
+> - The sum of the numbers must be greater than 5.
+> - The three numbers must be different.
+> - The third number must be three or higher.
+
+This possibility of changing the rule while we satisfy at the same time all cases is the essence of refactoring and agile. With essential cases tested all important functionalities are covered. Variations in the behavior of the code are possible if it passes all tests. Tests ensure that everything keeps working as expected.
+
+At this point, it is easy to refactor the code. Refactor is nothing else than finding another rule that suits better to our objectives. Who knows, perhaps we do not want three numbers in ascending order, maybe what we need is having at least one number higher than two.
+
+## The Sick Obsession
+
+I can listen to your thoughts as I can hear to the complaints from the attendants. Yes, I can change the rule and all cases still passing. It is good.
+
+Probably you are tempted to add more cases; you want to make sure that there is one and only one rule that satisfies all of them. Do you remember what Dijkstra said? Testing does not show the absence of bugs. So good luck, you need infinite test cases.
+
+But it is worst, having more tests has many implications:
+
+- There is more testing code to review and maintain.
+- It is more difficult to understand what the code is trying to do.
+- The smaller production code changes break tests.
+- And of course, refactoring is almost impossible.
+
+## Final Thoughts
+
+Think carefully about your essential cases. Include always counterexamples. Leave room to refactor. And of course, forget the sick obsession of getting rid of all bugs. Creating more and more complex tests does not help.
+
+<br />
+
+### About the puzzle
+
+The puzzle was initially published at https://www.nytimes.com/interactive/2015/07/03/upshot/a-quick-puzzle-to-test-your-problem-solving.html?_r=0&abt=0002&abg=0

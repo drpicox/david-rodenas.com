@@ -5,6 +5,7 @@ const mermaid = global.mermaid || { render: () => {} }
 
 let num = 1
 const mermaidCss = css`
+  text-align: center;
   & > svg {
     max-width: 100%;
   }

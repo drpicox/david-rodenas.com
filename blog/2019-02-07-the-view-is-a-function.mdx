@@ -1,0 +1,99 @@
+---
+title: The View is a Function
+canonical: https://medium.com/@drpicox/the-view-is-a-function-556754e99be5
+---
+
+After many years, decades, many applications, many programs, many screens, I finally realized a simple and powerful truth: views are just functions.
+
+## My firsts programs in BASIC
+
+When I was just a child a created my first views with just print:
+
+```basic
+10 PRINT "Good morning Dave"
+```
+
+After print, it came input. Input is an operation to mutate the program state:
+
+```basic
+10 PRINT "Hi"
+20 INPUT "What is your name? ", N$
+30 PRINT "Good morning"; N$
+40 GOTO 20
+```
+
+It was always the same: print the view, ask for new information, and print the result again. A never ended loop.
+
+```basic
+SUB MainMenu()
+  DO
+    CALL PrintMainMenu
+    INPUT “What option you choose? “, Option%
+    CALL ExecuteMainOption(Option%)
+  LOOP UNTIL Option% = 0
+END SUB
+```
+
+It was effortless and quick. When I started to simulate a graphical user interface with windows I always did the same: clear a secondary buffer, print all screens from bottom to top, copy the buffer to the screen, and then input again, waiting for a change.
+
+<Mermaid>{`stateDiagram
+  Print: 10 PRINT state
+  Input: 20 INPUT action
+  Input: 30 CALL action
+  Print --> Input
+  Input --> Print
+`}</Mermaid>
+
+## Entering the Object Oriented world
+
+Probably I could blame Java for that, but it is not true. The first programming language that I have used was C++, followed closely by VisualBasic (2.0 to be precise).
+
+Object Oriented programming was the coolest thing. I remember the change from simple procedural applications to Object Oriented. Model Objects that take care of themselves. I remember writing one small raytracer in C++, gorgeous. A render engine that took as input abstract Objects, ask them to intersect with rays, and it generated impressive images. Using Object Oriented programming in models was great.
+
+Problems appeared when I started to write interfaces in Object Oriented Programming.
+
+<Mermaid>{`classDiagram
+  class Button {
+    +action(ev, ob)
+  }
+  class TextField {
+    +getText()
+  }
+  class Label {
+    +setText(text)
+  }
+`}</Mermaid>
+
+A view was more complicated than just print, it was creating a complex tree of objects, configurations, and synchronize all of them correctly with the state. However, look at it, interfaces were gorgeous, with complex behaviors, and why not, I was amazed by these shiny buttons.
+
+In those days I did not realize what happened. First I thought that I did not have understood MVC. Later I thought that I needed a better methodology. I sensed that something was wrong, but I did not know what. I began a search for a comfortable way of code. I tried many patterns. Somehow, all solutions always seemed to be a kind of ad-hoc solutions.
+
+## Duplicated states, the root of all evil
+
+Normalized states, derived states, computed states, single source of truth, and more. There is an extensive list of concepts that explain why you should not have duplicated state. If you duplicate the state, you start working in highly reliable solutions to avoid data corruption.
+
+The main principle of Object Oriented programming is that each object keeps its own state. The only way to interact with that state is through methods. Using one object state from another object is considered an antipattern. In other words: Object Oriented programming encourages you to duplicate states.
+
+That is the problem of Object-Oriented views: each view has its state. That means that your state becomes duplicated: you have the state in your models, and you have the state in the view.
+
+When you have duplicated states, you need to synchronize them. If you look carefully at MVC, it is one proposal about how to implement that synchronization. Unfortunately is not entirely satisfactory; tens of variants have emerged. Almost every project that I have seen implements its unique mechanism and tries to synchronize views and models states, more or less effectively.
+
+
+## Functions have no state
+
+In Front End environments it appeared something surprising for me: React. In the beginning, I thought that It was one framework more, but I was wrong.
+
+React conceives the View as something that you can print. A simple React component is a render function. The idea of creating components in React is to allow React lazily call render functions; like a pure-functional programming language.
+
+Think in a view like something that you print from the state, it is simple and powerful. You do not duplicate the state, and everything is always consistent.
+
+Now, any extra code to synchronize application state and view state seems to be superfluous and adds unnecessary overhead and complexity.
+
+
+## The View is a Function
+
+Views should not keep state. That duplicates state, and state duplication leads to data corruption and synchronization overheads.
+
+Functions are stateless, predictable, highly reusable. ¿Why do not just print the state to show your view?
+
+The next time that you want to write a new view think about what would happen if you can print that. How easy it becomes when you remove the state from the view.

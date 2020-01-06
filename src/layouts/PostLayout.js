@@ -4,6 +4,13 @@ import Main from "../components/Main"
 import BasicLayout from "./BasicLayout"
 import * as shared from "../shared"
 
+function computeSource(canonical) {
+  if (canonical.startsWith("https://medium.com")) {
+    return "at medium"
+  }
+  return "here"
+}
+
 export default function WikiPage({ children, pageContext }) {
   const { canonical } = pageContext.frontmatter
 
@@ -16,7 +23,8 @@ export default function WikiPage({ children, pageContext }) {
             {canonical && (
               <p class="small">
                 <a href={canonical} target="_blank" rel="noopener noreferrer">
-                  This article was originally published outside ⬈
+                  This article was originally published{" "}
+                  {computeSource(canonical)} ⬈
                 </a>
               </p>
             )}

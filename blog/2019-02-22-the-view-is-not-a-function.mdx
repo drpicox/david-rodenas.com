@@ -1,0 +1,53 @@
+---
+title: The View is not a Function
+canonical: https://medium.com/@drpicox/a-view-is-not-a-function-b4b4fcd807b8
+---
+
+Previously I claimed that the view is a function, but I was wrong. Or was I?
+
+
+## Views must have state
+
+My first user interfaces were `PRINT “some text”`. I have considered that it was stateless. It was not.
+
+When I was a child programming BASIC usually the first step before PRINT was “CLS,” clear the screen. The CLS command does something more than clearing the screen; it also resets the cursor position to the first line and first column. That it is because each PRINT shows the text in the cursor position, and it alters the cursor position. Two consecutive calls to PRINT with the same arguments printed the same thing in different locations. That means that PRINT is not a pure function, and there is a state.
+
+We display our views on the screen. The screen requires memory to store what it has to show. That memory is state. The same is valid for speakers — they have a memory buffer — , printers — they even have a pool of papers — , and any other physical device has state.
+
+Object-oriented programming views objective is to split those physical devices with large amounts of memory and state into smaller ones. Instead of having one screen, we have multiple windows, panels, labels, input texts, buttons and so on. And Object-oriented parading naturally fits, they reproduce what we already have with a more convenient abstraction and programming interface.
+
+
+## Our brain has state
+
+And there is no clear button.
+
+That is the objective of any user interface, the view. We have to synchronize our application state with the brain of the user.
+
+That is nothing to be worried about, or it should be the only thing to be concerned. All creativity, methodologies, and philosophies come about how to synchronize both. Call it user experience or usability.
+
+But, what we cannot tolerate is to confuse the user. When we deal with multiple replicated state, showing the same data on many views, we must be sure that all views are consistent. That means synchronize all replicated states. And this is hard.
+
+
+## React is not stateless
+
+The cornerstone of React is the render function: a pure function designed to compute the view. And those functions are meant to be stateless.
+
+Of course, React has state. React allows using classes as views, classes are object-oriented and have state. They even have a property literally called state which is a state. And now they have created something called useState hook, which is a way to add a state to a function component.
+
+All this component state is optional. It is useful in some cases to deal with any state present in the view, but not in our application. If you want to understand that better, I suggest reading about containers and components in redux, or about smart components and dumb components in other methodologies.
+
+
+## CLS; PRINT Sequence
+
+There is a state in the view, but somehow I learned the skill of erasing it and redrawing everything again. That was a crude mechanism, but effective.
+
+React is more refined. It allows you to generate all the view tree like it was nothing printed before, then it compares the previous tree with the new one, and then it manipulates the underlying view to match the new tree. React does not erase everything and paint again because of speed and flickering.
+
+
+## Who cares about the state in the view?
+
+If you are using an object-oriented view, you have to care. Or do you?
+
+What if you were allowed to recreate the view each time that the application state changes, you would care about the view state? If you can forget about the state in the view, the main problem of the state synchronization disappears. If your view abstraction layer is so good that it makes the view state disappear, is it present?
+
+Of course, views have and always will have a state, but we should avoid them. We have tools, and we have abstractions. Use them, forgot about the state, and embrace your view as a function.
