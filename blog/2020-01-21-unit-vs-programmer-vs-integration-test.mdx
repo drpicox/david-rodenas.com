@@ -1,0 +1,75 @@
+---
+title: Unit test vs. Programmer test vs. Integration test
+canonical: https://medium.com/@drpicox/unit-test-vs-programmer-test-vs-integration-test-54c509852ab8
+---
+
+_Almost anyone agrees about what is a Unit Test. QA engineers and developers usually give Integration Test different meanings. Extreme Programming defines the Programmer Test concept, whose objective is to create more useful tests. This article outlines the properties of each type of test and creates a common ground to speak about them._
+
+## Unit test
+
+You get the headlamp, place a sensor as a lightbulb, and connect the headlamp to a power source. The test passes if the sensor receives power.
+
+![unit test](/images/testing/unit-test.png)
+
+- Runs fast; the scale is milliseconds.
+- Test a unit in isolation; one failure implies one single unit.
+- Mock internal dependencies; replace other components by mocks.
+- Mock externals; avoid databases, network, and external APIs.
+- Failure spots precisely the origin of failure; it is one unit.
+- Refactor is difficult; changes in code usually implies changes in the test.
+- **No business value**; the test does not explain the objective of the class.
+- Low confidence; do not test the relation between components.
+- **Discourage the use of TDD**; test and units are too close.
+
+The test is: does the headlamp powers the lightbulb outlet when it receives power? If the use case is that the headlamp lights turning the switch on, you have to add extra tests for the lightbulb, the switch, the battery, the wire.
+
+These tests also have no business value. Probably you are a car factory company, not a headlamp factory company, neither a lightbulb factory. If you read all the tests, you know which parts you need to build a car, but no idea how to make a car. Changes are hard; if you change any piece, you have to rebuild your tests for that piece, and you do not know how it affects other parts.
+
+Confidence is low. You are not checking if the headlamp socket is compatible with the lightbulb, or if the headlamp glass is black and do not allow light to pass, or if the voltage is correct, and many other things.
+
+## Programmer test
+
+You get the headlamp, a light bulb, a battery, a light switch, interconnect them. Turn the switch on. The test passes if the light bulb emits light.
+
+![programmer test](/images/testing/programmer-test.png)
+
+
+- Runs fast; the scale is milliseconds.
+- Test a business rule in isolation; do not build the whole application.
+- Use internal components; avoid mocks, and use actual parts.
+- Mock externals; avoid databases, network, and external APIs.
+- Failure spots reasonably well the origin of failure; a few units involved.
+- Refactor is easy; the test is resilient to changes in code.
+- **Has business value**; documents the code and connects test to business rules.
+- High confidence; tests a business rule with relevant components.
+- **Use TDD**; the most recent edit is vital.
+
+The test is: does turning the switch on lighting the lamp?
+
+These tests also have business value. You know what the headlamp does and how it works. Each test becomes a small manual about how to build a car part. You can switch lightbulbs, headlamps, and other pieces, and the test still passes if it works.
+
+Confidence is high. You are not checking each part and also that everything is working well together.
+
+
+## Integration test
+
+You build a car and place it in a dark street. Unlock the door, turn the key, and turn on the switch on. The test passes if it illumines the street correctly.
+
+![integration test](/images/testing/integration-test.png)
+
+
+- Faster than human; each test takes seconds or minutes.
+- Test a business rule; imitate the human using the application.
+- Use real internal components; mock nothing here.
+- May use real external dependencies; some mocks are necessary.
+- Failure gives the origin of failure vaguely; consider the whole system.
+- Refactor is hard; test is slow, and failure give vague hints.
+- **Is business value**; document the exact behavior of the system.
+- Highest confidence; the next step is real users.
+- **Not suitable for TDD**; test-code-refactor cycle is too long.
+
+The test is: does turning the switch on making the car light the road?
+
+These tests are real business value. You know what the car must do. You can change any part and still check if everything works. The problem is that if something fails, you have to debug the full car.
+
+Confidence is the highest. You have a real car. It is also slow because you need to build a new car for each test.

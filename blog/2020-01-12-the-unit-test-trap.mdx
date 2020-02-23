@@ -1,0 +1,61 @@
+---
+title: The Unit Test Trap
+canonical: https://medium.com/@drpicox/the-unit-test-trap-4a83e4012b17
+---
+
+_You may have listened a lot about Unit Tests. You even may have created many of them. It is also possible that you are using TDD. Nevertheless, it is highly probable that you have fallen into the Unit Test trap._
+
+
+Testing is amazing. I love it, and I cannot figure out how I was able to sleep comfortably before Testing. But this has not always been the case; there was a time when I thought that tests were a waste of time. I had read a lot about Testing, seen a lot of examples, went to lots of events explaining how great it was to do Testing, but in the end, the practice failed shockingly. My tests were fragile and almost worthless.
+
+I found that other colleagues’ tests, and most of the tests that I have seen, were suffering from the same fault: they were fragile tests. Tests looked like the implementation, almost a copy of it. Refactor on code was practically impossible without changing tests. Tests were hard to read and understand; it was hard to guess the code intentions. You have almost no clue of what the application does from tests. Time to time, the programmer disables tests because he failed to change them in a refactor. Teams were complaining about developing on the old code. Because they are unable to refactor and clean the code at each step, they ask for big refactors. They are afraid to upgrade library dependencies. And more. Does it sound familiar? If you are suffering a few or more of these problems, probably your tests are wrong.
+
+What was the cause? As I said, now I love tests, so something has changed, and I have realized the root of many of those problems.
+
+## The trap.
+
+It is the unit word. It is misleading. Which is the Unit? It could be a method, a class, a module, or a package. Which is the correct level? Although it looks simple, it has a lot of controversy among programmers. Most inexperienced programmers would tell you that the correct level is the class or the method level, and beyond that point, it is an integration test. Your QAs will not agree, and they would say that the integration test involves the whole application. Both forget the crucial point: all of the levels are valid targets of Unit Tests. The word unit of Unit Test implies that it looks for a bug in that unit, nothing else. So the question is, which level gives you more value? The unit can be the whole application. It satisfies the definition.
+
+The Unit Test definition is as simple as that it is a test that when it fails, it implies one and only one unit. If a Unit Test is at the class level and it fails, you can fix it only changing that class. It also means that if you change any other class, that test will never break.
+
+Why are Unit Tests so appealing? They spot what fails with precision; it allows a quick fix. The smaller the unit is, the faster we find what broke, and we fix it more quickly. But when units are too small, tests are less effective and less reliable. The smaller the units are, the less you test the interaction within your code.
+
+Imagine a Unit Test at the method level. Once it passes, it will likely never break again. Furthermore, if you do not touch that method again, it will never break. If all the application has only method level Unit Tests, it does not matter how you change one method, all tests but those related directly to that method will pass. That is what converts these tests into something almost useless. If you broke something in the interaction with other units, you would not discover it until you run the application. They give you no clue about how the whole interacts with itself. These tests do not provide confidence.
+
+The opposite would be Unit Tests at the application level. Once they pass, you have a high level of confidence that all units and their interactions are working. The problem is that once one test fails, it is hard to discover which part of the code has failed. And they will fail more frequently than smaller units. They account for any problem in their units, but also in their interactions.
+
+It seems that there is a tradeoff between confidence and time to detect the origin of the failure. Smaller the unit, faster you find the reason for a failing test but lower the confidence.
+
+## The exit.
+
+Is the tradeoff real? Do we have to choose between having confidence in the code and our ability to correct a problem quickly? Or is there something else? Maybe something that can change the equilibrium in favor of any level, something that we failed to take into consideration.
+
+We do not build the whole system at once; we do incremental changes. A Unit Test of the entire application that fails, it spots the most recent edit in code. That implies both; 
+**the incremental building gives us maximum confidence and reasonable fast failure origin**.
+
+There is an important concept here: [the most recent edit](http://wiki.c2.com/?ProgrammerTest). When a test affecting many parts of the code fails, if the last edit was small, you can follow interactions quickly and find the origin. You also have extra information from tests that have passed and tests that have failed. Usually, only one test fails. If the failing test tells you which case does not work, passing tests gives you essential information about which case not to look. That helps to find the origin of the failure faster. If more than one test fails with the most recent edit, probably you should revert it, and try another edit.
+
+The more we follow TDD, the smaller is the most recent edit. With TDD, you can use larger unit sizes, having a high level of confidence, and maintaining a good speed finding and fixing problems.
+
+## Why do people fall into the trap?
+
+That is the question. Why so many people write Unit Tests at levels of function or class? They may have no realized that using TDD, or a similar approach, they are quickly resolving problems. But I think that it is not the answer. I think that they cheat.
+
+> Most people like Unit Tests at the level of class or function because they cheat.
+
+I am quite afraid that it is true. And probably, most people do not realize that they are following [the path of least resistance](https://www.youtube.com/watch?v=Z1-vPQKwXbY).
+
+If you write the production code first, and then you build the test, the last piece of added production code is large. You probably have already tested by hand the application, and it seems to work. Although it works, you possibly are breaking many existing tests. Here tests of small units appear more helpful; you can write them as simple as looking to your production code and be sure that they pass. When you change the production code, and a test fails, you rewrite it to pass. You know that your application works because you tested it manually. If you broke something at a higher level, you expect the QA team to spot it. You accomplished a high degree of code coverage, and your Sonarqube is happy.
+
+I do not say that people that do small Unit Tests are lazy and do not practice TDD; I know a few of them. But with time, everyone changes to larger unit sizes or accepting that one test may fail because more than one small unit fails. That is not technically a Unit Test, but they still call them as Unit Test. They are giving a compromise that increases their confidence in the testing result.
+
+And that is how I learned to embrace Testing and use it effectively. Unit Tests are the trap. I use Programmers Tests instead. They are a kind of Unit Test, which allows mixing units, but instead of being motivated by code, it is business definitions that define them.
+
+## Use Programmers Tests instead.
+
+I will cover what a Programmer Test is in future articles, but meanwhile, I suggest you practice as follows:
+
+- Forget the one-unit limit; involve other units in a single test wisely.
+- Minimize the number of mocks; each mock diminishes your confidence.
+- Each test must satisfy a business rule; keep it in the test name.
+- Leverage in the most recent edit; **write tests first and iterate frequently**.

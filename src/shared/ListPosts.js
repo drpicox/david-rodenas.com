@@ -20,7 +20,8 @@ const ListPosts = () => {
     <ul>
       {posts.map(p => (
         <li>
-          <Link to={p.path}>{p.title}</Link>{" "}
+          <Link to={p.path}>{p.title}</Link>
+          {" — "}
           <small>
             <emph>
               {new Date(p.date).toLocaleDateString("en-US", {
