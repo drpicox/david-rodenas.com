@@ -1,0 +1,75 @@
+---
+title: Stairstep test
+---
+
+_A stairstep test is a test that by itself has no clear business value; it helps you to construct the production code in small cycles in [TheThreeStagesOfTDD], and once you have more tests, you remove them._
+
+An excelent example of what are stairstep tests can be found in the [BowlingGameKata].
+
+The first test that creates is:
+
+```javascript
+test("create a game", () => {
+  const g = new Game();
+});
+```
+
+And latter it adds the following test:
+
+```javascript
+test("roll a ball", () => {
+  const g = new Game();
+  g.roll(0);
+});
+```
+
+None of both tests are significant at the business level. They provide almost no information about the functionalities of our system, but it helps us to construct the production code in small increment steps.
+
+The first surprise in the test is what happens when we detect duplicated code in the tests, and we decide to refactor them.
+
+```javascript
+let g;
+beforeEach(() => (g = new Game()));
+
+test("create a game", () => {
+});
+
+test("roll a ball", () => {
+  g.roll(0);
+});
+```
+
+The first test got empty, with no code. That gives us the excuse to remove the first stairstep. This first stairstep has already served its purpose, which is the creation of the Game class, and now we can remove it. We give it a farewell, and we show ourselves grateful for its help.
+
+Later the kata adds the first test with a real business value: "the gutter game".
+
+```javascript
+let g;
+beforeEach(() => (g = new Game()));
+
+test("roll a ball", () => {
+  g.roll(0);
+});
+
+test("gutter game", () => {
+  for (let i = 0; i < 20; i += 1)
+    g.roll(0);
+
+  expect(g.score()).toBe(0);
+});
+```
+
+At this moment, and when all tests pass, we can remove the second stairstep. 
+The new test already includes the logic from the stairstep test, and this new test has business-relevant information: it describes an actual scoring rule. Once again, we are grateful for the stairstep test and give it a farewell. We remove it in the following Clean stage.
+
+```javascript
+let g;
+beforeEach(() => (g = new Game()));
+
+test("gutter game", () => {
+  for (let i = 0; i < 20; i += 1)
+    g.roll(0);
+
+  expect(g.score()).toBe(0);
+});
+```
