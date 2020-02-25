@@ -26,6 +26,30 @@ html {
     }
 }
 
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+table {
+    border-spacing: 0;
+    border-collapse: separate;
+}
+th {
+    color: white;
+    background: var(--primary-light-color);
+    padding: .5em 1em;
+}
+table, th, td {
+    border: solid .1rem var(--primary-light-color);
+}
+td {
+    padding: .3em .6em;
+    font-size: 90%;
+}
+
+
 html, body {
     font-size: 1.1rem;
     margin: 0;
@@ -85,6 +109,7 @@ blockquote {
 .small {
     font-size: 70%;
 }
+
 
 
 
