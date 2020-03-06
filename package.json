@@ -11,6 +11,7 @@
     "start": "gatsby clean; yarn develop",
     "serve": "gatsby serve",
     "ldeploy": "gatsby clean && gatsby build && gh-pages -d public -b master",
+    "pub": "gh-pages -d public -b master",
     "deploy": "gatsby clean && gatsby build && gh-pages -d public -b master -r https://$GH_TOKEN@github.com/drpicox/drpicox.github.io.git",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing \""
   },

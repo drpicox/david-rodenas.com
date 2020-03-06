@@ -1,0 +1,90 @@
+---
+title: Everyone knows how to do great testing
+canonical: https://medium.com/@drpicox/
+---
+
+_In the past, I thought that testing was hard, that you need considerable practice to learn to do proper testing. A few days ago, I realized that it is not correct; every programmer already knows how to test. In this article, I present a small recipe that allows anyone to write excellent tests starting today._
+
+## First Hint
+
+I learned the first hint from Uncle Bob just a few weeks ago. I was learning from one of their videos, and I heard the following question:
+
+> » Which test you write first?
+
+The question surprised me, because I have years of experience writing tests, and I had never asked the same question to myself. But Uncle Bob was right. But the answer that he gave to that question was also surprising and amazingly simple:
+
+> » If you do not write tests, which code would you write first?
+
+If you follow TDD (you should), there is a rule that says: you cannot write any production code until you have a failing test. And then, when you have that unit test failing, you cannot write more code than is sufficient to pass the test. That means that you cannot start writing production code; you need to write one test first. And which is that test? Simple, the one that gives you the excuse to write the code that you need.
+
+Do you not know where to begin to write a test? Write one that allows you to write the code that you need. That is simple. 
+
+## The Recipe
+
+That was the first hint that I had: everyone knows how to write the first test. It is because everyone already has the skills to do it: every experienced programmer knows how to start coding, so everyone knows which is the first chunk of code, therefore, what to test first. 
+
+So, is it possible that everyone knows how to do good tests in any case? 
+
+### Step 1: First tests
+
+We already have the recipe to make tests. It is to write first the tests that give us the excuse to write the code. Ok, you might find it slow in the beginning, but give yourself a little bit of practice. Embrace the TDD discipline and make the effort of writing the tests before. There is no better moment in a project to start learning proper testing.
+
+### Step 2: Scaling large code
+
+What happens if you already have an extensive application, or you discover a bug? What happens if you do not have a broad base of tests to help you doing tests?
+
+Here the tip of writing the test that gives you the excuse to write the code is not easy to follow. It seems so complicated, and it is far more straightforward to start the application and test by hand the latest changes that you have done. But this is also the answer. Because you know how to test the application manually, you know what you need to test (and what not to test). And that is what you have to write.
+
+We never write a large chunk of code at once; we all, almost all, avoid doing that. Instead, we write a small piece of code. Then, we open the application, navigate, introduce data, and finally, we evaluate if the chunk of code behaves correctly. And we iterate again until we finish a feature.
+
+That iterative is the precursor of TDD without testing. So, what we have to do? Easy, instead of test the application manually, we write the code that does the same operation us.
+
+**Are you doing login in your application? Consuming a service?** Write a mock for the service. I have seen many times programmers hardcoding fake credentials to test their software manually. You can do it manually and risk to commit it, or, put a little effort abstracting that functionality so you can mock it quickly.
+
+**Are you navigating through the UI? Changing the view? Filling a form?** Reproduce the same steps with your test. Make your test select the view in which the functionality works and fill the forms for you. It might seem hard if it is the first time that you do it, but if you do it manually, and you know the code, you know what precisely execute in the test to make your application reach the point.
+
+**Are you developing an API? No UI involved?** I bet you that you are using Postman or a similar tool to test it manually. Do the same in your test. Use MockMCV, Supertest, or any tool available in your software stack. Do API calls directly from your test and read the result. And of course, Am I right when I say that you do not check that every field in the response is ok? Do not do that in your test, either. Instead of snapshotting, or similar, use tools like Jsonpath, check only the fields and values that are relevant for your test.
+
+Try to stick to your debugging skills all the time; we are wiser more experienced than we realize. Leverage on that knowledge and make your code do what you would do manually, no more, no less.
+
+### Step 3: Remove references to UI
+
+That seems a little bit trickier because it does not feel natural in the beginning, but it is just the opposite. 
+
+The recipe in Step 2 says that you should reproduce what you do manually. And without doubt, you are using the UI. So, what means removing references to the UI?
+
+A little self-reflection. What do you think when you interact with the UI? Do you think: I am going to click that field, type those keys, and push the search button? Or you think: I am going to do that search? The second one, right? That is what you have to do.
+
+**Instead of writing in the test direct calls to the UI, create a library or an interface to express what you think**. Write a function call: search, instead of manipulating the UI. And then implement the exact behavior in the function. 
+
+Writing and using this abstraction library, you accomplish two objectives. The first is that the testing code is more readable than writing direct UI calls. It expresses the steps of the test at a level closer to your reasoning and probably closer to the requirements that you have. And second, you protect yourself from future changes in the UI. So you are not afraid of changes.
+
+### Step 4: Refactor
+
+It is not refactor everything; it is just maintaining things easy to read. But the test code the most.
+
+Once you have written your firsts test, try to read them. Try to guess what their intention is and what they are trying to accomplish. A good test should be readable like prose. Experiment, create helper functions, artifacts, whatever you need, but make it readable. In the future, you will need to read it and understand it.
+
+There is no need to say that the testing code should be cleaner and easier to understand than the production code.
+
+### Step 5: Do not forget the business value
+
+If you follow Step 2 (you should), you will notice that we end creating lots of tests for many little things. 
+
+When you test things manually, not everything that you test is what you have asked to implement; there are many small steps that we take to achieve that. And because you test them manually, you give no importance because any manual test that you do is destroyed when you finish. It is a matter of speaking; we do not destroy it; we simply do not repeat it.
+
+When we reproduce the same steps with automatic testing, we potentially end up with lots of tests. Once we write a test, it remains here, unless we remove it. That is ok. They are called stairstep tests. That means that they are tests that act like little steps that allow us to achieve our objective. Once we have achieved our objective, and we have a few useful tests, we can remove those old tests. Do not get very attached to them, give him thanks, and remove them.
+
+What is our objective? It is to implement some functionality. We have to implement a functionality that gives business value. Our test must show which is the functionality and how it works. We should be able to read, understand, and remember that from our test. Each test should reflect directly which business value it gives. 
+
+### Extra Step: Use tables
+
+Almost all testing frameworks accepts tables. They are handy. Learn their API and use them.
+
+Why are they so handy? Because when you have one code that tests one case, you can add more cases by adding rows in a table. With just one testing code, you can handle tens of cases. They are easier to maintain and to read that maintain. Do not doubt to refactor your test to accommodate as many tables as they make sense.
+
+## Conclusion
+
+Do great testing is just a matter of introspection. Learn how you test things manually, why you follow some steps, and no others. Then, automatize them.
+
+Make the testing code work for you.
