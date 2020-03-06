@@ -49,6 +49,11 @@ td {
     font-size: 90%;
 }
 
+center {
+    display: block;
+    margin: 0 auto;
+}
+
 
 html, body {
     font-size: 1.1rem;

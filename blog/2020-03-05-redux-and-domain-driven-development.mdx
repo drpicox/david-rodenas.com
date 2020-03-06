@@ -1,0 +1,184 @@
+---
+title: Redux and Doman-Driven Development
+canonical: https://medium.com/@drpicox/redux-and-doman-driven-development-29f818f60f2f
+---
+
+_Dan Abramov, the creator of Redux, says that he does not know what Domain-Driven Design is. Still, it is impressive how Redux resembles DDD. In this article, I explain what DDD, some key concepts, and how Redux implements its ideas. Understanding both, we can deliver even better implementations; two approaches from different worlds that collide and take advantage of the same design principles._
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Alas, I don’t know DDD. Can you show code examples of either approach? Generally you want to treat state as a database.</p>&mdash; Dan Abramov (@dan_abramov) <a href="https://twitter.com/dan_abramov/status/731102007034040322?ref_src=twsrc%5Etfw">May 13, 2016</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+## Domain-Driven Design
+
+Domain-Driven Design is a software modeling technique designed to create robust microservices architectures as well as integrate multiple existing solutions.
+
+Eric Evans initially presented it in 2003 in the book «_Domain-Driven Design: Tackling Complexity in the Heart of Software._» Currently, DDD has many more books, more examples, and it has proved to be effective scaling and maintaining high-grade performance in large systems. If you have listened about Event-Sourcing or CQRS, then you have crossed your paths with DDD.
+
+We can split DDD into two areas: strategy and tactics. The strategy introduces the Ubiquitous Language and Bounded Context. It creates a common language between the developers and the business, but this language goes beyond meetings: all documentation, stories, and even code shares that language. You should never declare a variable with a name not included in the Ubiquitous Language.
+
+The tactics are more about how to implement the system. The main target is to enable a system that can scale distributed across many microservices in many locations. The main abstractions used are queries, commands, domain events, and aggregates. The application directs queries and commands towards the aggregates that can manage them, while domain events maintain eventual consistency in the whole system.
+
+The relevant concepts of the tactics are:
+
+**Queries**: Any question that you can do to the system that does not change its state. It is something that you ask for, and it responds with information. It should not involve any data change. Example of query: list the available posts.
+
+<center>
+
+![listPosts(): list](/images/ddd/list-posts-query.png)
+
+</center>
+
+**Commands**: are requests for a mutation to the system. They may work, or they may fail. The system executes them and returns the result. Some variants, like CQS, do not allow commands to return a value. Example of command: add a new post.
+
+<center>
+
+![AddPost(title, body)](/images/ddd/add-post-command.png)
+
+</center>
+
+**Domain Events**: are the key to the methodology; they represent the effect of cause and effect, facts, something that had happened. Events cannot fail, cannot be canceled. Any component in the application can listen for any event; when it receives an event, it can update itself and generate new events as a consequence. They are used to achieve eventual consistency. Examples of domain events are: a new post is added, or it is five o’clock.
+
+<center>
+
+![PostAdded(postId, title, body)](/images/ddd/post-added-event.png)
+
+</center>
+
+**Aggregates**: it is the main pattern of the DDD. It represents small pieces of models (ideally just one entity and few object values) that are reasonably isolated. It communicates with other entities through queries, commands, and domain events. It consumes domain events to keep its state consistent with other parts of the system, and at the same time, it generates new domain events for each mutation that it has. Example of aggregate: post.
+
+<center>
+
+![Post(postId, title, body)](/images/ddd/post-added-event-source.png)
+
+</center>
+
+About Commands and Domain Events, unfortunately, many people confuse them, although they are very different. Commands are intentions and Domain Events are facts.
+
+If you want to learn more about DDD, I strongly recommend reading the book of Vernon Vaughn «Domain-Driven Design Distilled» (2016). This book quickly introduces all concepts and gives an unobstructed comprehensive view of how to start doing DDD.
+
+
+## Redux
+
+Redux is shockingly related to Domain-Driven Design. Although it does not share the same terminology, the ideas are present. Redux is almost an implementation of the tactics of DDD in a functional paradigm.
+
+Let’s compare the previous concepts with Redux:
+
+**Queries**: they are selectors. Use a selector to obtain a piece of information from the state.
+
+**Commands**: they are actions. When we dispatch an action, we submit a new command. Redux does not provide a result because it implements a pure CQS.
+
+**Events**: they are actions, too. But, ¿when an action is a fact? After when it is reduced. After reducing an action, it becomes a fact, something that does not change.
+
+**Aggregate**: the aggregate is who computes all changes in the state; this is the reducer.
+
+Unfortunately, Redux vocabulary does not make easy distinguish between commands and domain events. DDD uses infinitive verbs to denote commands and events in the past participle. Although it is common to see action types like “FETCH_POST” or “FETCH_POST_SUCCESSFUL.”
+
+## DDD Patterns on Redux
+
+Two patterns have made DDD popular: Event Sourcing and CQRS. Both have born from the necessity to improve scalability and performance, and both techniques are usually applied in Redux.
+
+**The first is Event Sourcing**. The objective of DDD for event sourcing is to increase the throughput of writes in a database. Instead of saving each change in the database, it only stores the domain events emitted by each aggregate and when it is possible a snapshot of the aggregate. The reasoning is simple: you can reconstruct the state of any aggregate by replaying its events. 
+
+For example, you can reconstruct the application posts by replaying all PostAdded events.
+
+<center>
+
+![event sourcing](/images/ddd/post-added-event-source.png)
+
+</center>
+
+Are you familiar with this concept in Redux? Almost sure, yes. In Redux, this is called Time Traveling, and probably you have used it many times in the developer tools.
+
+And this pattern is great; it does not only allows us to fix bugs more quickly, or speed writes on servers, but it helps to make the application safer. Data corruption? No problem, replay the events, and you can reconstruct the state, even if you had a bug. Are you helping other users? Just replay their events to know which is their state.
+
+
+**The second is CQRS**. The objective of DDD for CQRS is to create models that combine the data from multiple aggregates, so, instead of performing numerous slow queries, make one quick fast query on one single model. If Event Sourcing tackled slow updates, it addresses slow queries. The idea is that a unique model would consume multiple events and would compute a derived state, consistently. For example, we can create a model to count posts that uses PostAdded events to increment the count.
+
+<center>
+
+![event sourcing](/images/ddd/post-added-cqrs.png)
+
+</center>
+
+The equivalent in Redux is when multiple reducers are updating the store in different places. Although we have selectors with memoization, some times, we prefer to keep computed derived data to boost performance. For example, when we have an object with entities indexed by keys, but we have an array with the keys so we can list them efficiently.
+
+**The third is the decoupling that has DDD**. One of the main strengths, beyond the scalability in performance, it is the maintainability of the code. The concept of aggregate and how it interacts with others it gives excellent implementations.
+
+Let’s see an example: we have a company that sells products and uses marketing campaigns to make offers. Existing units in shops are labeled initially by their corresponding product selling price, but when the campaign starts, it relabels units with the advertised price.
+
+Without DDD we have a code like the following:
+
+<center style="background: rgba(255,255,255,0.5)">
+
+![campaign - product - unit](/images/ddd/campaign-product-unit.png)
+
+</center>
+
+```javascript
+// Without DDD
+class Campaign {
+  ...
+  startCampaign() {
+    product.relabelUnits(advertisedPrice);
+  }
+}
+
+class Product {
+  ...
+  relabelUnits(price) {
+    units.forEach(unit => unit.relabelPrice(price);
+  }
+}
+
+class Unit {
+  ...
+  relabelPrice(price) {
+    labeledPrice = price;
+  }
+}
+```
+
+If we apply DDD we can relay on domain events to update other aggregates:
+
+<center>
+
+![campaign - product - unit](/images/ddd/campaign-event-unit.png)
+
+</center>
+
+
+```javascript
+// With DDD
+class Campaign {
+  ...
+  startCampaign() {
+    emit(new CampaignStarted(..., productId, advertisedPrice));
+  }
+}
+
+class Unit {
+  ...
+  onCampaignStarted(event) {
+    labeledPrice = event.advertisedPrice;
+  }
+}
+```
+
+Did you have noticed the difference? Now Product has disappeared. The Product does not depend anymore from the Unit. We have reduced the coupling of the application, and we can plug and unplug the units from our application without changing any code.
+
+Redux does the same decoupling. Each combined reducer is like one aggregate. When a reducer receives one action, it reduces it independently.
+
+```javascript
+function reduceUnit(state, action) {
+  switch (action.type) {
+    case START_CAMPAIGN:
+      return { ...state, labeledPrice: action.advertisedPrice };
+    ...
+  }
+}
+```
+
+## Conclusion
+
+Redux and DDD present many similarities, and both share many of the advantages. Although they are created from different abstractions and from different backgrounds, both benefit the same architectural principles.
+
+The main difference is the domain events. This concept does not exist clearly in Redux. It has consequences, and it will probably be studied in further articles.
