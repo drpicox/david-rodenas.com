@@ -92,6 +92,12 @@ h1,h2,h3,h4 {
     margin-bottom: 1rem;
     line-height: 1.35;
 }
+h1 {
+    font-weight: 900;
+    font-size: 4rem;
+    line-height: 4rem;
+    margin-top: 5rem;
+}
 h2 {
     border-bottom: .12rem solid var(--title-color);
 }
