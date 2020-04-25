@@ -14,7 +14,7 @@ export default function ShowAliases({ aliases }) {
 
   return (
     <div>
-      <h3>Pick one alias:</h3>
+      <h3>Pick one nickname:</h3>
       <ul>
         {aliases.map(alias => (
           <ShowAlias alias={alias} enabled={!pick} setPick={setPick}>

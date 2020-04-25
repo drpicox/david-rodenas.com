@@ -22,7 +22,7 @@ export default function ShowAliases({ pick }) {
 
   return (
     <div css={myCss}>
-      <h3>Your Alias:</h3>
+      <h3>Your Nickname:</h3>
       <input value={pick} ref={inputRef} />
       <button onClick={copy}>Copy to clipboard</button>
     </div>
