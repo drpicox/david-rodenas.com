@@ -1,13 +1,4 @@
 import React, { useRef, useEffect, useCallback } from "react"
-import { css } from "@emotion/core"
-
-const myCss = css`
-  input {
-    display: inline;
-    width: auto;
-    height: 1.4em;
-  }
-`
 
 export default function ShowAliases({ pick }) {
   const inputRef = useRef(null)
@@ -21,7 +12,7 @@ export default function ShowAliases({ pick }) {
   }, [copy, pick])
 
   return (
-    <div css={myCss}>
+    <div>
       <h3>Your Nickname:</h3>
       <input value={pick} ref={inputRef} />
       <button onClick={copy}>Copy to clipboard</button>

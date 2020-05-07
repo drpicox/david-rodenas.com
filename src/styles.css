@@ -121,6 +121,31 @@ blockquote {
     font-size: 70%;
 }
 
+input {
+    width: 100%;
+    border: solid var(--text-color) 5px;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    background: inherit;
+  }
+  button {
+    margin-top: 10px;
+    border: solid var(--text-color) 5px;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    background: inherit;
+  }
+  .error {
+    color: red;
+  }
+  
+input {
+    display: inline;
+    width: auto;
+    height: 1.4em;
+}
 
 
 
