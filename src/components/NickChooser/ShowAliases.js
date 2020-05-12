@@ -16,7 +16,7 @@ export default function ShowAliases({ aliases }) {
     <div>
       <h3>Pick one nickname:</h3>
       <ul>
-        {aliases.map(alias => (
+        {aliases.sort().map(alias => (
           <ShowAlias alias={alias} enabled={!pick} setPick={setPick}>
             {alias}
           </ShowAlias>
