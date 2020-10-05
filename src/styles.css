@@ -106,6 +106,16 @@ blockquote {
     color: gray;
     font-family: 'Times New Roman';
     font-size: 1.5rem;
+    margin: 1.5em;
+}
+
+blockquote > blockquote {
+    font-size: 1rem;
+    background: var(--secondary-light-color);
+    color: var(--light-background-color);
+    margin: 0;
+    padding: .25em 2em;
+    margin: 0 -1.5em;
 }
 
 .gatsby-highlight {
