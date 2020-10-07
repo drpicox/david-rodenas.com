@@ -2,7 +2,15 @@
 title: TcLs2 Testing
 ---
 
+import { Deck, Slide, StartPresentation } from "../src/components/Deck"
+
 How to add new tests?
+
+<Deck>
+
+
+<Slide>
+
 
 ## Creating the test
 
@@ -12,9 +20,13 @@ The first step is the test creation. You need to:
 2. Create and pass the backend test
 3. Create and pass the frontend test
 
+</Slide><Slide>
+
+
 ## Create and pass backend test
 
-We include the step of creating the `post.md` inside the background test.
+</Slide><Slide>
+
 
 ### Create a new post.md file
 
@@ -28,6 +40,9 @@ Copy the markdown contents from the issue to the following file:
 - `mm`: is the current month with two digits (01 january, 10 october)
 - `dd`: is the current day with two digits (04, 10, 17 or 31)
 - `title_with_undercases`: is the title replacing no letter/numbers by a single underscore
+
+</Slide><Slide>
+
 
 ### Create the JUnit test file
 
@@ -64,27 +79,33 @@ public class Post_yyyymmdd_TitleInUpperPascalCase_Test {
 }
 ```
 
->> ⚠️ **Important**: Do not forget to add `_Test` at the end of the classname.
->> It is necessary to run the tests automatically from the command line.
->> Also make sure that the name matches the blog, because there is an 
->> automatic process that evaluates that all posts have test.
+> > ⚠️ **Important**: Do not forget to add `_Test` at the end of the classname.
+> > It is necessary to run the tests automatically from the command line.
+> > Also make sure that the name matches the blog, because there is an
+> > automatic process that evaluates that all posts have test.
+
+</Slide><Slide>
+
 
 ### Running steps
 
-Each blog sentence is a test step. The `PostRunner` recognizes 
+Each blog sentence is a test step. The `PostRunner` recognizes
 each one and executes the appropiate test step. For example:
 
 ```
 [PLSLiterature              ] ## Let's begin the game
 [PLSEmptyLine               ]
 [PLSLiterature              ] ### Create a gameplay
-[PLSEmptyLine               ] 
+[PLSEmptyLine               ]
 [PLSLiterature              ] Before playing, register you and your friend to play.
-[PLSEmptyLine               ] 
-[ClickNewGameInTheMainHeader] > Click _New Game_ in the main header.  
-[TypeIntoTheNewGameName     ] > Type _FirstGame_ into the _new game name_.  
-[SelectIntoTheGameScenario  ] > Select _Basic_ into the _game scenario_.  
+[PLSEmptyLine               ]
+[ClickNewGameInTheMainHeader] > Click _New Game_ in the main header.
+[TypeIntoTheNewGameName     ] > Type _FirstGame_ into the _new game name_.
+[SelectIntoTheGameScenario  ] > Select _Basic_ into the _game scenario_.
 ```
+
+</Slide><Slide>
+
 
 ### Steps structure
 
@@ -121,6 +142,9 @@ public class TypeIntoTheNewGameName extends AbstractPostLineStep {
 }
 ```
 
+</Slide><Slide>
+
+
 ### Steps packages
 
 Steps are orgenized in packages to ease finding them.
@@ -128,7 +152,7 @@ Current packages are:
 
 ```
 testSteps
-  - board      # checks for cards in the hand or in a table 
+  - board      # checks for cards in the hand or in a table
   - cheating   # help to advance the state quickly and set mocks
   - enterGame  # handles a player entering to a game
   - newGame    # handles the game creation
@@ -136,17 +160,20 @@ testSteps
   - players    # ready/refresh and tools to quickly change player
 ```
 
+</Slide><Slide>
+
+
 ### Missing steps
 
 Some times you write sentences that have no step associated:
 
 ```
-2020-08-24_defensing_fields:12  > Click _New Game_ in the main header.  
-2020-08-24_defensing_fields:13  > Type _FirstGame_ into the _new game name_.  
+2020-08-24_defensing_fields:12  > Click _New Game_ in the main header.
+2020-08-24_defensing_fields:13  > Type _FirstGame_ into the _new game name_.
 
 
 java.lang.AssertionError: There are no PostLineSteps (0) matching the instruction:
-=> 2020-08-24_defensing_fields:13  > Type _FirstGame_ into the _new game name_.  
+=> 2020-08-24_defensing_fields:13  > Type _FirstGame_ into the _new game name_.
 
 	at com.drpicox.game.testPost.PostRunner.newErrorNoRunnersFound(PostRunner.java:72)
 	at com.drpicox.game.testPost.PostRunner.runLine(PostRunner.java:35)
@@ -158,6 +185,9 @@ If that happens:
 - Check if you have another sentence that does the same
 - Check if there is a better sentence
 - Add a new Step if it is necessary
+
+</Slide><Slide>
+
 
 ### Add new steps
 
@@ -171,9 +201,12 @@ the variables.
 - They inherit from `AbstractPostLineStep`
 - Make sure that they have the `@Component` annotation
 
->> Some old classes have substituted variables in his name by X, Y, ...
->> remove them. For example: 
->> rename `TypeXIntoTheNewGameName` into `TypeIntoTheNewGameName`.
+> > Some old classes have substituted variables in his name by X, Y, ...
+> > remove them. For example:
+> > rename `TypeXIntoTheNewGameName` into `TypeIntoTheNewGameName`.
+
+</Slide><Slide>
+
 
 ### Forms
 
@@ -191,6 +224,9 @@ class TestPostForms {
 - Steps sets values to the form, ex: `TypeIntoTheNewGameName`
 - Steps reads from forms to make assertions, ex: `TheCurrentPlayerIs`
 - Steps replaces form content with API responses: `ClickTheEnterButton`
+
+</Slide><Slide>
+
 
 ### SnapshotService
 
@@ -222,14 +258,17 @@ public class ClickTheEnterButton extends AbstractPostLineStep {
 }
 ```
 
+</Slide><Slide>
+
+
 ### Snapshot step
 
-After a step needs to use the SnapshotService, 
+After a step needs to use the SnapshotService,
 you need an extra hidden sentence in the markdown to save
-the snapshot. 
+the snapshot.
 
 ```
- > Click the _Create Game_ button.  
+ > Click the _Create Game_ button.
  <!-- SNAPSHOT status=200 -->
 ```
 
@@ -240,17 +279,20 @@ returns the expected status.
 Make sure that you always add a step for saving the snapshot after
 any step that emulates an API call.
 
+</Slide><Slide>
+
+
 ### Multiple step errors
 
-Each sentence can only be matched by one and only by one step. 
+Each sentence can only be matched by one and only by one step.
 If given one sentence, it can match two steps, it fails:
 
 ```
-2020-08-21_buying_fields:31  > _Martel_ has in his hand _2_ _event_ card of _sheep_.  
+2020-08-21_buying_fields:31  > _Martel_ has in his hand _2_ _event_ card of _sheep_.
 
 
 java.lang.AssertionError: Too many PostLineSteps (2) matches the instruction:
-=> 2020-08-21_buying_fields:31  > _Martel_ has in his hand _2_ _event_ card of _sheep_.  
+=> 2020-08-21_buying_fields:31  > _Martel_ has in his hand _2_ _event_ card of _sheep_.
 They are:
   - Matches "_([^_]+)_ has in h[ei][rs] hand _([^_]+)_ _([^_]+)_ card" (com.drpicox.game.testSteps.board.HasInHisHandNCards)
   - Matches "_([^_]+)_ has in h[ei][rs] hand _([^_]+)_ _([^_]+)_ cards? of _([^_]+)_" (com.drpicox.game.testSteps.board.HasInHisHandNCardsOf)
@@ -261,14 +303,17 @@ They are:
 ```
 
 Note that the first match is a shorter version of the same sentence and because of it fails,
-one is a subset of the other. 
+one is a subset of the other.
 Be caurefule when redacting new sentences, or use regex exclusion patterns
 to avoid those cases.
 
+</Slide><Slide>
+
+
 ## Frontend
 
-Frontend and backend run the same set of sentences, 
-but they have different implementations. 
+Frontend and backend run the same set of sentences,
+but they have different implementations.
 
 - You have to replicate steps in frontend
 - You have to use the UI from your steps
@@ -276,13 +321,16 @@ but they have different implementations.
 - API calls are executed by the UI interaction
 - PLSSnapshot checks that the UI did the correct API call and provides the response
 
+</Slide><Slide>
+
+
 ### Frontend folders
 
 Javascript does not have packages, but it has folders, they are:
 
 ```
 src/www/__test__/testSteps
-  - board/      # checks for cards in the hand or in a table 
+  - board/      # checks for cards in the hand or in a table
   - cheating/   # ignores mocks and cheating at backend
   - enterGame/  # handles a player entering to a game
   - forms/      # generic sentences to handle forms (!!!)
@@ -291,9 +339,12 @@ src/www/__test__/testSteps
   - players/    # ready/refresh and tools to quickly change player
 ```
 
+</Slide><Slide>
+
+
 ### @testing-library helpers
 
-There are some testing accessors that are common for more than 
+There are some testing accessors that are common for more than
 one step, they are inside `helpers` folder inside boards, ex:
 
 ```
@@ -309,58 +360,70 @@ src/www/__test__/testSteps/board/
 ```
 
 ```typescript
-import { getAllByTestId } from "@testing-library/dom";
+import { getAllByTestId } from "@testing-library/dom"
 
-export function getAllByCard(container: HTMLElement, type: string): HTMLElement[] {
-  return getAllByTestId(container, `card-${type}`);
+export function getAllByCard(
+  container: HTMLElement,
+  type: string
+): HTMLElement[] {
+  return getAllByTestId(container, `card-${type}`)
 }
 ```
+
+</Slide><Slide>
+
 
 ### Create a step
 
 ```typescript
-import { AbstractPostLineStep } from "../AbstractPostLineStep";
-import { getAllByCard, getByHand } from "../board/helpers";
-      // ^- it uses helpers from other folders (becareful with dependency cycle)
-import { playCardIntoPile } from "./helpers";
-      // ^- it uses helpers from its folder
+import { AbstractPostLineStep } from "../AbstractPostLineStep"
+import { getAllByCard, getByHand } from "../board/helpers"
+// it uses helpers from other folders ---^ (becareful with dependency cycle)
+import { playCardIntoPile } from "./helpers"
+// it uses helpers from its folder -^
 
 export class PlaysACardIntoHisSquarePile extends AbstractPostLineStep {
   constructor() {
     super(
       /_([^_]+)_ plays an? _([^_]+)_ card into h[ei][rs] square _([^_]+)_ pile/i
-   // ^- the regular expression that matches
-      // ^- capture group [1]                                    ^- & [3]
-                 /        / ^- capture group [2]
-    );
+      // ^- the regular expression that matches
+      // ^- capture group [1]                                   ^- & [3]
+      //                     ^- capture group [2]
+    )
   }
 
   async runMatch(_: any, match: string[]) {
-    const [, player, type, square] = match;
-       // ^- destructuring to get capture group values
-    const hand = getByHand(document.body, player);
-    const [card] = getAllByCard(hand, type);
-              // ^-^- finds things in the UI to operate
+    const [, player, type, square] = match
+    // ^- destructuring to get capture group values
+    const hand = getByHand(document.body, player)
+    const [card] = getAllByCard(hand, type)
+    // ^- finds things in the UI to operate
 
-    playCardIntoPile(card, `${player}-square-${square}`);
-    // ^- and operates
+    playCardIntoPile(card, `${player}-square-${square}`)
+    // ^- and operates (here with a helper)
   }
 }
 ```
+
+</Slide><Slide>
+
 
 ### Register the step
 
 ```typescript
-import { Injector } from "www/injector";
-import { PostLineStep } from "www/__test__/testPost";
-import { ClickEnterGameInTheMainHeader } from "./ClickEnterGameInTheMainHeader";
+import { Injector } from "www/injector"
+import { PostLineStep } from "www/__test__/testPost"
+import { ClickEnterGameInTheMainHeader } from "./ClickEnterGameInTheMainHeader"
 
 export default function configureEnterGameInjector(injector: Injector) {
-  injector.register(PostLineStep, ClickEnterGameInTheMainHeader);
-                 // ^- it is a PostLineStep
-                               // ^- it is the class implementation
+  injector.register(PostLineStep, ClickEnterGameInTheMainHeader)
+  //                ^- it is a PostLineStep
+  //          it is the class implementation -^
 }
 ```
+
+</Slide><Slide>
+
 
 ### Asyncronous
 
@@ -375,7 +438,7 @@ export class PLSSnapshot implements PostLineStep {
   ...
 
   async run(line: PostLine) {
-    ... 
+    ...
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
     // ^- makes sure that the AfterStep hints loading
@@ -386,7 +449,13 @@ export class PLSSnapshot implements PostLineStep {
 }
 ```
 
+</Slide><Slide>
+
+
 ## Quirks
+
+</Slide><Slide>
+
 
 ### Cheats and mocks
 
@@ -400,22 +469,28 @@ that random cards are the ones that we expect in the tests, they are:
 [MockTakeAs] MOCK take _field_ as _frest_
 ```
 
+</Slide><Slide>
+
+
 ### Multiuser quirks
 
 Test only evaluates one frontend instance each time,
 but we need to emulate multiple browsers.
 
 One way is to enter each time with the corresponding user,
-but it is boring for the user and difficults the readability 
-of the test. 
+but it is boring for the user and difficults the readability
+of the test.
 
 Instead of it there are special Steps that deal with that.
 For example:
 
 - `AllPlayersClickReadyAndThenRefreshInTheMainHeader`:
-  emulates that all players click ready and refresh 
-- `UseTheBrowserOf`: 
+  emulates that all players click ready and refresh
+- `UseTheBrowserOf`:
   emulates that there are multiple users
 
+</Slide>
 
-usethebrowserof
+
+</Deck>
+

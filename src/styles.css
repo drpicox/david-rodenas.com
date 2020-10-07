@@ -140,6 +140,7 @@ input {
     background: inherit;
   }
   button {
+      cursor: pointer;
     margin-top: 10px;
     border: solid var(--text-color) 5px;
     font-size: inherit;
