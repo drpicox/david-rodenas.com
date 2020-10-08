@@ -27,7 +27,7 @@ export function PresentationProgress() {
 
   const slideIdx = state.slides.indexOf(state.currentSlideId)
   const slideCount = state.slides.length
-  const pct = (100 * (slideIdx + 1)) / slideCount
+  const pct = (100 * slideIdx) / (slideCount - 1)
 
   return (
     <div css={progressCss}>
