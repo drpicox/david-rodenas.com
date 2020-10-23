@@ -1,16 +1,9 @@
 ---
 title: TcLs2 Testing
+deck: true
 ---
 
-import { Deck, Slide } from "../src/components/Deck"
-
 How to add new tests?
-
-<Deck>
-
-
-<Slide>
-
 
 ## Creating the test
 
@@ -20,13 +13,14 @@ The first step is the test creation. You need to:
 2. Create and pass the backend test
 3. Create and pass the frontend test
 
-</Slide><Slide>
-
-
 ## Create and pass backend test
 
-</Slide><Slide>
+Begin creating and passing the backend test.
+The steps are the followings:
 
+- Create the `post.md`
+- Create the JUnit test field
+- Add missing steps with TDD
 
 ### Create a new post.md file
 
@@ -40,9 +34,6 @@ Copy the markdown contents from the issue to the following file:
 - `mm`: is the current month with two digits (01 january, 10 october)
 - `dd`: is the current day with two digits (04, 10, 17 or 31)
 - `title_with_undercases`: is the title replacing no letter/numbers by a single underscore
-
-</Slide><Slide>
-
 
 ### Create the JUnit test file
 
@@ -84,9 +75,6 @@ public class Post_yyyymmdd_TitleInUpperPascalCase_Test {
 > > Also make sure that the name matches the blog, because there is an
 > > automatic process that evaluates that all posts have test.
 
-</Slide><Slide>
-
-
 ### Running steps
 
 Each blog sentence is a test step. The `PostRunner` recognizes
@@ -103,9 +91,6 @@ each one and executes the appropiate test step. For example:
 [TypeIntoTheNewGameName     ] > Type _FirstGame_ into the _new game name_.
 [SelectIntoTheGameScenario  ] > Select _Basic_ into the _game scenario_.
 ```
-
-</Slide><Slide>
-
 
 ### Steps structure
 
@@ -142,9 +127,6 @@ public class TypeIntoTheNewGameName extends AbstractPostLineStep {
 }
 ```
 
-</Slide><Slide>
-
-
 ### Steps packages
 
 Steps are orgenized in packages to ease finding them.
@@ -159,9 +141,6 @@ testSteps
   - play       # player actions of playing cards into piles
   - players    # ready/refresh and tools to quickly change player
 ```
-
-</Slide><Slide>
-
 
 ### Missing steps
 
@@ -186,9 +165,6 @@ If that happens:
 - Check if there is a better sentence
 - Add a new Step if it is necessary
 
-</Slide><Slide>
-
-
 ### Add new steps
 
 The convention for adding one new step is creating a class that has
@@ -204,9 +180,6 @@ the variables.
 > > Some old classes have substituted variables in his name by X, Y, ...
 > > remove them. For example:
 > > rename `TypeXIntoTheNewGameName` into `TypeIntoTheNewGameName`.
-
-</Slide><Slide>
-
 
 ### Forms
 
@@ -225,12 +198,9 @@ class TestPostForms {
 - Steps reads from forms to make assertions, ex: `TheCurrentPlayerIs`
 - Steps replaces form content with API responses: `ClickTheEnterButton`
 
-</Slide><Slide>
-
-
 ### SnapshotService
 
-Use the SnapshotService to emulate API calls from the backend.
+Use the **SnapshotService to emulate API calls** from the frontend.
 
 ```java
 @Component
@@ -258,9 +228,6 @@ public class ClickTheEnterButton extends AbstractPostLineStep {
 }
 ```
 
-</Slide><Slide>
-
-
 ### Snapshot step
 
 After a step needs to use the SnapshotService,
@@ -278,9 +245,6 @@ returns the expected status.
 
 Make sure that you always add a step for saving the snapshot after
 any step that emulates an API call.
-
-</Slide><Slide>
-
 
 ### Multiple step errors
 
@@ -307,9 +271,6 @@ one is a subset of the other.
 Be caurefule when redacting new sentences, or use regex exclusion patterns
 to avoid those cases.
 
-</Slide><Slide>
-
-
 ## Frontend
 
 Frontend and backend run the same set of sentences,
@@ -320,9 +281,6 @@ but they have different implementations.
 - Forms are the ones in the UI
 - API calls are executed by the UI interaction
 - PLSSnapshot checks that the UI did the correct API call and provides the response
-
-</Slide><Slide>
-
 
 ### Frontend folders
 
@@ -338,9 +296,6 @@ src/www/__test__/testSteps
   - play/       # player actions of playing cards into piles
   - players/    # ready/refresh and tools to quickly change player
 ```
-
-</Slide><Slide>
-
 
 ### @testing-library helpers
 
@@ -369,9 +324,6 @@ export function getAllByCard(
   return getAllByTestId(container, `card-${type}`)
 }
 ```
-
-</Slide><Slide>
-
 
 ### Create a step
 
@@ -405,9 +357,6 @@ export class PlaysACardIntoHisSquarePile extends AbstractPostLineStep {
 }
 ```
 
-</Slide><Slide>
-
-
 ### Register the step
 
 ```typescript
@@ -421,9 +370,6 @@ export default function configureEnterGameInjector(injector: Injector) {
   //          it is the class implementation -^
 }
 ```
-
-</Slide><Slide>
-
 
 ### Asyncronous
 
@@ -449,13 +395,7 @@ export class PLSSnapshot implements PostLineStep {
 }
 ```
 
-</Slide><Slide>
-
-
 ## Quirks
-
-</Slide><Slide>
-
 
 ### Cheats and mocks
 
@@ -468,9 +408,6 @@ that random cards are the ones that we expect in the tests, they are:
 [CheatPicksNCardsOfAtSquare   ] CHEAT _Martel_ picks _3_ _field_ cards _seaport_ at square _1_
 [MockTakeAs                   ] MOCK take _field_ as _frest_
 ```
-
-</Slide><Slide>
-
 
 ### Multiuser quirks
 
@@ -488,9 +425,3 @@ For example:
   emulates that all players click ready and refresh
 - `UseTheBrowserOf`:
   emulates that there are multiple users
-
-</Slide>
-
-
-</Deck>
-

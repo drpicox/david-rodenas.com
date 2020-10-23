@@ -25,6 +25,7 @@ exports.onCreateNode = ({ node, actions, createNodeId }) => {
   createNodeField({ node, name: "name", value: name })
   createNodeField({ node, name: "path", value: `/${name}` })
   createNodeField({ node, name: "isTopic", value: true })
+  createNodeField({ node, name: "deck", value: !!node.frontmatter.deck })
 
   createNode({
     ...node.frontmatter,

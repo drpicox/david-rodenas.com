@@ -17,11 +17,19 @@ const fullDeckCss = css`
   h2,
   h3,
   h4 {
-    margin-top: 0.5em;
+    margin-top: 0em;
   }
 
   h3 {
     border-bottom: 0.12rem solid var(--title-color);
+  }
+
+  small {
+    font-size: 75%;
+    color: #888;
+  }
+  small p {
+    margin: 0;
   }
 `
 
