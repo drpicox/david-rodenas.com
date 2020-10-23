@@ -24,13 +24,15 @@ function AddSequence({ sequences, setSequences }) {
       return
     }
 
-    if (sequences.some(([oa, ob, oc]) => oa === a && ob === b && oc === c)) {
+    const sequence = [a, b, c]
+    if (isSequencePresent(sequences, sequence)) {
       setError("Sequence already present")
+      setSequences(highlightSequence(sequences, sequence))
       return
     }
 
     aRef.current.focus()
-    setSequences([...sequences, [a, b, c]])
+    setSequences(addSequnce(sequences, sequence))
     setError(false)
   }
 
@@ -43,6 +45,22 @@ function AddSequence({ sequences, setSequences }) {
       {error && <h3 className="error">Ops! {error}.</h3>}
     </div>
   )
+}
+
+function areSameSequence([x0, x1, x2], [y0, y1, y2]) {
+  return x0 === y0 && x1 === y1 && x2 === y2
+}
+
+function isSequencePresent(sequences, s) {
+  return sequences.some((c) => areSameSequence(c, s))
+}
+
+function addSequnce(sequences, s) {
+  return highlightSequence([...sequences, s], s)
+}
+
+function highlightSequence(sequences, h) {
+  return sequences.map((c) => [c[0], c[1], c[2], areSameSequence(c, h)])
 }
 
 export default AddSequence

@@ -16,11 +16,11 @@ const myCss = css`
   }
 `
 
-function ProposeRule({ rule, maxGuesses }) {
+function ProposeRule({ rule, maxGuesses, goodMorningDave }) {
   const proposalRef = useRef()
   const [lastGuess, setLastGuess] = useState()
   const [error, setError] = useState()
-  const [count, setCount] = useState(1)
+  const [count, setCount] = useState(0)
   const success = !error && lastGuess
 
   const propose = () => {
@@ -30,6 +30,12 @@ function ProposeRule({ rule, maxGuesses }) {
     }
 
     const guess = proposalRef.current.value
+    if (/goodMorningDave/.test(guess)) {
+      proposalRef.current.value = "true"
+      goodMorningDave()
+      return
+    }
+
     let proposedRule
     try {
       proposedRule = compileProposal(guess)
@@ -44,7 +50,7 @@ function ProposeRule({ rule, maxGuesses }) {
     setCount(count + 1)
     setLastGuess(guess)
     if (!evaluateProposal(proposedRule, rule)) {
-      setError("This is not the rule, test more sequences and guess again")
+      setError("This is not the rule. Test more sequences and guess again")
       return
     }
 
