@@ -1,0 +1,503 @@
+---
+title: TcLs2 Dependency Injection
+deck: true
+---
+
+## Testing Induced patterns
+
+We have seen some patterns that testing induces us to use that all
+work together and improves the composability of the system:
+
+- Lower 's' Singleton
+- Law of Dementer
+- Dependence Injection
+
+### Lower 's' Singleton
+
+Do not create static structures
+
+```java
+// avoid
+public class MySingleton {
+  private static MySingleton INSTANCE;
+
+  public static MySingleton getInstance() {
+    if (INSTANCE == null) INSTANCE = new MySingleton();
+    return INSTANCE;
+  }
+
+  private MySingleton() {}
+}
+
+this.mySingleton = MySingleton.getInstance();
+```
+
+Instead, create only one instance and pass it:
+
+```java
+public class MySingleton {
+  public MySingleton() { ... }
+}
+this.mySingleton = mySingleton;
+```
+
+### Law of Demeter
+
+Do not get things.
+
+```java
+// avoid
+public void record(WeatherStation station) {
+  records.add(station.getThermometer().getTemperature());
+}
+```
+
+Instead, use only those things in which you operate.
+
+```java
+public void record(Thermometer thermometer) {
+  records.add(thermometer.getTemperature());
+}
+```
+
+Rule of thumb: never concatenate two `.`.
+
+### Dependence Injection
+
+Do not look for things.
+
+```java
+public class WheelTester {
+  private LegalRules legalRules;
+
+  public WheelTester(LegalRules legalRules) {
+    this.legalRules = legalRules;
+  }
+
+  public boolean checkWheels(Car car) {
+    Thikness thikness = legalRules.getThikness();
+    List<Wheel>wheels = car.getWheels();
+    for (Wheel wheel: wheels) {
+      boolean isOk = wheel.hasThikness(thikness);
+      if (!isOk) return false;
+    }
+    return true;
+  }
+}
+```
+
+Instead, receive them as a parameter in constructor or functions.
+
+```java
+public class WheelTester {
+  private Thikness thikness;
+
+  public WheelTester(Thikness thikness) {
+    this.thikness = thikness;
+  }
+
+  public boolean checkWheels(List<Wheel> wheels) {
+    for (Wheel wheel: wheels) {
+      boolean isOk = wheel.hasThikness(thikness);
+      if (!isOk) return false;
+    }
+    return true;
+  }
+}
+```
+
+## Backend Dependency Injection
+
+We use Spring in the backend to automatize the dependence injection.
+
+### Define Singleton
+
+Spring defines as lower 's' singleton any class that
+it is annotated by:
+
+- `@Component`
+- `@Service`
+- `@Controller`
+- `@RestController`
+- ...
+
+Example:
+
+```java
+@Component
+public class BlogController {
+  public List<Post> listAll() { /* ... */ }
+  public Post getPost(String postId) { /* ... */ }
+  public String getTitle(String postId) { /* ... */ }
+  public String getBody(String postId) { /* ... */ }
+}
+```
+
+### Use Singleton
+
+Spring automatically instances and injects singleton into
+other singletons constructors.
+
+```java
+@RestController
+@RequestMapping("/api/v1/posts")
+public class BlogRestController {
+
+    private final BlogController blogController;
+
+    public BlogRestController(BlogController blogController) {
+        this.blogController = blogController;
+    }
+
+    @GetMapping
+    public PostListResponse listPosts() throws Exception {
+        var list = blogController.listAll();
+        var result = new PostListResponse(list);
+        return result;
+    }
+
+    @GetMapping("/{postId}")
+    public Post getPost(@PathVariable String postId) throws Exception {
+        return blogController.getPost(postId);
+    }
+}
+```
+
+### Injecting Interfaces
+
+Any singleton can request for an instance of any type,
+if for that interface there is one concrete class, it injects
+the corresponding concrete class.
+
+```java
+public interface Magic {
+  void spell(String name);
+}
+
+@Component
+public class MiddleAgeMagic implements Magic {
+  public void spell(String name) { /* ... */ }
+}
+
+@Component
+public class MagicController {
+  private Magic magic;
+
+  public MagicController(Magic magic) {
+    this.magic = magic;
+  }
+
+  public void cast(String name) {
+    this.magic.spell(name);
+  }
+}
+```
+
+### Injecting List of implementations
+
+In fact, instead of injecting one single instance,
+it injects one instance for each singleton that
+it satisfies the interface.
+
+```java
+public interface Magic {
+  void spell(String name);
+}
+
+@Component
+public class MiddleAgeMagic implements Magic {
+  public void spell(String name) { /* ... */ }
+}
+
+@Component
+public class DarkMagic implements Magic {
+  public void spell(String name) { /* ... */ }
+}
+
+@Component
+public class MagicController {
+  private List<Magic> magics;
+
+  public MagicController(List<Magic> magics) {
+    this.magics = magics;
+  }
+
+  public void cast(String name) {
+    this.magics.forEach(m -> m.spell(name));
+  }
+}
+```
+
+### Inside the code
+
+This is how `RoundRule`s works.
+
+```java
+@Component
+public class RoundRulesRunner {
+
+    private SortedSet<RoundRule> roundRules;
+
+    public RoundRulesRunner(SortedSet<RoundRule> roundRules) {
+        this.roundRules = roundRules;
+    }
+
+    public void run(Game game) {
+        roundRules.forEach(rr -> rr.run(game));
+    }
+}
+```
+
+And `PostLineStep`s:
+
+```java
+@Component
+public class PostRunner {
+    private final List<PostLineStep> postLineSteps;
+
+    public PostRunner(List<PostLineStep> postLineSteps) {
+        this.postLineSteps = postLineSteps;
+    }
+
+    /* ... */
+}
+```
+
+## Frontend Dependency Custom Injection System
+
+We have no spring in the Frontend, we use a manual injection.
+
+```typescript
+export class Injector {
+  register<T>(
+    Type: new (injector: Injector) => T,
+    Constructor?: new (injector: Injector) => T
+  ) {
+    /* ... */
+  }
+
+  set<T>(Type: new (...x: any[]) => T, value: T) {
+    /* ... */
+  }
+  get<T>(Type: new (...x: any[]) => T): T {
+    /* ... */
+  }
+  list<T>(Type: new (...x: any[]) => T): T[] {
+    /* ... */
+  }
+  configure(configurer: (injector: Injector) => void): Injector {
+    /* ... */
+  }
+}
+```
+
+### Registering singletons
+
+Register singletons with the `register` method.
+
+```typescript
+class Counter {
+  private count = 0
+
+  increment() {
+    this.count++
+  }
+
+  get() {
+    return this.count
+  }
+}
+
+const injector = new Injector()
+injector.register(Counter)
+```
+
+### Getting instances
+
+Use the `get` method to obtain the singleton instances:
+
+```typescript
+const counter = injector.get(Counter)
+counter.increment()
+expect(counter.get()).toBe(1)
+```
+
+### Using other singletons from singletons
+
+All singletons created by `Injector` receive the injector in the constructor.
+(It seems to break the law of demeter, but it is a manual step that we need)
+
+```typescript
+class MaxOccupancy {
+  private counter: Counter
+
+  constructor(injector: Injector) {
+    this.counter = injector.get(Counter)
+  }
+
+  isReached() {
+    return this.counter.get() > 2
+  }
+}
+
+injector.register(MaxOccupancy)
+const maxOccupancy = injector.get(MaxOccupancy)
+expect(maxOccupancy.isReached()).toBe(false)
+```
+
+### Mocking instances
+
+You can register other Classes (constructors) for other types:
+
+```typescript
+class CounterMock extends Counter {
+  get() {
+    return 3
+  }
+}
+
+injector.register(MaxOccupancy)
+injector.register(Counter, CounterMock)
+
+const maxOccupancy = injector.get(MaxOccupancy)
+expect(maxOccupancy.isReached()).toBe(true)
+```
+
+### Typescript type interfaces
+
+There are no interfaces in Javascript.
+But there are interfaces in typescript.
+
+```typescript
+// avoid
+interface Magic {
+  spell(name: string)
+}
+
+class MiddleAgeMagic implements Magic {
+  spell(name: string) {
+    /* ... */
+  }
+}
+```
+
+The problem is that these interfaces cannot be registered:
+
+```typescript
+injector.register(Magic, MiddleAgeMagic)
+// ^ compile error, Magic is not a symbol
+```
+
+### Typescript **class** interfaces
+
+Classes can act as interfaces in typescript and we can implement (instead of extend) them:
+
+```typescript
+class Magic {
+  constructor() {
+    throw new Error("Cannot instantiate an interface")
+  }
+  spell(name: string)
+}
+
+class MiddleAgeMagic implements Magic {
+  spell(name: string) {
+    throw new Error("Cannot call an abstract method")
+  }
+}
+```
+
+Now we can register magic.
+
+```typescript
+injector.register(Magic, MiddleAgeMagic)
+```
+
+### Lists from an interfaces
+
+Like in Spring, we can list all instances of one type
+
+```typescript
+class DarkMagic implements Magic {
+  void spell(String name) { /* ... */ }
+}
+
+class MagicController {
+  private magics: Magic[];
+
+  MagicController(injector: Injector) {
+    this.magics = injector.list(Magic);
+  }
+
+  void cast(String name) {
+    this.magics.forEach(m -> m.spell(name));
+  }
+}
+
+injector.register(Magic, MiddleAgeMagic);
+injector.register(Magic, DarkMagic);
+injector.register(MagicController);
+```
+
+### configureInjector.ts
+
+Configures the injector with the injections of the current package.
+
+```typescript
+// src/www/__test__/testPost/helpers/configureInjector.ts
+import { Injector } from "www/injector"
+import { PostLineStep } from "../PostLineStep"
+import { PLSEmptyLine } from "./PLSEmptyLine"
+import { PLSLiterature } from "./PLSLiterature"
+import { PLSSnapshot } from "./PLSSnapshot"
+
+export default function configurePostTestHelpersInjector(injector: Injector) {
+  injector.register(PostLineStep, PLSEmptyLine)
+  injector.register(PostLineStep, PLSLiterature)
+  injector.register(PostLineStep, PLSSnapshot)
+}
+```
+
+### Configuring inner packages
+
+Use children packages configureInjector in your configureInjector:
+
+```typescript
+// src/www/ducks/configureInjector.ts
+import { Injector } from "www/injector"
+import { ReduxStore } from "./ReduxStore"
+import configureBlogInjector from "./blog"
+import configureCardsInjector from "./cards"
+import configureCurrentUserInjector from "./currentUser"
+import configureGameInjector from "./game"
+import configureLoadingInjector from "./loading"
+import configureNewGameInjector from "./newGame"
+import configureSelectedCardInjector from "./selectedCard"
+import configureViewInjector from "./view"
+
+export default function configureDucksInjector(injector: Injector) {
+  injector.configure(configureBlogInjector)
+  injector.configure(configureCardsInjector)
+  injector.configure(configureCurrentUserInjector)
+  injector.configure(configureGameInjector)
+  injector.configure(configureLoadingInjector)
+  injector.configure(configureNewGameInjector)
+  injector.configure(configureSelectedCardInjector)
+  injector.configure(configureViewInjector)
+
+  injector.register(ReduxStore)
+}
+```
+
+### Two injectors configurations
+
+There are two injector configurations:
+
+- one for the main application:  
+  `src/www/configureInjector.ts`
+
+- another for the testing:  
+  `src/www/__test__/configureInjector.ts`
+
+The `__test__` injector uses the main injector,
+and adds all the necesary logic and mocks for the test.
