@@ -38,6 +38,7 @@ Instead, create only one instance and pass it:
 public class MySingleton {
   public MySingleton() { ... }
 }
+
 this.mySingleton = mySingleton;
 ```
 
@@ -397,12 +398,14 @@ class Magic {
   constructor() {
     throw new Error("Cannot instantiate an interface")
   }
-  spell(name: string)
+  spell(name: string) {
+    throw new Error("Cannot call an abstract method")
+  }
 }
 
 class MiddleAgeMagic implements Magic {
   spell(name: string) {
-    throw new Error("Cannot call an abstract method")
+    /* ... */
   }
 }
 ```
