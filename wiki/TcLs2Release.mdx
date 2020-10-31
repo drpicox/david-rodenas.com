@@ -1,36 +1,70 @@
 ---
 title: Release Strategy
+deck: true
 ---
 
 This article covers how to release the [TcLs2] project.
 It assumes that you have already a Heroku account and a repository created. 
 
-In this project, there is one release for each feature. Each time that there is a Pull Request, it implies a release. 
+## When to Release
 
-## Merging the Pull Request
-Given an approved Pull Request, you can start its release.
-The first step of the release is the merge of the Pull Request to the master branch. 
+The Release Manager has to make a release for 
+each pull request approved by its reviewers.
 
-To merge the Pull Request, you have the following steps:
-Download the branch to your development environment.
-Merge, in your development environment, the master branch.
-Run all tests and verify that they pass.
-Run the application and test that everything works.
-Merge the Pull Request: In GitHub, click the Merge button of the Pull Request. Make sure that it has the same commits that you have tested.
+## Tools
 
-## Run Deploy
-At this step, the master branch contains the changes in the Pull Request, but there is not release yet.
+Deploy tools are built on top of [BASH](https://www.gnu.org/software/bash/).
 
-To deploy run the following steps:
-Download the master branch into your environment,
-Create a deploy branch, ex: deploy/version
-Update version inside package.json
-Execute the script ./deploy.sh
+- If you are using UNIX (Linux or Mac) probably you are already using BASH.
+- If you are using Windows, you probably have Git BASH installed.
 
-## Integrating deploy changes into master
-At this step, the master branch is released. However, deploy changes are not yet integrated into the master branch. 
+## Release process
 
-Create a Pull Request from the deploy branch to the master branch. 
-Share this Pull Request with the other team members so they can approve it, and it can be merged back to master.
+### 1. Test branch on your local
 
-They must approve it if the release is done, and the package.json version is updated.
+1. Fetch changes from the GitHub repository
+2. Checkout the branch into your local
+3. Merge master into your local branch
+4. Run the tests:
+
+  ```bash
+  > ./mvnw test
+  > yarn test
+  ```
+
+### If 1. Fails
+
+- Return to your working branch.
+- Delete your feature master branch.
+- Notify through the PR the problem.
+
+### 2. Merge branch into GirHub master
+
+If all tests passes locally,
+go to GitHub, look for the PullResquest
+and click Merge to master.
+
+>> Make sure that it says merge to master.
+
+### 3. Deploy the project on Heroku
+
+1. Fetch changes from the GitHub repository
+2. Change to the master branch
+3. Pull changes from master
+4. Run the deplou script:
+
+  ```bash
+  > ./deploy.sh
+  ```
+
+### 4. Cleanup
+
+Return to your working branch and:
+
+1. Delete the old already deployed feature branch
+2. Delete your local master branch
+
+## Some final notes
+
+Make sure that all tests passes from command line.
+If they doesn't, the bot will assume that you have failed in your task.
