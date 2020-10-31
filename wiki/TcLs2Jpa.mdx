@@ -1,0 +1,589 @@
+---
+title: TcLs2 JPA
+deck: true
+---
+
+Spring JPA automatically creates the code for the DDBB connection.
+
+## JPA
+
+JPA decouples Java implementation from
+Database connection
+
+```java
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Cacauet {
+  @Id private String id;
+  private int round;
+}
+```
+
+### Annotations
+
+Use annotations to describe how
+to connect Objects to Database rows.
+
+Some of the annotations are:
+
+- `@Entity`
+- `@Id`
+- `@OneToMany`
+- `@ManyToOne`
+- `@ManyToMany`
+
+## @Entity
+
+Describes one class as an entity that can be stored in a Database.
+
+If you want to store in the database a new entity, add the
+`@Entity` annotation in the class definition:
+
+```java
+@Entity
+public class Game {
+  /* ... */
+}
+```
+
+>> **Important**: All entities must have `@Id`
+
+### Entities and storage
+
+Entity objects store all their private fields into the Database.
+- Simple types (int, String, List&lt;String>, ...) are stored automatically
+- Serializable: it serializes unkown Serializable objects directly to blobs.
+- Other and your types needs help to store (requires annotations).
+
+In this example it stores the name and the round:
+
+```java
+@Entity
+public class Game {
+
+  @Id private String name;
+  private int round;
+
+  /* ... */
+}
+```
+
+
+## @Id
+
+Describes which of the class fields is the primary key. 
+
+```java
+@Entity
+public class Game {
+  
+  @Id private String name;
+
+  /* ... */
+}
+```
+
+### @GeneratedValue
+
+Use it with `@Id` when you want a new _random_ identifier for each
+new Entity.
+
+```java
+@Entity
+public class Card  {
+    @Id @GeneratedValue private Long id;
+
+    /* ... */
+}
+```
+
+### @IdClass
+
+Use another class as composite primary key.
+
+```java
+public class AccountId implements Serializable {
+    private String accountNumber;
+    private String accountType;
+ 
+    /* ... + equals() + hashCode() */
+}
+
+@Entity
+@IdClass(AccountId.class)
+public class Account {
+    @Id private String accountNumber;
+    @Id private String accountType;
+
+    /* ... */
+}
+```
+
+## Relationships
+
+<Mermaid>{`classDiagram
+  class Player {
+    name
+  }
+  class Game {
+    name
+    round
+  }
+  Player "*" --> "1" Game
+`}</Mermaid>
+
+### @ManyToOne
+
+Use `@ManyToOne` to create one relationship from one entity
+to another entity, when there are many of the current entity
+referencing the same other entity.
+
+<slide-row>
+
+```java
+@Entity
+public class Player {
+  @Id 
+  private String name;
+
+  @ManyToOne
+  private Game game;
+
+  /* ... */
+}
+```
+
+<Mermaid>{`classDiagram
+  class Player {
+    name
+    game
+  }
+  class Game {
+    name
+    round
+  }
+  Player "*" --> "1" Game
+`}</Mermaid>
+
+</slide-row>
+
+### @OneToMany
+
+Use `@OneToMany` to create one relationship from one entity
+to another entity, when there the current entity has many
+references to the other entity.
+
+<slide-row>
+
+```java
+@Entity
+public class Game {
+  @Id 
+  private String name;
+
+  @OneToMany
+  private List<Player> players;
+
+  /* ... */
+}
+```
+
+<Mermaid>{`classDiagram
+  class Player {
+    name
+  }
+  class Game {
+    name
+    round
+    players
+  }
+  Player "*" <-- "1" Game
+`}</Mermaid>
+
+</slide-row>
+
+>> Note that in the current implementation
+>> we have opted for the reverse relationship,
+>> in order to decouple dependencies between packages.
+
+>> We do not need this reverse relationship. 
+>> See Repositories.
+
+### @ManyToMany
+
+Use this annotation when many entities connects to
+other many entities.
+
+<slide-row>
+
+```java
+@Entity
+public class Card {
+  @Id @GeneratedValue private Long id;
+
+  @ManyToMany
+  private List<Label> labels;
+
+  /* ... */
+}
+```
+
+<Mermaid>{`classDiagram
+  class Card {
+    id
+    labels
+  }
+  class Label {
+    name
+  }
+  Card "*" --> "*" Label
+`}</Mermaid>
+
+</slide-row>
+
+### @OneToOne
+
+Use this annotation when there is only one instance
+of this type of entity in relationship with another.
+
+<slide-row>
+
+```java
+@Entity
+public class Bag {
+  @Id private String username;
+
+  @OneToOne
+  private Player player;
+
+  /* ... */
+}
+```
+
+<Mermaid>{`classDiagram
+  class Bag {
+    username
+    player
+  }
+  class Player {
+    username
+  }
+  Bag "0..1" --> "1" Player
+`}</Mermaid>
+
+</slide-row>
+
+### Relationships are between entities
+
+You only can use:
+
+- `@ManyToOne`
+- `@OneToMany`
+- `@ManyToMany`
+- `@OneToOne`
+
+## Inheritance
+
+There are many strategies to save entities
+with inheritance.
+
+<Mermaid>{`classDiagram
+  class Item {
+    name
+  }
+  class Food {
+    name
+    lifePoints
+  }
+  class Weapon {
+    name
+    damage
+  }
+  Item <|-- Food
+  Item <|-- Weapon
+`}</Mermaid>
+
+### Joined Strategy
+
+Stores each class in a different table.
+
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Item {
+    @Id private String name;
+
+    /* ... */
+}
+
+@Entity
+public class Food extends Item {
+    private int lifePoints;
+
+    /* ... */
+}
+```
+
+### SingleTable Strategy
+
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE )
+@DiscriminatorColumn( name = "type" )
+public class Item {
+    @Id private String name;
+
+    /* ... */
+}
+
+@Entity
+@DiscriminatorValue( value="food" )
+public class Food extends Item {
+    private int lifePoints;
+
+    /* ... */
+}
+```
+
+### TablePerClass Strategy
+
+Tables for each entity, but with all the fields without joind and may have nulls.
+
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public class Item {
+    @Id private String name;
+
+    /* ... */
+}
+
+@Entity
+public class Food extends Item {
+    private int lifePoints;
+
+    /* ... */
+}
+```
+
+## @Embeddable
+
+Embed other class attributes directly to your entity.
+Requires serializable.
+
+```java
+@Embeddable
+public class Coordinates implements Serializable {
+  private int x;
+  private int y;
+  /* ... */
+}
+
+@Entity
+public class Ship {
+  @Id @GeneratedValue private Long id;
+  @Embedded Coordinates coordinates;
+
+  /* ... */
+}
+```
+
+### @EmbeddedId
+
+You can use Embedded as primary key for composite keys.
+
+```java
+@Entity
+public class StarSystem {
+  @EmbeddedId private Coordinates location;
+
+  /* ... */
+}
+```
+
+Please note that we have replaced `@Id` by `EmbeddedId`.
+
+### Not embedd twice
+
+You cannot embedd twice the same Embeddable.
+
+```java
+@Entity
+public class MoveCommand {
+  @Id @GeneratedValue private Long id;
+
+  @Embedded Coordinates from;
+  @Embedded Coordinates to;
+  // ^ fails because the x,y fields are already present because `from`
+
+}
+```
+
+>> Check for `@AttributeOverrides` if you really need it.
+
+## Repositories
+
+Access to the save instances through Repositories.
+
+```java
+interface CardRepository extends JpaRepository<Card, Long> {
+}
+```
+
+>> Note that the first Generic parameter is the Entity
+>> the second is the primary key type.
+>> The primary key type can be also the specified by an
+>> @IdClass or @EmbeddedId.
+
+### JpaRepository default methods
+
+See: https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html
+
+Some methods:
+- `findAll(): List<E>`: loads all saved entities from the database
+- `findById(key: K): Optional<E>`: returns the entity corresponding to that key, if it exists
+- `save(entity: E): E`: saves the current entity and returns it
+- `delete(entity: E)`: deletes an entity from the database 
+   (note that the instance still exists until you loose the reference)
+
+### Implementing JpaRepository
+
+Spring automatically implements JpaRepository.
+All you have to do is to inject it inside a @Component 
+and Spring automatically implements and injects it:
+
+```java
+@Controller
+public class CardController {
+    private final CardRepository cardRepository;
+    
+    public CardController(CardRepository cardRepository) {
+        this.cardRepository = cardRepository;
+    }
+
+    /* ... */
+}
+```
+
+>> Note that it fails if some annotations are wrong.
+>> Please, read errors carefully to discover which entity is wrong.
+
+### Automatic Custom Queries
+
+Spring implements automatically methods that are making queries on the 
+database.
+
+For example:
+
+```java
+interface CardRepository extends JpaRepository<Card, Long> {
+
+    // see https://docs.spring.io/spring-data/jpa/docs/1.5.0.RELEASE/reference/html/jpa.repositories.html
+    List<Card> findByGame(Game game);
+}
+```
+
+Looks for all Cards that has a relationship with that Game.
+
+See naming rules here https://docs.spring.io/spring-data/jpa/docs/1.5.0.RELEASE/reference/html/jpa.repositories.html
+
+### Manual queries
+
+It is possible to write manual queries.
+Do not use them on your assignment.
+
+
+## Lifecycle
+
+Entities have a lifecycle state graph about their relation with
+the database. They can work without a database, or inside one.
+
+<Mermaid>{`stateDiagram
+    [*] --> New
+    New --> Managed : persist
+    Managed --> Removed: remove
+    Removed --> Detached : clear/close
+    Managed --> Detached : clear/close
+    Removed --> Managed : persist
+    state Database {}
+    Database --> Managed : find/...
+    Managed --> Database : flush/commit
+    Removed --> Database : flush/commit
+`}</Mermaid>            
+
+### Consistency
+
+When you save an entity:
+
+- Becomes managed
+- Generate @GeneratedValue ids
+- Updates relationships
+
+## Database configuration
+
+Use `application.properties` to configure the database:
+
+```
+spring.datasource.url=jdbc:h2:mem:;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.platform=h2
+spring.datasource.username=sa
+spring.datasource.password=
+spring.datasource.driverClassName=org.h2.Driver
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+spring.h2.console.settings.trace=false
+spring.h2.console.settings.web-allow-others=true
+
+spring.jpa.hibernate.ddl-auto = create
+spring.jpa.properties.hibernate.show_sql=false
+spring.jpa.properties.hibernate.use_sql_comments=false
+spring.jpa.properties.hibernate.format_sql=false
+```
+
+## Quirks
+
+### Empty constructor
+
+All JPA entities must have a public, protected, or package private, empty
+constructor.
+
+```java
+@Entity
+public class Game {
+
+    @Id private String name;
+    private int round;
+
+    public Game(String gameName) {
+        this.name = gameName;
+        this.round = 1;
+    }
+
+    // JPA required
+    protected Game() {}
+
+    /* ... */
+}
+```
+
+### Reserved words
+
+Although JPA is vendor independent,
+it does not protect you to fail if you use a name
+reserved by the database.
+
+```java
+@Embeddable
+public class Coordinates implements Serializable {
+    @Column(name = "aRow")
+    private int row;
+    @Column(name = "aColumn")
+    private int column;
+
+    /* ... */
+}
+```

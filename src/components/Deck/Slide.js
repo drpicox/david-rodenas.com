@@ -31,6 +31,14 @@ const fullDeckCss = css`
   small p {
     margin: 0;
   }
+
+  slide-row {
+    display: flex;
+  }
+
+  slide-row > * {
+    flex: 1;
+  }
 `
 
 let nextSlideId = 0
