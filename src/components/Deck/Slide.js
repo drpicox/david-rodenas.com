@@ -20,7 +20,8 @@ const fullDeckCss = css`
     margin-top: 0em;
   }
 
-  h3 {
+  h2,h3,h4 {
+    font-size: 2rem;
     border-bottom: 0.12rem solid var(--title-color);
   }
 
