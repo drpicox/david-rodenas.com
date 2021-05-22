@@ -1,0 +1,105 @@
+---
+title: Objects
+deck: true
+index: TcEs3Redux
+prev: TcEs3ReduxArrays
+next: TcEs3ReduxDucks
+---
+
+In Javascript objects are maps with string keys and mixed values, plus suger
+syntax to access them like arrays or with dot notation.
+
+```javascript
+const object = {
+  keyA: valueA,
+  keyB: valueB,
+  /* … */
+};
+```
+
+## Objects
+
+![Redux Objects](/images/redux/redux-objects.png)
+
+Use objects as the rows of a database of each duck.
+
+### Traverse all keys
+
+Use the for to traverse all keys of the object:
+
+```javascript
+for (let key in object) {
+  const currentElement = array[key];
+  /* … */
+}
+```
+
+### Copy
+
+Duplicate an array with the triple dot notation:
+
+```javascript
+const copy = { ...original };
+```
+
+### Delete an element
+
+Use delete keyword to remove a _column_:
+
+```javascript
+delete copy[key];
+```
+
+### Insert one element
+
+Use the assignation to add a _column_:
+
+```javascript
+copy[key] = element;
+```
+
+### Replacing an element
+
+Use the assignation to replace an element
+
+```javascript
+copy[key] = element;
+```
+
+### Important
+
+> > **Important**: Remember always to make a copy.
+
+Some times it is easy to forget to make a copy, specially when there are objects
+inside of objects.
+
+For example, given the following object:
+
+```javascript
+const object = {
+  name: "Dr. Thermo",
+  power: {
+    name: "Climate Change",
+    strength: 5,
+  },
+};
+```
+
+If we want to change the strength we cannot do the following:
+
+```javascript
+const copy = { ...object };
+// WRONG: do not do that (look: two points)
+copy.power.strength = newStrength;
+```
+
+Instead, we have to copy both, the object and the power:
+
+```javascript
+const copy = { ...object };
+const powerCopy = { ...object.power };
+
+// OK (look: only one point)
+powerCopy.strength = newStrength;
+copy.power = powerCopy;
+```

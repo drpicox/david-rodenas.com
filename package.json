@@ -59,5 +59,8 @@
   },
   "learnMore": {
     "mdx": "https://alligator.io/gatsbyjs/mdx-in-gatsby/"
+  },
+  "prettier": {
+    "proseWrap": "always"
   }
 }

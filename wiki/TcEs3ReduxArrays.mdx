@@ -1,0 +1,85 @@
+---
+title: Arrays
+deck: true
+index: TcEs3Redux
+prev: TcEs3ReduxReducers
+next: TcEs3ReduxObjects
+---
+
+Arrays in javascript are lists of mixed types.
+
+```javascript
+const array = [element0, element1 /*, … */];
+```
+
+## Arrays
+
+![Redux Arrays](/images/redux/redux-arrays.png)
+
+Use arrays to keep data inside a duck state. The array is the table, and each
+object inside it is the row.
+
+> > **Note**: this is a request only for this assignment, in the real life use
+> > the most suitable structure or follow the
+> > [recommendation of redux](https://redux.js.org/recipes/structuring-reducers/normalizing-state-shape#relationships-and-tables)
+
+### Traverse all elements
+
+Use the for, the index and the length of the array to traverse all elements of
+the array:
+
+```javascript
+for (let index = 0; index < array.length; index += 1) {
+  const currentElement = array[index];
+  /* … */
+}
+```
+
+### Copy
+
+Duplicate an array with the triple dot notation:
+
+```javascript
+const copy = [...original];
+```
+
+### Delete an element
+
+Use splice to remove one element from the array:
+
+```javascript
+copy.splice(index, 1);
+```
+
+You can use pop or shift to remove the last or the first element.
+
+```javascript
+copy.pop(); // removes the last element
+copy.shift(); // removes the first element
+```
+
+> > **Important**: Do not use `delete`. This keyword sets the element to
+> > undefined but it does not remove it from the array.
+
+### Insert one element
+
+Use splice to insert one element to an array into an specific index:
+
+```javascript
+copy.splice(index, 0, element);
+```
+
+You can use push or unshift to add an element to the end or to the beggining.
+
+```javascript
+copy.push(element); // adds element to the end of the array
+copy.shift(element); // adds element to the beggining of the array
+```
+
+### Replacing an element
+
+Use the assignation to replace an element
+
+```javascript
+copy[index] = element;
+```
