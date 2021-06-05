@@ -13,7 +13,7 @@ export default function WikiPage({ children, pageContext }) {
       <MDXProvider components={shared}>
         <Main>
           <shared.Container>
-            <NavIndex index={index} />
+            <NavIndex index={index} prev={prev} next={next} />
             {title && <h1>{title}</h1>}
             {children}
             <NavTopics index={index} prev={prev} next={next} />
