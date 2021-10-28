@@ -1,0 +1,252 @@
+---
+title: Spring mock dice with ATDD
+---
+
+How to mock a dice with Spring for testing and ATDD?
+
+### Overview
+
+<Mermaid>{`classDiagram
+    class UnsafeDice {
+        +int roll()
+    }
+    class LuckGame {
+        +bool play()
+    }
+    UnsafeDice <-- LuckGame : dice
+    class DiceMock {
+        +int roll()
+        +void mockRoll(value)
+    }
+    UnsafeDice <|-- DiceMock
+    class DiceTestConfiguration {
+        <<Configuration>>
+        +UnsafeDice unsafeDice()
+    }
+    DiceMock <-- DiceTestConfiguration : diceMock
+    class DiceResultStep {
+        <<Component>>
+        +void getRegex()
+        +void run(line, match)
+    }
+    class ShouldWinGameStep {
+        <<Component>>
+        +void getRegex()
+        +void run(line, match)
+    }
+    class ShouldLooseGameStep {
+        <<Component>>
+        +void getRegex()
+        +void run(line, match)
+    }
+    DiceResultStep <|-- AbstractPostLineStep
+    ShouldWinGameStep <|-- AbstractPostLineStep
+    ShouldLooseGameStep <|-- AbstractPostLineStep
+    LuckGame <-- ShouldLooseGameStep : luckGame
+    LuckGame <-- ShouldWinGameStep : luckGame
+    DiceMock <-- DiceResultStep : diceMock
+`}</Mermaid>
+
+### The Dice
+
+First you need a dice:
+
+```java
+package game;
+
+import java.util.Random;
+import org.springframework.stereotype.Service;
+
+@Service
+public class UnsafeDice {
+    private Random random = new Random();
+
+    public int roll() {
+        return random.nextInt(6);
+    }
+}
+```
+
+### The DiceMock
+
+Now, inside the `test` directory, we need to add a mock for the dice.
+
+```java
+package game.mocks;
+
+import java.util.List;
+import java.util.LinkedList;
+import org.springframework.stereotype.Service;
+import game.Dice;
+
+@Service
+public class DiceMock extends UnsafeDice {
+
+    private List<Integer> values = new LinkedList<Integer>();
+
+    @Override
+    public int roll() {
+        if (values.isEmpty()) return 6;
+
+        return values.remove();
+    }
+
+    public void mockRoll(int value) {
+        valorsRandom.add(value);
+    }
+}
+```
+
+Please note that this mock does not return random elements, but elements that
+can be added with mockRoll.
+
+### The DiceMock spring configuration
+
+Configure Spring so it returns the mock instead of the original dice when
+components injects them.
+
+```java
+package game.mocks;
+
+import game.Dice;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
+
+@Profile("test")
+@Configuration
+public class DiceTestConfiguration {
+
+    private DiceMock diceMock;
+
+    public DiceTestConfiguration(DiceMock diceMock) {
+        this.diceMock = diceMock;
+    }
+
+    @Bean
+    @Primary
+    public UnsafeDice unsafeDice() {
+        return diceMock;
+    }
+}
+```
+
+### Use from code
+
+There is no change in the conventional code. Just use the dice as always.
+
+```java
+package game;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class LuckGame {
+
+    private UnsafeDice unsafeDice;
+
+    public LuckGame(UnsafeDice unsafeDice) {
+        this.unsafeDice = unsafeDice;
+    }
+
+    public boolean play() {
+        return unsafeDice.roll() <= 2;
+    }
+}
+```
+
+### Use from test
+
+You can inject either _UnsafeDice_ or _DiceMock_ in your test, but both will be
+the same instance: the mock.
+
+The post should look like this:
+
+```
+  * Given that the dice result will be 1
+  * I should win the game
+  * Given that the dice result will be 2
+  * I should win the game
+  * Given that the dice result will be 3
+  * I should loose the game
+```
+
+And the steps:
+
+```java
+@Component
+public class DiceResult extends AbstractPostLineStep {
+
+    private final DiceMock diceMock;
+
+    public ItShouldBeNotDockedStep(DiceMock diceMock) {
+        this.diceMock = diceMock;
+    }
+
+    @Override
+    protected String getRegex() {
+        return "dice result will be (\\d)";
+    }
+
+    @Override
+    protected void run(PostLine line, String[] match) {
+        var result = Integer.parseInt(match[1]);
+        diceMock.mockRoll(result);
+    }
+}
+```
+
+```java
+public class ShouldWinGameStep extends AbstractPostLineStep {
+
+    private final LuckGame luckGame;
+
+    public ShouldWinGameStep(LuckGame luckGame) {
+        this.luckGame = luckGame;
+    }
+
+    @Override
+    protected String getRegex() {
+        return "should win the game";
+    }
+
+    @Override
+    protected void run(PostLine line, String[] match) {
+        var result = luckGame.play();
+        assertThat(result).isEqualTo(true);
+    }
+}
+```
+
+```java
+public class ShouldLooseGameStep extends AbstractPostLineStep {
+
+    private final LuckGame luckGame;
+
+    public ShouldWinGameStep(LuckGame luckGame) {
+        this.luckGame = luckGame;
+    }
+
+    @Override
+    protected String getRegex() {
+        return "should win the game";
+    }
+
+    @Override
+    protected void run(PostLine line, String[] match) {
+        var result = luckGame.play();
+        assertThat(result).isEqualTo(false);
+    }
+}
+```
+
+### What happens?
+
+The behaviour of the code is the following:
+
+- During production the dice is a real dice. Each time that the game is played,
+  it rolls the UnsafeDice at was programmed.
+
+- During the testing stage, the dice is a mock. The game does not contains an
+  instance of the dice, but the mock which is injected by Spring.
