@@ -1,8 +1,8 @@
 ---
-title: TcEs3 React Function
-prev: TcEs3ReactState
-index: TcEs3React
-next: TcEs3ReactSelectors
+title: CourseOf React Function
+prev: CourseOfReactState
+index: CourseOfReact
+next: CourseOfReactSelectors
 ---
 
 ## React for Php programmers
@@ -38,7 +38,7 @@ has to paint. And, when something changes in the state, React components returns
 once again everything to paint.
 
 ```jsx
-import React from 'react'
+import React from "react";
 import { useSelector } from "react-redux";
 import { selectNews } from "../store/news/selectors";
 
@@ -65,7 +65,7 @@ And because of it, it turns out that React components are functions that returns
 pieces of html.
 
 ```javascript
-import React from 'react'
+import React from "react";
 
 export function HelloWorld() {
   return <div>Hello world!</div>;
@@ -77,7 +77,7 @@ export function HelloWorld() {
 Just import what you want to use, and use it.
 
 ```javascript
-import React from 'react'
+import React from "react";
 import { HelloWorld } from "./HelloWorld";
 
 export function SayHelloWorld() {
@@ -99,7 +99,7 @@ React function components have one and only one argument, and object with all
 the properties. Just get the ones that you need.
 
 ```javascript
-import React from 'react'
+import React from "react";
 
 export function SayHello({ name }) {
   return <div>Hello {name}</div>;
@@ -122,7 +122,7 @@ There is one special property called _children_, it contains all the content
 inside the component.
 
 ```javascript
-import React from 'react'
+import React from "react";
 
 export function Box({ children }) {
   return (
@@ -169,7 +169,7 @@ If you are observant, you can see that you can use React components in two
 different ways:
 
 ```javascript
-import React from 'react'
+import React from "react";
 
 export function SayHello({ name }) {
   return <div>Hello {name}</div>;

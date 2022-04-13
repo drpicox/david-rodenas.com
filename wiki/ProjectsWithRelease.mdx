@@ -3,13 +3,13 @@ title: Release Strategy
 deck: true
 ---
 
-This article covers how to release the [TcLs2] project.
-It assumes that you have already a Heroku account and a repository created. 
+This article covers how to release the [ProjectsWith] project. It assumes that
+you have already a Heroku account and a repository created.
 
 ## When to Release
 
-The Release Manager has to make a release for 
-each pull request approved by its reviewers.
+The Release Manager has to make a release for each pull request approved by its
+reviewers.
 
 ## Tools
 
@@ -27,10 +27,10 @@ Deploy tools are built on top of [BASH](https://www.gnu.org/software/bash/).
 3. Merge master into your local branch
 4. Run the tests:
 
-  ```bash
-  > ./mvnw test
-  > yarn test
-  ```
+```bash
+> ./mvnw test
+> yarn test
+```
 
 ### If 1. Fails
 
@@ -40,11 +40,10 @@ Deploy tools are built on top of [BASH](https://www.gnu.org/software/bash/).
 
 ### 2. Merge branch into GirHub master
 
-If all tests passes locally,
-go to GitHub, look for the PullResquest
-and click Merge to master.
+If all tests passes locally, go to GitHub, look for the PullResquest and click
+Merge to master.
 
->> Make sure that it says merge to master.
+> > Make sure that it says merge to master.
 
 ### 3. Deploy the project on Heroku
 
@@ -53,9 +52,9 @@ and click Merge to master.
 3. Pull changes from master
 4. Run the deplou script:
 
-  ```bash
-  > ./deploy.sh
-  ```
+```bash
+> ./deploy.sh
+```
 
 ### 4. Cleanup
 
@@ -66,5 +65,5 @@ Return to your working branch and:
 
 ## Some final notes
 
-Make sure that all tests passes from command line.
-If they doesn't, the bot will assume that you have failed in your task.
+Make sure that all tests passes from command line. If they doesn't, the bot will
+assume that you have failed in your task.

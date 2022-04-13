@@ -1,5 +1,5 @@
 ---
-title: TcLs2 Testing
+title: ProjectsWith Testing
 deck: true
 ---
 
@@ -15,8 +15,7 @@ The first step is the test creation. You need to:
 
 ## Create and pass backend test
 
-Begin creating and passing the backend test.
-The steps are the followings:
+Begin creating and passing the backend test. The steps are the followings:
 
 - Create the `post.md`
 - Create the JUnit test field
@@ -33,7 +32,8 @@ Copy the markdown contents from the issue to the following file:
 - `yyyy`: is the current year
 - `mm`: is the current month with two digits (01 january, 10 october)
 - `dd`: is the current day with two digits (04, 10, 17 or 31)
-- `title_with_undercases`: is the title replacing no letter/numbers by a single underscore
+- `title_with_undercases`: is the title replacing no letter/numbers by a single
+  underscore
 
 ### Create the JUnit test file
 
@@ -46,7 +46,8 @@ Create the corresponding class in the test package:
 - `yyyy`: is the current year
 - `mm`: is the current month with two digits (01 january, 10 october)
 - `dd`: is the current day with two digits (04, 10, 17 or 31)
-- `TitleInUpperPascalCase`: is the title replacing no letter/numbers by a single underscore
+- `TitleInUpperPascalCase`: is the title replacing no letter/numbers by a single
+  underscore
 
 The file content should be:
 
@@ -71,14 +72,14 @@ public class Post_yyyymmdd_TitleInUpperPascalCase_Test {
 ```
 
 > > ⚠️ **Important**: Do not forget to add `_Test` at the end of the classname.
-> > It is necessary to run the tests automatically from the command line.
-> > Also make sure that the name matches the blog, because there is an
-> > automatic process that evaluates that all posts have test.
+> > It is necessary to run the tests automatically from the command line. Also
+> > make sure that the name matches the blog, because there is an automatic
+> > process that evaluates that all posts have test.
 
 ### Running steps
 
-Each blog sentence is a test step. The `PostRunner` recognizes
-each one and executes the appropiate test step. For example:
+Each blog sentence is a test step. The `PostRunner` recognizes each one and
+executes the appropiate test step. For example:
 
 ```
 [PLSLiterature              ] ## Let's begin the game
@@ -129,8 +130,7 @@ public class TypeIntoTheNewGameName extends AbstractPostLineStep {
 
 ### Steps packages
 
-Steps are orgenized in packages to ease finding them.
-Current packages are:
+Steps are orgenized in packages to ease finding them. Current packages are:
 
 ```
 testSteps
@@ -167,9 +167,8 @@ If that happens:
 
 ### Add new steps
 
-The convention for adding one new step is creating a class that has
-as name the upper pascal case of the text of the sentence, but removing
-the variables.
+The convention for adding one new step is creating a class that has as name the
+upper pascal case of the text of the sentence, but removing the variables.
 
 - Start copy/pasting a similar step
 - Add the sentence to the appropiate package
@@ -177,9 +176,9 @@ the variables.
 - They inherit from `AbstractPostLineStep`
 - Make sure that they have the `@Component` annotation
 
-> > Some old classes have substituted variables in his name by X, Y, ...
-> > remove them. For example:
-> > rename `TypeXIntoTheNewGameName` into `TypeIntoTheNewGameName`.
+> > Some old classes have substituted variables in his name by X, Y, ... remove
+> > them. For example: rename `TypeXIntoTheNewGameName` into
+> > `TypeIntoTheNewGameName`.
 
 ### Forms
 
@@ -193,7 +192,8 @@ class TestPostForms {
 }
 ```
 
-- Steps creates new forms when the user enters to a view, ex: `ClickNewGameInTheMainHeader`
+- Steps creates new forms when the user enters to a view, ex:
+  `ClickNewGameInTheMainHeader`
 - Steps sets values to the form, ex: `TypeIntoTheNewGameName`
 - Steps reads from forms to make assertions, ex: `TheCurrentPlayerIs`
 - Steps replaces form content with API responses: `ClickTheEnterButton`
@@ -230,26 +230,25 @@ public class ClickTheEnterButton extends AbstractPostLineStep {
 
 ### Snapshot step
 
-After a step needs to use the SnapshotService,
-you need an extra hidden sentence in the markdown to save
-the snapshot.
+After a step needs to use the SnapshotService, you need an extra hidden sentence
+in the markdown to save the snapshot.
 
 ```
  > Click the _Create Game_ button.
  <!-- SNAPSHOT status=200 -->
 ```
 
-It invokes the `PLSSnapshot`, which saves the last API call into
-the corresponding _snapshots.json_. It also checks that the service
-returns the expected status.
+It invokes the `PLSSnapshot`, which saves the last API call into the
+corresponding _snapshots.json_. It also checks that the service returns the
+expected status.
 
-Make sure that you always add a step for saving the snapshot after
-any step that emulates an API call.
+Make sure that you always add a step for saving the snapshot after any step that
+emulates an API call.
 
 ### Multiple step errors
 
-Each sentence can only be matched by one and only by one step.
-If given one sentence, it can match two steps, it fails:
+Each sentence can only be matched by one and only by one step. If given one
+sentence, it can match two steps, it fails:
 
 ```
 2020-08-21_buying_fields:31  > _Martel_ has in his hand _2_ _event_ card of _sheep_.
@@ -266,21 +265,21 @@ They are:
 	at com.drpicox.game.testPost.PostRunner.runLine(PostRunner.java:33)
 ```
 
-Note that the first match is a shorter version of the same sentence and because of it fails,
-one is a subset of the other.
-Be caurefule when redacting new sentences, or use regex exclusion patterns
-to avoid those cases.
+Note that the first match is a shorter version of the same sentence and because
+of it fails, one is a subset of the other. Be caurefule when redacting new
+sentences, or use regex exclusion patterns to avoid those cases.
 
 ## Frontend
 
-Frontend and backend run the same set of sentences,
-but they have different implementations.
+Frontend and backend run the same set of sentences, but they have different
+implementations.
 
 - You have to replicate steps in frontend
 - You have to use the UI from your steps
 - Forms are the ones in the UI
 - API calls are executed by the UI interaction
-- PLSSnapshot checks that the UI did the correct API call and provides the response
+- PLSSnapshot checks that the UI did the correct API call and provides the
+  response
 
 ### Frontend folders
 
@@ -299,8 +298,8 @@ src/www/__test__/testSteps
 
 ### @testing-library helpers
 
-There are some testing accessors that are common for more than
-one step, they are inside `helpers` folder inside boards, ex:
+There are some testing accessors that are common for more than one step, they
+are inside `helpers` folder inside boards, ex:
 
 ```
 src/www/__test__/testSteps/board/
@@ -315,23 +314,23 @@ src/www/__test__/testSteps/board/
 ```
 
 ```typescript
-import { getAllByTestId } from "@testing-library/dom"
+import { getAllByTestId } from "@testing-library/dom";
 
 export function getAllByCard(
   container: HTMLElement,
   type: string
 ): HTMLElement[] {
-  return getAllByTestId(container, `card-${type}`)
+  return getAllByTestId(container, `card-${type}`);
 }
 ```
 
 ### Create a step
 
 ```typescript
-import { AbstractPostLineStep } from "../AbstractPostLineStep"
-import { getAllByCard, getByHand } from "../board/helpers"
+import { AbstractPostLineStep } from "../AbstractPostLineStep";
+import { getAllByCard, getByHand } from "../board/helpers";
 // it uses helpers from other folders ---^ (becareful with dependency cycle)
-import { playCardIntoPile } from "./helpers"
+import { playCardIntoPile } from "./helpers";
 // it uses helpers from its folder -^
 
 export class PlaysACardIntoHisSquarePile extends AbstractPostLineStep {
@@ -341,17 +340,17 @@ export class PlaysACardIntoHisSquarePile extends AbstractPostLineStep {
       // ^- the regular expression that matches
       // ^- capture group [1]                                   ^- & [3]
       //                     ^- capture group [2]
-    )
+    );
   }
 
   async runMatch(_: any, match: string[]) {
-    const [, player, type, square] = match
+    const [, player, type, square] = match;
     // ^- destructuring to get capture group values
-    const hand = getByHand(document.body, player)
-    const [card] = getAllByCard(hand, type)
+    const hand = getByHand(document.body, player);
+    const [card] = getAllByCard(hand, type);
     // ^- finds things in the UI to operate
 
-    playCardIntoPile(card, `${player}-square-${square}`)
+    playCardIntoPile(card, `${player}-square-${square}`);
     // ^- and operates (here with a helper)
   }
 }
@@ -360,12 +359,12 @@ export class PlaysACardIntoHisSquarePile extends AbstractPostLineStep {
 ### Register the step
 
 ```typescript
-import { Injector } from "www/injector"
-import { PostLineStep } from "www/__test__/testPost"
-import { ClickEnterGameInTheMainHeader } from "./ClickEnterGameInTheMainHeader"
+import { Injector } from "www/injector";
+import { PostLineStep } from "www/__test__/testPost";
+import { ClickEnterGameInTheMainHeader } from "./ClickEnterGameInTheMainHeader";
 
 export default function configureEnterGameInjector(injector: Injector) {
-  injector.register(PostLineStep, ClickEnterGameInTheMainHeader)
+  injector.register(PostLineStep, ClickEnterGameInTheMainHeader);
   //                ^- it is a PostLineStep
   //          it is the class implementation -^
 }
@@ -373,11 +372,11 @@ export default function configureEnterGameInjector(injector: Injector) {
 
 ### Asyncronous
 
-Javascript executes API call asynchronously, and it requires special code
-to wait for its completaion.
+Javascript executes API call asynchronously, and it requires special code to
+wait for its completaion.
 
-The frontend has a loader spinner that test utilized to wait data loading.
-See `PLSSnapshot`:
+The frontend has a loader spinner that test utilized to wait data loading. See
+`PLSSnapshot`:
 
 ```typescript
 export class PLSSnapshot implements PostLineStep {
@@ -399,8 +398,8 @@ export class PLSSnapshot implements PostLineStep {
 
 ### Cheats and mocks
 
-There are special sentences to advance quickly the game, or ensure
-that random cards are the ones that we expect in the tests, they are:
+There are special sentences to advance quickly the game, or ensure that random
+cards are the ones that we expect in the tests, they are:
 
 ```
 [CheatDiscardsNCardsOfAtSquare] CHEAT _Martel_ discards _3_ _event_ cards of _fire_ at square _1_
@@ -411,17 +410,14 @@ that random cards are the ones that we expect in the tests, they are:
 
 ### Multiuser quirks
 
-Test only evaluates one frontend instance each time,
-but we need to emulate multiple browsers.
+Test only evaluates one frontend instance each time, but we need to emulate
+multiple browsers.
 
-One way is to enter each time with the corresponding user,
-but it is boring for the user and difficults the readability
-of the test.
+One way is to enter each time with the corresponding user, but it is boring for
+the user and difficults the readability of the test.
 
-Instead of it there are special Steps that deal with that.
-For example:
+Instead of it there are special Steps that deal with that. For example:
 
-- `AllPlayersClickReadyAndThenRefreshInTheMainHeader`:
-  emulates that all players click ready and refresh
-- `UseTheBrowserOf`:
-  emulates that there are multiple users
+- `AllPlayersClickReadyAndThenRefreshInTheMainHeader`: emulates that all players
+  click ready and refresh
+- `UseTheBrowserOf`: emulates that there are multiple users

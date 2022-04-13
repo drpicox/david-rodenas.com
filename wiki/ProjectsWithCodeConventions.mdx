@@ -1,0 +1,54 @@
+---
+title: Code Conventions
+---
+
+This article covers code conventions for the [ProjectsWith] project.
+
+## Package dependences
+
+Avoid circular dependencies between packages.
+
+## Java Storage Repositories
+
+Access to repositories only from the current package. All repositories
+interfaces should be package private.
+
+## Method/Function order
+
+High level methods go first. Helper functions go below. See bowling kata as
+example.
+
+## If/For brackets
+
+Both `if` and `for` statements should have no brackets. All content inside them
+should be wrapped in a function.
+
+```java
+// avoid
+if (isActive(card)) {
+  cardController.pickCard()
+  cardController.discardCard(card);
+}
+
+// recommended
+if (isActive(card))
+  runCardActivation(card):
+```
+
+## Do not use setXXX
+
+Look for a better suited word that explains exactly what is going on and why the
+value is set. Aka, do not expose how it is implemented.
+
+```java
+// avoid
+card.setPile(NONE);
+
+// recommended
+card.discard();
+```
+
+## Injections by constructor
+
+Avoid the use of spring `@Autowired`. Use always the constructor. The only
+exception are JUnit Test Runner Post\_\*\_Test classes.

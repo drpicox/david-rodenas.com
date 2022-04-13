@@ -1,0 +1,797 @@
+---
+title: ProjectsWith Ducks
+deck: true
+---
+
+Redux, ducks, and dependence injection.
+
+## Redux
+
+Redux is a state management library.
+
+<Mermaid>{`classDiagram
+  class State {
+    your
+    state
+  }
+`}</Mermaid>
+
+### With Views
+
+It is like a database but for the frontend. The Frontend reads it, and paints
+what is inside.
+
+<Mermaid>{`classDiagram
+  class State {
+    your
+    state
+  }
+  class View {
+    label
+    button
+  }
+  State <-- View : reads
+`}</Mermaid>
+
+### And actions
+
+But views produces actions when things happen.
+
+<Mermaid>{`classDiagram
+  class State {
+    your
+    state
+  }
+  class View {
+    label
+    button
+  }
+  State <-- View : reads
+  class Action {
+    type
+    payload
+  }
+  View --> Action : produces
+`}</Mermaid>
+
+### With reducers
+
+The reducer, catch the actions and executes them.
+
+<Mermaid>{`classDiagram
+  class State {
+    your
+    state
+  }
+  class View {
+    label
+    button
+  }
+  State <-- View : reads
+  class Action {
+    type
+    payload
+  }
+  View --> Action : produces
+  class Reducer {
+    reduce(state, action) state
+  }
+  Action --> Reducer : produces
+`}</Mermaid>
+
+### State updates
+
+And the reducer, computes the new value of the sate, and replaces its value by
+the new one with the action applied.
+
+<Mermaid>{`classDiagram
+  class Reducer {
+    reduce(state, action) state
+  }
+  class State {
+    your
+    state
+  }
+  class View {
+    label
+    button
+  }
+  State <-- View : reads
+  class Action {
+    type
+    payload
+  }
+  View --> Action : produces
+  Action --> Reducer : produces
+  Reducer --> State : replaces
+`}</Mermaid>
+
+> > This schema is incomplete.  
+> > View and the State have a complex relationship.
+
+## The Redux Store
+
+This is the basic interface of Redux.
+
+<Mermaid>{`classDiagram
+  class Store {
+  }
+`}</Mermaid>
+
+### With State
+
+It contains the state.
+
+<Mermaid>{`classDiagram
+  class Store {
+  }
+  class State {
+    your
+    state
+  }
+  Store *-- State
+`}</Mermaid>
+
+### With Reducer
+
+It also contains the Reducer
+
+<Mermaid>{`classDiagram
+  class Store {
+  }
+  class State {
+    your
+    state
+  }
+  class Reducer {
+    reduce(state, action) state
+  }
+  Store *-- State
+  Store *-- Reducer
+`}</Mermaid>
+
+### Getting the State
+
+There is a getter that returns the state.
+
+<Mermaid>{`classDiagram
+  class Store {
+    getState() state
+  }
+  class State {
+    your
+    state
+  }
+  class Reducer {
+    reduce(state, action) state
+  }
+  Store *-- State
+  Store *-- Reducer
+`}</Mermaid>
+
+### Dispatching Actions
+
+There is a dispatch action to compute a new state.
+
+<Mermaid>{`classDiagram
+  class Store {
+    getState() state
+    dispatch(action)
+  }
+  class State {
+    your
+    state
+  }
+  class Reducer {
+    reduce(state, action) state
+  }
+  Store *-- State
+  Store *-- Reducer
+`}</Mermaid>
+
+#### Step by step
+
+When:
+
+1. an actor dispatches an action,
+2. the reducer computes the new state
+3. the store replaces the state
+
+<Mermaid>{`sequenceDiagram
+    Actor->>+Store: dispatch(action)
+    Store->>+Reducer: reduce(state,action)
+    Reducer-->>-Store: state
+    deactivate Store
+ `}</Mermaid>{" "}
+
+> > But... what happens after the store finishes?
+
+### Subscribing
+
+Views can subscribe to the store.
+
+<Mermaid>{`classDiagram
+  class Store {
+    getState() state
+    dispatch(action)
+    subscribe(callback)
+  }
+  class State {
+    your
+    state
+  }
+  class Reducer {
+    reduce(state, action) state
+  }
+  Store *-- State
+  Store *-- Reducer
+`}</Mermaid>
+
+#### Step by step
+
+1. a view subscribes to the Store
+2. an actor dispatches an action,
+3. the reducer computes the new state
+4. the store replaces the state
+5. the store notifies to all the subscribers
+6. views gets the new state from the store
+
+<Mermaid>{`sequenceDiagram
+  participant View
+  participant Actor
+  View->>Store: subscribe(self)
+  loop every dispatch
+    Actor->>+Store: dispatch(action)
+    Store->>+Reducer: reduce(state,action)
+    Reducer-->>-Store: state
+    loop every subscriber
+      Store->>+View: update()
+      View->>Store: getState()
+      deactivate View
+    end
+    deactivate Store
+  end
+ `}</Mermaid>{" "}
+
+## AfterAction
+
+Implementing part of the
+[DDD](/blog/2020/03/05/redux-and-domain-driven-development.html) you can add
+perform chained actions as a consequence of an existing action:
+
+<Mermaid>{`classDiagram
+  class Store {
+    getState() state
+    dispatch(action)
+    subscribe(callback)
+  }
+  class State {
+    your
+    state
+  }
+  class Reducer {
+    reduce(state, action) state
+  }
+  class AfterAction {
+    afterAction(action)
+  }
+  Store *-- State
+  Store *-- Reducer
+  Store *-- "*" AfterAction
+`}</Mermaid>
+
+### Step by Step
+
+When an action executes, after all subscribers has been dispatched, it executes
+all after actions:
+
+1. an actor dispatches an action,
+2. the reducer computes the new state
+3. the store replaces the state
+4. the store notifies the action to all the afterActions
+5. the store notifies to all the subscribers
+
+<Mermaid>{`sequenceDiagram
+  loop every dispatch
+    Actor->>+Store: dispatch(action)
+    Store->>+Reducer: reduce(state,action)
+    Reducer-->>-Store: state
+    loop every after action
+      Store->>+AfterAction: afterAction()
+      deactivate AfterAction
+    end
+    loop every subscriber
+      Store->>+View: update()
+      deactivate View
+    end
+    deactivate Store
+  end
+ `}</Mermaid>{" "}
+
+### Asynchronous
+
+Redux cannot handle asynchronous actions, but AfterActions can handle them.
+
+Use after actions to handle asynchronous code.
+
+```typescript
+export class EnterGameDuck implements ReduxAfterAction {
+  private reduxStore: ReduxStore;
+  private apiRest: ApiRest;
+
+  constructor(injector: Injector) {
+    this.apiRest = injector.get(ApiRest);
+    this.reduxStore = injector.get(ReduxStore);
+  }
+
+  async afterAction(action: any) {
+    if (action.type !== LOAD_GAME) return;
+    //  ^ waits for an action of this type
+
+    this.reduxStore.dispatch(incrementLoading());
+    // ^ shows the loading spinner
+    // v makes the asynchronous request
+    const game = await this.apiRest.get(`/api/v1/games/${action.id}`);
+
+    // v executes the syncrhornous part
+    this.reduxStore.dispatch(replaceGame(game));
+    this.reduxStore.dispatch(decrementLoading());
+    // ^ removes the loading spinner
+  }
+}
+```
+
+### The flow
+
+The LoadGame action activates the AfterAction. The AfterAction dispatches the
+following ReplaceGame when everything works well.
+
+<Mermaid>{`stateDiagram-v2
+    [*] --> LoadGame
+    state LoadGame {
+      state "await apiRest.get(…)" as API
+      [*] --> API
+      API --> [*]
+    }
+    LoadGame --> ReplaceGame
+    note right of LoadGame: & Increment/Decrement Loading
+    ReplaceGame --> [*]
+ `}</Mermaid>{" "}
+
+And ofcourse, it also dispatches other actions like IncrementLoading or
+DecrementLoading.
+
+### Handling Errors
+
+Views cannot handle errors that happens in AfterActions. They shouldn't. If an
+error happens in an AfterAction it should handle it and dispatch the appropiate
+action. It is the state who stores the problem and the View who shows the state.
+
+```typescript
+export class EnterGameDuck implements ReduxAfterAction {
+  private reduxStore: ReduxStore;
+  private apiRest: ApiRest;
+
+  constructor(injector: Injector) {
+    this.apiRest = injector.get(ApiRest);
+    this.reduxStore = injector.get(ReduxStore);
+  }
+
+  async afterAction(action: any) {
+    if (action.type !== LOAD_GAME) return;
+
+    this.reduxStore.dispatch(incrementLoading());
+    try {
+      const game = await this.apiRest.get(`/api/v1/games/${action.id}`);
+      this.reduxStore.dispatch(replaceGame(game));
+    } catch (error) {
+      this.reduxStore.dispatch(notifyError(error));
+      // ^ dispatches an action to store the error in the state
+    }
+
+    this.reduxStore.dispatch(decrementLoading());
+  }
+}
+```
+
+### The Actor
+
+In a previous section you have seen that actors are the ones who dispatches
+actions:
+
+<Mermaid>{`sequenceDiagram
+    Actor->>+Store: dispatch(action)
+    Store->>+Reducer: reduce(state,action)
+    Reducer-->>-Store: state
+    deactivate Store
+ `}</Mermaid>
+
+Actors are:
+
+- External Actors: The users of the View, that clicking, typing, ... and
+  interacting dispatches actions to the Store.
+
+- Internal Actors: They are AfterActions that once an action is completed, it
+  dispatches other actions to complete a Process.
+
+### Process, Glue, and Decoupling
+
+AfterActions are not only meant for asynchronous, they are also to decouple
+packages of Redux.
+
+You can decouple two packages through AfterActions. When an existing action in
+an other package can trigger a new chain of changes, instead of modifying the
+original package, use an AfterAction to trigger more changes.
+
+<Mermaid>{`stateDiagram-v2
+    [*] --> SetView
+    BlogSetView : AfterAction BlogSetViewDuck
+    SetView --> BlogSetView : triggers
+    BlogSetView --> LoadPostList : if Blog
+    BlogSetView --> LoadPost : if BlogPost
+ `}</Mermaid>{" "}
+
+#### Code
+
+```typescript
+export class BlogSetViewDuck implements ReduxAfterAction {
+  private reduxStore: ReduxStore;
+  private apiRest: ApiRest;
+
+  constructor(injector: Injector) {
+    this.apiRest = injector.get(ApiRest);
+    this.reduxStore = injector.get(ReduxStore);
+  }
+
+  async afterAction(action: any) {
+    if (action.type !== SET_VIEW) return;
+
+    switch (action.view.root) {
+      case "Blog":
+        await this.loadPostList();
+        break;
+      case "BlogPost":
+        await this.loadPost(action.view.postId);
+        break;
+      default:
+      // do nothing
+    }
+  }
+
+  /* ... */
+}
+```
+
+### Rule of thumb
+
+We follow the Aggregate pattern from DDD:
+
+> Never let an action dispatched by one Reduxe package to reduce inside another
+> Redux package. Use an AfterAction instead.
+
+#### Don't
+
+<Mermaid>{`sequenceDiagram
+  Actor->>+Store: dispatch(actionA)
+  Store->>+ReducerA: reduce(stateA, actionA)
+  deactivate ReducerA
+  Store->>+ReducerB: reduce(stateB, actionA)
+  deactivate ReducerB
+  deactivate Store
+ `}</Mermaid>{" "}
+
+#### Do
+
+<Mermaid>{`sequenceDiagram
+  Actor->>+Store: dispatch(actionA)
+  Store->>+ReducerA: reduce(stateA, actionA)
+  deactivate ReducerA
+  Store->>+AfterActionB: afterAction(actionA)
+  AfterActionB->>+Store: dispatch(actionB)
+  deactivate AfterActionB
+  Store->>+ReducerB: reduce(stateB, actionB)
+  deactivate ReducerB
+  deactivate Store
+  deactivate Store
+`}</Mermaid>{" "}
+
+#### Why?
+
+The package C might want to know when B is updated, and it could be updated
+because A, but also because B.
+
+Not having this rule requires C to know the implementation of B.
+
+## Ducks & Packages
+
+A duck is a set of functionalities over redux.
+
+They are under `src/www/ducks`.
+
+```
+src/www/ducks/blog
+  - BlogDuck.ts
+  - BlogSetViewDuck.ts
+  - BlogState.ts
+  - configureInjector.ts
+  - getCurrentPost.ts
+  - getPostList.ts
+  - index.ts
+  - replaceCurrentPost.ts
+  - replacePostList.ts
+```
+
+### There are Reducers
+
+Reducers implements ReduceReducer.
+
+<Mermaid>{`classDiagram
+    class ReduxReducer {
+      <<interface>>
+      reduce(state, action)* state
+    }
+    class BlogDuck {
+      +reduce(state, action) state
+    }
+    ReduxReducer <|-- BlogDuck
+`}</Mermaid>{" "}
+
+```typescript
+export class ReduxReducer {
+  constructor() {
+    throw new Error("Cannot instantiate an interface");
+  }
+
+  reduce(state: {}, action: { type: string }): {} {
+    throw new Error("Cannot call an abstract method");
+  }
+}
+```
+
+```typescript
+export class BlogDuck implements ReduxReducer {
+  reduce(state: BlogState, action: Action & any): {} {
+    // v- if the state is not set for this duck, it sets it
+    if (!state.blog)
+      state = set(state, "blog", { list: [], currentPost: null });
+
+    // v- and it continues with a regular reducer
+    switch (action.type) {
+      case REPLACE_CURRENT_POST:
+        return set(state, "blog.currentPost", action.currentPost);
+      case REPLACE_POST_LIST:
+        return set(state, "blog.list", action.list);
+      default:
+        return state;
+    }
+  }
+}
+```
+
+### There are AfterActions
+
+They implement ReduxAfterAction
+
+<Mermaid>{`classDiagram
+    class ReduxAfterAction {
+      <<interface>>
+      afterAction(action)*
+    }
+    class BlogSetViewDuck {
+      +afterAction(action)
+      - loadPostList()
+      - loadPost(postId);
+    }
+    ReduxAfterAction <|-- BlogSetViewDuck
+`}</Mermaid>{" "}
+
+```typescript
+export class ReduxAfterAction {
+  constructor() {
+    throw new Error("Cannot instantiate an interface");
+  }
+
+  afterAction(action: { type: string }) {
+    throw new Error("Cannot call an abstract method");
+  }
+}
+```
+
+```typescript
+export class BlogSetViewDuck implements ReduxAfterAction {
+  private reduxStore: ReduxStore;
+  private apiRest: ApiRest;
+
+  constructor(injector: Injector) {
+    this.apiRest = injector.get(ApiRest);
+    this.reduxStore = injector.get(ReduxStore);
+  }
+
+  async afterAction(action: any) {
+    /* ... */
+  }
+
+  /* ... */
+}
+```
+
+### There are selectors
+
+Exported from the package `index.js`.
+
+<Mermaid>{`classDiagram
+    class BlogPackage {
+      <<package>>
+      +getCurrentPost(state)
+      +getPostList(state)
+    }
+`}</Mermaid>{" "}
+
+### And actionCreators
+
+Exported from the package `index.js`.
+
+<Mermaid>{`classDiagram
+    class BlogPackage {
+      <<package>>
+      +REPLACE_CURRENT_POST
+      replaceCurrentPost(currentPost)
+      +REPLACE_POST_LIST
+      replacePostList(list)
+    }
+`}</Mermaid>{" "}
+
+### Configure the Store
+
+The `configureInjector.ts` configures the injector for the package.
+
+```typescript
+import { Injector } from "www/injector";
+import { ReduxAfterAction } from "../ReduxAfterAction";
+import { ReduxReducer } from "../ReduxReducer";
+import { BlogDuck } from "./BlogDuck";
+import { BlogSetViewDuck } from "./BlogSetViewDuck";
+
+export default function configureDucksViewInjector(injector: Injector) {
+  injector.register(ReduxReducer, BlogDuck);
+  injector.register(ReduxAfterAction, BlogSetViewDuck);
+}
+```
+
+### And configure all ducks
+
+The root imports and configures all ducks
+
+```typescript
+import { Injector } from "www/injector";
+import { ReduxStore } from "./ReduxStore";
+import configureBlogInjector from "./blog";
+import configureCardsInjector from "./cards";
+import configureCurrentUserInjector from "./currentUser";
+import configureGameInjector from "./game";
+import configureLoadingInjector from "./loading";
+import configureNewGameInjector from "./newGame";
+import configureSelectedCardInjector from "./selectedCard";
+import configureViewInjector from "./view";
+
+export default function configureDucksnjector(injector: Injector) {
+  injector.configure(configureBlogInjector);
+  injector.configure(configureCardsInjector);
+  injector.configure(configureCurrentUserInjector);
+  injector.configure(configureGameInjector);
+  injector.configure(configureLoadingInjector);
+  injector.configure(configureNewGameInjector);
+  injector.configure(configureSelectedCardInjector);
+  injector.configure(configureViewInjector);
+
+  injector.register(ReduxStore);
+}
+```
+
+## React Views
+
+Views subscribe to the store and dispatches new actions through:
+
+> [react-redux](https://react-redux.js.org)
+
+### Selectors
+
+Subscribe to the store and get the current selector result with `useSelector`.
+
+```typescript
+import React from "react";
+import { useSelector } from "react-redux";
+import ReactMarkdown from "react-markdown";
+import { css } from "emotion";
+import { getCurrentPost } from "www/ducks/blog";
+
+const postClassName = css`...`;
+
+export function BlogPostView() {
+  const post = useSelector(getCurrentPost);
+
+  if (!post) return null;
+
+  return (
+    <div style={{ textAlign: "left", paddingTop: "80px" }}>
+      <article className={postClassName}>
+        <ReactMarkdown source={post.body} escapeHtml={false} />
+      </article>
+    </div>
+  );
+}
+```
+
+### Dispatch
+
+Dispatch new actions with `useDispatch`.
+
+```typescript
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { getPostList } from "www/ducks/blog";
+import { setView } from "www/ducks/view";
+import { css } from "emotion";
+
+const headerClassName = css`...`;
+
+export function BlogView() {
+  const dispatch = useDispatch();
+  const list = useSelector(getPostList);
+  const go = (postId: string) =>
+    dispatch(setView({ root: "BlogPost", postId }));
+
+  return (
+    <div style={{ textAlign: "center", paddingTop: "80px" }}>
+      <ul style={{ listStyle: "none" }}>
+        {list.map((post) => (
+          <div className={headerClassName}>
+            <li key={post.id} onClick={() => go(post.id)}>
+              <span role="button" style={{ fontSize: "1.5rem" }}>
+                {post.title}
+              </span>{" "}
+              »
+            </li>
+          </div>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Other libraries
+
+### State manipulation
+
+Ease the state manipulation with
+[object-path-immutable](https://www.npmjs.com/package/object-path-immutable).
+
+```typescript
+import { Action } from "redux";
+import { set } from "object-path-immutable";
+import { ReduxReducer } from "../ReduxReducer";
+import { BlogState } from "./BlogState";
+import { REPLACE_CURRENT_POST } from "./replaceCurrentPost";
+import { REPLACE_POST_LIST } from "./replacePostList";
+
+export class BlogDuck implements ReduxReducer {
+  reduce(state: BlogState, action: Action & any): {} {
+    if (!state.blog)
+      state = set(state, "blog", { list: [], currentPost: null });
+
+    switch (action.type) {
+      case REPLACE_CURRENT_POST:
+        return set(state, "blog.currentPost", action.currentPost);
+      case REPLACE_POST_LIST:
+        return set(state, "blog.list", action.list);
+      default:
+        return state;
+    }
+  }
+}
+```
+
+### Memoization
+
+Use [reselect](https://github.com/reduxjs/reselect) when needed.

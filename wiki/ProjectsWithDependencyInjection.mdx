@@ -1,12 +1,12 @@
 ---
-title: TcLs2 Dependency Injection
+title: ProjectsWith Dependency Injection
 deck: true
 ---
 
 ## Testing Induced patterns
 
-We have seen some patterns that testing induces us to use that all
-work together and improves the composability of the system:
+We have seen some patterns that testing induces us to use that all work together
+and improves the composability of the system:
 
 - Lower 's' Singleton
 - Law of Dementer
@@ -113,8 +113,7 @@ We use Spring in the backend to automatize the dependence injection.
 
 ### Define Singleton
 
-Spring defines as lower 's' singleton any class that
-it is annotated by:
+Spring defines as lower 's' singleton any class that it is annotated by:
 
 - `@Component`
 - `@Service`
@@ -136,8 +135,8 @@ public class BlogController {
 
 ### Use Singleton
 
-Spring automatically instances and injects singleton into
-other singletons constructors.
+Spring automatically instances and injects singleton into other singletons
+constructors.
 
 ```java
 @RestController
@@ -166,9 +165,8 @@ public class BlogRestController {
 
 ### Injecting Interfaces
 
-Any singleton can request for an instance of any type,
-if for that interface there is one concrete class, it injects
-the corresponding concrete class.
+Any singleton can request for an instance of any type, if for that interface
+there is one concrete class, it injects the corresponding concrete class.
 
 ```java
 public interface Magic {
@@ -196,9 +194,8 @@ public class MagicController {
 
 ### Injecting List of implementations
 
-In fact, instead of injecting one single instance,
-it injects one instance for each singleton that
-it satisfies the interface.
+In fact, instead of injecting one single instance, it injects one instance for
+each singleton that it satisfies the interface.
 
 ```java
 public interface Magic {
@@ -298,19 +295,19 @@ Register singletons with the `register` method.
 
 ```typescript
 class Counter {
-  private count = 0
+  private count = 0;
 
   increment() {
-    this.count++
+    this.count++;
   }
 
   get() {
-    return this.count
+    return this.count;
   }
 }
 
-const injector = new Injector()
-injector.register(Counter)
+const injector = new Injector();
+injector.register(Counter);
 ```
 
 ### Getting instances
@@ -318,9 +315,9 @@ injector.register(Counter)
 Use the `get` method to obtain the singleton instances:
 
 ```typescript
-const counter = injector.get(Counter)
-counter.increment()
-expect(counter.get()).toBe(1)
+const counter = injector.get(Counter);
+counter.increment();
+expect(counter.get()).toBe(1);
 ```
 
 ### Using other singletons from singletons
@@ -330,20 +327,20 @@ All singletons created by `Injector` receive the injector in the constructor.
 
 ```typescript
 class MaxOccupancy {
-  private counter: Counter
+  private counter: Counter;
 
   constructor(injector: Injector) {
-    this.counter = injector.get(Counter)
+    this.counter = injector.get(Counter);
   }
 
   isReached() {
-    return this.counter.get() > 2
+    return this.counter.get() > 2;
   }
 }
 
-injector.register(MaxOccupancy)
-const maxOccupancy = injector.get(MaxOccupancy)
-expect(maxOccupancy.isReached()).toBe(false)
+injector.register(MaxOccupancy);
+const maxOccupancy = injector.get(MaxOccupancy);
+expect(maxOccupancy.isReached()).toBe(false);
 ```
 
 ### Mocking instances
@@ -353,26 +350,25 @@ You can register other Classes (constructors) for other types:
 ```typescript
 class CounterMock extends Counter {
   get() {
-    return 3
+    return 3;
   }
 }
 
-injector.register(MaxOccupancy)
-injector.register(Counter, CounterMock)
+injector.register(MaxOccupancy);
+injector.register(Counter, CounterMock);
 
-const maxOccupancy = injector.get(MaxOccupancy)
-expect(maxOccupancy.isReached()).toBe(true)
+const maxOccupancy = injector.get(MaxOccupancy);
+expect(maxOccupancy.isReached()).toBe(true);
 ```
 
 ### Typescript type interfaces
 
-There are no interfaces in Javascript.
-But there are interfaces in typescript.
+There are no interfaces in Javascript. But there are interfaces in typescript.
 
 ```typescript
 // avoid
 interface Magic {
-  spell(name: string)
+  spell(name: string);
 }
 
 class MiddleAgeMagic implements Magic {
@@ -385,21 +381,22 @@ class MiddleAgeMagic implements Magic {
 The problem is that these interfaces cannot be registered:
 
 ```typescript
-injector.register(Magic, MiddleAgeMagic)
+injector.register(Magic, MiddleAgeMagic);
 // ^ compile error, Magic is not a symbol
 ```
 
 ### Typescript **class** interfaces
 
-Classes can act as interfaces in typescript and we can implement (instead of extend) them:
+Classes can act as interfaces in typescript and we can implement (instead of
+extend) them:
 
 ```typescript
 class Magic {
   constructor() {
-    throw new Error("Cannot instantiate an interface")
+    throw new Error("Cannot instantiate an interface");
   }
   spell(name: string) {
-    throw new Error("Cannot call an abstract method")
+    throw new Error("Cannot call an abstract method");
   }
 }
 
@@ -413,7 +410,7 @@ class MiddleAgeMagic implements Magic {
 Now we can register magic.
 
 ```typescript
-injector.register(Magic, MiddleAgeMagic)
+injector.register(Magic, MiddleAgeMagic);
 ```
 
 ### Lists from an interfaces
@@ -448,16 +445,16 @@ Configures the injector with the injections of the current package.
 
 ```typescript
 // src/www/__test__/testPost/helpers/configureInjector.ts
-import { Injector } from "www/injector"
-import { PostLineStep } from "../PostLineStep"
-import { PLSEmptyLine } from "./PLSEmptyLine"
-import { PLSLiterature } from "./PLSLiterature"
-import { PLSSnapshot } from "./PLSSnapshot"
+import { Injector } from "www/injector";
+import { PostLineStep } from "../PostLineStep";
+import { PLSEmptyLine } from "./PLSEmptyLine";
+import { PLSLiterature } from "./PLSLiterature";
+import { PLSSnapshot } from "./PLSSnapshot";
 
 export default function configurePostTestHelpersInjector(injector: Injector) {
-  injector.register(PostLineStep, PLSEmptyLine)
-  injector.register(PostLineStep, PLSLiterature)
-  injector.register(PostLineStep, PLSSnapshot)
+  injector.register(PostLineStep, PLSEmptyLine);
+  injector.register(PostLineStep, PLSLiterature);
+  injector.register(PostLineStep, PLSSnapshot);
 }
 ```
 
@@ -467,28 +464,28 @@ Use children packages configureInjector in your configureInjector:
 
 ```typescript
 // src/www/ducks/configureInjector.ts
-import { Injector } from "www/injector"
-import { ReduxStore } from "./ReduxStore"
-import configureBlogInjector from "./blog"
-import configureCardsInjector from "./cards"
-import configureCurrentUserInjector from "./currentUser"
-import configureGameInjector from "./game"
-import configureLoadingInjector from "./loading"
-import configureNewGameInjector from "./newGame"
-import configureSelectedCardInjector from "./selectedCard"
-import configureViewInjector from "./view"
+import { Injector } from "www/injector";
+import { ReduxStore } from "./ReduxStore";
+import configureBlogInjector from "./blog";
+import configureCardsInjector from "./cards";
+import configureCurrentUserInjector from "./currentUser";
+import configureGameInjector from "./game";
+import configureLoadingInjector from "./loading";
+import configureNewGameInjector from "./newGame";
+import configureSelectedCardInjector from "./selectedCard";
+import configureViewInjector from "./view";
 
 export default function configureDucksInjector(injector: Injector) {
-  injector.configure(configureBlogInjector)
-  injector.configure(configureCardsInjector)
-  injector.configure(configureCurrentUserInjector)
-  injector.configure(configureGameInjector)
-  injector.configure(configureLoadingInjector)
-  injector.configure(configureNewGameInjector)
-  injector.configure(configureSelectedCardInjector)
-  injector.configure(configureViewInjector)
+  injector.configure(configureBlogInjector);
+  injector.configure(configureCardsInjector);
+  injector.configure(configureCurrentUserInjector);
+  injector.configure(configureGameInjector);
+  injector.configure(configureLoadingInjector);
+  injector.configure(configureNewGameInjector);
+  injector.configure(configureSelectedCardInjector);
+  injector.configure(configureViewInjector);
 
-  injector.register(ReduxStore)
+  injector.register(ReduxStore);
 }
 ```
 
@@ -502,5 +499,5 @@ There are two injector configurations:
 - another for the testing:  
   `src/www/__test__/configureInjector.ts`
 
-The `__test__` injector uses the main injector,
-and adds all the necesary logic and mocks for the test.
+The `__test__` injector uses the main injector, and adds all the necesary logic
+and mocks for the test.

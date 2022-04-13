@@ -1,5 +1,5 @@
 ---
-title: TcLs2 Ducks
+title: ProjectsWith Ducks
 deck: true
 ---
 
@@ -7,7 +7,7 @@ Redux, ducks, and dependence injection.
 
 ## Redux
 
-Redux is a state management library. 
+Redux is a state management library.
 
 <Mermaid>{`classDiagram
   class State {
@@ -18,8 +18,8 @@ Redux is a state management library.
 
 ### With Views
 
-It is like a database but for the frontend.
-The Frontend reads it, and paints what is inside.
+It is like a database but for the frontend. The Frontend reads it, and paints
+what is inside.
 
 <Mermaid>{`classDiagram
   class State {
@@ -81,8 +81,8 @@ The reducer, catch the actions and executes them.
 
 ### State updates
 
-And the reducer, computes the new value of the sate, and
-replaces its value by the new one with the action applied.
+And the reducer, computes the new value of the sate, and replaces its value by
+the new one with the action applied.
 
 <Mermaid>{`classDiagram
   class Reducer {
@@ -106,9 +106,8 @@ replaces its value by the new one with the action applied.
   Reducer --> State : replaces
 `}</Mermaid>
 
->> This schema is incomplete.  
->> View and the State
->> have a complex relationship.
+> > This schema is incomplete.  
+> > View and the State have a complex relationship.
 
 ## The Redux Store
 
@@ -193,6 +192,7 @@ There is a dispatch action to compute a new state.
 #### Step by step
 
 When:
+
 1. an actor dispatches an action,
 2. the reducer computes the new state
 3. the store replaces the state
@@ -202,9 +202,9 @@ When:
     Store->>+Reducer: reduce(state,action)
     Reducer-->>-Store: state
     deactivate Store
- `}</Mermaid>           
+ `}</Mermaid>{" "}
 
->> But... what happens after the store finishes?
+> > But... what happens after the store finishes?
 
 ### Subscribing
 
@@ -229,7 +229,7 @@ Views can subscribe to the store.
 
 #### Step by step
 
-1. a view subscribes to the Store  
+1. a view subscribes to the Store
 2. an actor dispatches an action,
 3. the reducer computes the new state
 4. the store replaces the state
@@ -251,14 +251,13 @@ Views can subscribe to the store.
     end
     deactivate Store
   end
- `}</Mermaid>           
+ `}</Mermaid>{" "}
 
 ## AfterAction
 
 Implementing part of the
-[DDD](/blog/2020/03/05/redux-and-domain-driven-development.html)
-you can add perform chained actions as a consequence of an 
-existing action:
+[DDD](/blog/2020/03/05/redux-and-domain-driven-development.html) you can add
+perform chained actions as a consequence of an existing action:
 
 <Mermaid>{`classDiagram
   class Store {
@@ -283,9 +282,8 @@ existing action:
 
 ### Step by Step
 
-When an action executes,
-after all subscribers has been dispatched,
-it executes all after actions:
+When an action executes, after all subscribers has been dispatched, it executes
+all after actions:
 
 1. an actor dispatches an action,
 2. the reducer computes the new state
@@ -308,14 +306,13 @@ it executes all after actions:
     end
     deactivate Store
   end
- `}</Mermaid> 
+ `}</Mermaid>{" "}
 
- ### Asynchronous
+### Asynchronous
 
- Redux cannot handle asynchronous actions,
- but AfterActions can handle them. 
+Redux cannot handle asynchronous actions, but AfterActions can handle them.
 
- Use after actions to handle asynchronous code.
+Use after actions to handle asynchronous code.
 
 ```typescript
 export class EnterGameDuck implements ReduxAfterAction {
@@ -334,9 +331,7 @@ export class EnterGameDuck implements ReduxAfterAction {
     this.reduxStore.dispatch(incrementLoading());
     // ^ shows the loading spinner
     // v makes the asynchronous request
-    const game = await this.apiRest.get(
-      `/api/v1/games/${action.id}`
-    );
+    const game = await this.apiRest.get(`/api/v1/games/${action.id}`);
 
     // v executes the syncrhornous part
     this.reduxStore.dispatch(replaceGame(game));
@@ -348,9 +343,8 @@ export class EnterGameDuck implements ReduxAfterAction {
 
 ### The flow
 
-The LoadGame action activates the AfterAction.
-The AfterAction dispatches the following ReplaceGame
-when everything works well.
+The LoadGame action activates the AfterAction. The AfterAction dispatches the
+following ReplaceGame when everything works well.
 
 <Mermaid>{`stateDiagram-v2
     [*] --> LoadGame
@@ -362,18 +356,16 @@ when everything works well.
     LoadGame --> ReplaceGame
     note right of LoadGame: & Increment/Decrement Loading
     ReplaceGame --> [*]
- `}</Mermaid> 
+ `}</Mermaid>{" "}
 
- And ofcourse, it also dispatches other
- actions like IncrementLoading or DecrementLoading.
+And ofcourse, it also dispatches other actions like IncrementLoading or
+DecrementLoading.
 
 ### Handling Errors
 
-Views cannot handle errors that happens in 
-AfterActions. They shouldn't. If an error happens
-in an AfterAction it should handle it and dispatch
-the appropiate action. It is the state who stores
-the problem and the View who shows the state.
+Views cannot handle errors that happens in AfterActions. They shouldn't. If an
+error happens in an AfterAction it should handle it and dispatch the appropiate
+action. It is the state who stores the problem and the View who shows the state.
 
 ```typescript
 export class EnterGameDuck implements ReduxAfterAction {
@@ -390,9 +382,7 @@ export class EnterGameDuck implements ReduxAfterAction {
 
     this.reduxStore.dispatch(incrementLoading());
     try {
-      const game = await this.apiRest.get(
-        `/api/v1/games/${action.id}`
-      );
+      const game = await this.apiRest.get(`/api/v1/games/${action.id}`);
       this.reduxStore.dispatch(replaceGame(game));
     } catch (error) {
       this.reduxStore.dispatch(notifyError(error));
@@ -406,8 +396,8 @@ export class EnterGameDuck implements ReduxAfterAction {
 
 ### The Actor
 
-In a previous section you have seen that actors
-are the ones who dispatches actions:
+In a previous section you have seen that actors are the ones who dispatches
+actions:
 
 <Mermaid>{`sequenceDiagram
     Actor->>+Store: dispatch(action)
@@ -416,25 +406,22 @@ are the ones who dispatches actions:
     deactivate Store
  `}</Mermaid>
 
- Actors are:
+Actors are:
 
- - External Actors:
-   The users of the View, that clicking, typing, ... and interacting
-   dispatches actions to the Store. 
+- External Actors: The users of the View, that clicking, typing, ... and
+  interacting dispatches actions to the Store.
 
-- Internal Actors:
-  They are AfterActions that once an action is completed, 
-  it dispatches other actions to complete a Process.
+- Internal Actors: They are AfterActions that once an action is completed, it
+  dispatches other actions to complete a Process.
 
 ### Process, Glue, and Decoupling
 
-AfterActions are not only meant for asynchronous, they
-are also to decouple packages of Redux.
+AfterActions are not only meant for asynchronous, they are also to decouple
+packages of Redux.
 
-You can decouple two packages through AfterActions. When
-an existing action in an other package can trigger a new chain 
-of changes, instead of modifying the original package,
-use an AfterAction to trigger more changes.
+You can decouple two packages through AfterActions. When an existing action in
+an other package can trigger a new chain of changes, instead of modifying the
+original package, use an AfterAction to trigger more changes.
 
 <Mermaid>{`stateDiagram-v2
     [*] --> SetView
@@ -442,12 +429,12 @@ use an AfterAction to trigger more changes.
     SetView --> BlogSetView : triggers
     BlogSetView --> LoadPostList : if Blog
     BlogSetView --> LoadPost : if BlogPost
- `}</Mermaid> 
+ `}</Mermaid>{" "}
 
- #### Code
+#### Code
 
- ```typescript
- export class BlogSetViewDuck implements ReduxAfterAction {
+```typescript
+export class BlogSetViewDuck implements ReduxAfterAction {
   private reduxStore: ReduxStore;
   private apiRest: ApiRest;
 
@@ -479,9 +466,8 @@ use an AfterAction to trigger more changes.
 
 We follow the Aggregate pattern from DDD:
 
-> Never let an action dispatched by one Reduxe package
-> to reduce inside another Redux package.
-> Use an AfterAction instead.
+> Never let an action dispatched by one Reduxe package to reduce inside another
+> Redux package. Use an AfterAction instead.
 
 #### Don't
 
@@ -492,7 +478,7 @@ We follow the Aggregate pattern from DDD:
   Store->>+ReducerB: reduce(stateB, actionA)
   deactivate ReducerB
   deactivate Store
- `}</Mermaid> 
+ `}</Mermaid>{" "}
 
 #### Do
 
@@ -507,12 +493,12 @@ We follow the Aggregate pattern from DDD:
   deactivate ReducerB
   deactivate Store
   deactivate Store
-`}</Mermaid> 
+`}</Mermaid>{" "}
 
 #### Why?
 
-The package C might want to know when B is updated,
-and it could be updated because A, but also because B.
+The package C might want to know when B is updated, and it could be updated
+because A, but also because B.
 
 Not having this rule requires C to know the implementation of B.
 
@@ -548,7 +534,7 @@ Reducers implements ReduceReducer.
       +reduce(state, action) state
     }
     ReduxReducer <|-- BlogDuck
-`}</Mermaid> 
+`}</Mermaid>{" "}
 
 ```typescript
 export class ReduxReducer {
@@ -597,7 +583,7 @@ They implement ReduxAfterAction
       - loadPost(postId);
     }
     ReduxAfterAction <|-- BlogSetViewDuck
-`}</Mermaid> 
+`}</Mermaid>{" "}
 
 ```typescript
 export class ReduxAfterAction {
@@ -639,7 +625,7 @@ Exported from the package `index.js`.
       +getCurrentPost(state)
       +getPostList(state)
     }
-`}</Mermaid> 
+`}</Mermaid>{" "}
 
 ### And actionCreators
 
@@ -653,7 +639,7 @@ Exported from the package `index.js`.
       +REPLACE_POST_LIST
       replacePostList(list)
     }
-`}</Mermaid> 
+`}</Mermaid>{" "}
 
 ### Configure the Store
 
@@ -710,8 +696,7 @@ Views subscribe to the store and dispatches new actions through:
 
 ### Selectors
 
-Subscribe to the store and get the current selector result 
-with `useSelector`.
+Subscribe to the store and get the current selector result with `useSelector`.
 
 ```typescript
 import React from "react";
@@ -728,7 +713,7 @@ export function BlogPostView() {
   if (!post) return null;
 
   return (
-    <div style={{textAlign: 'left', paddingTop: '80px'}}>
+    <div style={{ textAlign: "left", paddingTop: "80px" }}>
       <article className={postClassName}>
         <ReactMarkdown source={post.body} escapeHtml={false} />
       </article>
@@ -746,7 +731,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getPostList } from "www/ducks/blog";
 import { setView } from "www/ducks/view";
-import {css} from "emotion";
+import { css } from "emotion";
 
 const headerClassName = css`...`;
 
@@ -757,18 +742,20 @@ export function BlogView() {
     dispatch(setView({ root: "BlogPost", postId }));
 
   return (
-    <div style={{textAlign: 'center', paddingTop: '80px'}}>
-      <ul style={{listStyle: "none"}}>
-      {list.map((post) => (
-        <div className={headerClassName}>
-          <li key={post.id} onClick={() => go(post.id)} >
-            <span role="button" style={{fontSize:"1.5rem"}}>{post.title}</span> »
-          </li>
-        </div>
-      ))}
-    </ul>
+    <div style={{ textAlign: "center", paddingTop: "80px" }}>
+      <ul style={{ listStyle: "none" }}>
+        {list.map((post) => (
+          <div className={headerClassName}>
+            <li key={post.id} onClick={() => go(post.id)}>
+              <span role="button" style={{ fontSize: "1.5rem" }}>
+                {post.title}
+              </span>{" "}
+              »
+            </li>
+          </div>
+        ))}
+      </ul>
     </div>
-
   );
 }
 ```
@@ -777,7 +764,8 @@ export function BlogView() {
 
 ### State manipulation
 
-Ease the state manipulation with [object-path-immutable](https://www.npmjs.com/package/object-path-immutable).
+Ease the state manipulation with
+[object-path-immutable](https://www.npmjs.com/package/object-path-immutable).
 
 ```typescript
 import { Action } from "redux";
