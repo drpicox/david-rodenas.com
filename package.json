@@ -37,7 +37,7 @@
     "gatsby-source-filesystem": "^2.4.2",
     "gatsby-transformer-sharp": "^2.5.21",
     "gh-pages": "^3.1.0",
-    "mermaid": "^8.8.3",
+    "mermaid": "^9.1.2",
     "object-path-immutable": "^4.1.1",
     "prism-themes": "^1.5.0",
     "prismjs": "^1.22.0",
