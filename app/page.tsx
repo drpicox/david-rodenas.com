@@ -68,10 +68,85 @@ export default function HomePage() {
                 </div>
             </div>
 
+            {/* Featured Book Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                        <div className="md:w-1/3">
+                            <div className="relative">
+                                <div className="transform rotate-3 transition-transform hover:rotate-0">
+                                    <img
+                                        src="/BookGuide.jpeg"
+                                        alt="Book Cover"
+                                        className="rounded-lg shadow-2xl"
+                                    />
+                                </div>
+                                <div className="absolute -bottom-4 -right-4 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-semibold transform rotate-12">
+                                    New Release!
+                                </div>
+                            </div>
+                        </div>
+                        <div className="md:w-2/3">
+                            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                                The Emotional and Technical Guide to Rescue Stalled Software
+                            </h2>
+                            <p className="text-xl font-semibold text-blue-600 mb-6">
+                                &ldquo;Never rewrite. Never stop delivery.&rdquo;
+                            </p>
+                            <div className="prose prose-lg mb-6">
+                                <p className="text-gray-600">
+                                    A revolutionary approach to conquering technical debt without sacrificing your sanity or shipping schedule. This guide acknowledges both the technical and emotional challenges developers face when dealing with legacy code.
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-4 mb-8">
+                <span className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
+                  🛠️ Technical Patterns
+                </span>
+                                <span className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full">
+                  🧠 Emotional Support
+                </span>
+                                <span className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
+                  📈 Practical Solutions
+                </span>
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                                <a
+                                    href="https://www.amazon.com/dp/8409652536"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all"
+                                >
+                                    Get it on Amazon
+                                </a>
+                                {/* <button className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 shadow-lg hover:shadow-xl transition-all">
+                                    Read Sample Chapter
+                                </button> */}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Key Takeaways */}
+                    <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div className="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Technical Mastery</h3>
+                            <p className="text-gray-600">Learn practical techniques to transform legacy code into maintainable, reliable paths using TDD as a transformation tool.</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Emotional Intelligence</h3>
+                            <p className="text-gray-600">Address the fear, anxiety, and frustration that comes from maintaining unsustainable code with proven strategies.</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-lg">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Continuous Delivery</h3>
+                            <p className="text-gray-600">Master the art of making impactful changes while maintaining continuous delivery and team momentum.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* About Section */}
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">About Me</h2>
-                <div className="prose prose-lg max-w-none">
+                <div className="prose prose-lg max-w-none text-gray-600">
                     <p className="mb-4">
                         Let me introduce myself, I&#39;m David Rodenas, PhD in Computer Science. My journey in the world of
                         computing began at the tender age of eight, kindling a passion that has only grown stronger over
