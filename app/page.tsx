@@ -95,7 +95,7 @@ export default function HomePage() {
                             </p>
                             <div className="prose prose-lg mb-6">
                                 <p className="text-gray-600">
-                                    A revolutionary approach to conquering technical debt without sacrificing your sanity or shipping schedule. This guide acknowledges both the technical and emotional challenges developers face when dealing with legacy code.
+                                    Conquering technical debt without sacrificing your sanity or shipping schedule. This guide acknowledges both the technical and emotional challenges developers face when dealing with legacy code.
                                 </p>
                             </div>
                             <div className="flex flex-wrap gap-4 mb-8">
@@ -223,6 +223,8 @@ export default function HomePage() {
                             <ul className="space-y-2">
                                 <li><a href="https://medium.com/@drpicox" target="_blank"
                                        rel="noopener noreferrer">Articles</a></li>
+                                <li><a href="https://www.amazon.com/dp/8409652536" target="_blank"
+                                       rel="noopener noreferrer">My book</a></li>
                                 {/* <li>Speaking</li>
                   <li>Research</li>
                   <li>Teaching</li> */}
