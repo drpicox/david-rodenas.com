@@ -1,5 +1,5 @@
 import React from 'react';
-import {BookOpen, PenTool, Github, Linkedin, Mail} from 'lucide-react';
+import { BookOpen, PenTool, Github, Linkedin } from 'lucide-react';
 
 export default function HomePage() {
     return (
@@ -73,7 +73,7 @@ export default function HomePage() {
                 <h2 className="text-3xl font-bold text-gray-900 mb-8">About Me</h2>
                 <div className="prose prose-lg max-w-none">
                     <p className="mb-4">
-                        Let me introduce myself, I'm David Rodenas, PhD in Computer Science. My journey in the world of
+                        Let me introduce myself, I&#39;m David Rodenas, PhD in Computer Science. My journey in the world of
                         computing began at the tender age of eight, kindling a passion that has only grown stronger over
                         the
                         years.
@@ -105,7 +105,7 @@ export default function HomePage() {
                         champion.
                     </p>
                     <p className="mb-4">
-                        Since 2011, I've been a regular speaker at professional events, sharing insights and promoting
+                        Since 2011, I&#39;ve been a regular speaker at professional events, sharing insights and promoting
                         discussions within our community. This aligns with my firm belief that knowledge shared is
                         knowledge
                         multiplied, a philosophy that brings me to platforms like Medium to engage with a broader
@@ -117,7 +117,7 @@ export default function HomePage() {
                         comprehensive and unique perspective on the software engineering landscape.
                     </p>
                     <p>
-                        Currently, I'm engaged in the vital task of documenting and disseminating contemporary software
+                        Currently, I&#39;m engaged in the vital task of documenting and disseminating contemporary software
                         engineering strategies. This work synthesizes my experiences as a researcher, educator, and
                         industry
                         consultant, aiming to contribute meaningfully to the ongoing evolution of our field. My goal is
