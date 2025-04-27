@@ -17,7 +17,7 @@
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.2.5",
     "gray-matter": "^4.0.3",
-    "next": "15.2.3",
+    "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "remark": "^15.0.1",
