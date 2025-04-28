@@ -37,5 +37,21 @@ export class CdCommand extends AbstractCommand {
       return `No such directory: ${dirName}`;
     }
     this.#currentPath.setPath(targetPath);
+    
+    // Update browser URL to match the current path
+    this.#updateBrowserUrl(targetPath);
+  }
+  
+  #updateBrowserUrl(path: string) {
+    if (typeof window === 'undefined') return;
+    
+    // Convert shell path to URL path
+    let urlPath = path === '~' ? '/' : path.replace(/^~\//, '/');
+    
+    // Don't include README in URL
+    urlPath = urlPath.replace(/\/README$/, '/');
+    
+    // Update browser URL without reloading the page
+    window.history.pushState({}, '', urlPath);
   }
 }
