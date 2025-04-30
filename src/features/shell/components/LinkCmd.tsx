@@ -1,8 +1,7 @@
 "use client";
 
-import { CurrentPath } from "@/features/shell/CurrentPath";
 import { Shell } from "@/features/shell/Shell";
-import { TerminalScreen } from "@/features/terminal/TerminalScreen";
+import { focusShellPrompt } from "@/features/shell/components/focusShellPrompt";
 import { useInject } from "@/utils/injector/useInject";
 
 export function LinkCmd({
@@ -15,21 +14,12 @@ export function LinkCmd({
   children: React.ReactNode;
 }) {
   const inject = useInject();
-  const runCommand = inject(
-    [CurrentPath, Shell, TerminalScreen],
-    (currentPath, shell) => async () => {
-      await shell.executeCommand(command);
-      if (focusPrompt) {
-        const input = document.querySelector(
-          "input[data-ref=prompt]",
-        ) as HTMLInputElement;
-        if (input) {
-          input.focus();
-          input.scrollIntoView({ behavior: "smooth" });
-        }
-      }
-    },
-  );
+  const runCommand = inject([Shell], (shell) => async () => {
+    await shell.executeCommand(command);
+    if (focusPrompt) {
+      focusShellPrompt();
+    }
+  });
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>

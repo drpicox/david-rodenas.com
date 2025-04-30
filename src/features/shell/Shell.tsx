@@ -1,5 +1,6 @@
 import { CurrentPath } from "@/features/shell/CurrentPath";
 import { ShellCommandExecutor } from "@/features/shell/ShellCommandExecutor";
+import { focusShellPrompt } from "@/features/shell/components/focusShellPrompt";
 import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { AbstractSubject } from "@/utils/injector/AbstractSubject";
 
@@ -50,7 +51,8 @@ export class Shell extends AbstractSubject {
 
   #appendPrompt(command: string) {
     this.#terminalScreen.append(
-      <div className="mt-4">
+      // biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
+      <div className="mt-4" onClick={focusShellPrompt}>
         {this.#currentPath.getPath()}
         <span className="prompt">$ </span>
         <span className="command">{command}</span>
