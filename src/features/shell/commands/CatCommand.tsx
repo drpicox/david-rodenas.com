@@ -5,6 +5,7 @@ import { CommandParser } from "@/features/shell/parser/CommandParser";
 import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { getFileByAbsolutePath } from "@/utils/content/files";
 import type { ParsedCommand } from "../parser/ParsedCommand";
+import { pathToUrlPath } from "@/utils/pathUtils";
 
 export class CatCommand extends AbstractCommand {
   static #parser = new CommandParser(
@@ -35,6 +36,9 @@ export class CatCommand extends AbstractCommand {
       return `No such file: ${fileName}`;
     }
 
+    // Update browser URL to match the file being viewed
+    this.#updateBrowserUrl(absolutePath, fileName);
+
     const content = await fetch(file.path).then((r) => r.text());
 
     // Handle markdown files with our component
@@ -44,5 +48,15 @@ export class CatCommand extends AbstractCommand {
 
     // Handle other file types
     return <pre className="whitespace-pre text-wrap">{content}</pre>;
+  }
+
+  #updateBrowserUrl(absolutePath: string, fileName: string) {
+    if (typeof window === "undefined") return;
+    
+    // Use the utility function to convert the path to a URL path
+    const urlPath = pathToUrlPath(absolutePath, true);
+    
+    // Update browser URL without reloading the page
+    window.history.pushState({}, "", urlPath);
   }
 }

@@ -3,7 +3,7 @@ import { AbstractCommand } from "@/features/shell/commands/AbstractCommand";
 import { CommandParser } from "@/features/shell/parser/CommandParser";
 import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { getDirectory } from "@/utils/content/directories";
-import { navigatePath, toContentPath } from "@/utils/pathUtils";
+import { navigatePath, toContentPath, pathToUrlPath } from "@/utils/pathUtils";
 import type { ParsedCommand } from "../parser/ParsedCommand";
 
 export class CdCommand extends AbstractCommand {
@@ -37,21 +37,18 @@ export class CdCommand extends AbstractCommand {
       return `No such directory: ${dirName}`;
     }
     this.#currentPath.setPath(targetPath);
-    
+
     // Update browser URL to match the current path
     this.#updateBrowserUrl(targetPath);
   }
-  
+
   #updateBrowserUrl(path: string) {
-    if (typeof window === 'undefined') return;
-    
-    // Convert shell path to URL path
-    let urlPath = path === '~' ? '/' : path.replace(/^~\//, '/');
-    
-    // Don't include README in URL
-    urlPath = urlPath.replace(/\/README$/, '/');
-    
+    if (typeof window === "undefined") return;
+
+    // Use the utility function to convert the path to a URL path
+    const urlPath = pathToUrlPath(path, false);
+
     // Update browser URL without reloading the page
-    window.history.pushState({}, '', urlPath);
+    window.history.pushState({}, "", urlPath);
   }
 }

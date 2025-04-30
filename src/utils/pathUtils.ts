@@ -57,3 +57,26 @@ export function toRelativePath(from: string, to: string) {
 
   return toSegments.join("/");
 }
+
+/**
+ * Converts a shell path to a URL path
+ * 
+ * @param path The path to convert (e.g., ~/some/path or ~/some/README.md)
+ * @param isFile Whether the path is a file (for README.md handling)
+ * @returns The URL path
+ */
+export function pathToUrlPath(path: string, isFile: boolean = false) {
+  // Convert shell path to URL path
+  let urlPath = path === "~" ? "/" : path.replace(/^~\//, "/");
+  
+  // Handle README.md files for directories
+  if (isFile && urlPath.endsWith("/README.md")) {
+    urlPath = urlPath.replace(/\/README\.md$/, "/");
+  } else if (isFile && urlPath.endsWith(".md")) {
+    // Keep other .md files as they are
+  } else if (isFile) {
+    // For non-md files, keep the extension
+  }
+  
+  return urlPath;
+}
