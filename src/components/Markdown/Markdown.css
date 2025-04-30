@@ -1,0 +1,48 @@
+.markdown-body {
+  /* General code block styling */
+  pre {
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    position: relative;
+    background-color: #0d1117;
+  }
+
+  /* Code block language badge */
+  pre code[data-language]::before {
+    content: attr(data-language);
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.7rem;
+    padding: 0.3rem 0.5rem;
+    border-bottom-left-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: #ccc;
+    font-family: monospace;
+    text-transform: uppercase;
+  }
+
+  /* Inline code styling */
+  :not(pre) > code {
+    background-color: rgba(110, 118, 129, 0.4);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+
+  /* Ensure highlighting styles are visible */
+  .hljs {
+    display: block;
+    color: #e6e6e6;
+    background: #0d1117;
+  }
+
+  /* Fix for language display */
+  code.hljs {
+    position: relative;
+    display: block;
+  }
+}
