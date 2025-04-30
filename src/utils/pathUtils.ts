@@ -66,11 +66,14 @@ export function toRelativePath(from: string, to: string) {
  * @returns The URL path
  */
 export function pathToUrlPath(path: string, isFile: boolean = false) {
-  // Convert shell path to URL path
+  // First convert ~ to root path 
   let urlPath = path === "~" ? "/" : path.replace(/^~\//, "/");
   
+  // Remove the /content/ prefix if present
+  urlPath = urlPath.replace(/^\/content\//, "/");
+  
   // Handle README.md files for directories
-  if (isFile && urlPath.endsWith("/README.md")) {
+  if (isFile && (urlPath.endsWith("/README.md") || urlPath === "/README.md")) {
     urlPath = urlPath.replace(/\/README\.md$/, "/");
   } else if (isFile && urlPath.endsWith(".md")) {
     // Keep other .md files as they are

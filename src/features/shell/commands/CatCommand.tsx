@@ -5,7 +5,7 @@ import { CommandParser } from "@/features/shell/parser/CommandParser";
 import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { getFileByAbsolutePath } from "@/utils/content/files";
 import type { ParsedCommand } from "../parser/ParsedCommand";
-import { pathToUrlPath } from "@/utils/pathUtils";
+import { pathToUrlPath, toContentPath } from "@/utils/pathUtils";
 
 export class CatCommand extends AbstractCommand {
   static #parser = new CommandParser(
@@ -53,8 +53,21 @@ export class CatCommand extends AbstractCommand {
   #updateBrowserUrl(absolutePath: string, fileName: string) {
     if (typeof window === "undefined") return;
     
+    // First check if the absolutePath is a ~ path or a content path
+    let pathToConvert = absolutePath;
+    
+    // If it's a content path, use it directly
+    if (absolutePath.startsWith("/content/")) {
+      pathToConvert = absolutePath;
+    } 
+    // If it's not a content path and doesn't start with ~, it's already a relative path
+    else if (!absolutePath.startsWith("~")) {
+      // Convert to an absolute path format for the utility
+      pathToConvert = toContentPath(this.#currentPath.getPath()) + "/" + fileName;
+    }
+    
     // Use the utility function to convert the path to a URL path
-    const urlPath = pathToUrlPath(absolutePath, true);
+    const urlPath = pathToUrlPath(pathToConvert, true);
     
     // Update browser URL without reloading the page
     window.history.pushState({}, "", urlPath);
