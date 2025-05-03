@@ -1,8 +1,20 @@
 .markdown-body {
-  /* Paragraph and heading spacing */
-  p, h1, h2, h3, h4, h5, h6, ul, ol {
+  /* Paragraph spacing */
+  p, ul, ol {
     margin-top: 0.75rem;
     margin-bottom: 0.75rem;
+  }
+  
+  /* Heading spacing - closer to content below than above */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  /* First heading needs less top margin */
+  h1:first-child, h2:first-child, h3:first-child,
+  h4:first-child, h5:first-child, h6:first-child {
+    margin-top: 0.5rem;
   }
   
   /* Reduce spacing between list items */
