@@ -86,6 +86,7 @@ export function Markdown({ content }: MarkdownProps) {
   useEffect(() => {
     if (!markdownRef.current) return;
 
+    // First pass: Process existing links
     const links = markdownRef.current.querySelectorAll("a");
     links.forEach((link) => {
       const href = link.getAttribute("href");
@@ -105,6 +106,78 @@ export function Markdown({ content }: MarkdownProps) {
           externalIcon.innerHTML = " ↗"; // Simple arrow, could be replaced with SVG
           link.appendChild(externalIcon);
         }
+      }
+    });
+
+    // Mark all link text nodes so we can avoid processing them in the second pass
+    const linkTextNodes = new Set();
+    links.forEach(link => {
+      Array.from(link.childNodes)
+        .filter(node => node.nodeType === Node.TEXT_NODE)
+        .forEach(node => linkTextNodes.add(node));
+    });
+
+    // Second pass: Look for raw URLs in text nodes only (not inside links) and convert them
+    const allElements = Array.from(markdownRef.current.querySelectorAll("*"));
+    
+    // Get text nodes that are not inside links
+    const textNodes = allElements
+      .filter(el => el.childNodes.length > 0 && el.tagName !== "A")  // Skip <a> elements entirely
+      .flatMap(el => Array.from(el.childNodes))
+      .filter(node => 
+        node.nodeType === Node.TEXT_NODE && 
+        !linkTextNodes.has(node) && // Skip text nodes that are inside links
+        !(node.parentNode?.tagName === "A") // Double-check parent is not a link
+      );
+    
+    // URL regex pattern
+    const urlPattern = /(https?:\/\/[^\s<>"']+)/g;
+    
+    textNodes.forEach(textNode => {
+      const text = textNode.textContent || "";
+      if (!urlPattern.test(text)) return;
+      
+      // Reset the regex pattern
+      urlPattern.lastIndex = 0;
+      
+      // Create a document fragment to hold the result
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      let match;
+      
+      while ((match = urlPattern.exec(text)) !== null) {
+        // Add text before the match
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+        }
+        
+        // Create link for the URL
+        const url = match[0];
+        const link = document.createElement("a");
+        link.href = url;
+        link.textContent = url;
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+        link.classList.add("external-link");
+        
+        // Add external link icon
+        const externalIcon = document.createElement("span");
+        externalIcon.className = "external-link-icon";
+        externalIcon.innerHTML = " ↗";
+        link.appendChild(externalIcon);
+        
+        fragment.appendChild(link);
+        lastIndex = match.index + url.length;
+      }
+      
+      // Add remaining text
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+      }
+      
+      // Replace the original text node with the fragment
+      if (textNode.parentNode) {
+        textNode.parentNode.replaceChild(fragment, textNode);
       }
     });
   }, [htmlContent]);

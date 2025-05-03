@@ -33,6 +33,24 @@
     font-size: 0.9em;
   }
 
+  /* External link styling */
+  a.external-link {
+    color: #58a6ff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  a.external-link:hover {
+    color: #8cb4fe;
+    text-decoration: underline;
+  }
+
+  .external-link-icon {
+    font-size: 0.8em;
+    vertical-align: super;
+    margin-left: 2px;
+  }
+
   /* Ensure highlighting styles are visible */
   .hljs {
     display: block;
