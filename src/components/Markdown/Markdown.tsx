@@ -1,6 +1,5 @@
 "use client";
 
-import { remark } from "remark";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
@@ -71,7 +70,7 @@ export function Markdown({ content }: MarkdownProps) {
             ts: "typescript",
             tsx: "typescript",
           },
-        }) // Add syntax highlighting
+        } as any) // Add syntax highlighting
         .use(rehypeAddLanguageAttribute) // Add data-language attribute for CSS styling
         .use(rehypeStringify, { allowDangerousHtml: true }) // Convert to HTML string
         .processSync(mdContent);
