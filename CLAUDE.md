@@ -74,12 +74,132 @@ This is a retro terminal-style developer portfolio website for David Rodenas. It
 4. **Interactive UI Elements**: Links in output can trigger commands, enhancing UX
 5. **SSG-Ready**: Structure supports Static Site Generation for optimal performance
 
+## Interactive Simulators System
+
+This website supports embedding interactive React components (simulators) directly within markdown content. The system allows for rich, interactive demonstrations of software development concepts.
+
+### Simulator Architecture
+- **Component Location**: All simulators are stored in `src/features/simulators/`
+- **Markdown Integration**: Components are rendered using a custom markdown processing system
+- **Dynamic Loading**: Simulators are dynamically imported for optimal performance
+- **Theme Integration**: All simulators follow the terminal theme system (see `STYLE.md`)
+
+### Adding New Simulators
+
+To add a new interactive simulator to the website, follow these steps:
+
+#### 1. Create the Simulator Component
+```bash
+# Create your simulator component
+touch src/features/simulators/YourSimulatorName.tsx
+```
+
+Follow the styling guidelines in `STYLE.md` to ensure visual consistency with the terminal theme.
+
+#### 2. Register the Component
+Add your component to the registry in `src/components/Markdown/Markdown.tsx`:
+
+```tsx
+// Dynamic imports for simulators
+const YourSimulatorName = dynamic(
+  () => import("../../features/simulators/YourSimulatorName"),
+  {
+    ssr: false,
+    loading: () => <div className="text-center py-8">Loading simulator...</div>,
+  },
+);
+
+// Component registry for dynamic rendering
+const componentRegistry = {
+  TechnicalDebtSimulator,
+  YourSimulatorName, // Add here
+} as const;
+```
+
+#### 3. Create Content Directory and Files
+```bash
+# Create directory for your simulator content
+mkdir -p public/content/simulators
+
+# Create the markdown file that will contain your simulator
+touch public/content/simulators/your-simulator-name.md
+```
+
+#### 4. Add Simulator to Markdown Content
+In your markdown file, use the self-closing tag syntax:
+
+```markdown
+---
+title: "Your Simulator Name"
+description: "Brief description of what the simulator does"
+---
+
+# Your Simulator Name
+
+Brief introduction and explanation.
+
+## Interactive Simulation
+
+<YourSimulatorName />
+
+## Additional content explaining the simulation
+```
+
+#### 5. Update Content Index
+```bash
+# Regenerate the content index to include your new files
+node scripts/generate-content-index.js
+```
+
+#### 6. Add to Navigation (Optional)
+If you want your simulator section to appear in the main menu, add it to `public/content/README.md`:
+
+```markdown
+## Main Sections
+
+- [Your Section](/your-section) - Description of your simulators
+```
+
+### Example Implementation
+
+See `src/features/simulators/TechnicalDebtSimulator.tsx` and `public/content/simulators/technical-debt-simulator.md` for a complete example of:
+- Terminal-themed component styling
+- Interactive controls (sliders, charts)
+- Responsive design patterns
+- Integration with the markdown system
+
+### Styling Requirements
+
+All simulators must follow the terminal theme system:
+- Use CSS custom properties (`var(--accent)`, `var(--background)`, etc.)
+- Maintain consistent borders and layouts
+- Support both light and dark themes
+- Follow the typography scale defined in `STYLE.md`
+
+### Testing Your Simulator
+
+1. Navigate to your simulator via the terminal: `cd simulators && cat your-simulator-name.md`
+2. Test theme switching: `theme light` and `theme dark`
+3. Verify responsive behavior on different screen sizes
+4. Ensure the component loads properly in the markdown context
+
+### Best Practices
+
+- **Performance**: Use `dynamic` imports with `ssr: false` for heavy components
+- **Accessibility**: Ensure good contrast ratios in both light and dark themes
+- **User Experience**: Provide loading states and clear controls
+- **Code Organization**: Keep simulator logic self-contained within the component
+- **Documentation**: Include comprehensive explanations in the markdown content
+
 ## Content Structure
 - `public/content/`: All site content
   - `README.md`: Initial welcome message
   - `whoami.md`: Personal information
   - `contact-links.md`: Contact information
+  - `simulators/`: Interactive simulators and demonstrations
+    - `README.md`: Simulators section overview
+    - `technical-debt-simulator.md`: Technical debt compound interest simulator
   - `projects/`: Portfolio projects
     - Individual project markdown files
 
-This project elegantly combines modern web technologies with a nostalgic terminal interface to create a unique developer portfolio experience.
+This project elegantly combines modern web technologies with a nostalgic terminal interface to create a unique developer portfolio experience, enhanced with interactive demonstrations of software development concepts.
