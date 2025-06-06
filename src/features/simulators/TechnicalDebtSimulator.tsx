@@ -22,50 +22,66 @@ const TechnicalDebtSimulator = () => {
   // Calculate simulation data with immediate updates
   const simulationData = useMemo(() => {
     const data = [];
+
     let cleanCumulative = 0;
     let debtCumulative = 0;
-    let currentDebtFeatureCost = baseTime * (1 - shortcutFactor); // Initial shortcut applied once
+
+    let cleanMonthly = 0;
+    let debtMonthly = 0;
+
+    const cleanFeatureCost = baseTime;
+    let debtFeatureCost = baseTime * (1 - shortcutFactor);
+
     let breakEvenPoint = null;
 
-    const monthsToSimulate = timeHorizon;
-    const cleanFeaturesPerMonth = 30 / baseTime; // assuming 30 working days per month
+    let nextCleanFeatureDay = 0; // Next day to deliver a clean feature
+    let nextDebtFeatureDay = 0; // Next day to deliver a debt-driven feature
 
-    for (let month = 0; month <= monthsToSimulate; month++) {
-      // Clean development: consistent pace
-      const cleanFeaturesThisMonth = month === 0 ? 0 : cleanFeaturesPerMonth;
-      cleanCumulative += cleanFeaturesThisMonth;
-
-      // Debt-driven development
-      let debtFeaturesThisMonth = 0;
-      if (month > 0) {
-        // Calculate how many features can be delivered this month with current debt cost
-        debtFeaturesThisMonth = Math.max(0, 30 / currentDebtFeatureCost);
-
-        // Apply compound interest for next month (each feature makes subsequent ones harder)
-        currentDebtFeatureCost = currentDebtFeatureCost * (1 + interestRate);
-      }
-      debtCumulative += debtFeaturesThisMonth;
-
-      // Check for break-even point
-      if (
-        cleanCumulative > debtCumulative &&
-        breakEvenPoint === null &&
-        month > 0
-      ) {
-        breakEvenPoint = month;
+    let today = 0;
+    const daysPerMonth = 20; // Assuming 20 days per month for simplicity
+    const daysToSimulate = timeHorizon * daysPerMonth; // Total days to simulate
+    while (today < daysToSimulate) {
+      while (nextCleanFeatureDay <= today) {
+        // Deliver a clean feature
+        cleanCumulative += 1;
+        cleanMonthly += 1;
+        nextCleanFeatureDay += cleanFeatureCost; // Move to the next clean feature delivery day
       }
 
-      data.push({
-        month,
-        cleanCumulative: Number(cleanCumulative.toFixed(1)),
-        debtCumulative: Number(debtCumulative.toFixed(1)),
-        cleanMonthly: Number(cleanFeaturesThisMonth.toFixed(1)),
-        debtMonthly: Number(debtFeaturesThisMonth.toFixed(1)),
-        currentFeatureCost: Number(currentDebtFeatureCost.toFixed(2)),
-        debtInterest: Number(
-          (currentDebtFeatureCost - baseTime * (1 - shortcutFactor)).toFixed(2),
-        ),
-      });
+      while (nextDebtFeatureDay <= today) {
+        // Deliver a debt-driven feature
+        debtCumulative += 1;
+        debtMonthly += 1;
+        nextDebtFeatureDay += debtFeatureCost; // Move to the next debt-driven feature delivery day
+
+        // Increase the cost for the next debt-driven feature
+        debtFeatureCost *= 1 + interestRate;
+      }
+
+      today += 1; // Move to the next day
+
+      if (today % daysPerMonth === 0) {
+        // End of the month, reset monthly counters
+        data.push({
+          month: Math.floor(today / daysPerMonth),
+          cleanCumulative: Number(cleanCumulative.toFixed(1)),
+          debtCumulative: Number(debtCumulative.toFixed(1)),
+          cleanMonthly: Number(cleanMonthly.toFixed(1)),
+          debtMonthly: Number(debtMonthly.toFixed(1)),
+          currentFeatureCost: Number(debtFeatureCost.toFixed(2)),
+          debtInterest: Number(
+            (debtFeatureCost - baseTime * (1 - shortcutFactor)).toFixed(2),
+          ),
+        });
+
+        // Reset monthly counters
+        cleanMonthly = 0;
+        debtMonthly = 0;
+
+        if (breakEvenPoint === null && cleanCumulative > debtCumulative) {
+          breakEvenPoint = Math.floor(today / daysPerMonth);
+        }
+      }
     }
 
     return { data, breakEvenPoint };
@@ -144,7 +160,7 @@ const TechnicalDebtSimulator = () => {
             </label>
             <input
               type="range"
-              min="5"
+              min="1"
               max="30"
               value={baseTime}
               onChange={(e) => setBaseTime(Number(e.target.value))}
