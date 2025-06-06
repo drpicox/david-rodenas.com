@@ -24,30 +24,25 @@ const TechnicalDebtSimulator = () => {
     const data = [];
     let cleanCumulative = 0;
     let debtCumulative = 0;
-    let accumulatedDebt = 0;
+    let currentDebtFeatureCost = baseTime * (1 - shortcutFactor); // Initial shortcut applied once
     let breakEvenPoint = null;
 
     const monthsToSimulate = timeHorizon;
-    const featuresPerMonth = 30 / baseTime; // assuming 30 working days per month
+    const cleanFeaturesPerMonth = 30 / baseTime; // assuming 30 working days per month
 
     for (let month = 0; month <= monthsToSimulate; month++) {
       // Clean development: consistent pace
-      const cleanFeaturesThisMonth = month === 0 ? 0 : featuresPerMonth;
+      const cleanFeaturesThisMonth = month === 0 ? 0 : cleanFeaturesPerMonth;
       cleanCumulative += cleanFeaturesThisMonth;
 
       // Debt-driven development
       let debtFeaturesThisMonth = 0;
       if (month > 0) {
-        // Initial speed boost due to shortcuts
-        const initialSpeedBoost = 1 / (1 - shortcutFactor);
+        // Calculate how many features can be delivered this month with current debt cost
+        debtFeaturesThisMonth = Math.max(0, 30 / currentDebtFeatureCost);
 
-        // Apply compound interest to slow down development
-        const debtMultiplier = 1 + accumulatedDebt * interestRate;
-        const effectiveTime = (baseTime * debtMultiplier) / initialSpeedBoost;
-        debtFeaturesThisMonth = Math.max(0, 30 / effectiveTime);
-
-        // Add to accumulated debt (shortcuts create debt)
-        accumulatedDebt += debtFeaturesThisMonth * shortcutFactor;
+        // Apply compound interest for next month (each feature makes subsequent ones harder)
+        currentDebtFeatureCost = currentDebtFeatureCost * (1 + interestRate);
       }
       debtCumulative += debtFeaturesThisMonth;
 
@@ -66,8 +61,10 @@ const TechnicalDebtSimulator = () => {
         debtCumulative: Number(debtCumulative.toFixed(1)),
         cleanMonthly: Number(cleanFeaturesThisMonth.toFixed(1)),
         debtMonthly: Number(debtFeaturesThisMonth.toFixed(1)),
-        accumulatedDebt: Number(accumulatedDebt.toFixed(1)),
-        debtInterest: Number((accumulatedDebt * interestRate).toFixed(2)),
+        currentFeatureCost: Number(currentDebtFeatureCost.toFixed(2)),
+        debtInterest: Number(
+          (currentDebtFeatureCost - baseTime * (1 - shortcutFactor)).toFixed(2),
+        ),
       });
     }
 
