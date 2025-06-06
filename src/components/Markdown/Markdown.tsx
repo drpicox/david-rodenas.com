@@ -66,7 +66,6 @@ const rehypeReactComponents: Plugin = () => {
     visit(tree, "element", (node: Element) => {
       // Check if this is our component element (it will be parsed as an HTML element)
       if (node.tagName && componentRegistry[node.tagName as keyof typeof componentRegistry]) {
-        console.log("Found component element:", node.tagName);
         const componentName = node.tagName;
         // Replace with a placeholder div
         node.tagName = "div";
@@ -81,12 +80,10 @@ const rehypeReactComponents: Plugin = () => {
         const child = node.children[0];
         if (child?.type === "text") {
           const text = child.value;
-          console.log("Checking text:", text);
           // Match syntax like <TechnicalDebtSimulator />
           const componentMatch = text.match(/^<(\w+)\s*\/>$/);
           if (componentMatch) {
             const componentName = componentMatch[1];
-            console.log("Found component in text:", componentName);
             // Replace with a placeholder div
             node.tagName = "div";
             node.properties = {
@@ -134,12 +131,10 @@ export function Markdown({ content }: MarkdownProps) {
         .processSync(mdContent);
 
       let result = processedContent.toString();
-      console.log("Generated HTML:", result);
       
       // Post-process to replace component syntax that wasn't caught by the rehype plugin
       result = result.replace(/<(\w+)\s*\/>/g, (match, componentName) => {
         if (componentRegistry[componentName as keyof typeof componentRegistry]) {
-          console.log("Post-processing found component:", componentName);
           return `<div class="react-component-placeholder" data-component="${componentName}"></div>`;
         }
         return match;
@@ -260,14 +255,11 @@ export function Markdown({ content }: MarkdownProps) {
     const componentPlaceholders = markdownRef.current.querySelectorAll(
       ".react-component-placeholder",
     );
-    console.log("Found component placeholders:", componentPlaceholders.length);
     componentPlaceholders.forEach((placeholder) => {
       const componentName = placeholder.getAttribute(
         "data-component",
       ) as keyof typeof componentRegistry;
-      console.log("Component name:", componentName);
       if (componentName && componentRegistry[componentName]) {
-        console.log("Rendering component:", componentName);
         const Component = componentRegistry[componentName];
         const root = createRoot(placeholder);
         root.render(createElement(Component));

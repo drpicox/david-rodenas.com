@@ -89,41 +89,45 @@ const TechnicalDebtSimulator = () => {
   const productivityLabel = isEven ? "Even" : isGain ? "Gain" : "Loss";
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
+    <div className="w-full max-w-6xl mx-auto my-8 p-6 border border-current rounded-lg" style={{ backgroundColor: 'var(--background)', color: 'var(--foreground)' }}>
       <style jsx>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 16px;
           width: 16px;
           border-radius: 50%;
-          background: #3b82f6;
+          background: var(--accent);
           cursor: pointer;
           box-shadow: 0 1px 3px rgba(0,0,0,0.2);
           transition: all 0.1s ease;
         }
         .slider::-webkit-slider-thumb:hover {
           transform: scale(1.1);
-          background: #2563eb;
+          background: var(--secondary);
+        }
+        .slider {
+          background: var(--foreground);
+          opacity: 0.3;
         }
       `}</style>
 
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-        <h1 className="text-2xl font-bold text-slate-800 mb-2 flex items-center gap-2">
-          <TrendingUp className="text-blue-600 w-6 h-6" />
+      <div className="border border-current rounded p-4 mb-4" style={{ backgroundColor: 'var(--background)' }}>
+        <h1 className="text-2xl font-bold mb-2 flex items-center gap-2" style={{ color: 'var(--accent)' }}>
+          <TrendingUp className="w-6 h-6" style={{ color: 'var(--accent)' }} />
           Technical Debt Simulator
         </h1>
-        <p className="text-slate-600 text-sm">
+        <p className="text-sm" style={{ color: 'var(--foreground)' }}>
           Explore how shortcuts create compound productivity losses over time
         </p>
       </div>
 
       {/* Compact Controls */}
-      <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+      <div className="border border-current rounded p-4 mb-4" style={{ backgroundColor: 'var(--background)' }}>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
-              Base Time: <span className="font-mono">{baseTime} days</span>
+            <label className="block text-xs font-medium" style={{ color: 'var(--foreground)' }}>
+              Base Time: <span className="font-mono" style={{ color: 'var(--accent)' }}>{baseTime} days</span>
             </label>
             <input
               type="range"
@@ -131,14 +135,14 @@ const TechnicalDebtSimulator = () => {
               max="30"
               value={baseTime}
               onChange={(e) => setBaseTime(Number(e.target.value))}
-              className="w-full h-1 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
+            <label className="block text-xs font-medium" style={{ color: 'var(--foreground)' }}>
               Shortcuts:{" "}
-              <span className="font-mono">
+              <span className="font-mono" style={{ color: 'var(--secondary)' }}>
                 {(shortcutFactor * 100).toFixed(0)}%
               </span>
             </label>
@@ -149,14 +153,14 @@ const TechnicalDebtSimulator = () => {
               step="0.05"
               value={shortcutFactor}
               onChange={(e) => setShortcutFactor(Number(e.target.value))}
-              className="w-full h-1 bg-orange-200 rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
+            <label className="block text-xs font-medium" style={{ color: 'var(--foreground)' }}>
               Interest:{" "}
-              <span className="font-mono">
+              <span className="font-mono" style={{ color: 'var(--error)' }}>
                 {(interestRate * 100).toFixed(0)}%
               </span>
             </label>
@@ -167,13 +171,13 @@ const TechnicalDebtSimulator = () => {
               step="0.01"
               value={interestRate}
               onChange={(e) => setInterestRate(Number(e.target.value))}
-              className="w-full h-1 bg-red-200 rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="block text-xs font-medium text-slate-700">
-              Timeline: <span className="font-mono">{timeHorizon} months</span>
+            <label className="block text-xs font-medium" style={{ color: 'var(--foreground)' }}>
+              Timeline: <span className="font-mono" style={{ color: 'var(--tertiary)' }}>{timeHorizon} months</span>
             </label>
             <input
               type="range"
@@ -181,7 +185,7 @@ const TechnicalDebtSimulator = () => {
               max="60"
               value={timeHorizon}
               onChange={(e) => setTimeHorizon(Number(e.target.value))}
-              className="w-full h-1 bg-purple-200 rounded-lg appearance-none cursor-pointer slider"
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
             />
           </div>
         </div>
@@ -189,62 +193,70 @@ const TechnicalDebtSimulator = () => {
 
       {/* Compact Metrics - Single Row */}
       <div className="flex gap-3 mb-4">
-        <div className="bg-white rounded-lg shadow-sm p-3 border-l-4 border-green-500 flex-1">
-          <div className="flex items-center gap-1 text-green-600 mb-1">
+        <div className="border border-current rounded p-3 flex-1" style={{ backgroundColor: 'var(--background)', borderLeftColor: 'var(--accent)', borderLeftWidth: '4px' }}>
+          <div className="flex items-center gap-1 mb-1" style={{ color: 'var(--accent)' }}>
             <Clock className="w-4 h-4" />
             <span className="text-xs font-semibold">Clean</span>
           </div>
-          <div className="text-xl font-bold text-slate-800">
+          <div className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
             {finalCleanFeatures}
           </div>
-          <div className="text-xs text-slate-500">features</div>
+          <div className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.7 }}>features</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-3 border-l-4 border-red-500 flex-1">
-          <div className="flex items-center gap-1 text-red-600 mb-1">
+        <div className="border border-current rounded p-3 flex-1" style={{ backgroundColor: 'var(--background)', borderLeftColor: 'var(--error)', borderLeftWidth: '4px' }}>
+          <div className="flex items-center gap-1 mb-1" style={{ color: 'var(--error)' }}>
             <AlertCircle className="w-4 h-4" />
             <span className="text-xs font-semibold">Debt</span>
           </div>
-          <div className="text-xl font-bold text-slate-800">
+          <div className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
             {finalDebtFeatures}
           </div>
-          <div className="text-xs text-slate-500">features</div>
+          <div className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.7 }}>features</div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-3 border-l-4 border-orange-500 flex-1">
-          <div className="flex items-center gap-1 text-orange-600 mb-1">
+        <div className="border border-current rounded p-3 flex-1" style={{ backgroundColor: 'var(--background)', borderLeftColor: 'var(--highlight)', borderLeftWidth: '4px' }}>
+          <div className="flex items-center gap-1 mb-1" style={{ color: 'var(--highlight)' }}>
             <DollarSign className="w-4 h-4" />
             <span className="text-xs font-semibold">Break-Even</span>
           </div>
-          <div className="text-xl font-bold text-slate-800">
+          <div className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
             {simulationData.breakEvenPoint
               ? `${simulationData.breakEvenPoint}mo`
               : "Never"}
           </div>
-          <div className="text-xs text-slate-500">crossover</div>
+          <div className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.7 }}>crossover</div>
         </div>
 
         <div
-          className={`bg-white rounded-lg shadow-sm p-3 border-l-4 ${isEven ? "border-gray-500" : isGain ? "border-blue-500" : "border-purple-500"} flex-1`}
+          className="border border-current rounded p-3 flex-1"
+          style={{ 
+            backgroundColor: 'var(--background)', 
+            borderLeftColor: isEven ? 'var(--foreground)' : isGain ? 'var(--secondary)' : 'var(--tertiary)', 
+            borderLeftWidth: '4px' 
+          }}
         >
           <div
-            className={`flex items-center gap-1 ${isEven ? "text-gray-600" : isGain ? "text-blue-600" : "text-purple-600"} mb-1`}
+            className="flex items-center gap-1 mb-1"
+            style={{ 
+              color: isEven ? 'var(--foreground)' : isGain ? 'var(--secondary)' : 'var(--tertiary)' 
+            }}
           >
             <TrendingUp className="w-4 h-4" />
             <span className="text-xs font-semibold">{productivityLabel}</span>
           </div>
-          <div className="text-xl font-bold text-slate-800">
+          <div className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
             {isEven ? "≈0%" : `${productivityValue}%`}
           </div>
-          <div className="text-xs text-slate-500">productivity</div>
+          <div className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.7 }}>productivity</div>
         </div>
       </div>
 
       {/* Side-by-side Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         {/* Cumulative Features Chart */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <h3 className="text-sm font-semibold text-slate-800 mb-3">
+        <div className="border border-current rounded p-4" style={{ backgroundColor: 'var(--background)' }}>
+          <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--accent)' }}>
             Cumulative Features
           </h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -288,19 +300,19 @@ const TechnicalDebtSimulator = () => {
               <Line
                 type="monotone"
                 dataKey="cleanCumulative"
-                stroke="#10b981"
+                stroke="var(--accent)"
                 strokeWidth={2}
                 name="Clean"
-                dot={{ fill: "#10b981", r: 2 }}
+                dot={{ fill: "var(--accent)", r: 2 }}
                 animationDuration={200}
               />
               <Line
                 type="monotone"
                 dataKey="debtCumulative"
-                stroke="#ef4444"
+                stroke="var(--error)"
                 strokeWidth={2}
                 name="Debt-Driven"
-                dot={{ fill: "#ef4444", r: 2 }}
+                dot={{ fill: "var(--error)", r: 2 }}
                 animationDuration={200}
               />
             </LineChart>
@@ -308,8 +320,8 @@ const TechnicalDebtSimulator = () => {
         </div>
 
         {/* Monthly Productivity Chart */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <h3 className="text-sm font-semibold text-slate-800 mb-3">
+        <div className="border border-current rounded p-4" style={{ backgroundColor: 'var(--background)' }}>
+          <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--accent)' }}>
             Monthly Delivery Rate
           </h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -351,13 +363,13 @@ const TechnicalDebtSimulator = () => {
               />
               <Bar
                 dataKey="cleanMonthly"
-                fill="#10b981"
+                fill="var(--accent)"
                 name="Clean"
                 animationDuration={200}
               />
               <Bar
                 dataKey="debtMonthly"
-                fill="#ef4444"
+                fill="var(--error)"
                 name="Debt-Driven"
                 animationDuration={200}
               />
@@ -367,17 +379,17 @@ const TechnicalDebtSimulator = () => {
       </div>
 
       {/* Compact Insights */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-md p-4">
-        <h3 className="text-sm font-semibold text-slate-800 mb-2">
+      <div className="border border-current rounded p-4" style={{ backgroundColor: 'var(--background)' }}>
+        <h3 className="text-sm font-semibold mb-2" style={{ color: 'var(--accent)' }}>
           Key Insights
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div className="space-y-2">
             <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5"></div>
+              <div className="w-1.5 h-1.5 rounded-full mt-1.5" style={{ backgroundColor: 'var(--accent)' }}></div>
               <div>
-                <p className="font-medium text-slate-800">Compound Effect</p>
-                <p className="text-xs text-slate-600">
+                <p className="font-medium" style={{ color: 'var(--foreground)' }}>Compound Effect</p>
+                <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
                   {interestRate === 0
                     ? "No interest = no compound slowdown"
                     : `${(interestRate * 100).toFixed(0)}% interest compounds with each feature`}
@@ -385,10 +397,10 @@ const TechnicalDebtSimulator = () => {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-1.5"></div>
+              <div className="w-1.5 h-1.5 rounded-full mt-1.5" style={{ backgroundColor: 'var(--highlight)' }}></div>
               <div>
-                <p className="font-medium text-slate-800">False Economy</p>
-                <p className="text-xs text-slate-600">
+                <p className="font-medium" style={{ color: 'var(--foreground)' }}>False Economy</p>
+                <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
                   {(shortcutFactor * 100).toFixed(0)}% initial savings →{" "}
                   {isEven
                     ? "break even"
@@ -399,10 +411,10 @@ const TechnicalDebtSimulator = () => {
           </div>
           <div className="space-y-2">
             <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5"></div>
+              <div className="w-1.5 h-1.5 rounded-full mt-1.5" style={{ backgroundColor: 'var(--secondary)' }}></div>
               <div>
-                <p className="font-medium text-slate-800">Break-Even</p>
-                <p className="text-xs text-slate-600">
+                <p className="font-medium" style={{ color: 'var(--foreground)' }}>Break-Even</p>
+                <p className="text-xs" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
                   {simulationData.breakEvenPoint
                     ? `Clean overtakes debt at month ${simulationData.breakEvenPoint}`
                     : "Debt-driven never recovers in this timeline"}
@@ -410,10 +422,10 @@ const TechnicalDebtSimulator = () => {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-1.5"></div>
+              <div className="w-1.5 h-1.5 rounded-full mt-1.5" style={{ backgroundColor: 'var(--tertiary)' }}></div>
               <div>
-                <p className="font-medium text-slate-800">Current Settings</p>
-                <p className="text-xs text-slate-600 font-mono">
+                <p className="font-medium" style={{ color: 'var(--foreground)' }}>Current Settings</p>
+                <p className="text-xs font-mono" style={{ color: 'var(--foreground)', opacity: 0.8 }}>
                   {baseTime}d base × {(shortcutFactor * 100).toFixed(0)}% cuts ×{" "}
                   {(interestRate * 100).toFixed(0)}% interest
                 </p>
