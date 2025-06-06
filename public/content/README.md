@@ -22,6 +22,7 @@ This is my terminal-style portfolio website. You can navigate it using familiar 
 ## Main Sections
 
 - [Book](/book) - My book: "_The Emotional and Technical Guide to Rescue Stalled Software_"
+- [Simulators](/simulators) - Interactive software development simulators
 - [Ethics](/ethics) - My thoughts on ethics in software development
 - [Testing](/testing) - Testing methodologies and best practices
 - [Agile](/agile) - Resources on agile development
