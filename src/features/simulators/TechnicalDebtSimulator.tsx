@@ -14,9 +14,9 @@ import {
 } from "recharts";
 
 const TechnicalDebtSimulator = () => {
-  const [baseTime, setBaseTime] = useState(10); // days per feature
-  const [shortcutFactor, setShortcutFactor] = useState(0.4); // 40% time saved initially
-  const [interestRate, setInterestRate] = useState(0.08); // 8% compound interest per feature
+  const [baseTime, setBaseTime] = useState(20); // days per feature
+  const [shortcutFactor, setShortcutFactor] = useState(0.25); // 25% time saved initially
+  const [interestRate, setInterestRate] = useState(0.1); // 10% compound interest per feature
   const [timeHorizon, setTimeHorizon] = useState(24); // months to simulate
 
   // Calculate simulation data with immediate updates
