@@ -36,26 +36,23 @@ const MEETING_TYPES: Record<
   {
     name: string;
     icon: React.ComponentType<{ size?: number }>;
-    color: string;
     multiplier: number;
   }
 > = {
-  lunch: { name: "Lunch", icon: Coffee, color: "bg-yellow-500", multiplier: 1 },
+  lunch: { name: "Lunch", icon: Coffee, multiplier: 1 },
   nextFeature: {
     name: "Next Feature Planning",
     icon: Calendar,
-    color: "bg-blue-500",
     multiplier: 0,
   },
   other: {
     name: "Other Meeting",
     icon: Users,
-    color: "bg-red-500",
     multiplier: 0.5,
   },
 };
 
-export default function DeveloperProductivitySimulator() {
+const DeveloperProductivitySimulator = () => {
   // Configuration state
   const [config, setConfig] = useState({
     totalFeatures: 10,
@@ -85,7 +82,11 @@ export default function DeveloperProductivitySimulator() {
     avgFeaturesPerWeek: 0,
     focusHistory: [] as FocusHistoryEntry[],
     weeklyFeatures: [] as { week: string; features: number }[],
-    debugInfo: {},
+    debugInfo: {
+      featureCompletions: [],
+      focusResets: 0,
+      avgWorkPerFeature: "0",
+    },
   });
 
   // Add or remove meeting
@@ -244,236 +245,505 @@ export default function DeveloperProductivitySimulator() {
   }, [config, calendar]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Developer Productivity Simulator
-        </h1>
+    <div className="w-full mx-auto">
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 16px;
+          width: 16px;
+          border-radius: 50%;
+          background: var(--accent);
+          cursor: pointer;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+          transition: all 0.1s ease;
+        }
+        .slider::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          background: var(--secondary);
+        }
+        .slider {
+          background: var(--foreground);
+          opacity: 0.3;
+        }
+      `}</style>
 
-        {/* Configuration Panel */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Project Configuration</h2>
-          <p className="text-sm text-gray-600 mb-4">
-            Focus grows exponentially while working and maintains between
-            features. It only resets at the start of each day or when
-            interrupted by "Next Feature Planning" meetings.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Total Features: {config.totalFeatures}
-              </label>
-              <input
-                type="range"
-                min="5"
-                max="50"
-                value={config.totalFeatures}
-                onChange={(e) =>
-                  setConfig({
-                    ...config,
-                    totalFeatures: Number.parseInt(e.target.value),
-                  })
-                }
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Work per Feature: {config.workPerFeature}
-              </label>
-              <input
-                type="range"
-                min="10"
-                max="100"
-                value={config.workPerFeature}
-                onChange={(e) =>
-                  setConfig({
-                    ...config,
-                    workPerFeature: Number.parseInt(e.target.value),
-                  })
-                }
-                className="w-full"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Focus Growth Factor: {config.focusGrowthFactor}x
-              </label>
-              <input
-                type="range"
-                min="1.1"
-                max="2"
-                step="0.1"
-                value={config.focusGrowthFactor}
-                onChange={(e) =>
-                  setConfig({
-                    ...config,
-                    focusGrowthFactor: Number.parseFloat(e.target.value),
-                  })
-                }
-                className="w-full"
-              />
-            </div>
+      {/* Configuration Panel */}
+      <div
+        className="border border-current rounded p-4 mb-4"
+        style={{ backgroundColor: "var(--background)" }}
+      >
+        <h2
+          className="text-sm font-semibold mb-2"
+          style={{ color: "var(--accent)" }}
+        >
+          Project Configuration
+        </h2>
+        <p
+          className="text-xs mb-4"
+          style={{ color: "var(--foreground)", opacity: 0.8 }}
+        >
+          Focus grows exponentially while working and maintains between
+          features. It only resets at the start of each day or when
+          interrupted by &quot;Next Feature Planning&quot; meetings.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-1">
+            <label
+              className="block text-xs font-medium"
+              style={{ color: "var(--foreground)" }}
+              htmlFor="totalFeatures"
+            >
+              Total Features:{" "}
+              <span className="font-mono" style={{ color: "var(--accent)" }}>
+                {config.totalFeatures}
+              </span>
+            </label>
+            <input
+              id="totalFeatures"
+              type="range"
+              min="5"
+              max="50"
+              value={config.totalFeatures}
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  totalFeatures: Number.parseInt(e.target.value),
+                })
+              }
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
+            />
+          </div>
+          <div className="space-y-1">
+            <label
+              className="block text-xs font-medium"
+              style={{ color: "var(--foreground)" }}
+              htmlFor="workPerFeature"
+            >
+              Work per Feature:{" "}
+              <span className="font-mono" style={{ color: "var(--secondary)" }}>
+                {config.workPerFeature}
+              </span>
+            </label>
+            <input
+              id="workPerFeature"
+              type="range"
+              min="10"
+              max="100"
+              value={config.workPerFeature}
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  workPerFeature: Number.parseInt(e.target.value),
+                })
+              }
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
+            />
+          </div>
+          <div className="space-y-1">
+            <label
+              className="block text-xs font-medium"
+              style={{ color: "var(--foreground)" }}
+              htmlFor="focusGrowthFactor"
+            >
+              Focus Growth Factor:{" "}
+              <span className="font-mono" style={{ color: "var(--tertiary)" }}>
+                {config.focusGrowthFactor}x
+              </span>
+            </label>
+            <input
+              id="focusGrowthFactor"
+              type="range"
+              min="1.1"
+              max="2"
+              step="0.1"
+              value={config.focusGrowthFactor}
+              onChange={(e) =>
+                setConfig({
+                  ...config,
+                  focusGrowthFactor: Number.parseFloat(e.target.value),
+                })
+              }
+              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
+            />
           </div>
         </div>
+      </div>
 
-        {/* Calendar */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Weekly Calendar</h2>
-          <div className="mb-4 flex gap-4">
-            {Object.entries(MEETING_TYPES).map(([type, info]) => (
-              <div key={type} className="flex items-center gap-2">
-                <div className={`w-4 h-4 ${info.color} rounded`}></div>
-                <span className="text-sm">
-                  {info.name} (×{info.multiplier})
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left">Time</th>
-                  {DAYS.map((day) => (
-                    <th key={day} className="px-4 py-2 text-center">
-                      {day}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {HOURS.map((hour, hourIdx) => (
-                  <tr key={hourIdx} className="border-t">
-                    <td className="px-4 py-2 font-medium">{hour}</td>
-                    {DAYS.map((_, dayIdx) => {
-                      const meeting = calendar[dayIdx][hourIdx];
-                      return (
-                        <td key={dayIdx} className="px-4 py-2">
-                          <div className="flex gap-1">
-                            {Object.keys(MEETING_TYPES).map((type) => (
-                              <button
-                                key={type}
-                                onClick={() =>
-                                  toggleMeeting(dayIdx, hourIdx, type)
-                                }
-                                className={`p-2 rounded ${
-                                  meeting === type
-                                    ? MEETING_TYPES[type].color + " text-white"
-                                    : "bg-gray-200 hover:bg-gray-300"
-                                }`}
-                              >
-                                {React.createElement(MEETING_TYPES[type].icon, {
-                                  size: 16,
-                                })}
-                              </button>
-                            ))}
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
+      {/* Calendar */}
+      <div
+        className="border border-current rounded p-4 mb-4"
+        style={{ backgroundColor: "var(--background)" }}
+      >
+        <h2
+          className="text-sm font-semibold mb-3"
+          style={{ color: "var(--accent)" }}
+        >
+          Weekly Calendar
+        </h2>
+        <div className="mb-4 flex gap-4 text-xs">
+          {Object.entries(MEETING_TYPES).map(([type, info]) => (
+            <div key={type} className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded"
+                style={{
+                  backgroundColor:
+                    type === "lunch"
+                      ? "var(--highlight)"
+                      : type === "nextFeature"
+                        ? "var(--error)"
+                        : "var(--tertiary)",
+                }}
+              />
+              <span style={{ color: "var(--foreground)" }}>
+                {info.name} (×{info.multiplier})
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                <th
+                  className="px-3 py-2 text-left text-xs font-semibold"
+                  style={{ color: "var(--accent)" }}
+                >
+                  Time
+                </th>
+                {DAYS.map((day) => (
+                  <th
+                    key={day}
+                    className="px-3 py-2 text-center text-xs font-semibold"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    {day}
+                  </th>
                 ))}
-              </tbody>
-            </table>
+              </tr>
+            </thead>
+            <tbody>
+              {HOURS.map((hour, hourIdx) => (
+                <tr key={`hour-${hourIdx}`} className="border-t border-current">
+                  <td
+                    className="px-3 py-2 font-medium text-xs"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    {hour}
+                  </td>
+                  {DAYS.map((_, dayIdx) => {
+                    const meeting = calendar[dayIdx][hourIdx];
+                    return (
+                      <td key={`day-${dayIdx}`} className="px-3 py-1">
+                        <div className="flex gap-1">
+                          {Object.keys(MEETING_TYPES).map((type) => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() =>
+                                toggleMeeting(dayIdx, hourIdx, type)
+                              }
+                              className="p-1.5 rounded border border-current transition-colors"
+                              style={{
+                                backgroundColor:
+                                  meeting === type
+                                    ? type === "lunch"
+                                      ? "var(--highlight)"
+                                      : type === "nextFeature"
+                                        ? "var(--error)"
+                                        : "var(--tertiary)"
+                                    : "var(--background)",
+                                color:
+                                  meeting === type
+                                    ? "var(--background)"
+                                    : "var(--foreground)",
+                              }}
+                            >
+                              {React.createElement(MEETING_TYPES[type].icon, {
+                                size: 12,
+                              })}
+                            </button>
+                          ))}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div className="flex gap-3 mb-4">
+        <div
+          className="border border-current rounded p-3 flex-1"
+          style={{
+            backgroundColor: "var(--background)",
+            borderLeftColor: "var(--secondary)",
+            borderLeftWidth: "4px",
+          }}
+        >
+          <div
+            className="flex items-center gap-1 mb-1"
+            style={{ color: "var(--secondary)" }}
+          >
+            <Calendar className="w-4 h-4" />
+            <span className="text-xs font-semibold">Duration</span>
+          </div>
+          <div
+            className="text-xl font-bold"
+            style={{ color: "var(--foreground)" }}
+          >
+            {metrics.totalWeeks}
+          </div>
+          <div
+            className="text-xs"
+            style={{ color: "var(--foreground)", opacity: 0.7 }}
+          >
+            weeks
           </div>
         </div>
 
-        {/* Results */}
-        {/* Metrics */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Results</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">
-                {metrics.totalWeeks}
-              </div>
-              <div className="text-gray-600">Weeks to Complete</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">
-                {metrics.avgWorkPerHour}
-              </div>
-              <div className="text-gray-600">Avg Work/Hour</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">
-                {metrics.avgFeaturesPerWeek}
-              </div>
-              <div className="text-gray-600">Avg Features/Week</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-orange-600">
-                {metrics.totalHours > 0
-                  ? ((metrics.workingHours / metrics.totalHours) * 100).toFixed(
-                      0,
-                    )
-                  : 0}
-                %
-              </div>
-              <div className="text-gray-600">Time Working</div>
-            </div>
+        <div
+          className="border border-current rounded p-3 flex-1"
+          style={{
+            backgroundColor: "var(--background)",
+            borderLeftColor: "var(--accent)",
+            borderLeftWidth: "4px",
+          }}
+        >
+          <div
+            className="flex items-center gap-1 mb-1"
+            style={{ color: "var(--accent)" }}
+          >
+            <Coffee className="w-4 h-4" />
+            <span className="text-xs font-semibold">Work/Hour</span>
           </div>
-
-          {/* Debug Info */}
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-600 grid grid-cols-2 md:grid-cols-4 gap-2">
-              <div>Total Work: {metrics.totalWork.toFixed(0)}</div>
-              <div>Working Hours: {metrics.workingHours}</div>
-              <div>Features Completed: {config.totalFeatures}</div>
-              <div>
-                Avg Work/Feature: {metrics.debugInfo?.avgWorkPerFeature || 0}
-              </div>
-            </div>
+          <div
+            className="text-xl font-bold"
+            style={{ color: "var(--foreground)" }}
+          >
+            {metrics.avgWorkPerHour}
+          </div>
+          <div
+            className="text-xs"
+            style={{ color: "var(--foreground)", opacity: 0.7 }}
+          >
+            average
           </div>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Focus Level Over Time
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={metrics.focusHistory}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="focus"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="workDone"
-                  stroke="#82ca9d"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+        <div
+          className="border border-current rounded p-3 flex-1"
+          style={{
+            backgroundColor: "var(--background)",
+            borderLeftColor: "var(--tertiary)",
+            borderLeftWidth: "4px",
+          }}
+        >
+          <div
+            className="flex items-center gap-1 mb-1"
+            style={{ color: "var(--tertiary)" }}
+          >
+            <Users className="w-4 h-4" />
+            <span className="text-xs font-semibold">Features/Week</span>
           </div>
+          <div
+            className="text-xl font-bold"
+            style={{ color: "var(--foreground)" }}
+          >
+            {metrics.avgFeaturesPerWeek}
+          </div>
+          <div
+            className="text-xs"
+            style={{ color: "var(--foreground)", opacity: 0.7 }}
+          >
+            delivery
+          </div>
+        </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Features Completed per Week
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={metrics.weeklyFeatures}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="features" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
+        <div
+          className="border border-current rounded p-3 flex-1"
+          style={{
+            backgroundColor: "var(--background)",
+            borderLeftColor: "var(--highlight)",
+            borderLeftWidth: "4px",
+          }}
+        >
+          <div
+            className="flex items-center gap-1 mb-1"
+            style={{ color: "var(--highlight)" }}
+          >
+            <Users className="w-4 h-4" />
+            <span className="text-xs font-semibold">Focus Time</span>
           </div>
+          <div
+            className="text-xl font-bold"
+            style={{ color: "var(--foreground)" }}
+          >
+            {metrics.totalHours > 0
+              ? ((metrics.workingHours / metrics.totalHours) * 100).toFixed(
+                  0,
+                )
+              : 0}
+            %
+          </div>
+          <div
+            className="text-xs"
+            style={{ color: "var(--foreground)", opacity: 0.7 }}
+          >
+            productive
+          </div>
+        </div>
+      </div>
+
+      {/* Debug Info */}
+      <div
+        className="border border-current rounded p-3 mb-4"
+        style={{ backgroundColor: "var(--background)" }}
+      >
+        <div
+          className="text-xs grid grid-cols-2 md:grid-cols-4 gap-2"
+          style={{ color: "var(--foreground)", opacity: 0.7 }}
+        >
+          <div className="font-mono">Total Work: {metrics.totalWork.toFixed(0)}</div>
+          <div className="font-mono">Working Hours: {metrics.workingHours}</div>
+          <div className="font-mono">Features Completed: {config.totalFeatures}</div>
+          <div className="font-mono">
+            Avg Work/Feature: {metrics.debugInfo.avgWorkPerFeature}
+          </div>
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <div
+          className="border border-current rounded p-4"
+          style={{ backgroundColor: "var(--background)" }}
+        >
+          <h3
+            className="text-sm font-semibold mb-3"
+            style={{ color: "var(--accent)" }}
+          >
+            Focus Level Over Time
+          </h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart
+              data={metrics.focusHistory}
+              margin={{ top: 5, right: 5, left: 5, bottom: 35 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="time"
+                tick={{ fontSize: 10 }}
+                label={{
+                  value: "Time",
+                  position: "insideBottom",
+                  offset: -5,
+                  style: { fontSize: 10 },
+                }}
+              />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                label={{
+                  value: "Focus Level",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { fontSize: 10 },
+                }}
+              />
+              <Tooltip
+                formatter={(value, name) => [
+                  value,
+                  name === "focus" ? "Focus Level" : "Work Done",
+                ]}
+                contentStyle={{ fontSize: 12 }}
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 12, paddingTop: "15px" }}
+                verticalAlign="bottom"
+                height={30}
+              />
+              <Line
+                type="monotone"
+                dataKey="focus"
+                stroke="var(--accent)"
+                strokeWidth={2}
+                name="Focus"
+                dot={{ fill: "var(--accent)", r: 1 }}
+                animationDuration={200}
+              />
+              <Line
+                type="monotone"
+                dataKey="workDone"
+                stroke="var(--secondary)"
+                strokeWidth={2}
+                name="Work Done"
+                dot={{ fill: "var(--secondary)", r: 1 }}
+                animationDuration={200}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div
+          className="border border-current rounded p-4"
+          style={{ backgroundColor: "var(--background)" }}
+        >
+          <h3
+            className="text-sm font-semibold mb-3"
+            style={{ color: "var(--accent)" }}
+          >
+            Features Completed per Week
+          </h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart
+              data={metrics.weeklyFeatures}
+              margin={{ top: 5, right: 5, left: 5, bottom: 35 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="week"
+                tick={{ fontSize: 10 }}
+                label={{
+                  value: "Week",
+                  position: "insideBottom",
+                  offset: -5,
+                  style: { fontSize: 10 },
+                }}
+              />
+              <YAxis
+                tick={{ fontSize: 10 }}
+                label={{
+                  value: "Features",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { fontSize: 10 },
+                }}
+              />
+              <Tooltip
+                formatter={(value, name) => [`${value} features`, "Completed"]}
+                labelFormatter={(week) => `${week}`}
+                contentStyle={{ fontSize: 12 }}
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 12, paddingTop: "15px" }}
+                verticalAlign="bottom"
+                height={30}
+              />
+              <Bar
+                dataKey="features"
+                fill="var(--tertiary)"
+                name="Features"
+                animationDuration={200}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default DeveloperProductivitySimulator;
