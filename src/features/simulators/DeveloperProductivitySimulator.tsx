@@ -1,748 +1,975 @@
-import { Calendar, Coffee, Users } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import {
   Bar,
-  BarChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
+  ComposedChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const HOURS = [
-  "9 AM",
-  "10 AM",
-  "11 AM",
-  "12 PM",
-  "1 PM",
-  "2 PM",
-  "3 PM",
-  "4 PM",
-];
+// Simulation functions
+const normalize = (x) => Math.max(0, Math.min(100, x));
 
-type FocusHistoryEntry = {
-  time: string;
-  focus: number;
-  workDone: number;
+const getMeeting = (calendar, meetingTypes, hour, day) => {
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
+
+  const key = `${days[day]}-${timeSlots[hour]}`;
+  const meetingType = calendar[key];
+
+  return meetingType ? meetingTypes[meetingType] : null;
 };
 
-const MEETING_TYPES: Record<
-  string,
-  {
-    name: string;
-    icon: React.ComponentType<{ size?: number }>;
-    multiplier: number;
+const simulateProductivity = (
+  focus,
+  fatigue,
+  featureSize,
+  weeks,
+  calendar,
+  meetingTypes,
+) => {
+  const results = [];
+  let accumulatedProductivity = 0;
+  let completedFeatures = 0;
+
+  for (let week = 0; week < weeks; week++) {
+    for (let day = 0; day < 5; day++) {
+      let hourFocus = 0;
+      let hourFatigue = 0;
+
+      for (let hour = 0; hour < 8; hour++) {
+        const meeting = getMeeting(calendar, meetingTypes, hour, day);
+
+        if (meeting) {
+          hourFocus = normalize(hourFocus + meeting.focus);
+          hourFatigue = normalize(hourFatigue + meeting.fatigue);
+
+          results.push({
+            hourFocus,
+            hourFatigue,
+            hourProductivity: 0,
+            accumulatedProductivity,
+            completedFeatures,
+            featureCompleted: false,
+            hour,
+            day,
+            week,
+          });
+        } else {
+          const remainingWork = featureSize - accumulatedProductivity;
+
+          hourFocus = normalize(hourFocus + focus);
+          hourFatigue = normalize(hourFatigue + fatigue);
+          const potentialProductivity = normalize(hourFocus - hourFatigue);
+
+          const featureCompleted = potentialProductivity > remainingWork;
+
+          let hourProductivity;
+          if (featureCompleted) {
+            hourProductivity = remainingWork;
+            accumulatedProductivity = featureSize;
+            completedFeatures += 1;
+          } else {
+            hourProductivity = potentialProductivity;
+            accumulatedProductivity += hourProductivity;
+          }
+
+          results.push({
+            hourFocus,
+            hourFatigue,
+            hourProductivity,
+            accumulatedProductivity,
+            completedFeatures,
+            featureCompleted,
+            hour,
+            day,
+            week,
+          });
+
+          if (featureCompleted) {
+            hourFocus = 0;
+            accumulatedProductivity = 0;
+          }
+        }
+      }
+    }
   }
-> = {
-  lunch: { name: "Lunch", icon: Coffee, multiplier: 1 },
-  nextFeature: {
-    name: "Next Feature Planning",
-    icon: Calendar,
-    multiplier: 0,
-  },
-  other: {
-    name: "Other Meeting",
-    icon: Users,
-    multiplier: 0.5,
-  },
+
+  return results;
 };
 
 const DeveloperProductivitySimulator = () => {
-  // Configuration state
-  const [config, setConfig] = useState({
-    totalFeatures: 10,
-    workPerFeature: 20,
-    focusGrowthFactor: 1.5,
+  const [focus, setFocus] = useState(25);
+  const [fatigue, setFatigue] = useState(15);
+  const [featureSize, setFeatureSize] = useState(200);
+  const [weeks, setWeeks] = useState(8);
+  const [currentMeetingType, setCurrentMeetingType] = useState("🏃 Sprint plan");
+  const [showNewMeetingForm, setShowNewMeetingForm] = useState(false);
+  const [newMeetingName, setNewMeetingName] = useState("");
+  const [newMeetingFocus, setNewMeetingFocus] = useState(0);
+  const [newMeetingFatigue, setNewMeetingFatigue] = useState(0);
+
+  const [meetingTypes, setMeetingTypes] = useState({
+    "🍽️ Lunch": { focus: -100, fatigue: -100, color: "var(--accent)" },
+    "🏃 Sprint plan": { focus: -100, fatigue: 50, color: "var(--secondary)" },
+    "😴 Boring": { focus: -50, fatigue: -25, color: "var(--error)" },
   });
 
-  // Calendar state (day -> hour -> meeting type)
   const [calendar, setCalendar] = useState(() => {
-    const cal: Record<number, Record<number, string | null>> = {};
-    for (let day = 0; day < 5; day++) {
-      cal[day] = {};
-      for (let hour = 0; hour < 8; hour++) {
-        cal[day][hour] = hour === 3 ? "lunch" : null; // Lunch at 12 PM
-      }
-    }
-    return cal;
+    const initialCalendar = {};
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    days.forEach((day) => {
+      initialCalendar[`${day}-12:00`] = "🍽️ Lunch";
+    });
+    return initialCalendar;
   });
 
-  // Metrics
-  const [metrics, setMetrics] = useState({
-    totalWeeks: 0,
-    totalHours: 0,
-    workingHours: 0,
-    totalWork: 0,
-    avgWorkPerHour: 0,
-    avgFeaturesPerWeek: 0,
-    focusHistory: [] as FocusHistoryEntry[],
-    weeklyFeatures: [] as { week: string; features: number }[],
-    debugInfo: {
-      featureCompletions: [],
-      focusResets: 0,
-      avgWorkPerFeature: "0",
-    },
-  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragAction, setDragAction] = useState(null);
+  const [simulationResults, setSimulationResults] = useState([]);
 
-  // Add or remove meeting
-  const toggleMeeting = (day: number, hour: number, type: string | null) => {
-    setCalendar((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        [hour]: prev[day][hour] === type ? null : type,
-      },
-    }));
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
+  const availableColors = [
+    "var(--tertiary)",
+    "var(--highlight)",
+    "var(--secondary)",
+    "var(--accent)",
+    "var(--error)",
+  ];
+
+  const addMeetingType = () => {
+    setShowNewMeetingForm(true);
   };
 
-  type HourData = {
-    week: number;
-    day: number;
-    hour: number;
-    focus: number;
-    meeting: string | null;
-    feature: number;
-    workDone: number;
-  };
+  const createNewMeetingType = () => {
+    if (!newMeetingName.trim()) return;
 
-  // Run simulation
-  const runSimulation = () => {
-    const state = {
-      running: true,
-      completed: false,
-      currentWeek: 1,
-      currentDay: 0,
-      currentHour: 0,
-      currentFeature: 0,
-      workOnCurrentFeature: 0,
-      featuresCompleted: 0,
-      focus: 1,
-      history: [] as HourData[],
+    const usedColors = Object.values(meetingTypes).map((m) => m.color);
+    const availableColor =
+      availableColors.find((c) => !usedColors.includes(c)) ||
+      availableColors[0];
+
+    const newType = {
+      focus: newMeetingFocus,
+      fatigue: newMeetingFatigue,
+      color: availableColor,
     };
 
-    const focusHistory: FocusHistoryEntry[] = [];
+    setMeetingTypes({ ...meetingTypes, [newMeetingName]: newType });
+    setCurrentMeetingType(newMeetingName);
 
-    const weeklyFeatures: Record<string, number> = {};
-    let totalWork = 0;
-    let workingHours = 0;
-    let totalHours = 0;
-    const featureCompletions = [];
-    let focusResets = 0;
+    setNewMeetingName("");
+    setNewMeetingFocus(0);
+    setNewMeetingFatigue(0);
+    setShowNewMeetingForm(false);
+  };
 
-    while (state.featuresCompleted < config.totalFeatures) {
-      const meeting = calendar[state.currentDay]?.[state.currentHour];
-
-      // Record current state
-      const hourData: HourData = {
-        week: state.currentWeek,
-        day: state.currentDay,
-        hour: state.currentHour,
-        focus: state.focus,
-        meeting: meeting,
-        feature: state.currentFeature,
-        workDone: 0,
-      };
-
-      if (meeting) {
-        // During meeting: apply focus multiplier
-        const multiplier = MEETING_TYPES[meeting].multiplier;
-        state.focus = Math.max(1, state.focus * multiplier);
-      } else {
-        // Working hour
-        workingHours++;
-        hourData.workDone = state.focus;
-        state.workOnCurrentFeature += state.focus;
-        totalWork += state.focus;
-
-        // Check if feature is completed
-        if (state.workOnCurrentFeature >= config.workPerFeature) {
-          state.featuresCompleted++;
-          state.currentFeature++;
-          state.workOnCurrentFeature = 0;
-          state.focus = 1; // Reset focus at feature completion
-          focusResets++;
-          featureCompletions.push({
-            week: state.currentWeek,
-            day: state.currentDay,
-            hour: state.currentHour,
-            previousFocus: hourData.focus,
-          });
-
-          // Track weekly features
-          const weekKey = `Week ${state.currentWeek}`;
-          weeklyFeatures[weekKey] = (weeklyFeatures[weekKey] || 0) + 1;
-        } else {
-          // Continue working on current feature
-          state.focus *= config.focusGrowthFactor;
-        }
-      }
-
-      focusHistory.push({
-        time: `W${state.currentWeek}D${state.currentDay + 1}H${state.currentHour + 1}`,
-        focus: hourData.focus,
-        workDone: hourData.workDone,
-      });
-
-      state.history.push(hourData);
-      totalHours++;
-
-      // Advance time
-      state.currentHour++;
-      if (state.currentHour >= 8) {
-        state.currentHour = 0;
-        state.currentDay++;
-        state.focus = 1; // Reset focus at start of day
-
-        if (state.currentDay >= 5) {
-          state.currentDay = 0;
-          state.currentWeek++;
-        }
-      }
-
-      // Safety check to prevent infinite loops
-      if (totalHours > 10000) break;
-    }
-
-    // Calculate final metrics
-    const totalWeeks = Math.ceil(totalHours / 40);
-    const avgWorkPerHour = workingHours > 0 ? totalWork / workingHours : 0;
-    const avgFeaturesPerWeek =
-      totalWeeks > 0 ? config.totalFeatures / totalWeeks : 0;
-
-    // Convert weekly features to array for chart
-    const weeklyFeaturesArray = Object.entries(weeklyFeatures).map(
-      ([week, count]) => ({
-        week,
-        features: count,
-      }),
-    );
-
-    setMetrics({
-      totalWeeks,
-      totalHours,
-      workingHours,
-      totalWork,
-      avgWorkPerHour: +avgWorkPerHour.toFixed(2),
-      avgFeaturesPerWeek: +avgFeaturesPerWeek.toFixed(2),
-      focusHistory: focusHistory.slice(0, 200), // Limit for performance
-      weeklyFeatures: weeklyFeaturesArray,
-      debugInfo: {
-        featureCompletions,
-        focusResets,
-        avgWorkPerFeature: (totalWork / config.totalFeatures).toFixed(2),
+  const updateMeetingType = (field, value) => {
+    setMeetingTypes({
+      ...meetingTypes,
+      [currentMeetingType]: {
+        ...meetingTypes[currentMeetingType],
+        [field]: Number.parseInt(value),
       },
     });
   };
 
-  // Auto-run simulation when config or calendar changes
+  const handleMouseDown = (day, timeSlot) => {
+    const key = `${day}-${timeSlot}`;
+    const isOccupied = !!calendar[key];
+
+    setIsDragging(true);
+    setDragAction(isOccupied ? "remove" : "add");
+
+    if (isOccupied) {
+      setCalendar((prev) => {
+        const newCalendar = { ...prev };
+        delete newCalendar[key];
+        return newCalendar;
+      });
+    } else {
+      setCalendar((prev) => ({
+        ...prev,
+        [key]: currentMeetingType,
+      }));
+    }
+  };
+
+  const handleMouseEnter = (day, timeSlot) => {
+    if (!isDragging) return;
+
+    const key = `${day}-${timeSlot}`;
+    const isOccupied = !!calendar[key];
+
+    if (dragAction === "add" && !isOccupied) {
+      setCalendar((prev) => ({
+        ...prev,
+        [key]: currentMeetingType,
+      }));
+    } else if (dragAction === "remove" && isOccupied) {
+      setCalendar((prev) => {
+        const newCalendar = { ...prev };
+        delete newCalendar[key];
+        return newCalendar;
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setDragAction(null);
+  };
+
   useEffect(() => {
-    runSimulation();
-  }, [config, calendar]);
+    const timer = setTimeout(() => {
+      const results = simulateProductivity(
+        focus,
+        fatigue,
+        featureSize,
+        weeks,
+        calendar,
+        meetingTypes,
+      );
+      setSimulationResults(results);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [focus, fatigue, featureSize, weeks, calendar, meetingTypes]);
+
+  const getWeekSummaryData = () => {
+    const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const weekSummary = dayNames.map((day) => ({
+      day: day.slice(0, 3),
+      productivity: 0,
+      features: 0,
+      meetings: 0,
+    }));
+
+    simulationResults.forEach((result) => {
+      const dayIndex = result.day;
+      weekSummary[dayIndex].productivity += result.hourProductivity;
+      if (result.featureCompleted) {
+        weekSummary[dayIndex].features += 1;
+      }
+      if (result.hourProductivity === 0) {
+        weekSummary[dayIndex].meetings += 1;
+      }
+    });
+
+    return weekSummary;
+  };
+
+  const getHeatmapData = () => {
+    // Initialize data structure for 8 hours x 5 days
+    const heatmapData = {
+      focus: Array(8).fill(null).map(() => Array(5).fill(0)),
+      fatigue: Array(8).fill(null).map(() => Array(5).fill(0)),
+      productivity: Array(8).fill(null).map(() => Array(5).fill(0)),
+      features: Array(8).fill(null).map(() => Array(5).fill(0)),
+      counts: Array(8).fill(null).map(() => Array(5).fill(0)),
+    };
+
+    // Aggregate data across all weeks
+    simulationResults.forEach((result) => {
+      const { hour, day, hourFocus, hourFatigue, hourProductivity, featureCompleted } = result;
+      heatmapData.focus[hour][day] += hourFocus;
+      heatmapData.fatigue[hour][day] += hourFatigue;
+      heatmapData.productivity[hour][day] += hourProductivity;
+      if (featureCompleted) {
+        heatmapData.features[hour][day] += 1;
+      }
+      heatmapData.counts[hour][day] += 1;
+    });
+
+    // Calculate averages and find min/max for scaling
+    const averages = {
+      focus: { data: [], min: Infinity, max: -Infinity },
+      fatigue: { data: [], min: Infinity, max: -Infinity },
+      productivity: { data: [], min: Infinity, max: -Infinity },
+      features: { data: [], min: Infinity, max: -Infinity },
+    };
+
+    for (let hour = 0; hour < 8; hour++) {
+      averages.focus.data[hour] = [];
+      averages.fatigue.data[hour] = [];
+      averages.productivity.data[hour] = [];
+      averages.features.data[hour] = [];
+
+      for (let day = 0; day < 5; day++) {
+        const count = heatmapData.counts[hour][day];
+
+        const avgFocus = count > 0 ? heatmapData.focus[hour][day] / count : 0;
+        const avgFatigue = count > 0 ? heatmapData.fatigue[hour][day] / count : 0;
+        const avgProductivity = count > 0 ? heatmapData.productivity[hour][day] / count : 0;
+        const totalFeatures = heatmapData.features[hour][day];
+
+        averages.focus.data[hour][day] = avgFocus;
+        averages.fatigue.data[hour][day] = avgFatigue;
+        averages.productivity.data[hour][day] = avgProductivity;
+        averages.features.data[hour][day] = totalFeatures;
+
+        // Update min/max for scaling
+        averages.focus.min = Math.min(averages.focus.min, avgFocus);
+        averages.focus.max = Math.max(averages.focus.max, avgFocus);
+        averages.fatigue.min = Math.min(averages.fatigue.min, avgFatigue);
+        averages.fatigue.max = Math.max(averages.fatigue.max, avgFatigue);
+        averages.productivity.min = Math.min(averages.productivity.min, avgProductivity);
+        averages.productivity.max = Math.max(averages.productivity.max, avgProductivity);
+        averages.features.min = Math.min(averages.features.min, totalFeatures);
+        averages.features.max = Math.max(averages.features.max, totalFeatures);
+      }
+    }
+
+    return averages;
+  };
+
+  const getHeatmapColor = (value, min, max) => {
+    if (max === min) return 0.1;
+    const intensity = (value - min) / (max - min);
+    return Math.max(0.1, Math.min(1, intensity));
+  };
+
+  const renderHeatmap = (title, data, min, max, color) => (
+    <div className="border border-current rounded p-3">
+      <h4 className="text-xs font-semibold mb-2" style={{ color: "var(--foreground)" }}>
+        {title}
+      </h4>
+      <div className="grid grid-cols-6 gap-px">
+        <div className="w-8 text-xs font-mono opacity-60" style={{ color: "var(--foreground)" }}></div>
+        {["Mon", "Tue", "Wed", "Thu", "Fri"].map(day => (
+          <div key={day} className="w-8 text-xs font-mono text-center opacity-60" style={{ color: "var(--foreground)" }}>
+            {day}
+          </div>
+        ))}
+        {timeSlots.map((timeSlot, hour) => (
+          <React.Fragment key={timeSlot}>
+            <div className="w-8 text-xs font-mono opacity-60" style={{ color: "var(--foreground)" }}>
+              {timeSlot.split(':')[0]}
+            </div>
+            {data[hour].map((value, day) => {
+              const opacity = getHeatmapColor(value, min, max);
+              return (
+                <div
+                  key={day}
+                  className="w-8 h-6 border border-current flex items-center justify-center"
+                  style={{
+                    backgroundColor: color,
+                    opacity: opacity,
+                  }}
+                  title={`${timeSlot} ${["Mon", "Tue", "Wed", "Thu", "Fri"][day]}: ${Math.round(value * 100) / 100}`}
+                >
+                  <span className="text-xs font-mono" style={{ color: opacity > 0.5 ? "var(--background)" : "var(--foreground)" }}>
+                    {Math.round(value)}
+                  </span>
+                </div>
+              );
+            })}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="w-full mx-auto">
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          height: 16px;
-          width: 16px;
-          border-radius: 50%;
-          background: var(--accent);
-          cursor: pointer;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-          transition: all 0.1s ease;
-        }
-        .slider::-webkit-slider-thumb:hover {
-          transform: scale(1.1);
-          background: var(--secondary);
-        }
-        .slider {
-          background: var(--foreground);
-          opacity: 0.3;
-        }
-      `}</style>
-
-      {/* Configuration Panel */}
-      <div
-        className="border border-current rounded p-4 mb-4"
-        style={{ backgroundColor: "var(--background)" }}
-      >
-        <h2
-          className="text-sm font-semibold mb-2"
-          style={{ color: "var(--accent)" }}
-        >
-          Project Configuration
-        </h2>
-        <p
-          className="text-xs mb-4"
-          style={{ color: "var(--foreground)", opacity: 0.8 }}
-        >
-          Focus grows exponentially while working and maintains between
-          features. It only resets at the start of each day or when
-          interrupted by &quot;Next Feature Planning&quot; meetings.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-1">
-            <label
-              className="block text-xs font-medium"
-              style={{ color: "var(--foreground)" }}
-              htmlFor="totalFeatures"
-            >
-              Total Features:{" "}
-              <span className="font-mono" style={{ color: "var(--accent)" }}>
-                {config.totalFeatures}
-              </span>
-            </label>
-            <input
-              id="totalFeatures"
-              type="range"
-              min="5"
-              max="50"
-              value={config.totalFeatures}
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  totalFeatures: Number.parseInt(e.target.value),
-                })
-              }
-              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
-            />
-          </div>
-          <div className="space-y-1">
-            <label
-              className="block text-xs font-medium"
-              style={{ color: "var(--foreground)" }}
-              htmlFor="workPerFeature"
-            >
-              Work per Feature:{" "}
-              <span className="font-mono" style={{ color: "var(--secondary)" }}>
-                {config.workPerFeature}
-              </span>
-            </label>
-            <input
-              id="workPerFeature"
-              type="range"
-              min="10"
-              max="100"
-              value={config.workPerFeature}
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  workPerFeature: Number.parseInt(e.target.value),
-                })
-              }
-              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
-            />
-          </div>
-          <div className="space-y-1">
-            <label
-              className="block text-xs font-medium"
-              style={{ color: "var(--foreground)" }}
-              htmlFor="focusGrowthFactor"
-            >
-              Focus Growth Factor:{" "}
-              <span className="font-mono" style={{ color: "var(--tertiary)" }}>
-                {config.focusGrowthFactor}x
-              </span>
-            </label>
-            <input
-              id="focusGrowthFactor"
-              type="range"
-              min="1.1"
-              max="2"
-              step="0.1"
-              value={config.focusGrowthFactor}
-              onChange={(e) =>
-                setConfig({
-                  ...config,
-                  focusGrowthFactor: Number.parseFloat(e.target.value),
-                })
-              }
-              className="w-full h-1 rounded-lg appearance-none cursor-pointer slider"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Calendar */}
-      <div
-        className="border border-current rounded p-4 mb-4"
-        style={{ backgroundColor: "var(--background)" }}
-      >
+    <>
+      {/* Controls */}
+      <div className="border border-current rounded p-4 mb-4">
         <h2
           className="text-sm font-semibold mb-3"
           style={{ color: "var(--accent)" }}
         >
+          Parameters
+        </h2>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="flex items-center space-x-3">
+            <span
+              className="text-sm font-mono w-16"
+              style={{ color: "var(--foreground)" }}
+            >
+              Focus: {focus}
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={focus}
+              onChange={(e) => setFocus(Number.parseInt(e.target.value))}
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              style={{ background: "var(--foreground)", opacity: 0.3 }}
+            />
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <span
+              className="text-sm font-mono w-16"
+              style={{ color: "var(--foreground)" }}
+            >
+              Fatigue: {fatigue}
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={fatigue}
+              onChange={(e) => setFatigue(Number.parseInt(e.target.value))}
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              style={{ background: "var(--foreground)", opacity: 0.3 }}
+            />
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <span
+              className="text-sm font-mono w-20"
+              style={{ color: "var(--foreground)" }}
+            >
+              Feature: {featureSize}
+            </span>
+            <input
+              type="range"
+              min="0"
+              max="1000"
+              value={featureSize}
+              onChange={(e) => setFeatureSize(Number.parseInt(e.target.value))}
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              style={{ background: "var(--foreground)", opacity: 0.3 }}
+            />
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <span
+              className="text-sm font-mono w-16"
+              style={{ color: "var(--foreground)" }}
+            >
+              Weeks: {weeks}
+            </span>
+            <input
+              type="range"
+              min="1"
+              max="16"
+              value={weeks}
+              onChange={(e) => setWeeks(Number.parseInt(e.target.value))}
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              style={{ background: "var(--foreground)", opacity: 0.3 }}
+            />
+          </div>
+        </div>
+
+        {/* Meeting Type Section */}
+        <div className="mb-4">
+          <h3
+            className="text-sm font-semibold mb-3"
+            style={{ color: "var(--secondary)" }}
+          >
+            Meeting Type
+          </h3>
+
+          <div className="flex items-center space-x-3 flex-wrap gap-y-2">
+            <select
+              value={currentMeetingType}
+              onChange={(e) => {
+                if (e.target.value === "custom") {
+                  addMeetingType();
+                } else {
+                  setCurrentMeetingType(e.target.value);
+                }
+              }}
+              className="px-3 py-1 border border-current rounded"
+              style={{
+                backgroundColor: "var(--background)",
+                color: "var(--foreground)",
+              }}
+            >
+              {Object.keys(meetingTypes).map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+              <option value="custom">+ New meeting type</option>
+            </select>
+            <div
+              className="w-3 h-3 rounded"
+              style={{
+                backgroundColor: meetingTypes[currentMeetingType]?.color,
+              }}
+            ></div>
+            {currentMeetingType && meetingTypes[currentMeetingType] && (
+              <>
+                <div className="flex items-center space-x-2">
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    Focus:
+                  </span>
+                  <input
+                    type="number"
+                    min="-100"
+                    max="100"
+                    value={meetingTypes[currentMeetingType].focus}
+                    onChange={(e) => updateMeetingType("focus", e.target.value)}
+                    className="px-2 py-1 border border-current rounded w-20 font-mono"
+                    style={{
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)",
+                    }}
+                  />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span
+                    className="text-sm"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    Fatigue:
+                  </span>
+                  <input
+                    type="number"
+                    min="-100"
+                    max="100"
+                    value={meetingTypes[currentMeetingType].fatigue}
+                    onChange={(e) =>
+                      updateMeetingType("fatigue", e.target.value)
+                    }
+                    className="px-2 py-1 border border-current rounded w-20 font-mono"
+                    style={{
+                      backgroundColor: "var(--background)",
+                      color: "var(--foreground)",
+                    }}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {showNewMeetingForm && (
+            <div
+              className="mb-3 p-3 border border-current rounded"
+              style={{ backgroundColor: "var(--background)" }}
+            >
+              <div className="flex items-center space-x-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Meeting name"
+                  value={newMeetingName}
+                  onChange={(e) => setNewMeetingName(e.target.value)}
+                  className="px-2 py-1 border border-current rounded flex-1"
+                  style={{
+                    backgroundColor: "var(--background)",
+                    color: "var(--foreground)",
+                  }}
+                />
+                <span
+                  className="text-sm"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  Focus:
+                </span>
+                <input
+                  type="number"
+                  min="-100"
+                  max="100"
+                  value={newMeetingFocus}
+                  onChange={(e) =>
+                    setNewMeetingFocus(Number.parseInt(e.target.value) || 0)
+                  }
+                  className="px-2 py-1 border border-current rounded w-20 font-mono"
+                  style={{
+                    backgroundColor: "var(--background)",
+                    color: "var(--foreground)",
+                  }}
+                />
+                <span
+                  className="text-sm"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  Fatigue:
+                </span>
+                <input
+                  type="number"
+                  min="-100"
+                  max="100"
+                  value={newMeetingFatigue}
+                  onChange={(e) =>
+                    setNewMeetingFatigue(Number.parseInt(e.target.value) || 0)
+                  }
+                  className="px-2 py-1 border border-current rounded w-20 font-mono"
+                  style={{
+                    backgroundColor: "var(--background)",
+                    color: "var(--foreground)",
+                  }}
+                />
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={createNewMeetingType}
+                  className="px-3 py-1 border border-current rounded text-sm hover:opacity-80"
+                  style={{
+                    backgroundColor: "var(--accent)",
+                    color: "var(--background)",
+                  }}
+                >
+                  Create
+                </button>
+                <button
+                  onClick={() => setShowNewMeetingForm(false)}
+                  className="px-3 py-1 border border-current rounded text-sm hover:opacity-80"
+                  style={{
+                    backgroundColor: "var(--error)",
+                    color: "var(--background)",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Calendar */}
+      <div className="border border-current rounded p-4 mb-4">
+        <h2
+          className="text-sm font-semibold mb-3"
+          style={{ color: "var(--secondary)" }}
+        >
           Weekly Calendar
         </h2>
-        <div className="mb-4 flex gap-4 text-xs">
-          {Object.entries(MEETING_TYPES).map(([type, info]) => (
-            <div key={type} className="flex items-center gap-2">
+        <div
+          className="border border-current rounded overflow-hidden select-none"
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <div
+            className="grid grid-cols-6"
+            style={{ backgroundColor: "var(--background)" }}
+          >
+            <div
+              className="p-2 text-sm font-semibold border-r border-current"
+              style={{ color: "var(--accent)" }}
+            >
+              Time
+            </div>
+            {days.map((day) => (
               <div
-                className="w-3 h-3 rounded"
+                key={day}
+                className="p-2 text-sm font-semibold text-center border-r border-current last:border-r-0"
+                style={{ color: "var(--accent)" }}
+              >
+                {day.slice(0, 3)}
+              </div>
+            ))}
+          </div>
+
+          {timeSlots.map((timeSlot) => (
+            <div
+              key={timeSlot}
+              className="grid grid-cols-6 border-t border-current"
+            >
+              <div
+                className="p-2 text-sm font-mono border-r border-current"
                 style={{
-                  backgroundColor:
-                    type === "lunch"
-                      ? "var(--highlight)"
-                      : type === "nextFeature"
-                        ? "var(--error)"
-                        : "var(--tertiary)",
+                  backgroundColor: "var(--background)",
+                  color: "var(--foreground)",
+                  opacity: 0.7,
                 }}
-              />
-              <span style={{ color: "var(--foreground)" }}>
-                {info.name} (×{info.multiplier})
-              </span>
+              >
+                {timeSlot}
+              </div>
+              {days.map((day) => {
+                const key = `${day}-${timeSlot}`;
+                const meetingType = calendar[key];
+                const meeting = meetingType ? meetingTypes[meetingType] : null;
+                return (
+                  <div
+                    key={day}
+                    className="p-1 border-r border-current last:border-r-0 cursor-pointer hover:opacity-80"
+                    style={{
+                      backgroundColor: meeting
+                        ? meeting.color
+                        : "var(--background)",
+                      opacity: meeting ? 0.8 : 1,
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleMouseDown(day, timeSlot);
+                    }}
+                    onMouseEnter={() => handleMouseEnter(day, timeSlot)}
+                  >
+                    {meeting && (
+                      <div
+                        className="text-xs font-semibold truncate"
+                        style={{ color: "var(--background)" }}
+                      >
+                        {meetingType}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr>
-                <th
-                  className="px-3 py-2 text-left text-xs font-semibold"
+      </div>
+
+      {/* Results */}
+      <div className="border border-current rounded p-4">
+        <h2
+          className="text-sm font-semibold mb-4"
+          style={{ color: "var(--accent)" }}
+        >
+          Simulation Results
+        </h2>
+        {simulationResults.length > 0 ? (
+          <div className="space-y-4">
+            {/* Key Metrics */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div
+                className="border border-current rounded p-3 text-center"
+                style={{
+                  backgroundColor: "var(--background)",
+                  borderLeftColor: "var(--accent)",
+                  borderLeftWidth: "4px",
+                }}
+              >
+                <div
+                  className="text-2xl font-bold font-mono"
                   style={{ color: "var(--accent)" }}
                 >
-                  Time
-                </th>
-                {DAYS.map((day) => (
-                  <th
-                    key={day}
-                    className="px-3 py-2 text-center text-xs font-semibold"
-                    style={{ color: "var(--accent)" }}
-                  >
-                    {day}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {HOURS.map((hour, hourIdx) => (
-                <tr key={`hour-${hourIdx}`} className="border-t border-current">
-                  <td
-                    className="px-3 py-2 font-medium text-xs"
-                    style={{ color: "var(--foreground)" }}
-                  >
-                    {hour}
-                  </td>
-                  {DAYS.map((_, dayIdx) => {
-                    const meeting = calendar[dayIdx][hourIdx];
-                    return (
-                      <td key={`day-${dayIdx}`} className="px-3 py-1">
-                        <div className="flex gap-1">
-                          {Object.keys(MEETING_TYPES).map((type) => (
-                            <button
-                              key={type}
-                              type="button"
-                              onClick={() =>
-                                toggleMeeting(dayIdx, hourIdx, type)
-                              }
-                              className="p-1.5 rounded border border-current transition-colors"
-                              style={{
-                                backgroundColor:
-                                  meeting === type
-                                    ? type === "lunch"
-                                      ? "var(--highlight)"
-                                      : type === "nextFeature"
-                                        ? "var(--error)"
-                                        : "var(--tertiary)"
-                                    : "var(--background)",
-                                color:
-                                  meeting === type
-                                    ? "var(--background)"
-                                    : "var(--foreground)",
-                              }}
-                            >
-                              {React.createElement(MEETING_TYPES[type].icon, {
-                                size: 12,
-                              })}
-                            </button>
-                          ))}
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                  {simulationResults[simulationResults.length - 1]
+                    ?.completedFeatures || 0}
+                </div>
+                <div
+                  className="text-xs"
+                  style={{ color: "var(--foreground)", opacity: 0.7 }}
+                >
+                  Completed Features
+                </div>
+              </div>
 
-      {/* Metrics */}
-      <div className="flex gap-3 mb-4">
-        <div
-          className="border border-current rounded p-3 flex-1"
-          style={{
-            backgroundColor: "var(--background)",
-            borderLeftColor: "var(--secondary)",
-            borderLeftWidth: "4px",
-          }}
-        >
-          <div
-            className="flex items-center gap-1 mb-1"
-            style={{ color: "var(--secondary)" }}
-          >
-            <Calendar className="w-4 h-4" />
-            <span className="text-xs font-semibold">Duration</span>
-          </div>
-          <div
-            className="text-xl font-bold"
-            style={{ color: "var(--foreground)" }}
-          >
-            {metrics.totalWeeks}
-          </div>
-          <div
-            className="text-xs"
-            style={{ color: "var(--foreground)", opacity: 0.7 }}
-          >
-            weeks
-          </div>
-        </div>
+              <div
+                className="border border-current rounded p-3 text-center"
+                style={{
+                  backgroundColor: "var(--background)",
+                  borderLeftColor: "var(--secondary)",
+                  borderLeftWidth: "4px",
+                }}
+              >
+                <div
+                  className="text-2xl font-bold font-mono"
+                  style={{ color: "var(--secondary)" }}
+                >
+                  {Math.round(
+                    (simulationResults[simulationResults.length - 1]
+                      ?.completedFeatures || 0) * featureSize,
+                  )}
+                </div>
+                <div
+                  className="text-xs"
+                  style={{ color: "var(--foreground)", opacity: 0.7 }}
+                >
+                  Final Accumulated Productivity
+                </div>
+              </div>
 
-        <div
-          className="border border-current rounded p-3 flex-1"
-          style={{
-            backgroundColor: "var(--background)",
-            borderLeftColor: "var(--accent)",
-            borderLeftWidth: "4px",
-          }}
-        >
-          <div
-            className="flex items-center gap-1 mb-1"
-            style={{ color: "var(--accent)" }}
-          >
-            <Coffee className="w-4 h-4" />
-            <span className="text-xs font-semibold">Work/Hour</span>
-          </div>
-          <div
-            className="text-xl font-bold"
-            style={{ color: "var(--foreground)" }}
-          >
-            {metrics.avgWorkPerHour}
-          </div>
-          <div
-            className="text-xs"
-            style={{ color: "var(--foreground)", opacity: 0.7 }}
-          >
-            average
-          </div>
-        </div>
+              <div
+                className="border border-current rounded p-3 text-center"
+                style={{
+                  backgroundColor: "var(--background)",
+                  borderLeftColor: "var(--tertiary)",
+                  borderLeftWidth: "4px",
+                }}
+              >
+                <div
+                  className="text-2xl font-bold font-mono"
+                  style={{ color: "var(--tertiary)" }}
+                >
+                  {Math.round(
+                    ((simulationResults[simulationResults.length - 1]
+                      ?.completedFeatures || 0) *
+                      featureSize) /
+                      simulationResults.length,
+                  )}
+                </div>
+                <div
+                  className="text-xs"
+                  style={{ color: "var(--foreground)", opacity: 0.7 }}
+                >
+                  Average Hourly Productivity
+                </div>
+              </div>
 
-        <div
-          className="border border-current rounded p-3 flex-1"
-          style={{
-            backgroundColor: "var(--background)",
-            borderLeftColor: "var(--tertiary)",
-            borderLeftWidth: "4px",
-          }}
-        >
-          <div
-            className="flex items-center gap-1 mb-1"
-            style={{ color: "var(--tertiary)" }}
-          >
-            <Users className="w-4 h-4" />
-            <span className="text-xs font-semibold">Features/Week</span>
-          </div>
-          <div
-            className="text-xl font-bold"
-            style={{ color: "var(--foreground)" }}
-          >
-            {metrics.avgFeaturesPerWeek}
-          </div>
-          <div
-            className="text-xs"
-            style={{ color: "var(--foreground)", opacity: 0.7 }}
-          >
-            delivery
-          </div>
-        </div>
+              <div
+                className="border border-current rounded p-3 text-center"
+                style={{
+                  backgroundColor: "var(--background)",
+                  borderLeftColor: "var(--highlight)",
+                  borderLeftWidth: "4px",
+                }}
+              >
+                <div
+                  className="text-2xl font-bold font-mono"
+                  style={{ color: "var(--highlight)" }}
+                >
+                  {simulationResults.length}
+                </div>
+                <div
+                  className="text-xs"
+                  style={{ color: "var(--foreground)", opacity: 0.7 }}
+                >
+                  Total Hours Simulated
+                </div>
+              </div>
+            </div>
 
-        <div
-          className="border border-current rounded p-3 flex-1"
-          style={{
-            backgroundColor: "var(--background)",
-            borderLeftColor: "var(--highlight)",
-            borderLeftWidth: "4px",
-          }}
-        >
-          <div
-            className="flex items-center gap-1 mb-1"
-            style={{ color: "var(--highlight)" }}
-          >
-            <Users className="w-4 h-4" />
-            <span className="text-xs font-semibold">Focus Time</span>
-          </div>
-          <div
-            className="text-xl font-bold"
-            style={{ color: "var(--foreground)" }}
-          >
-            {metrics.totalHours > 0
-              ? ((metrics.workingHours / metrics.totalHours) * 100).toFixed(
-                  0,
-                )
-              : 0}
-            %
-          </div>
-          <div
-            className="text-xs"
-            style={{ color: "var(--foreground)", opacity: 0.7 }}
-          >
-            productive
-          </div>
-        </div>
-      </div>
-
-      {/* Debug Info */}
-      <div
-        className="border border-current rounded p-3 mb-4"
-        style={{ backgroundColor: "var(--background)" }}
-      >
-        <div
-          className="text-xs grid grid-cols-2 md:grid-cols-4 gap-2"
-          style={{ color: "var(--foreground)", opacity: 0.7 }}
-        >
-          <div className="font-mono">Total Work: {metrics.totalWork.toFixed(0)}</div>
-          <div className="font-mono">Working Hours: {metrics.workingHours}</div>
-          <div className="font-mono">Features Completed: {config.totalFeatures}</div>
-          <div className="font-mono">
-            Avg Work/Feature: {metrics.debugInfo.avgWorkPerFeature}
-          </div>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <div
-          className="border border-current rounded p-4"
-          style={{ backgroundColor: "var(--background)" }}
-        >
-          <h3
-            className="text-sm font-semibold mb-3"
-            style={{ color: "var(--accent)" }}
-          >
-            Focus Level Over Time
-          </h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart
-              data={metrics.focusHistory}
-              margin={{ top: 5, right: 5, left: 5, bottom: 35 }}
+            {/* Hourly Heat Maps */}
+            <div
+              className="border border-current rounded p-4"
+              style={{ backgroundColor: "var(--background)" }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                tick={{ fontSize: 10 }}
-                label={{
-                  value: "Time",
-                  position: "insideBottom",
-                  offset: -5,
-                  style: { fontSize: 10 },
-                }}
-              />
-              <YAxis
-                tick={{ fontSize: 10 }}
-                label={{
-                  value: "Focus Level",
-                  angle: -90,
-                  position: "insideLeft",
-                  style: { fontSize: 10 },
-                }}
-              />
-              <Tooltip
-                formatter={(value, name) => [
-                  value,
-                  name === "focus" ? "Focus Level" : "Work Done",
-                ]}
-                contentStyle={{ fontSize: 12 }}
-              />
-              <Legend
-                wrapperStyle={{ fontSize: 12, paddingTop: "15px" }}
-                verticalAlign="bottom"
-                height={30}
-              />
-              <Line
-                type="monotone"
-                dataKey="focus"
-                stroke="var(--accent)"
-                strokeWidth={2}
-                name="Focus"
-                dot={{ fill: "var(--accent)", r: 1 }}
-                animationDuration={200}
-              />
-              <Line
-                type="monotone"
-                dataKey="workDone"
-                stroke="var(--secondary)"
-                strokeWidth={2}
-                name="Work Done"
-                dot={{ fill: "var(--secondary)", r: 1 }}
-                animationDuration={200}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+              <h3
+                className="text-sm font-semibold mb-3"
+                style={{ color: "var(--accent)" }}
+              >
+                Hourly Patterns
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(() => {
+                  const heatmapData = getHeatmapData();
+                  return (
+                    <>
+                      {renderHeatmap("Average Focus", heatmapData.focus.data, heatmapData.focus.min, heatmapData.focus.max, "var(--accent)")}
+                      {renderHeatmap("Average Fatigue", heatmapData.fatigue.data, heatmapData.fatigue.min, heatmapData.fatigue.max, "var(--error)")}
+                      {renderHeatmap("Average Productivity", heatmapData.productivity.data, heatmapData.productivity.min, heatmapData.productivity.max, "var(--secondary)")}
+                      {renderHeatmap("Completed Features", heatmapData.features.data, heatmapData.features.min, heatmapData.features.max, "var(--tertiary)")}
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
 
-        <div
-          className="border border-current rounded p-4"
-          style={{ backgroundColor: "var(--background)" }}
-        >
-          <h3
-            className="text-sm font-semibold mb-3"
-            style={{ color: "var(--accent)" }}
-          >
-            Features Completed per Week
-          </h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart
-              data={metrics.weeklyFeatures}
-              margin={{ top: 5, right: 5, left: 5, bottom: 35 }}
+            {/* Week Summary Chart */}
+            <div
+              className="border border-current rounded p-4"
+              style={{ backgroundColor: "var(--background)" }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="week"
-                tick={{ fontSize: 10 }}
-                label={{
-                  value: "Week",
-                  position: "insideBottom",
-                  offset: -5,
-                  style: { fontSize: 10 },
-                }}
-              />
-              <YAxis
-                tick={{ fontSize: 10 }}
-                label={{
-                  value: "Features",
-                  angle: -90,
-                  position: "insideLeft",
-                  style: { fontSize: 10 },
-                }}
-              />
-              <Tooltip
-                formatter={(value, name) => [`${value} features`, "Completed"]}
-                labelFormatter={(week) => `${week}`}
-                contentStyle={{ fontSize: 12 }}
-              />
-              <Legend
-                wrapperStyle={{ fontSize: 12, paddingTop: "15px" }}
-                verticalAlign="bottom"
-                height={30}
-              />
-              <Bar
-                dataKey="features"
-                fill="var(--tertiary)"
-                name="Features"
-                animationDuration={200}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+              <h3
+                className="text-sm font-semibold mb-3"
+                style={{ color: "var(--accent)" }}
+              >
+                Weekly Productivity Summary
+              </h3>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={getWeekSummaryData()}>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="var(--foreground)"
+                      opacity={0.3}
+                    />
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fill: "var(--foreground)", fontSize: 12 }}
+                      axisLine={{ stroke: "var(--foreground)" }}
+                    />
+                    <YAxis
+                      yAxisId="left"
+                      orientation="left"
+                      tick={{ fill: "var(--foreground)", fontSize: 12 }}
+                      axisLine={{ stroke: "var(--foreground)" }}
+                    />
+                    <YAxis
+                      yAxisId="right"
+                      orientation="right"
+                      tick={{ fill: "var(--foreground)", fontSize: 12 }}
+                      axisLine={{ stroke: "var(--foreground)" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "var(--background)",
+                        border: "1px solid var(--foreground)",
+                        borderRadius: "4px",
+                        color: "var(--foreground)",
+                      }}
+                      formatter={(value, name) => [
+                        name === "productivity"
+                          ? `${Math.round(value)} productivity`
+                          : `${value} features`,
+                        name === "productivity"
+                          ? "Daily Productivity"
+                          : "Features Completed",
+                      ]}
+                    />
+                    <Bar
+                      dataKey="productivity"
+                      fill="var(--accent)"
+                      name="productivity"
+                      yAxisId="left"
+                    />
+                    <Bar
+                      dataKey="features"
+                      fill="var(--secondary)"
+                      name="features"
+                      yAxisId="right"
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex items-center justify-center space-x-6 mt-2 text-xs">
+                <div className="flex items-center space-x-1">
+                  <div
+                    className="w-3 h-3"
+                    style={{ backgroundColor: "var(--accent)" }}
+                  ></div>
+                  <span style={{ color: "var(--foreground)" }}>
+                    Daily Productivity (Left Axis)
+                  </span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <div
+                    className="w-3 h-3"
+                    style={{ backgroundColor: "var(--secondary)" }}
+                  ></div>
+                  <span style={{ color: "var(--foreground)" }}>
+                    Features Completed (Right Axis)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p style={{ color: "var(--foreground)", opacity: 0.7 }}>
+            Running simulation...
+          </p>
+        )}
       </div>
-    </div>
+
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: var(--accent);
+          cursor: pointer;
+          border: 2px solid var(--background);
+        }
+        .slider::-webkit-slider-thumb:hover {
+          background: var(--secondary);
+        }
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: var(--accent);
+          cursor: pointer;
+          border: 2px solid var(--background);
+        }
+        .slider::-moz-range-thumb:hover {
+          background: var(--secondary);
+        }
+      `}</style>
+    </>
   );
 };
 

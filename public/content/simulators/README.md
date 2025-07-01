@@ -17,6 +17,15 @@ An interactive tool that demonstrates how shortcuts in software development crea
 - The break-even point between clean and debt-driven development
 - The impact of different interest rates on technical debt
 
+### [Developer Productivity Simulator](/simulators/developer-productivity-simulator)
+A comprehensive simulation that models how meetings, focus, and fatigue affect developer productivity over time. Features include:
+
+- Interactive weekly calendar for scheduling different types of meetings
+- Real-time productivity calculations based on focus and fatigue levels
+- Visual heat maps showing hourly productivity patterns
+- Customizable meeting types with configurable focus/fatigue impacts
+- Multi-week productivity analysis and feature completion tracking
+
 ## Why Simulators?
 
 Software development concepts like technical debt, scalability bottlenecks, and team dynamics are often abstract and hard to visualize. These simulators provide:

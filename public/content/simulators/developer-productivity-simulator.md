@@ -1,107 +1,163 @@
 ---
 title: "Developer Productivity Simulator"
-description: "Interactive simulator showing how meetings and interruptions affect developer focus and productivity"
+description: "Interactive simulator showing how focus, fatigue, and meetings affect project delivery over time"
 ---
 
-# Developer Productivity Simulator
+# Project Productivity Simulator
 
-This interactive simulator demonstrates how meetings, interruptions, and focus time affect developer productivity. It shows how focus grows exponentially during uninterrupted work periods and how different types of meetings impact overall feature delivery.
+This interactive simulator demonstrates how individual focus levels, fatigue accumulation, and meeting schedules affect project productivity and feature delivery over multiple weeks.
 
 ## How It Works
 
-The simulator models developer productivity based on:
+The simulator models project work based on:
 
-1. **Focus Growth**: Focus increases exponentially while working on tasks without interruption
-2. **Meeting Impact**: Different meeting types have different multipliers on focus levels
-3. **Daily Reset**: Focus resets at the start of each day
-4. **Feature Completion**: Focus resets when features are completed
+1. **Focus & Fatigue Balance**: Hourly productivity = normalize(focus - fatigue)
+2. **Meeting Impact**: Different meeting types modify focus and fatigue levels
+3. **Feature Completion**: Features complete when accumulated work reaches the feature size
+4. **Weekly Patterns**: Simulates Monday-Friday work weeks with 8-hour days
 
 ## Interactive Simulation
 
 <DeveloperProductivitySimulator />
 
-## Key Concepts
+## Core Mechanics
 
-### Focus and Flow State
+### Focus and Fatigue System
 
-- **Exponential Growth**: Developer focus grows exponentially during uninterrupted work
-- **Context Switching Cost**: Meetings and interruptions reduce focus and productivity
-- **Daily Rhythm**: Focus naturally resets each day, requiring time to rebuild
+- **Base Focus**: Your starting focus level each hour (0 to 100)
+- **Base Fatigue**: Your starting fatigue level each hour (0 to 100)
+- **Hourly Productivity**: Calculated as `normalize(hourFocus - hourFatigue)` where normalize clamps values between 0-100
+- **Accumulation**: Focus and fatigue accumulate throughout each day
 
-### Meeting Types and Impact
+### Meeting Types and Effects
 
-The simulator includes different meeting types with varying productivity impacts:
+The simulator includes three default meeting types that modify your focus and fatigue:
 
-- **Lunch (×1.0)**: Maintains current focus level - necessary break
-- **Next Feature Planning (×0.0)**: Completely resets focus - major context switch
-- **Other Meetings (×0.5)**: Reduces focus by half - general productivity loss
+- **🍽️ Lunch**: Focus -100, Fatigue -100 (reduces fatigue, breaks focus)
+- **🏃 Sprint plan**: Focus -100, Fatigue +50 (planning is mentally tiring)
+- **😴 Boring**: Focus -50, Fatigue -25 (mild negative impact)
 
-### Time Management Strategies
+You can create custom meeting types with your own focus/fatigue values.
 
-Experiment with different calendar configurations to see how meeting placement affects:
+### Feature Completion Logic
 
-- Total weeks to complete the project
-- Average work completed per hour
-- Features delivered per week
-- Percentage of time spent actually working
+```
+For each work hour (non-meeting):
+  hourFocus = normalize(hourFocus + baseFocus)
+  hourFatigue = normalize(hourFatigue + baseFatigue)
+  hourProductivity = normalize(hourFocus - hourFatigue)
 
-## Real-World Implications
+  If hourProductivity >= remainingWork:
+    Feature completes, focus resets to 0
+  Else:
+    Add hourProductivity to accumulated work
+```
 
-This simulation models common workplace scenarios:
+## Key Features
 
-- **Meeting-Heavy Days**: See how back-to-back meetings destroy productivity
-- **Focus Blocks**: Observe the benefits of protecting large blocks of uninterrupted time
-- **Meeting Scheduling**: Learn optimal times to schedule different types of meetings
-- **Context Switching**: Understand the hidden cost of frequent interruptions
+### Interactive Calendar
 
-### Understanding the Results
+- **Drag and Drop**: Click and drag to schedule meetings across the week
+- **5-Day Schedule**: Monday through Friday, 9:00 AM to 4:00 PM (8 hours)
+- **Default Schedule**: Lunch meetings pre-scheduled at 12:00 PM daily
+- **Meeting Types**: Select different meeting types and paint them on the calendar
 
-The simulator provides several key metrics:
+### Real-Time Simulation
 
-1. **Weeks to Complete**: Total time needed to finish all features
-2. **Avg Work/Hour**: How much actual work gets done per working hour
-3. **Avg Features/Week**: Feature delivery rate over time
-4. **Time Working**: Percentage of total time spent on productive work
+The simulator runs continuously, updating results as you change:
+- Focus and fatigue sliders
+- Feature size (complexity)
+- Number of weeks to simulate
+- Meeting schedule
+- Meeting type parameters
 
-### Charts and Visualization
+### Metrics Dashboard
 
-- **Focus Level Over Time**: Shows how focus builds and gets interrupted throughout the simulation
-- **Features Completed per Week**: Demonstrates the impact of meeting patterns on delivery velocity
+The simulator provides key productivity metrics:
 
-## Experiment with Different Scenarios
+1. **Completed Features**: Total features finished during simulation
+2. **Final Accumulated Productivity**: `completedFeatures × featureSize`
+3. **Average Hourly Productivity**: `finalAccumulatedProductivity ÷ totalHours`
+4. **Total Hours Simulated**: `weeks × 5 days × 8 hours`
 
-Try these configurations to see their impact:
+### Weekly Summary Chart
 
-### Scenario 1: Meeting-Free Mornings
-- Schedule all meetings in the afternoon
-- Protect morning hours for deep work
-- Observe how sustained focus improves productivity
-
-### Scenario 2: Meeting-Heavy Schedule
-- Add multiple meetings throughout each day
-- See how context switching destroys productivity
-- Notice the compound effect of lost focus time
-
-### Scenario 3: Strategic Planning Days
-- Concentrate "Next Feature Planning" meetings on specific days
-- Compare with spreading planning throughout the week
-- Observe how batching similar meetings helps
+Interactive bar chart showing:
+- **Daily Productivity** (blue bars, left axis): Total productivity accumulated each day of the week
+- **Features Completed** (green bars, right axis): Number of features finished each day
+- **Dual Y-axes**: Properly scaled for different metrics
 
 ## Configuration Parameters
 
-Adjust these settings to model different project scenarios:
+### Primary Controls
 
-- **Total Features**: The scope of your project (5-50 features)
-- **Work per Feature**: Complexity of each feature (10-100 work units)
-- **Focus Growth Factor**: How quickly developers enter flow state (1.1x - 2.0x)
+- **Focus (0 to 100)**: Your base focus level added each work hour
+- **Fatigue (0 to 100)**: Your base fatigue level added each work hour
+- **Feature Size (0 to 1000)**: How much work each feature requires
+- **Weeks (1 to 16)**: Duration of the simulation
 
-## Lessons Learned
+### Meeting Configuration
 
-The simulator typically reveals:
+- **Meeting Type Selector**: Choose which type of meeting to schedule
+- **Focus/Fatigue Editing**: Modify the impact of each meeting type
+- **Custom Meeting Types**: Create new meeting types with custom names and effects
+- **Color Coding**: Each meeting type has a distinct color on the calendar
 
-1. **Protected Focus Time**: Large blocks of uninterrupted time are exponentially more valuable
-2. **Meeting Placement**: Strategic scheduling of meetings can dramatically improve productivity
-3. **Context Switching Cost**: The hidden cost of interruptions is higher than most people realize
-4. **Compound Effect**: Small changes in meeting patterns can have large impacts on delivery
+## Experiment with Different Scenarios
 
-This tool helps visualize why protecting developer focus time and being strategic about meeting scheduling is crucial for team productivity and project success.
+### Scenario 1: High Focus, Low Fatigue
+- Set Focus: 75, Fatigue: 10
+- Minimal meetings
+- Observe high daily productivity and frequent feature completions
+
+### Scenario 2: Meeting-Heavy Schedule
+- Add multiple "Boring" meetings throughout each day
+- Watch how negative focus impacts reduce productivity
+- Notice the compound effect on feature delivery
+
+### Scenario 3: Strategic Lunch Breaks
+- Default lunch meetings help by reducing fatigue (-100)
+- Try removing lunches and see productivity suffer from fatigue buildup
+- Experiment with different lunch meeting focus/fatigue values
+
+### Scenario 4: Sprint Planning Impact
+- Schedule sprint planning meetings on Mondays
+- Observe how the fatigue boost (+50) affects the week
+- Compare with spreading planning throughout the week
+
+## Understanding the Results
+
+### Weekly Patterns
+
+The weekly summary chart reveals patterns like:
+- **Monday Blues**: Lower productivity due to week startup
+- **Mid-week Peak**: Highest productivity on Tuesday-Thursday
+- **Friday Falloff**: Reduced output as the week ends
+- **Meeting Impact**: Days with many meetings show lower productivity
+
+### Feature Completion Timing
+
+- Features complete when accumulated productivity reaches the feature size
+- Larger features require sustained productivity over multiple days
+- Meeting interruptions delay feature completion
+- Focus resets after each feature completion, requiring momentum rebuilding
+
+### Productivity Optimization
+
+The simulator typically shows:
+1. **Fatigue Management**: Negative fatigue (breaks, rest) improves long-term productivity
+2. **Focus Protection**: Minimizing negative focus meetings preserves productivity
+3. **Meeting Timing**: Strategic placement of disruptive meetings matters
+4. **Work Rhythm**: Consistent daily patterns often outperform erratic schedules
+
+## Real-World Applications
+
+This simulation models common project management scenarios:
+
+- **Sprint Planning**: How often should teams meet for planning?
+- **Meeting Fatigue**: The cost of excessive meetings on delivery
+- **Work-Life Balance**: Benefits of proper breaks and lunch scheduling
+- **Team Capacity**: Understanding realistic feature delivery timelines
+- **Schedule Optimization**: Finding the best meeting patterns for your team
+
+Use the simulator to test different approaches before implementing them with your actual team!
