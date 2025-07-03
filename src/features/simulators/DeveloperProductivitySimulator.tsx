@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -9,10 +9,36 @@ import {
   YAxis,
 } from "recharts";
 
-// Simulation functions
-const normalize = (x) => Math.max(0, Math.min(100, x));
+// Types
+type MeetingType = {
+  focus: number;
+  fatigue: number;
+  color: string;
+};
 
-const getMeeting = (calendar, meetingTypes, hour, day) => {
+type SimulationResult = {
+  hourFocus: number;
+  hourFatigue: number;
+  hourProductivity: number;
+  accumulatedProductivity: number;
+  completedFeatures: number;
+  featureCompleted: boolean;
+  hour: number;
+  day: number;
+  week: number;
+};
+
+type SimulationSummary = {
+  totalFeatures: number;
+  totalProductivity: number;
+  averageFeaturesPerWeek: number;
+  averageProductivityPerWeek: number;
+};
+
+// Simulation functions
+const normalize = (x: number) => Math.max(0, Math.min(100, x));
+
+const getMeeting = (calendar: Record<string, string>, meetingTypes: Record<string, MeetingType>, hour: number, day: number) => {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
 
@@ -23,12 +49,12 @@ const getMeeting = (calendar, meetingTypes, hour, day) => {
 };
 
 const simulateProductivity = (
-  focus,
-  fatigue,
-  featureSize,
-  weeks,
-  calendar,
-  meetingTypes,
+  focus: number,
+  fatigue: number,
+  featureSize: number,
+  weeks: number,
+  calendar: Record<string, string>,
+  meetingTypes: Record<string, MeetingType>,
 ) => {
   const results = [];
   let accumulatedProductivity = 0;
@@ -111,17 +137,17 @@ const DeveloperProductivitySimulator = () => {
   const [newMeetingName, setNewMeetingName] = useState("");
   const [newMeetingFocus, setNewMeetingFocus] = useState(0);
   const [newMeetingFatigue, setNewMeetingFatigue] = useState(0);
-  const [baselineResults, setBaselineResults] = useState(null);
+  const [baselineResults, setBaselineResults] = useState<SimulationResult[] | null>(null);
   const [showComparison, setShowComparison] = useState(false);
 
-  const [meetingTypes, setMeetingTypes] = useState({
+  const [meetingTypes, setMeetingTypes] = useState<Record<string, MeetingType>>({
     "🍽️ Lunch": { focus: -100, fatigue: -100, color: "var(--accent)" },
     "🏃 Sprint plan": { focus: -100, fatigue: 50, color: "var(--secondary)" },
     "😴 Boring": { focus: -50, fatigue: -25, color: "var(--error)" },
   });
 
-  const [calendar, setCalendar] = useState(() => {
-    const initialCalendar = {};
+  const [calendar, setCalendar] = useState<Record<string, string>>(() => {
+    const initialCalendar: Record<string, string> = {};
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     days.forEach((day) => {
       initialCalendar[`${day}-12:00`] = "🍽️ Lunch";
@@ -130,8 +156,8 @@ const DeveloperProductivitySimulator = () => {
   });
 
   const [isDragging, setIsDragging] = useState(false);
-  const [dragAction, setDragAction] = useState(null);
-  const [simulationResults, setSimulationResults] = useState([]);
+  const [dragAction, setDragAction] = useState<'add' | 'remove' | null>(null);
+  const [simulationResults, setSimulationResults] = useState<SimulationResult[]>([]);
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
@@ -170,17 +196,17 @@ const DeveloperProductivitySimulator = () => {
     setShowNewMeetingForm(false);
   };
 
-  const updateMeetingType = (field, value) => {
+  const updateMeetingType = (field: keyof MeetingType, value: string) => {
     setMeetingTypes({
       ...meetingTypes,
       [currentMeetingType]: {
         ...meetingTypes[currentMeetingType],
-        [field]: Number.parseInt(value),
+        [field]: field === 'color' ? value : Number.parseInt(value),
       },
     });
   };
 
-  const handleMouseDown = (day, timeSlot) => {
+  const handleMouseDown = (day: string, timeSlot: string) => {
     const key = `${day}-${timeSlot}`;
     const isOccupied = !!calendar[key];
 
@@ -201,7 +227,7 @@ const DeveloperProductivitySimulator = () => {
     }
   };
 
-  const handleMouseEnter = (day, timeSlot) => {
+  const handleMouseEnter = (day: string, timeSlot: string) => {
     if (!isDragging) return;
 
     const key = `${day}-${timeSlot}`;
@@ -264,7 +290,7 @@ const DeveloperProductivitySimulator = () => {
     return weekSummary;
   };
 
-  const getSimulationSummary = (results) => {
+  const getSimulationSummary = (results: SimulationResult[] | null): SimulationSummary | null => {
     if (!results || results.length === 0) return null;
     const { completedFeatures = 0, accumulatedProductivity = 0 } =
       results[results.length - 1] ?? {};
@@ -339,22 +365,22 @@ const DeveloperProductivitySimulator = () => {
     // Calculate averages and find min/max for scaling
     const averages = {
       focus: {
-        data: [],
+        data: [] as number[][],
         min: Number.POSITIVE_INFINITY,
         max: Number.NEGATIVE_INFINITY,
       },
       fatigue: {
-        data: [],
+        data: [] as number[][],
         min: Number.POSITIVE_INFINITY,
         max: Number.NEGATIVE_INFINITY,
       },
       productivity: {
-        data: [],
+        data: [] as number[][],
         min: Number.POSITIVE_INFINITY,
         max: Number.NEGATIVE_INFINITY,
       },
       features: {
-        data: [],
+        data: [] as number[][],
         min: Number.POSITIVE_INFINITY,
         max: Number.NEGATIVE_INFINITY,
       },
@@ -402,13 +428,13 @@ const DeveloperProductivitySimulator = () => {
     return averages;
   };
 
-  const getHeatmapColor = (value, min, max) => {
+  const getHeatmapColor = (value: number, min: number, max: number) => {
     if (max === min) return 0.1;
     const intensity = (value - min) / (max - min);
     return Math.max(0.1, Math.min(1, intensity));
   };
 
-  const renderHeatmap = (title, data, min, max, color) => (
+  const renderHeatmap = (title: string, data: number[][], min: number, max: number, color: string) => (
     <div className="border border-current rounded p-3">
       <h4
         className="text-xs font-semibold mb-2"
@@ -431,7 +457,7 @@ const DeveloperProductivitySimulator = () => {
           </div>
         ))}
         {timeSlots.map((timeSlot, hour) => (
-          <React.Fragment key={timeSlot}>
+          <div key={timeSlot} className="contents">
             <div
               className="w-8 text-xs font-mono opacity-60"
               style={{ color: "var(--foreground)" }}
@@ -464,7 +490,7 @@ const DeveloperProductivitySimulator = () => {
                 </div>
               );
             })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
     </div>
@@ -889,7 +915,7 @@ const DeveloperProductivitySimulator = () => {
                         >
                           {currentSummary?.averageFeaturesPerWeek || 0}/week avg
                         </div>
-                        {showComparison && baselineSummary && (
+                        {showComparison && baselineSummary && currentSummary && (
                           <div
                             className="text-xs font-mono mt-1"
                             style={{
@@ -941,7 +967,7 @@ const DeveloperProductivitySimulator = () => {
                           )}
                           /week avg
                         </div>
-                        {showComparison && baselineSummary && (
+                        {showComparison && baselineSummary && currentSummary && (
                           <div
                             className="text-xs font-mono mt-1"
                             style={{
@@ -1064,7 +1090,7 @@ const DeveloperProductivitySimulator = () => {
                         borderRadius: "4px",
                         color: "var(--foreground)",
                       }}
-                      formatter={(value, name) => [
+                      formatter={(value: number, name: string) => [
                         name === "productivity"
                           ? `${Math.round(value)} productivity`
                           : `${value} features`,
@@ -1117,7 +1143,7 @@ const DeveloperProductivitySimulator = () => {
         )}
       </div>
 
-      <style jsx>{`
+      <style>{`
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 20px;
