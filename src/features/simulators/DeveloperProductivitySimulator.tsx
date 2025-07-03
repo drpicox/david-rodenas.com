@@ -69,8 +69,8 @@ const simulateProductivity = (
           let hourProductivity;
           if (featureCompleted) {
             hourProductivity = remainingWork;
-            accumulatedProductivity = featureSize;
             completedFeatures += 1;
+            accumulatedProductivity = 0;
           } else {
             hourProductivity = potentialProductivity;
             accumulatedProductivity += hourProductivity;
@@ -103,9 +103,10 @@ const simulateProductivity = (
 const DeveloperProductivitySimulator = () => {
   const [focus, setFocus] = useState(25);
   const [fatigue, setFatigue] = useState(15);
-  const [featureSize, setFeatureSize] = useState(200);
+  const [featureSize, setFeatureSize] = useState(300);
   const [weeks, setWeeks] = useState(8);
-  const [currentMeetingType, setCurrentMeetingType] = useState("🏃 Sprint plan");
+  const [currentMeetingType, setCurrentMeetingType] =
+    useState("🏃 Sprint plan");
   const [showNewMeetingForm, setShowNewMeetingForm] = useState(false);
   const [newMeetingName, setNewMeetingName] = useState("");
   const [newMeetingFocus, setNewMeetingFocus] = useState(0);
@@ -265,12 +266,19 @@ const DeveloperProductivitySimulator = () => {
 
   const getSimulationSummary = (results) => {
     if (!results || results.length === 0) return null;
-    
-    const totalFeatures = results[results.length - 1]?.completedFeatures || 0;
-    const totalProductivity = totalFeatures * featureSize;
-    const averageFeaturesPerWeek = Math.round((totalFeatures / weeks) * 100) / 100;
-    const averageProductivityPerWeek = Math.round((totalProductivity / weeks) * 100) / 100;
-    
+    const { completedFeatures = 0, accumulatedProductivity = 0 } =
+      results[results.length - 1] ?? {};
+    const uncompletedFeatures =
+      Math.round((10 * accumulatedProductivity) / featureSize) / 10;
+
+    const totalFeatures = completedFeatures + uncompletedFeatures;
+    const totalProductivity =
+      completedFeatures * featureSize + accumulatedProductivity;
+    const averageFeaturesPerWeek =
+      Math.round((totalFeatures / weeks) * 100) / 100;
+    const averageProductivityPerWeek =
+      Math.round((totalProductivity / weeks) * 100) / 100;
+
     return {
       totalFeatures,
       totalProductivity,
@@ -292,16 +300,33 @@ const DeveloperProductivitySimulator = () => {
   const getHeatmapData = () => {
     // Initialize data structure for 8 hours x 5 days
     const heatmapData = {
-      focus: Array(8).fill(null).map(() => Array(5).fill(0)),
-      fatigue: Array(8).fill(null).map(() => Array(5).fill(0)),
-      productivity: Array(8).fill(null).map(() => Array(5).fill(0)),
-      features: Array(8).fill(null).map(() => Array(5).fill(0)),
-      counts: Array(8).fill(null).map(() => Array(5).fill(0)),
+      focus: Array(8)
+        .fill(null)
+        .map(() => Array(5).fill(0)),
+      fatigue: Array(8)
+        .fill(null)
+        .map(() => Array(5).fill(0)),
+      productivity: Array(8)
+        .fill(null)
+        .map(() => Array(5).fill(0)),
+      features: Array(8)
+        .fill(null)
+        .map(() => Array(5).fill(0)),
+      counts: Array(8)
+        .fill(null)
+        .map(() => Array(5).fill(0)),
     };
 
     // Aggregate data across all weeks
     simulationResults.forEach((result) => {
-      const { hour, day, hourFocus, hourFatigue, hourProductivity, featureCompleted } = result;
+      const {
+        hour,
+        day,
+        hourFocus,
+        hourFatigue,
+        hourProductivity,
+        featureCompleted,
+      } = result;
       heatmapData.focus[hour][day] += hourFocus;
       heatmapData.fatigue[hour][day] += hourFatigue;
       heatmapData.productivity[hour][day] += hourProductivity;
@@ -313,10 +338,26 @@ const DeveloperProductivitySimulator = () => {
 
     // Calculate averages and find min/max for scaling
     const averages = {
-      focus: { data: [], min: Infinity, max: -Infinity },
-      fatigue: { data: [], min: Infinity, max: -Infinity },
-      productivity: { data: [], min: Infinity, max: -Infinity },
-      features: { data: [], min: Infinity, max: -Infinity },
+      focus: {
+        data: [],
+        min: Number.POSITIVE_INFINITY,
+        max: Number.NEGATIVE_INFINITY,
+      },
+      fatigue: {
+        data: [],
+        min: Number.POSITIVE_INFINITY,
+        max: Number.NEGATIVE_INFINITY,
+      },
+      productivity: {
+        data: [],
+        min: Number.POSITIVE_INFINITY,
+        max: Number.NEGATIVE_INFINITY,
+      },
+      features: {
+        data: [],
+        min: Number.POSITIVE_INFINITY,
+        max: Number.NEGATIVE_INFINITY,
+      },
     };
 
     for (let hour = 0; hour < 8; hour++) {
@@ -329,8 +370,10 @@ const DeveloperProductivitySimulator = () => {
         const count = heatmapData.counts[hour][day];
 
         const avgFocus = count > 0 ? heatmapData.focus[hour][day] / count : 0;
-        const avgFatigue = count > 0 ? heatmapData.fatigue[hour][day] / count : 0;
-        const avgProductivity = count > 0 ? heatmapData.productivity[hour][day] / count : 0;
+        const avgFatigue =
+          count > 0 ? heatmapData.fatigue[hour][day] / count : 0;
+        const avgProductivity =
+          count > 0 ? heatmapData.productivity[hour][day] / count : 0;
         const totalFeatures = heatmapData.features[hour][day];
 
         averages.focus.data[hour][day] = avgFocus;
@@ -343,8 +386,14 @@ const DeveloperProductivitySimulator = () => {
         averages.focus.max = Math.max(averages.focus.max, avgFocus);
         averages.fatigue.min = Math.min(averages.fatigue.min, avgFatigue);
         averages.fatigue.max = Math.max(averages.fatigue.max, avgFatigue);
-        averages.productivity.min = Math.min(averages.productivity.min, avgProductivity);
-        averages.productivity.max = Math.max(averages.productivity.max, avgProductivity);
+        averages.productivity.min = Math.min(
+          averages.productivity.min,
+          avgProductivity,
+        );
+        averages.productivity.max = Math.max(
+          averages.productivity.max,
+          avgProductivity,
+        );
         averages.features.min = Math.min(averages.features.min, totalFeatures);
         averages.features.max = Math.max(averages.features.max, totalFeatures);
       }
@@ -361,20 +410,33 @@ const DeveloperProductivitySimulator = () => {
 
   const renderHeatmap = (title, data, min, max, color) => (
     <div className="border border-current rounded p-3">
-      <h4 className="text-xs font-semibold mb-2" style={{ color: "var(--foreground)" }}>
+      <h4
+        className="text-xs font-semibold mb-2"
+        style={{ color: "var(--foreground)" }}
+      >
         {title}
       </h4>
       <div className="grid grid-cols-6 gap-px">
-        <div className="w-8 text-xs font-mono opacity-60" style={{ color: "var(--foreground)" }}></div>
-        {["Mon", "Tue", "Wed", "Thu", "Fri"].map(day => (
-          <div key={day} className="w-8 text-xs font-mono text-center opacity-60" style={{ color: "var(--foreground)" }}>
+        <div
+          className="w-8 text-xs font-mono opacity-60"
+          style={{ color: "var(--foreground)" }}
+        ></div>
+        {["Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
+          <div
+            key={day}
+            className="w-8 text-xs font-mono text-center opacity-60"
+            style={{ color: "var(--foreground)" }}
+          >
             {day}
           </div>
         ))}
         {timeSlots.map((timeSlot, hour) => (
           <React.Fragment key={timeSlot}>
-            <div className="w-8 text-xs font-mono opacity-60" style={{ color: "var(--foreground)" }}>
-              {timeSlot.split(':')[0]}
+            <div
+              className="w-8 text-xs font-mono opacity-60"
+              style={{ color: "var(--foreground)" }}
+            >
+              {timeSlot.split(":")[0]}
             </div>
             {data[hour].map((value, day) => {
               const opacity = getHeatmapColor(value, min, max);
@@ -388,7 +450,15 @@ const DeveloperProductivitySimulator = () => {
                   }}
                   title={`${timeSlot} ${["Mon", "Tue", "Wed", "Thu", "Fri"][day]}: ${Math.round(value * 100) / 100}`}
                 >
-                  <span className="text-xs font-mono" style={{ color: opacity > 0.5 ? "var(--background)" : "var(--foreground)" }}>
+                  <span
+                    className="text-xs font-mono"
+                    style={{
+                      color:
+                        opacity > 0.5
+                          ? "var(--background)"
+                          : "var(--foreground)",
+                    }}
+                  >
                     {Math.round(value)}
                   </span>
                 </div>
@@ -753,7 +823,10 @@ const DeveloperProductivitySimulator = () => {
             {/* Key Metrics */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+                <h3
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--accent)" }}
+                >
                   Current Results
                 </h3>
                 <div className="flex space-x-2">
@@ -781,12 +854,13 @@ const DeveloperProductivitySimulator = () => {
                   )}
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(() => {
-                  const currentSummary = getSimulationSummary(simulationResults);
+                  const currentSummary =
+                    getSimulationSummary(simulationResults);
                   const baselineSummary = getSimulationSummary(baselineResults);
-                  
+
                   return (
                     <>
                       <div
@@ -818,12 +892,22 @@ const DeveloperProductivitySimulator = () => {
                         {showComparison && baselineSummary && (
                           <div
                             className="text-xs font-mono mt-1"
-                            style={{ 
-                              color: currentSummary.totalFeatures >= baselineSummary.totalFeatures ? "var(--tertiary)" : "var(--error)",
-                              opacity: 0.8 
+                            style={{
+                              color:
+                                currentSummary.totalFeatures >=
+                                baselineSummary.totalFeatures
+                                  ? "var(--tertiary)"
+                                  : "var(--error)",
+                              opacity: 0.8,
                             }}
                           >
-                            {currentSummary.totalFeatures >= baselineSummary.totalFeatures ? "+" : ""}{currentSummary.totalFeatures - baselineSummary.totalFeatures} vs baseline
+                            {currentSummary.totalFeatures >=
+                            baselineSummary.totalFeatures
+                              ? "+"
+                              : ""}
+                            {currentSummary.totalFeatures -
+                              baselineSummary.totalFeatures}{" "}
+                            vs baseline
                           </div>
                         )}
                       </div>
@@ -852,17 +936,32 @@ const DeveloperProductivitySimulator = () => {
                           className="text-xs font-mono"
                           style={{ color: "var(--secondary)", opacity: 0.8 }}
                         >
-                          {Math.round(currentSummary?.averageProductivityPerWeek || 0)}/week avg
+                          {Math.round(
+                            currentSummary?.averageProductivityPerWeek || 0,
+                          )}
+                          /week avg
                         </div>
                         {showComparison && baselineSummary && (
                           <div
                             className="text-xs font-mono mt-1"
-                            style={{ 
-                              color: currentSummary.totalProductivity >= baselineSummary.totalProductivity ? "var(--tertiary)" : "var(--error)",
-                              opacity: 0.8 
+                            style={{
+                              color:
+                                currentSummary.totalProductivity >=
+                                baselineSummary.totalProductivity
+                                  ? "var(--tertiary)"
+                                  : "var(--error)",
+                              opacity: 0.8,
                             }}
                           >
-                            {currentSummary.totalProductivity >= baselineSummary.totalProductivity ? "+" : ""}{Math.round(currentSummary.totalProductivity - baselineSummary.totalProductivity)} vs baseline
+                            {currentSummary.totalProductivity >=
+                            baselineSummary.totalProductivity
+                              ? "+"
+                              : ""}
+                            {Math.round(
+                              currentSummary.totalProductivity -
+                                baselineSummary.totalProductivity,
+                            )}{" "}
+                            vs baseline
                           </div>
                         )}
                       </div>
@@ -888,10 +987,34 @@ const DeveloperProductivitySimulator = () => {
                   const heatmapData = getHeatmapData();
                   return (
                     <>
-                      {renderHeatmap("Average Focus", heatmapData.focus.data, heatmapData.focus.min, heatmapData.focus.max, "var(--accent)")}
-                      {renderHeatmap("Average Fatigue", heatmapData.fatigue.data, heatmapData.fatigue.min, heatmapData.fatigue.max, "var(--error)")}
-                      {renderHeatmap("Average Productivity", heatmapData.productivity.data, heatmapData.productivity.min, heatmapData.productivity.max, "var(--secondary)")}
-                      {renderHeatmap("Completed Features", heatmapData.features.data, heatmapData.features.min, heatmapData.features.max, "var(--tertiary)")}
+                      {renderHeatmap(
+                        "Average Focus",
+                        heatmapData.focus.data,
+                        heatmapData.focus.min,
+                        heatmapData.focus.max,
+                        "var(--accent)",
+                      )}
+                      {renderHeatmap(
+                        "Average Fatigue",
+                        heatmapData.fatigue.data,
+                        heatmapData.fatigue.min,
+                        heatmapData.fatigue.max,
+                        "var(--error)",
+                      )}
+                      {renderHeatmap(
+                        "Average Productivity",
+                        heatmapData.productivity.data,
+                        heatmapData.productivity.min,
+                        heatmapData.productivity.max,
+                        "var(--secondary)",
+                      )}
+                      {renderHeatmap(
+                        "Completed Features",
+                        heatmapData.features.data,
+                        heatmapData.features.min,
+                        heatmapData.features.max,
+                        "var(--tertiary)",
+                      )}
                     </>
                   );
                 })()}
@@ -1010,7 +1133,7 @@ const DeveloperProductivitySimulator = () => {
           cursor: pointer;
           border: 2px solid var(--background);
         }
-        
+
         .focus-slider::-webkit-slider-thumb {
           background: var(--accent);
         }
@@ -1025,7 +1148,7 @@ const DeveloperProductivitySimulator = () => {
           background: var(--accent);
           opacity: 0.8;
         }
-        
+
         .fatigue-slider::-webkit-slider-thumb {
           background: var(--error);
         }
@@ -1040,7 +1163,7 @@ const DeveloperProductivitySimulator = () => {
           background: var(--error);
           opacity: 0.8;
         }
-        
+
         .productivity-slider::-webkit-slider-thumb {
           background: var(--secondary);
         }
@@ -1055,7 +1178,7 @@ const DeveloperProductivitySimulator = () => {
           background: var(--secondary);
           opacity: 0.8;
         }
-        
+
         .features-slider::-webkit-slider-thumb {
           background: var(--tertiary);
         }
