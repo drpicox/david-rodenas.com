@@ -110,6 +110,8 @@ const DeveloperProductivitySimulator = () => {
   const [newMeetingName, setNewMeetingName] = useState("");
   const [newMeetingFocus, setNewMeetingFocus] = useState(0);
   const [newMeetingFatigue, setNewMeetingFatigue] = useState(0);
+  const [baselineResults, setBaselineResults] = useState(null);
+  const [showComparison, setShowComparison] = useState(false);
 
   const [meetingTypes, setMeetingTypes] = useState({
     "🍽️ Lunch": { focus: -100, fatigue: -100, color: "var(--accent)" },
@@ -261,6 +263,32 @@ const DeveloperProductivitySimulator = () => {
     return weekSummary;
   };
 
+  const getSimulationSummary = (results) => {
+    if (!results || results.length === 0) return null;
+    
+    const totalFeatures = results[results.length - 1]?.completedFeatures || 0;
+    const totalProductivity = totalFeatures * featureSize;
+    const averageFeaturesPerWeek = Math.round((totalFeatures / weeks) * 100) / 100;
+    const averageProductivityPerWeek = Math.round((totalProductivity / weeks) * 100) / 100;
+    
+    return {
+      totalFeatures,
+      totalProductivity,
+      averageFeaturesPerWeek,
+      averageProductivityPerWeek,
+    };
+  };
+
+  const saveAsBaseline = () => {
+    setBaselineResults(simulationResults);
+    setShowComparison(true);
+  };
+
+  const clearBaseline = () => {
+    setBaselineResults(null);
+    setShowComparison(false);
+  };
+
   const getHeatmapData = () => {
     // Initialize data structure for 8 hours x 5 days
     const heatmapData = {
@@ -396,7 +424,7 @@ const DeveloperProductivitySimulator = () => {
               max="100"
               value={focus}
               onChange={(e) => setFocus(Number.parseInt(e.target.value))}
-              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider focus-slider"
               style={{ background: "var(--foreground)", opacity: 0.3 }}
             />
           </div>
@@ -414,7 +442,7 @@ const DeveloperProductivitySimulator = () => {
               max="100"
               value={fatigue}
               onChange={(e) => setFatigue(Number.parseInt(e.target.value))}
-              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider fatigue-slider"
               style={{ background: "var(--foreground)", opacity: 0.3 }}
             />
           </div>
@@ -432,7 +460,7 @@ const DeveloperProductivitySimulator = () => {
               max="1000"
               value={featureSize}
               onChange={(e) => setFeatureSize(Number.parseInt(e.target.value))}
-              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider productivity-slider"
               style={{ background: "var(--foreground)", opacity: 0.3 }}
             />
           </div>
@@ -450,7 +478,7 @@ const DeveloperProductivitySimulator = () => {
               max="16"
               value={weeks}
               onChange={(e) => setWeeks(Number.parseInt(e.target.value))}
-              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider"
+              className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider features-slider"
               style={{ background: "var(--foreground)", opacity: 0.3 }}
             />
           </div>
@@ -723,102 +751,124 @@ const DeveloperProductivitySimulator = () => {
         {simulationResults.length > 0 ? (
           <div className="space-y-4">
             {/* Key Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div
-                className="border border-current rounded p-3 text-center"
-                style={{
-                  backgroundColor: "var(--background)",
-                  borderLeftColor: "var(--accent)",
-                  borderLeftWidth: "4px",
-                }}
-              >
-                <div
-                  className="text-2xl font-bold font-mono"
-                  style={{ color: "var(--accent)" }}
-                >
-                  {simulationResults[simulationResults.length - 1]
-                    ?.completedFeatures || 0}
-                </div>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--foreground)", opacity: 0.7 }}
-                >
-                  Completed Features
-                </div>
-              </div>
-
-              <div
-                className="border border-current rounded p-3 text-center"
-                style={{
-                  backgroundColor: "var(--background)",
-                  borderLeftColor: "var(--secondary)",
-                  borderLeftWidth: "4px",
-                }}
-              >
-                <div
-                  className="text-2xl font-bold font-mono"
-                  style={{ color: "var(--secondary)" }}
-                >
-                  {Math.round(
-                    (simulationResults[simulationResults.length - 1]
-                      ?.completedFeatures || 0) * featureSize,
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+                  Current Results
+                </h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={saveAsBaseline}
+                    className="px-3 py-1 border border-current rounded text-sm hover:opacity-80"
+                    style={{
+                      backgroundColor: "var(--secondary)",
+                      color: "var(--background)",
+                    }}
+                  >
+                    Save as Baseline
+                  </button>
+                  {baselineResults && (
+                    <button
+                      onClick={clearBaseline}
+                      className="px-3 py-1 border border-current rounded text-sm hover:opacity-80"
+                      style={{
+                        backgroundColor: "var(--error)",
+                        color: "var(--background)",
+                      }}
+                    >
+                      Clear Baseline
+                    </button>
                   )}
                 </div>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--foreground)", opacity: 0.7 }}
-                >
-                  Final Accumulated Productivity
-                </div>
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {(() => {
+                  const currentSummary = getSimulationSummary(simulationResults);
+                  const baselineSummary = getSimulationSummary(baselineResults);
+                  
+                  return (
+                    <>
+                      <div
+                        className="border border-current rounded p-3 text-center"
+                        style={{
+                          backgroundColor: "var(--background)",
+                          borderLeftColor: "var(--accent)",
+                          borderLeftWidth: "4px",
+                        }}
+                      >
+                        <div
+                          className="text-2xl font-bold font-mono"
+                          style={{ color: "var(--accent)" }}
+                        >
+                          {currentSummary?.totalFeatures || 0}
+                        </div>
+                        <div
+                          className="text-xs mb-1"
+                          style={{ color: "var(--foreground)", opacity: 0.7 }}
+                        >
+                          Completed Features
+                        </div>
+                        <div
+                          className="text-xs font-mono"
+                          style={{ color: "var(--accent)", opacity: 0.8 }}
+                        >
+                          {currentSummary?.averageFeaturesPerWeek || 0}/week avg
+                        </div>
+                        {showComparison && baselineSummary && (
+                          <div
+                            className="text-xs font-mono mt-1"
+                            style={{ 
+                              color: currentSummary.totalFeatures >= baselineSummary.totalFeatures ? "var(--tertiary)" : "var(--error)",
+                              opacity: 0.8 
+                            }}
+                          >
+                            {currentSummary.totalFeatures >= baselineSummary.totalFeatures ? "+" : ""}{currentSummary.totalFeatures - baselineSummary.totalFeatures} vs baseline
+                          </div>
+                        )}
+                      </div>
 
-              <div
-                className="border border-current rounded p-3 text-center"
-                style={{
-                  backgroundColor: "var(--background)",
-                  borderLeftColor: "var(--tertiary)",
-                  borderLeftWidth: "4px",
-                }}
-              >
-                <div
-                  className="text-2xl font-bold font-mono"
-                  style={{ color: "var(--tertiary)" }}
-                >
-                  {Math.round(
-                    ((simulationResults[simulationResults.length - 1]
-                      ?.completedFeatures || 0) *
-                      featureSize) /
-                      simulationResults.length,
-                  )}
-                </div>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--foreground)", opacity: 0.7 }}
-                >
-                  Average Hourly Productivity
-                </div>
-              </div>
-
-              <div
-                className="border border-current rounded p-3 text-center"
-                style={{
-                  backgroundColor: "var(--background)",
-                  borderLeftColor: "var(--highlight)",
-                  borderLeftWidth: "4px",
-                }}
-              >
-                <div
-                  className="text-2xl font-bold font-mono"
-                  style={{ color: "var(--highlight)" }}
-                >
-                  {simulationResults.length}
-                </div>
-                <div
-                  className="text-xs"
-                  style={{ color: "var(--foreground)", opacity: 0.7 }}
-                >
-                  Total Hours Simulated
-                </div>
+                      <div
+                        className="border border-current rounded p-3 text-center"
+                        style={{
+                          backgroundColor: "var(--background)",
+                          borderLeftColor: "var(--secondary)",
+                          borderLeftWidth: "4px",
+                        }}
+                      >
+                        <div
+                          className="text-2xl font-bold font-mono"
+                          style={{ color: "var(--secondary)" }}
+                        >
+                          {Math.round(currentSummary?.totalProductivity || 0)}
+                        </div>
+                        <div
+                          className="text-xs mb-1"
+                          style={{ color: "var(--foreground)", opacity: 0.7 }}
+                        >
+                          Total Productivity
+                        </div>
+                        <div
+                          className="text-xs font-mono"
+                          style={{ color: "var(--secondary)", opacity: 0.8 }}
+                        >
+                          {Math.round(currentSummary?.averageProductivityPerWeek || 0)}/week avg
+                        </div>
+                        {showComparison && baselineSummary && (
+                          <div
+                            className="text-xs font-mono mt-1"
+                            style={{ 
+                              color: currentSummary.totalProductivity >= baselineSummary.totalProductivity ? "var(--tertiary)" : "var(--error)",
+                              opacity: 0.8 
+                            }}
+                          >
+                            {currentSummary.totalProductivity >= baselineSummary.totalProductivity ? "+" : ""}{Math.round(currentSummary.totalProductivity - baselineSummary.totalProductivity)} vs baseline
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
@@ -950,23 +1000,75 @@ const DeveloperProductivitySimulator = () => {
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: var(--accent);
           cursor: pointer;
           border: 2px solid var(--background);
-        }
-        .slider::-webkit-slider-thumb:hover {
-          background: var(--secondary);
         }
         .slider::-moz-range-thumb {
           height: 20px;
           width: 20px;
           border-radius: 50%;
-          background: var(--accent);
           cursor: pointer;
           border: 2px solid var(--background);
         }
-        .slider::-moz-range-thumb:hover {
+        
+        .focus-slider::-webkit-slider-thumb {
+          background: var(--accent);
+        }
+        .focus-slider::-webkit-slider-thumb:hover {
+          background: var(--accent);
+          opacity: 0.8;
+        }
+        .focus-slider::-moz-range-thumb {
+          background: var(--accent);
+        }
+        .focus-slider::-moz-range-thumb:hover {
+          background: var(--accent);
+          opacity: 0.8;
+        }
+        
+        .fatigue-slider::-webkit-slider-thumb {
+          background: var(--error);
+        }
+        .fatigue-slider::-webkit-slider-thumb:hover {
+          background: var(--error);
+          opacity: 0.8;
+        }
+        .fatigue-slider::-moz-range-thumb {
+          background: var(--error);
+        }
+        .fatigue-slider::-moz-range-thumb:hover {
+          background: var(--error);
+          opacity: 0.8;
+        }
+        
+        .productivity-slider::-webkit-slider-thumb {
           background: var(--secondary);
+        }
+        .productivity-slider::-webkit-slider-thumb:hover {
+          background: var(--secondary);
+          opacity: 0.8;
+        }
+        .productivity-slider::-moz-range-thumb {
+          background: var(--secondary);
+        }
+        .productivity-slider::-moz-range-thumb:hover {
+          background: var(--secondary);
+          opacity: 0.8;
+        }
+        
+        .features-slider::-webkit-slider-thumb {
+          background: var(--tertiary);
+        }
+        .features-slider::-webkit-slider-thumb:hover {
+          background: var(--tertiary);
+          opacity: 0.8;
+        }
+        .features-slider::-moz-range-thumb {
+          background: var(--tertiary);
+        }
+        .features-slider::-moz-range-thumb:hover {
+          background: var(--tertiary);
+          opacity: 0.8;
         }
       `}</style>
     </>
