@@ -3,7 +3,7 @@ title: "Developer Productivity Simulator"
 description: "Interactive simulator showing how focus, fatigue, and meetings affect project delivery over time"
 ---
 
-# Project Productivity Simulator
+# Developer Productivity Simulator
 
 This interactive simulator demonstrates how individual focus levels, fatigue accumulation, and meeting schedules affect project productivity and feature delivery over multiple weeks.
 
