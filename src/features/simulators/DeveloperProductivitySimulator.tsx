@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -303,7 +303,7 @@ const DeveloperProductivitySimulator = () => {
     return () => clearTimeout(timer);
   }, [focus, fatigue, featureSize, weeks, calendar, meetingTypes]);
 
-  const getWeekSummaryData = () => {
+  const weeklySummary = useMemo(() => {
     const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
     const weekSummary = dayNames.map((day) => ({
       day: day.slice(0, 3),
@@ -324,32 +324,39 @@ const DeveloperProductivitySimulator = () => {
     });
 
     return weekSummary;
-  };
+  }, [simulationResults]);
 
-  const getSimulationSummary = (
-    results: SimulationResult[] | null,
-  ): SimulationSummary | null => {
-    if (!results || results.length === 0) return null;
-    const { completedFeatures = 0, accumulatedProductivity = 0 } =
-      results[results.length - 1] ?? {};
-    const uncompletedFeatures =
-      Math.round((10 * accumulatedProductivity) / featureSize) / 10;
+  const [currentSummary, baselineSummary] = useMemo(() => {
+    const getSimulationSummary = (
+      results: SimulationResult[] | null,
+    ): SimulationSummary | null => {
+      if (!results || results.length === 0) return null;
+      const { completedFeatures = 0, accumulatedProductivity = 0 } =
+        results[results.length - 1] ?? {};
+      const uncompletedFeatures =
+        Math.round((10 * accumulatedProductivity) / featureSize) / 10;
 
-    const totalFeatures = completedFeatures + uncompletedFeatures;
-    const totalProductivity =
-      completedFeatures * featureSize + accumulatedProductivity;
-    const averageFeaturesPerWeek =
-      Math.round((totalFeatures / weeks) * 100) / 100;
-    const averageProductivityPerWeek =
-      Math.round((totalProductivity / weeks) * 100) / 100;
+      const totalFeatures = completedFeatures + uncompletedFeatures;
+      const totalProductivity =
+        completedFeatures * featureSize + accumulatedProductivity;
+      const averageFeaturesPerWeek =
+        Math.round((totalFeatures / weeks) * 100) / 100;
+      const averageProductivityPerWeek =
+        Math.round((totalProductivity / weeks) * 100) / 100;
 
-    return {
-      totalFeatures,
-      totalProductivity,
-      averageFeaturesPerWeek,
-      averageProductivityPerWeek,
+      return {
+        totalFeatures,
+        totalProductivity,
+        averageFeaturesPerWeek,
+        averageProductivityPerWeek,
+      };
     };
-  };
+
+    return [
+      getSimulationSummary(simulationResults),
+      getSimulationSummary(baselineResults),
+    ];
+  }, [simulationResults, baselineResults]);
 
   const saveAsBaseline = () => {
     setBaselineResults(simulationResults);
@@ -361,7 +368,7 @@ const DeveloperProductivitySimulator = () => {
     setShowComparison(false);
   };
 
-  const getHeatmapData = () => {
+  const heatmapData = useMemo(() => {
     // Initialize data structure for 8 hours x 5 days
     const heatmapData = {
       focus: Array(8)
@@ -464,7 +471,7 @@ const DeveloperProductivitySimulator = () => {
     }
 
     return averages;
-  };
+  }, [simulationResults]);
 
   const getHeatmapColor = (value: number, min: number, max: number) => {
     if (max === min) return 0.1;
@@ -930,122 +937,112 @@ const DeveloperProductivitySimulator = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(() => {
-                  const currentSummary =
-                    getSimulationSummary(simulationResults);
-                  const baselineSummary = getSimulationSummary(baselineResults);
-
-                  return (
-                    <>
+                {
+                  <>
+                    <div
+                      className="border border-current rounded p-3 text-center"
+                      style={{
+                        backgroundColor: "var(--background)",
+                        borderLeftColor: "var(--accent)",
+                        borderLeftWidth: "4px",
+                      }}
+                    >
                       <div
-                        className="border border-current rounded p-3 text-center"
-                        style={{
-                          backgroundColor: "var(--background)",
-                          borderLeftColor: "var(--accent)",
-                          borderLeftWidth: "4px",
-                        }}
+                        className="text-2xl font-bold font-mono"
+                        style={{ color: "var(--accent)" }}
                       >
+                        {currentSummary?.totalFeatures || 0}
+                      </div>
+                      <div
+                        className="text-xs mb-1"
+                        style={{ color: "var(--foreground)", opacity: 0.7 }}
+                      >
+                        Completed Features
+                      </div>
+                      <div
+                        className="text-xs font-mono"
+                        style={{ color: "var(--accent)", opacity: 0.8 }}
+                      >
+                        {currentSummary?.averageFeaturesPerWeek || 0}/week avg
+                      </div>
+                      {showComparison && baselineSummary && currentSummary && (
                         <div
-                          className="text-2xl font-bold font-mono"
-                          style={{ color: "var(--accent)" }}
-                        >
-                          {currentSummary?.totalFeatures || 0}
-                        </div>
-                        <div
-                          className="text-xs mb-1"
-                          style={{ color: "var(--foreground)", opacity: 0.7 }}
-                        >
-                          Completed Features
-                        </div>
-                        <div
-                          className="text-xs font-mono"
-                          style={{ color: "var(--accent)", opacity: 0.8 }}
-                        >
-                          {currentSummary?.averageFeaturesPerWeek || 0}/week avg
-                        </div>
-                        {showComparison &&
-                          baselineSummary &&
-                          currentSummary && (
-                            <div
-                              className="text-xs font-mono mt-1"
-                              style={{
-                                color:
-                                  currentSummary.totalFeatures >=
-                                  baselineSummary.totalFeatures
-                                    ? "var(--tertiary)"
-                                    : "var(--error)",
-                                opacity: 0.8,
-                              }}
-                            >
-                              {currentSummary.totalFeatures >=
+                          className="text-xs font-mono mt-1"
+                          style={{
+                            color:
+                              currentSummary.totalFeatures >=
                               baselineSummary.totalFeatures
-                                ? "+"
-                                : ""}
-                              {currentSummary.totalFeatures -
-                                baselineSummary.totalFeatures}{" "}
-                              vs baseline
-                            </div>
-                          )}
-                      </div>
+                                ? "var(--tertiary)"
+                                : "var(--error)",
+                            opacity: 0.8,
+                          }}
+                        >
+                          {currentSummary.totalFeatures >=
+                          baselineSummary.totalFeatures
+                            ? "+"
+                            : ""}
+                          {currentSummary.totalFeatures -
+                            baselineSummary.totalFeatures}{" "}
+                          vs baseline
+                        </div>
+                      )}
+                    </div>
 
+                    <div
+                      className="border border-current rounded p-3 text-center"
+                      style={{
+                        backgroundColor: "var(--background)",
+                        borderLeftColor: "var(--secondary)",
+                        borderLeftWidth: "4px",
+                      }}
+                    >
                       <div
-                        className="border border-current rounded p-3 text-center"
-                        style={{
-                          backgroundColor: "var(--background)",
-                          borderLeftColor: "var(--secondary)",
-                          borderLeftWidth: "4px",
-                        }}
+                        className="text-2xl font-bold font-mono"
+                        style={{ color: "var(--secondary)" }}
                       >
-                        <div
-                          className="text-2xl font-bold font-mono"
-                          style={{ color: "var(--secondary)" }}
-                        >
-                          {Math.round(currentSummary?.totalProductivity || 0)}
-                        </div>
-                        <div
-                          className="text-xs mb-1"
-                          style={{ color: "var(--foreground)", opacity: 0.7 }}
-                        >
-                          Total Productivity
-                        </div>
-                        <div
-                          className="text-xs font-mono"
-                          style={{ color: "var(--secondary)", opacity: 0.8 }}
-                        >
-                          {Math.round(
-                            currentSummary?.averageProductivityPerWeek || 0,
-                          )}
-                          /week avg
-                        </div>
-                        {showComparison &&
-                          baselineSummary &&
-                          currentSummary && (
-                            <div
-                              className="text-xs font-mono mt-1"
-                              style={{
-                                color:
-                                  currentSummary.totalProductivity >=
-                                  baselineSummary.totalProductivity
-                                    ? "var(--tertiary)"
-                                    : "var(--error)",
-                                opacity: 0.8,
-                              }}
-                            >
-                              {currentSummary.totalProductivity >=
-                              baselineSummary.totalProductivity
-                                ? "+"
-                                : ""}
-                              {Math.round(
-                                currentSummary.totalProductivity -
-                                  baselineSummary.totalProductivity,
-                              )}{" "}
-                              vs baseline
-                            </div>
-                          )}
+                        {Math.round(currentSummary?.totalProductivity || 0)}
                       </div>
-                    </>
-                  );
-                })()}
+                      <div
+                        className="text-xs mb-1"
+                        style={{ color: "var(--foreground)", opacity: 0.7 }}
+                      >
+                        Total Productivity
+                      </div>
+                      <div
+                        className="text-xs font-mono"
+                        style={{ color: "var(--secondary)", opacity: 0.8 }}
+                      >
+                        {Math.round(
+                          currentSummary?.averageProductivityPerWeek || 0,
+                        )}
+                        /week avg
+                      </div>
+                      {showComparison && baselineSummary && currentSummary && (
+                        <div
+                          className="text-xs font-mono mt-1"
+                          style={{
+                            color:
+                              currentSummary.totalProductivity >=
+                              baselineSummary.totalProductivity
+                                ? "var(--tertiary)"
+                                : "var(--error)",
+                            opacity: 0.8,
+                          }}
+                        >
+                          {currentSummary.totalProductivity >=
+                          baselineSummary.totalProductivity
+                            ? "+"
+                            : ""}
+                          {Math.round(
+                            currentSummary.totalProductivity -
+                              baselineSummary.totalProductivity,
+                          )}{" "}
+                          vs baseline
+                        </div>
+                      )}
+                    </div>
+                  </>
+                }
               </div>
             </div>
 
@@ -1061,41 +1058,38 @@ const DeveloperProductivitySimulator = () => {
                 Hourly Patterns
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(() => {
-                  const heatmapData = getHeatmapData();
-                  return (
-                    <>
-                      {renderHeatmap(
-                        "Average Focus",
-                        heatmapData.focus.data,
-                        heatmapData.focus.min,
-                        heatmapData.focus.max,
-                        "var(--accent)",
-                      )}
-                      {renderHeatmap(
-                        "Average Fatigue",
-                        heatmapData.fatigue.data,
-                        heatmapData.fatigue.min,
-                        heatmapData.fatigue.max,
-                        "var(--error)",
-                      )}
-                      {renderHeatmap(
-                        "Average Productivity",
-                        heatmapData.productivity.data,
-                        heatmapData.productivity.min,
-                        heatmapData.productivity.max,
-                        "var(--secondary)",
-                      )}
-                      {renderHeatmap(
-                        "Completed Features",
-                        heatmapData.features.data,
-                        heatmapData.features.min,
-                        heatmapData.features.max,
-                        "var(--tertiary)",
-                      )}
-                    </>
-                  );
-                })()}
+                {
+                  <>
+                    {renderHeatmap(
+                      "Average Focus",
+                      heatmapData.focus.data,
+                      heatmapData.focus.min,
+                      heatmapData.focus.max,
+                      "var(--accent)",
+                    )}
+                    {renderHeatmap(
+                      "Average Fatigue",
+                      heatmapData.fatigue.data,
+                      heatmapData.fatigue.min,
+                      heatmapData.fatigue.max,
+                      "var(--error)",
+                    )}
+                    {renderHeatmap(
+                      "Average Productivity",
+                      heatmapData.productivity.data,
+                      heatmapData.productivity.min,
+                      heatmapData.productivity.max,
+                      "var(--secondary)",
+                    )}
+                    {renderHeatmap(
+                      "Completed Features",
+                      heatmapData.features.data,
+                      heatmapData.features.min,
+                      heatmapData.features.max,
+                      "var(--tertiary)",
+                    )}
+                  </>
+                }
               </div>
             </div>
 
@@ -1112,7 +1106,7 @@ const DeveloperProductivitySimulator = () => {
               </h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={getWeekSummaryData()}>
+                  <ComposedChart data={weeklySummary}>
                     <CartesianGrid
                       strokeDasharray="3 3"
                       stroke="var(--foreground)"
