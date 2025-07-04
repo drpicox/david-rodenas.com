@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -38,7 +38,37 @@ type SimulationSummary = {
 // Simulation functions
 const normalize = (x: number) => Math.max(0, Math.min(100, x));
 
-const getMeeting = (calendar: Record<string, string>, meetingTypes: Record<string, MeetingType>, hour: number, day: number) => {
+// Feature size conversion functions
+const sliderToFeatureSize = (sliderValue: number) => {
+  if (sliderValue <= 500) {
+    return sliderValue;
+  } else if (sliderValue <= 750) {
+    return 500 + (sliderValue - 500) * 2;
+  } else if (sliderValue < 1000) {
+    return 1000 + (sliderValue - 750) * 35;
+  } else {
+    return 10000;
+  }
+};
+
+const featureSizeToSlider = (featureSize: number) => {
+  if (featureSize <= 500) {
+    return featureSize;
+  } else if (featureSize <= 1000) {
+    return 500 + (featureSize - 500) / 2;
+  } else if (featureSize < 10000) {
+    return 750 + (featureSize - 1000) / 35;
+  } else {
+    return 1000;
+  }
+};
+
+const getMeeting = (
+  calendar: Record<string, string>,
+  meetingTypes: Record<string, MeetingType>,
+  hour: number,
+  day: number,
+) => {
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
 
@@ -137,14 +167,18 @@ const DeveloperProductivitySimulator = () => {
   const [newMeetingName, setNewMeetingName] = useState("");
   const [newMeetingFocus, setNewMeetingFocus] = useState(0);
   const [newMeetingFatigue, setNewMeetingFatigue] = useState(0);
-  const [baselineResults, setBaselineResults] = useState<SimulationResult[] | null>(null);
+  const [baselineResults, setBaselineResults] = useState<
+    SimulationResult[] | null
+  >(null);
   const [showComparison, setShowComparison] = useState(false);
 
-  const [meetingTypes, setMeetingTypes] = useState<Record<string, MeetingType>>({
-    "🍽️ Lunch": { focus: -100, fatigue: -100, color: "var(--accent)" },
-    "🏃 Sprint plan": { focus: -100, fatigue: 50, color: "var(--secondary)" },
-    "😴 Boring": { focus: -50, fatigue: -25, color: "var(--error)" },
-  });
+  const [meetingTypes, setMeetingTypes] = useState<Record<string, MeetingType>>(
+    {
+      "🍽️ Lunch": { focus: -100, fatigue: -100, color: "var(--accent)" },
+      "🏃 Sprint plan": { focus: -100, fatigue: 50, color: "var(--secondary)" },
+      "😴 Boring": { focus: -50, fatigue: -25, color: "var(--error)" },
+    },
+  );
 
   const [calendar, setCalendar] = useState<Record<string, string>>(() => {
     const initialCalendar: Record<string, string> = {};
@@ -156,8 +190,10 @@ const DeveloperProductivitySimulator = () => {
   });
 
   const [isDragging, setIsDragging] = useState(false);
-  const [dragAction, setDragAction] = useState<'add' | 'remove' | null>(null);
-  const [simulationResults, setSimulationResults] = useState<SimulationResult[]>([]);
+  const [dragAction, setDragAction] = useState<"add" | "remove" | null>(null);
+  const [simulationResults, setSimulationResults] = useState<
+    SimulationResult[]
+  >([]);
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const timeSlots = Array.from({ length: 8 }, (_, i) => `${9 + i}:00`);
@@ -201,7 +237,7 @@ const DeveloperProductivitySimulator = () => {
       ...meetingTypes,
       [currentMeetingType]: {
         ...meetingTypes[currentMeetingType],
-        [field]: field === 'color' ? value : Number.parseInt(value),
+        [field]: field === "color" ? value : Number.parseInt(value),
       },
     });
   };
@@ -290,7 +326,9 @@ const DeveloperProductivitySimulator = () => {
     return weekSummary;
   };
 
-  const getSimulationSummary = (results: SimulationResult[] | null): SimulationSummary | null => {
+  const getSimulationSummary = (
+    results: SimulationResult[] | null,
+  ): SimulationSummary | null => {
     if (!results || results.length === 0) return null;
     const { completedFeatures = 0, accumulatedProductivity = 0 } =
       results[results.length - 1] ?? {};
@@ -434,7 +472,13 @@ const DeveloperProductivitySimulator = () => {
     return Math.max(0.1, Math.min(1, intensity));
   };
 
-  const renderHeatmap = (title: string, data: number[][], min: number, max: number, color: string) => (
+  const renderHeatmap = (
+    title: string,
+    data: number[][],
+    min: number,
+    max: number,
+    color: string,
+  ) => (
     <div className="border border-current rounded p-3">
       <h4
         className="text-xs font-semibold mb-2"
@@ -554,8 +598,12 @@ const DeveloperProductivitySimulator = () => {
               type="range"
               min="0"
               max="1000"
-              value={featureSize}
-              onChange={(e) => setFeatureSize(Number.parseInt(e.target.value))}
+              value={featureSizeToSlider(featureSize)}
+              onChange={(e) =>
+                setFeatureSize(
+                  sliderToFeatureSize(Number.parseInt(e.target.value)),
+                )
+              }
               className="flex-1 h-1 rounded-lg appearance-none cursor-pointer slider productivity-slider"
               style={{ background: "var(--foreground)", opacity: 0.3 }}
             />
@@ -915,27 +963,29 @@ const DeveloperProductivitySimulator = () => {
                         >
                           {currentSummary?.averageFeaturesPerWeek || 0}/week avg
                         </div>
-                        {showComparison && baselineSummary && currentSummary && (
-                          <div
-                            className="text-xs font-mono mt-1"
-                            style={{
-                              color:
-                                currentSummary.totalFeatures >=
-                                baselineSummary.totalFeatures
-                                  ? "var(--tertiary)"
-                                  : "var(--error)",
-                              opacity: 0.8,
-                            }}
-                          >
-                            {currentSummary.totalFeatures >=
-                            baselineSummary.totalFeatures
-                              ? "+"
-                              : ""}
-                            {currentSummary.totalFeatures -
-                              baselineSummary.totalFeatures}{" "}
-                            vs baseline
-                          </div>
-                        )}
+                        {showComparison &&
+                          baselineSummary &&
+                          currentSummary && (
+                            <div
+                              className="text-xs font-mono mt-1"
+                              style={{
+                                color:
+                                  currentSummary.totalFeatures >=
+                                  baselineSummary.totalFeatures
+                                    ? "var(--tertiary)"
+                                    : "var(--error)",
+                                opacity: 0.8,
+                              }}
+                            >
+                              {currentSummary.totalFeatures >=
+                              baselineSummary.totalFeatures
+                                ? "+"
+                                : ""}
+                              {currentSummary.totalFeatures -
+                                baselineSummary.totalFeatures}{" "}
+                              vs baseline
+                            </div>
+                          )}
                       </div>
 
                       <div
@@ -967,29 +1017,31 @@ const DeveloperProductivitySimulator = () => {
                           )}
                           /week avg
                         </div>
-                        {showComparison && baselineSummary && currentSummary && (
-                          <div
-                            className="text-xs font-mono mt-1"
-                            style={{
-                              color:
-                                currentSummary.totalProductivity >=
-                                baselineSummary.totalProductivity
-                                  ? "var(--tertiary)"
-                                  : "var(--error)",
-                              opacity: 0.8,
-                            }}
-                          >
-                            {currentSummary.totalProductivity >=
-                            baselineSummary.totalProductivity
-                              ? "+"
-                              : ""}
-                            {Math.round(
-                              currentSummary.totalProductivity -
-                                baselineSummary.totalProductivity,
-                            )}{" "}
-                            vs baseline
-                          </div>
-                        )}
+                        {showComparison &&
+                          baselineSummary &&
+                          currentSummary && (
+                            <div
+                              className="text-xs font-mono mt-1"
+                              style={{
+                                color:
+                                  currentSummary.totalProductivity >=
+                                  baselineSummary.totalProductivity
+                                    ? "var(--tertiary)"
+                                    : "var(--error)",
+                                opacity: 0.8,
+                              }}
+                            >
+                              {currentSummary.totalProductivity >=
+                              baselineSummary.totalProductivity
+                                ? "+"
+                                : ""}
+                              {Math.round(
+                                currentSummary.totalProductivity -
+                                  baselineSummary.totalProductivity,
+                              )}{" "}
+                              vs baseline
+                            </div>
+                          )}
                       </div>
                     </>
                   );
