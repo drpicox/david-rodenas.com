@@ -164,6 +164,13 @@ const simulateProductivity = (
   return results;
 };
 
+type SimulationParameters = {
+  focus: number;
+  fatigue: number;
+  featureSize: number;
+  weeks: number;
+};
+
 const DeveloperProductivitySimulator = () => {
   const [focus, setFocus] = useState(25);
   const [fatigue, setFatigue] = useState(15);
@@ -178,6 +185,13 @@ const DeveloperProductivitySimulator = () => {
   const [baselineResults, setBaselineResults] = useState<
     SimulationResult[] | null
   >(null);
+  const [baselineParameters, setBaselineParameters] =
+    useState<SimulationParameters>({
+      focus: 25,
+      fatigue: 15,
+      featureSize: 300,
+      weeks: 8,
+    });
   const [showComparison, setShowComparison] = useState(false);
 
   const [meetingTypes, setMeetingTypes] = useState<Record<string, MeetingType>>(
@@ -337,6 +351,7 @@ const DeveloperProductivitySimulator = () => {
   const [currentSummary, baselineSummary] = useMemo(() => {
     const getSimulationSummary = (
       results: SimulationResult[] | null,
+      { featureSize, weeks }: SimulationParameters,
     ): SimulationSummary | null => {
       if (!results || results.length === 0) return null;
       const { completedFeatures = 0, accumulatedProductivity = 0 } =
@@ -361,13 +376,19 @@ const DeveloperProductivitySimulator = () => {
     };
 
     return [
-      getSimulationSummary(simulationResults),
-      getSimulationSummary(baselineResults),
+      getSimulationSummary(simulationResults, {
+        focus,
+        fatigue,
+        featureSize,
+        weeks,
+      }),
+      getSimulationSummary(baselineResults, baselineParameters),
     ];
-  }, [simulationResults, baselineResults]);
+  }, [simulationResults, baselineResults, baselineParameters]);
 
   const saveAsBaseline = () => {
     setBaselineResults(simulationResults);
+    setBaselineParameters({ focus, fatigue, featureSize, weeks });
     setShowComparison(true);
   };
 
