@@ -63,6 +63,14 @@ const featureSizeToSlider = (featureSize: number) => {
   }
 };
 
+// Time formatting function
+const formatTime12Hour = (timeStr: string) => {
+  const hour = Number.parseInt(timeStr.split(":")[0]);
+  const ampm = hour >= 12 ? "pm" : "am";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}${ampm}`;
+};
+
 const getMeeting = (
   calendar: Record<string, string>,
   meetingTypes: Record<string, MeetingType>,
@@ -513,7 +521,7 @@ const DeveloperProductivitySimulator = () => {
               className="w-8 text-xs font-mono opacity-60"
               style={{ color: "var(--foreground)" }}
             >
-              {timeSlot.split(":")[0]}
+              {formatTime12Hour(timeSlot).replace(/pm|am/, "")}
             </div>
             {data[hour].map((value, day) => {
               const opacity = getHeatmapColor(value, min, max);
@@ -525,7 +533,7 @@ const DeveloperProductivitySimulator = () => {
                     backgroundColor: color,
                     opacity: opacity,
                   }}
-                  title={`${timeSlot} ${["Mon", "Tue", "Wed", "Thu", "Fri"][day]}: ${Math.round(value * 100) / 100}`}
+                  title={`${formatTime12Hour(timeSlot)} ${["Mon", "Tue", "Wed", "Thu", "Fri"][day]}: ${Math.round(value * 100) / 100}`}
                 >
                   <span
                     className="text-xs font-mono"
@@ -853,7 +861,7 @@ const DeveloperProductivitySimulator = () => {
                   opacity: 0.7,
                 }}
               >
-                {timeSlot}
+                {formatTime12Hour(timeSlot)}
               </div>
               {days.map((day) => {
                 const key = `${day}-${timeSlot}`;
