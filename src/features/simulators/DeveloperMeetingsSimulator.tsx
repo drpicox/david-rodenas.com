@@ -171,7 +171,7 @@ type SimulationParameters = {
   weeks: number;
 };
 
-const DeveloperProductivitySimulator = () => {
+const DeveloperMeetingsSimulator = () => {
   const [focus, setFocus] = useState(25);
   const [fatigue, setFatigue] = useState(15);
   const [featureSize, setFeatureSize] = useState(300);
@@ -1299,4 +1299,4 @@ const DeveloperProductivitySimulator = () => {
   );
 };
 
-export default DeveloperProductivitySimulator;
+export default DeveloperMeetingsSimulator;

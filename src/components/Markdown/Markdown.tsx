@@ -24,8 +24,8 @@ const TechnicalDebtSimulator = dynamic(
   },
 );
 
-const DeveloperProductivitySimulator = dynamic(
-  () => import("../../features/simulators/DeveloperProductivitySimulator"),
+const DeveloperMeetingsSimulator = dynamic(
+  () => import("../../features/simulators/DeveloperMeetingsSimulator"),
   {
     ssr: false,
     loading: () => <div className="text-center py-8">Loading simulator...</div>,
@@ -35,7 +35,7 @@ const DeveloperProductivitySimulator = dynamic(
 // Component registry for dynamic rendering
 const componentRegistry = {
   TechnicalDebtSimulator,
-  DeveloperProductivitySimulator,
+  DeveloperMeetingsSimulator,
 } as const;
 
 // Extend the Element interface to include dataLanguage property

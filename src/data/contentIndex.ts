@@ -586,8 +586,8 @@ export const contentIndex: ContentIndex = {
   {
     "path": "/content/simulators/README.md",
     "name": "README.md",
-    "size": 1660,
-    "modified": "2025-06-06T12:39:14.273Z",
+    "size": 2215,
+    "modified": "2025-07-01T10:01:42.831Z",
     "created": "2025-06-06T12:39:14.273Z",
     "type": "md",
     "title": "Software Development Simulators",
@@ -595,21 +595,21 @@ export const contentIndex: ContentIndex = {
     "tags": [],
     "author": "",
     "user": "",
-    "date": "2025-06-06T12:39:14.273Z"
+    "date": "2025-07-01T10:01:42.831Z"
   },
   {
-    "path": "/content/simulators/developer-productivity-simulator.md",
-    "name": "developer-productivity-simulator.md",
-    "size": 4357,
-    "modified": "2025-06-13T11:42:16.044Z",
+    "path": "/content/simulators/developer-meetings-simulator.md",
+    "name": "developer-meetings-simulator.md",
+    "size": 6275,
+    "modified": "2025-07-05T07:52:35.744Z",
     "created": "2025-06-13T11:42:16.043Z",
     "type": "md",
-    "title": "Developer Productivity Simulator",
-    "description": "Interactive simulator showing how meetings and interruptions affect developer focus and productivity",
+    "title": "Developer Meetings Simulator",
+    "description": "Interactive simulator showing how different meeting types and schedules affect developer productivity and project delivery",
     "tags": [],
     "author": "",
     "user": "",
-    "date": "2025-06-13T11:42:16.044Z"
+    "date": "2025-07-05T07:52:35.744Z"
   },
   {
     "path": "/content/simulators/technical-debt-simulator.md",
@@ -742,6 +742,6 @@ export const contentIndex: ContentIndex = {
   }
 ],
   count: 46,
-  generated: "2025-06-13T11:42:35.688Z"
+  generated: "2025-07-05T08:02:28.121Z"
 };
 

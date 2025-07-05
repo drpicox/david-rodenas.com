@@ -1,11 +1,11 @@
 ---
-title: "Developer Productivity Simulator"
-description: "Interactive simulator showing how focus, fatigue, and meetings affect project delivery over time"
+title: "Developer Meetings Simulator"
+description: "Interactive simulator showing how different meeting types and schedules affect developer productivity and project delivery"
 ---
 
-# Developer Productivity Simulator
+# Developer Meetings Simulator
 
-This interactive simulator demonstrates how individual focus levels, fatigue accumulation, and meeting schedules affect project productivity and feature delivery over multiple weeks.
+This interactive simulator demonstrates how different meeting types, schedules, and their impact on developer focus and fatigue affect project productivity and feature delivery over multiple weeks.
 
 ## How It Works
 
@@ -18,7 +18,7 @@ The simulator models project work based on:
 
 ## Interactive Simulation
 
-<DeveloperProductivitySimulator />
+<DeveloperMeetingsSimulator />
 
 ## Core Mechanics
 
@@ -57,7 +57,7 @@ For each work hour (non-meeting):
 
 ### Interactive Calendar
 
-- **Drag and Drop**: Click and drag to schedule meetings across the week
+- **Click and drag**: Click and drag to schedule meetings across the week
 - **5-Day Schedule**: Monday through Friday, 9:00 AM to 4:00 PM (8 hours)
 - **Default Schedule**: Lunch meetings pre-scheduled at 12:00 PM daily
 - **Meeting Types**: Select different meeting types and paint them on the calendar
