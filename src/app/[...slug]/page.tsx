@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  return contentIndex.files
+  const paths = contentIndex.files
     .map((file) => {
       // Convert '/content/path/to/file.md' to ['path', 'to', 'file']
       // Skip the '/content/' prefix and remove file extension
@@ -27,6 +27,8 @@ export async function generateStaticParams() {
       return { slug };
     })
     .filter(({ slug }) => slug.length > 0);
+
+  return paths;
 }
 
 export default async function ContentPage({
@@ -40,8 +42,11 @@ export default async function ContentPage({
     );
   }
 
+  // Handle trailing slash case by removing the empty string at the end
+  const cleanSlug = slug[slug.length - 1] === "" ? slug.slice(0, -1) : slug;
+
   // Convert slug array back to a path
-  const path = slug.join("/");
+  const path = cleanSlug.join("/");
 
   // Check if the path exists in our content index
   const contentFile = contentIndex.files.find(
