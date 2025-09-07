@@ -4,6 +4,7 @@ import { CommandParser } from "@/features/shell/parser/CommandParser";
 import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { getDirectory } from "@/utils/content/directories";
 import { navigatePath, toContentPath, pathToUrlPath } from "@/utils/pathUtils";
+import { trackVirtualPageView } from "@/utils/analytics";
 import type { ParsedCommand } from "../parser/ParsedCommand";
 
 export class CdCommand extends AbstractCommand {
@@ -50,5 +51,8 @@ export class CdCommand extends AbstractCommand {
 
     // Update browser URL without reloading the page
     window.history.pushState({}, "", urlPath);
+
+    // Track the virtual page view with GoatCounter
+    trackVirtualPageView(urlPath, `Directory: ${path}`);
   }
 }

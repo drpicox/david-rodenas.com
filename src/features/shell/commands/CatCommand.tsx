@@ -6,6 +6,7 @@ import { TerminalScreen } from "@/features/terminal/TerminalScreen";
 import { getFileByAbsolutePath } from "@/utils/content/files";
 import type { ParsedCommand } from "../parser/ParsedCommand";
 import { pathToUrlPath, toContentPath } from "@/utils/pathUtils";
+import { trackVirtualPageView } from "@/utils/analytics";
 
 export class CatCommand extends AbstractCommand {
   static #parser = new CommandParser(
@@ -71,5 +72,8 @@ export class CatCommand extends AbstractCommand {
     
     // Update browser URL without reloading the page
     window.history.pushState({}, "", urlPath);
+
+    // Track the virtual page view with GoatCounter
+    trackVirtualPageView(urlPath, `File: ${fileName}`);
   }
 }
