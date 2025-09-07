@@ -35,6 +35,11 @@ export default function RootLayout({
             })();
           `}
         </Script>
+        <Script
+          data-goatcounter="https://drpicox.goatcounter.com/count"
+          src="//gc.zgo.at/count.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body>
         <div className="max-w-4xl mx-auto p-4">
