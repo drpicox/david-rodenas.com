@@ -20,6 +20,7 @@ function render(route: string): string {
 describe("renderDocument", () => {
   it("puts the words in the HTML, which is the whole reason this exists", () => {
     expect(render("/")).toContain("I build the foundations");
+    expect(render("/")).toContain('<link rel="icon" type="image/png" href="/favicon.png">');
     expect(render("/")).toContain("Hello.");
   });
 

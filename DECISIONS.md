@@ -102,7 +102,10 @@ arrives, so typing into a page that is still loading loses nothing.
 ### The favicon is the planet
 The same world, 32 pixels wide, painted into the tab's icon a few times a
 second from the same rotation. Chrome and Firefox turn it; Safari shows the
-first frame. Until the script runs there is the old `favicon.ico`.
+first frame. Until the script runs there is `favicon.png`: a still world,
+grown with the header's recipe from seed 1999 by `tools/write-favicon.mjs`.
+It is all that bookmarks, the history and a background tab ever see, so it
+had to be a planet too — the triangle inherited from the 2025 site is gone.
 
 ### One external script: GoatCounter
 Analytics have to come from somewhere, and the 2025 site already counted at

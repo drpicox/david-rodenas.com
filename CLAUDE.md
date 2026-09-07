@@ -29,6 +29,8 @@ traced, write the weaker sentence.
 - `npm run build` — typecheck, then a static build into `dist/`
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
+- `node tools/write-favicon.mjs [seed]` — grow one still world into
+  `public/favicon.png`, the icon a browser has before the script runs
 
 ## Architecture
 
