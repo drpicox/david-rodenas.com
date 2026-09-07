@@ -211,9 +211,9 @@ export function mountWorlds(host: HTMLElement): () => void {
     el(
       "div",
       { class: "dials" },
-      dial("levels", "Detail", 2, 5, 1, (v) => `${v} splits`),
-      dial("roughness", "Roughness", 0.05, 0.5, 0.01, (v) => v.toFixed(2)),
-      dial("share", "Sea", 0.2, 0.85, 0.01, (v) => `${Math.round(v * 100)}%`),
+      dial("levels", "Detail", 2, 6, 1, (v) => `${v} splits`),
+      dial("roughness", "Roughness", 0.02, 1, 0.01, (v) => v.toFixed(2)),
+      dial("share", "Sea", 0, 0.98, 0.01, (v) => `${Math.round(v * 100)}%`),
     ),
     caption,
   );

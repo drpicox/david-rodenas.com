@@ -38,6 +38,20 @@ for the first entry in the work list.
 The pipeline's order is asserted by a test: painting before the land exists
 leaves one flat colour. Order is meaning, not style.
 
+The climate and the paint are the 1999 code, read from the source on 7
+September 2026 after the author noticed the summits away from the poles were
+not white. `PosarTemperatura` is linear in the radius, from the equator's
+kelvin at the lowest point to the peak's at the highest, plus a latitude
+term: height alone makes a summit cold. `TexturaTemperatura` is a table by
+temperature band and surface type, tinted by surface type; the surface type
+is a fractal value carried through the subdivision, as in
+`FractalRadialTexturat`. The sea is blue to cyan by surface type, not depth.
+The values (300, 240, 240 K) are not in the code — they were typed into the
+GUI — and were chosen to match `planeta1.jpg`. The sea runs before the
+climate so that the lowest point is sea level and the coast gets the
+equator's number; the first attempt measured from the deepest seabed and left
+the coast at 277 K.
+
 ### Positioning: the role in the headline, the rarity underneath
 "I design languages" is true and almost unhireable — perhaps four companies in
 the world hire for it. The work is *platform* work, done five times in

@@ -3,6 +3,8 @@ export interface Mesh {
   readonly directions: Float32Array;
   /** Distance from the centre of each vertex. Relief lives here. */
   readonly radii: Float32Array;
+  /** The 1999 "tipus de superfície": a number in 0..1 per vertex that chooses and tints the colour. */
+  readonly surface: Float32Array;
   /** Three vertex indices per face. */
   readonly faces: Uint32Array;
   readonly faceCount: number;
@@ -28,13 +30,14 @@ const TRIANGLES: readonly (readonly [number, number, number])[] = [
 interface Vertex {
   direction: [number, number, number];
   radius: number;
+  surface: number;
 }
 
 /** The solid the whole thing starts from: twenty faces, all at radius one. */
 export function icosahedron(): Mesh {
   const vertices = CORNERS.map(([x, y, z]) => {
     const length = Math.hypot(x, y, z);
-    return { direction: [x / length, y / length, z / length] as [number, number, number], radius: 1 };
+    return { direction: [x / length, y / length, z / length] as [number, number, number], radius: 1, surface: 0 };
   });
   return meshOf(vertices, TRIANGLES.map((face) => [...face] as [number, number, number]));
 }
@@ -47,6 +50,10 @@ export function icosahedron(): Mesh {
  */
 export type Displace = (length: number) => number;
 
+/** The surface type of a new midpoint, from the two ends of its edge. Plain average unless told otherwise. */
+export type Blend = (a: number, b: number) => number;
+const AVERAGE: Blend = (a, b) => (a + b) / 2;
+
 /**
  * Subdivide, displacing each new midpoint along its own radius.
  *
@@ -55,7 +62,7 @@ export type Displace = (length: number) => number;
  * the old ones as well would average the mountains away, which is exactly what
  * a fractal landscape must not do.
  */
-export function subdivide(mesh: Mesh, displace: Displace): Mesh {
+export function subdivide(mesh: Mesh, displace: Displace, blend: Blend = AVERAGE): Mesh {
   const vertices: Vertex[] = Array.from({ length: mesh.vertexCount }, (_unused, index) => ({
     direction: [
       mesh.directions[index * 3] ?? 0,
@@ -63,6 +70,7 @@ export function subdivide(mesh: Mesh, displace: Displace): Mesh {
       mesh.directions[index * 3 + 2] ?? 0,
     ],
     radius: mesh.radii[index] ?? 1,
+    surface: mesh.surface[index] ?? 0,
   }));
 
   const middles = new Map<string, number>();
@@ -86,9 +94,12 @@ export function subdivide(mesh: Mesh, displace: Displace): Mesh {
     const [mx, my, mz] = [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2];
     const scale = Math.hypot(mx, my, mz) || 1;
 
+    // The texture is drawn before the height, as the 1999 code drew them.
+    const surface = blend(first.surface, second.surface);
     vertices.push({
       direction: [mx / scale, my / scale, mz / scale],
       radius: (first.radius + second.radius) / 2 + displace(length),
+      surface,
     });
 
     const index = vertices.length - 1;
@@ -113,11 +124,13 @@ export function subdivide(mesh: Mesh, displace: Displace): Mesh {
 function meshOf(vertices: readonly Vertex[], faces: readonly (readonly [number, number, number])[]): Mesh {
   const directions = new Float32Array(vertices.length * 3);
   const radii = new Float32Array(vertices.length);
-  vertices.forEach(({ direction, radius }, index) => {
-    directions[index * 3] = direction[0];
-    directions[index * 3 + 1] = direction[1];
-    directions[index * 3 + 2] = direction[2];
-    radii[index] = radius;
+  const surface = new Float32Array(vertices.length);
+  vertices.forEach((vertex, index) => {
+    directions[index * 3] = vertex.direction[0];
+    directions[index * 3 + 1] = vertex.direction[1];
+    directions[index * 3 + 2] = vertex.direction[2];
+    radii[index] = vertex.radius;
+    surface[index] = vertex.surface;
   });
 
   const indices = new Uint32Array(faces.length * 3);
@@ -130,6 +143,7 @@ function meshOf(vertices: readonly Vertex[], faces: readonly (readonly [number, 
   return {
     directions,
     radii,
+    surface,
     faces: indices,
     faceCount: faces.length,
     vertexCount: vertices.length,

@@ -44,10 +44,12 @@ Java 1.1.8 on MS-DOS, writing worlds out as VRML.
 It is a pipeline of filters, and the order is part of the meaning. Start from
 an icosahedron. Split every edge and push each new midpoint out or in by a
 fraction of the edge it came from, so the first rounds carve continents and the
-last ones only roughen a slope. Work out the climate from latitude and height.
-Put in the sea as a minimum radius: everything below it is raised up to it,
-which is why a coastline reads as a coastline and not as a change of colour.
-Only then paint it. Paint first and you get a ball of one colour.
+last ones only roughen a slope. Put in the sea as a minimum radius:
+everything below it is raised up to it, which is why a coastline reads as a
+coastline and not as a change of colour. Work out the climate, in kelvin,
+from height above the sea and from latitude, so that a summit is cold wherever
+it stands. Only then paint it, from the 1999 table of colours by temperature.
+Paint first and you get a ball of one colour.
 
 Reload, and it is a different world. The same pipeline runs here, rewritten in
 TypeScript with nothing underneath it, and you can [turn the dials yourself](/worlds/).
