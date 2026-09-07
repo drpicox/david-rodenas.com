@@ -38,7 +38,7 @@ export function mountWorlds(host: HTMLElement): () => void {
   let tilt = -0.38;
   let spinning = !stillPreferred;
   let dragging: { x: number; y: number; at: number } | null = null;
-  /** Radians per second the hand was turning the world at, kept after it lets go. */
+  /** Radians per second the hand was turning the world at, kept after it lets go. Positive is rightwards. */
   let momentum = 0;
   let lastFrame = performance.now();
 
@@ -116,9 +116,12 @@ export function mountWorlds(host: HTMLElement): () => void {
         const floor = spinning ? IDLE_SPEED : 0;
         if (Math.abs(momentum) <= floor || Math.abs(momentum) < 0.01) momentum = 0;
       }
-      const speed = momentum !== 0 ? momentum : spinning ? IDLE_SPEED : 0;
-      if (speed !== 0) {
-        rotation += speed * seconds;
+      // The renderer turns the surface leftwards as rotation grows, so a rightward hand takes it away.
+      if (momentum !== 0) {
+        rotation -= momentum * seconds;
+        paint();
+      } else if (spinning) {
+        rotation += IDLE_SPEED * seconds;
         paint();
       }
       slideSky((momentum !== 0 ? momentum : 0) * seconds + (seconds / SKY_SECONDS) * Math.PI * 2);
@@ -136,7 +139,7 @@ export function mountWorlds(host: HTMLElement): () => void {
     if (!dragging) return;
     const scale = canvas.clientWidth || SIZE;
     const turned = ((event.clientX - dragging.x) / scale) * Math.PI;
-    rotation += turned;
+    rotation -= turned;
     const before = tilt;
     tilt = Math.max(-1.2, Math.min(1.2, tilt - ((event.clientY - dragging.y) / scale) * Math.PI));
     slideSky(turned, tilt - before);
