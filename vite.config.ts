@@ -7,6 +7,7 @@ import { renderDocument } from "./src/core/site/renderDocument";
 
 const CONTENT = "content";
 const ORIGIN = "https://david-rodenas.com";
+const VIRTUAL_SITE = "virtual:site";
 
 function sourcesIn(directory: string): { file: string; markdown: string }[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -31,8 +32,23 @@ function site(): Plugin {
   return {
     name: "site",
 
+    // The browser gets the same markdown the build saw, so the shell there
+    // answers `ls` and `cat` from the very content the pages were made of.
+    resolveId(id) {
+      return id === VIRTUAL_SITE ? `\0${VIRTUAL_SITE}` : null;
+    },
+    load(id) {
+      if (id !== `\0${VIRTUAL_SITE}`) return null;
+      return `export const sources = ${JSON.stringify(sourcesIn(CONTENT))};`;
+    },
+
     configureServer(server) {
       server.watcher.add(CONTENT);
+      server.watcher.on("change", (path) => {
+        if (!path.includes(`/${CONTENT}/`)) return;
+        const cached = server.moduleGraph.getModuleById(`\0${VIRTUAL_SITE}`);
+        if (cached) server.moduleGraph.invalidateModule(cached);
+      });
       server.middlewares.use((request, response, next) => {
         const route = (request.url ?? "/").split("?")[0] ?? "/";
         const withSlash = route.endsWith("/") ? route : `${route}/`;

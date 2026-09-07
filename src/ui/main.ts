@@ -1,59 +1,44 @@
 import "../styles.css";
-import { ACCENTS, applyAccent, rememberAccent, savedAccent, type Accent } from "./accents";
+import { mountApps } from "./apps/mountApps";
+import { savedHeaderWorld } from "./headerWorld";
+import { mountNavigation } from "./navigation";
+import { siteInBrowser } from "./siteInBrowser";
 import { spinPlanet } from "./spinPlanet";
+import { mountTerminal, type Terminal } from "./terminal";
 
 /**
  * Everything here is an improvement on a page that already works. The words
- * arrived in the HTML; this only makes the mark turn and lets a reader choose
- * the one colour on the page.
+ * arrived in the HTML; this makes the mark turn, wires the prompt to the
+ * shell, and starts the programs the page has left room for.
  */
-
-function mountPlanet(): void {
+function mount(): void {
   const canvas = document.querySelector<HTMLCanvasElement>("canvas.planet");
-  if (canvas) spinPlanet(canvas);
-}
+  if (canvas) spinPlanet(canvas, savedHeaderWorld() ?? undefined);
 
-function mountAccents(): void {
-  const footer = document.querySelector(".site-footer");
-  if (!footer) return;
+  const route = window.location.pathname.endsWith("/") ? window.location.pathname : `${window.location.pathname}/`;
 
-  const row = document.createElement("p");
-  row.className = "accents";
-  row.append("colour");
-
-  const buttons = ACCENTS.map((accent) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.style.setProperty("--swatch", accent.light);
-    button.setAttribute("aria-label", accent.name);
-    button.setAttribute("aria-pressed", "false");
-    button.addEventListener("click", () => choose(accent));
-    row.append(button);
-    return [accent, button] as const;
+  // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
+  let stopApps = mountApps();
+  let terminal: Terminal | null = null;
+  const goTo = mountNavigation(siteInBrowser, (arrived) => {
+    stopApps();
+    stopApps = mountApps();
+    terminal?.moveTo(arrived);
   });
 
-  function choose(accent: Accent): void {
-    applyAccent(accent);
-    rememberAccent(accent);
-    for (const [candidate, button] of buttons) {
-      button.setAttribute("aria-pressed", candidate === accent ? "true" : "false");
-    }
+  terminal = mountTerminal(siteInBrowser, siteInBrowser.at(route) ? route : "/", { navigate: goTo });
+
+  const toggle = document.querySelector<HTMLButtonElement>(".theme-toggle");
+  if (toggle && terminal) {
+    toggle.classList.add("ready");
+    toggle.removeAttribute("aria-hidden");
+    toggle.removeAttribute("tabindex");
+    toggle.addEventListener("click", () => terminal?.run("theme"));
   }
-
-  footer.after(row);
-  choose(savedAccent());
 }
-
-const current = savedAccent();
-applyAccent(current);
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyAccent(savedAccent()));
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => {
-    mountPlanet();
-    mountAccents();
-  });
+  document.addEventListener("DOMContentLoaded", mount);
 } else {
-  mountPlanet();
-  mountAccents();
+  mount();
 }

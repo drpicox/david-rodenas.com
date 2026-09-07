@@ -11,9 +11,10 @@
   --sunken: #f2f4f8;
   --lead: var(--ink);
 
-  /* The one colour on the page. Swapped by the accent picker. */
+  /* The one colour on the page: the navy of the 2019 site, lifted a little. */
   --accent: #1a4b9c;
   --accent-soft: #6b83b8;
+  --warn: #b4443c;
   --title: var(--accent);
 
   color-scheme: light;
@@ -29,6 +30,7 @@
     --lead: #e5eaf2;
     --accent: #7fa6ea;
     --accent-soft: #61748f;
+    --warn: #e0806f;
     color-scheme: dark;
   }
 }
@@ -42,6 +44,7 @@
   --lead: #e5eaf2;
   --accent: #7fa6ea;
   --accent-soft: #61748f;
+  --warn: #e0806f;
   color-scheme: dark;
 }
 
@@ -82,6 +85,16 @@ dl {
 
 li {
   margin: 0.5em 0;
+}
+
+/* A list item with a second line: the link is the title, the line under it is the hook. */
+li a:has(+ br) {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+li a:has(+ br):hover {
+  text-decoration: underline;
 }
 
 h1,
@@ -134,6 +147,56 @@ pre {
   border-left: 0.12rem solid var(--rule);
 }
 
+/* An image on its own stands centred; one among words sits small, to the right. */
+figure {
+  margin: 0 0 1.8em;
+  text-align: center;
+}
+
+figure img {
+  max-width: 11rem;
+  height: auto;
+  border: 1px solid var(--rule);
+}
+
+figure img.large {
+  max-width: 22rem;
+}
+
+figure img.wide {
+  max-width: 100%;
+}
+
+p > img.large {
+  width: 9rem;
+}
+
+/* Air asked for on purpose, in paragraphs' worth. */
+.space {
+  height: calc(var(--n, 1) * 1.6em);
+}
+
+p > img {
+  float: right;
+  width: 5.5rem;
+  height: auto;
+  margin: 0.2em 0 0.6em 1.2em;
+  border: 1px solid var(--rule);
+}
+
+h2 {
+  clear: both;
+}
+
+/* A link that leaves the site says so. */
+a[target="_blank"]::after {
+  content: "\2197";
+  font-size: 0.7em;
+  margin-left: 0.15em;
+  vertical-align: 0.15em;
+  opacity: 0.7;
+}
+
 hr {
   border: 0;
   border-top: 1px solid var(--rule);
@@ -169,10 +232,65 @@ dl dd {
   line-height: 0;
 }
 
+.site-header > div {
+  flex: 1;
+}
+
+/* In its place from the first paint, but invisible until a script can make it do something; then it fades in. */
+.theme-toggle {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.4rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: none;
+  color: var(--dim);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.theme-toggle.ready {
+  visibility: visible;
+  opacity: 1;
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Until the world has grown there is a grey one, breathing, so the page never opens with a hole. */
 .planet {
   width: 4.25rem;
   height: 4.25rem;
   display: block;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 35%, var(--rule), var(--sunken) 70%);
+  animation: breathe 1.6s ease-in-out infinite;
+}
+
+.planet.grown {
+  background: none;
+  animation: none;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.45;
+  }
 }
 
 .brand {
@@ -241,30 +359,319 @@ nav {
   font-size: 0.85em;
 }
 
-/* ---- accents ---- */
+/* ---- the shell ---- */
 
-.accents {
+.terminal {
+  animation: fade-in 0.6s ease;
+  margin-top: 3rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.terminal .screen > * {
+  margin: 0 0 0.6em;
+}
+
+.terminal .echo {
+  color: var(--dim);
+}
+
+.terminal .echo .ps1,
+.terminal .prompt .ps1 {
+  color: var(--accent);
+}
+
+.terminal pre {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+
+.terminal .listing-out a {
+  text-decoration: none;
+}
+
+.terminal .listing-out a:hover {
+  text-decoration: underline;
+}
+
+.terminal .error {
+  color: #b4443c;
+}
+
+.terminal .cat {
+  padding-left: 1em;
+  border-left: 0.12rem solid var(--rule);
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.terminal .cat h1 {
+  font-size: 1.6rem;
+  margin-top: 0.6rem;
+}
+
+.terminal .prompt {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 3rem 0 0;
+  gap: 0.5em;
+  align-items: baseline;
+  margin: 0;
+}
+
+.terminal .prompt input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+}
+
+.terminal .hint {
+  color: var(--dim);
+}
+
+/* ---- the programs on the pages ---- */
+
+/* A program is wider than a paragraph. It steps out of the column, up to 60rem, and centres itself. */
+.app {
+  --wide: min(60rem, 100vw - 2rem);
+  width: var(--wide);
+  margin: 0 0 2em calc((100% - var(--wide)) / 2);
+  font-size: 0.9rem;
+}
+
+.app .charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: 1em 1.5em;
+}
+
+.app .dials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.6em 1.2em;
+  margin-bottom: 1.2em;
+}
+
+.app .dials label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .dials label output {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.app .dials input[type="range"] {
+  display: block;
+  width: 100%;
+  margin: 0.2em 0 0;
+  accent-color: var(--accent);
+}
+
+.app .figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.6em;
+  margin-bottom: 1.2em;
+}
+
+.app .figures div {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--rule);
+  border-radius: 0.25em;
+  padding: 0.6em 0.8em;
   font-size: 0.78rem;
   color: var(--dim);
 }
 
-.accents button {
-  width: 0.95rem;
-  height: 0.95rem;
-  padding: 0;
+.app .figures strong {
+  display: block;
+  font-size: 1.3rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.app .figures .clean {
+  border-left-color: var(--accent);
+}
+
+.app .figures .debt {
+  border-left-color: var(--warn);
+}
+
+.app .chart {
+  margin-bottom: 1.2em;
   border: 1px solid var(--rule);
-  border-radius: 50%;
-  background: var(--swatch);
+  border-radius: 0.25em;
+  padding: 0.8em;
+}
+
+.app .charts > .week,
+.app .maps > div {
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  padding: 0.8em;
+}
+
+.app .chart h4 {
+  margin: 0 0 0.3em;
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+.app svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.app svg text {
+  font-size: 10px;
+  fill: var(--dim);
+}
+
+.app svg .grid {
+  stroke: var(--rule);
+}
+
+.app svg .clean {
+  stroke: var(--accent);
+  fill: var(--accent);
+}
+
+.app svg .debt {
+  stroke: var(--warn);
+  fill: var(--warn);
+}
+
+.app svg .line {
+  fill: none;
+  stroke-width: 2;
+}
+
+.app .row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em 1em;
+  align-items: center;
+  margin-bottom: 0.8em;
+  font-size: 0.85rem;
+}
+
+.app select,
+.app input[type="text"],
+.app input[type="number"] {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.15em 0.4em;
+  border: 1px solid var(--rule);
+  border-radius: 0.2em;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app input[type="number"] {
+  width: 4.5em;
+}
+
+.app button {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 0.25em 0.7em;
+  border: 1px solid var(--accent);
+  border-radius: 0.2em;
+  background: none;
+  color: var(--accent);
   cursor: pointer;
 }
 
-.accents button[aria-pressed="true"] {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+.app button:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+/* the calendar and the heat maps share one grid */
+.app .week {
+  display: grid;
+  grid-template-columns: 3.2em repeat(5, 1fr);
+  gap: 2px;
+  margin-bottom: 1.2em;
+  user-select: none;
+}
+
+.app .week .head,
+.app .week .hour {
+  font-size: 0.72rem;
+  color: var(--dim);
+  text-align: center;
+  align-self: center;
+}
+
+.app .week .hour {
+  text-align: right;
+  padding-right: 0.4em;
+}
+
+.app .week .slot {
+  height: 1.6em;
+  border: 1px solid var(--rule);
+  border-radius: 0.15em;
+  font-size: 0.72rem;
+  line-height: 1.6em;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.app .week .slot.meeting {
+  background: var(--sunken);
+  border-color: var(--accent-soft);
+  color: var(--ink);
+}
+
+.app .week .cell {
+  height: 1.6em;
+  font-size: 0.72rem;
+  line-height: 1.6em;
+  text-align: center;
+  border-radius: 0.15em;
+  background: color-mix(in srgb, var(--accent) calc(var(--heat) * 100%), var(--sunken));
+  color: var(--ink);
+}
+
+.app .maps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1em;
+}
+
+.app .maps h4 {
+  margin: 0 0 0.3em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* the world */
+.app canvas.world {
+  display: block;
+  width: min(100%, 22rem);
+  margin: 0 auto 1em;
+  aspect-ratio: 1;
+  cursor: grab;
+  touch-action: none;
+}
+
+.app canvas.world:active {
+  cursor: grabbing;
 }
 
 /* ---- footer ---- */

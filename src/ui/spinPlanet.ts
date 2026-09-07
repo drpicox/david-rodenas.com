@@ -1,7 +1,14 @@
-import { generateWorld } from "../core/planet/generateWorld";
+import { growWorld } from "../core/planet/growWorld";
 import { renderSphere } from "../core/planet/renderSphere";
+import { HEADER_RECIPE, type WorldRecipe } from "../core/planet/WorldRecipe";
+import { paintFavicon } from "./favicon";
 
 const TURN_SECONDS = 90;
+/** The tab's icon turns too, but a few times a second is plenty for 32 pixels. */
+const FAVICON_EVERY_MS = 400;
+
+/** One animation per canvas: starting another stops the one before it. */
+const running = new WeakMap<HTMLCanvasElement, () => void>();
 
 /**
  * Grows a world and turns it.
@@ -10,32 +17,46 @@ const TURN_SECONDS = 90;
  * that is only a projection of it, which is cheap enough to leave running.
  * Someone who would rather things held still gets a single frame.
  */
-export function spinPlanet(canvas: HTMLCanvasElement, seed = Math.floor(Math.random() * 0xffffff)): () => void {
+export function spinPlanet(canvas: HTMLCanvasElement, recipe?: WorldRecipe): () => void {
+  running.get(canvas)?.();
   const context = canvas.getContext("2d");
   if (!context) return () => {};
 
+  const chosen = recipe ?? { ...HEADER_RECIPE, seed: Math.floor(Math.random() * 0xffffff) };
   const size = canvas.width;
-  const world = generateWorld(seed);
+  const world = growWorld(chosen);
   const image = context.createImageData(size, size);
-  canvas.dataset["seed"] = String(seed);
+  canvas.dataset["seed"] = String(chosen.seed);
+  canvas.title = `World ${chosen.seed}, ${world.mesh.faceCount.toLocaleString("en")} triangles`;
 
   const paint = (rotation: number) => {
     image.data.set(renderSphere(world, size, { rotation }));
     context.putImageData(image, 0, 0);
+    canvas.classList.add("grown");
   };
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     paint(0.6);
+    paintFavicon(world, 0.6);
+    running.set(canvas, () => {});
     return () => {};
   }
 
   let frame = 0;
+  let iconPainted = -Infinity;
   const started = performance.now();
   const tick = (now: number) => {
-    paint(((now - started) / 1000 / TURN_SECONDS) * Math.PI * 2);
+    const rotation = ((now - started) / 1000 / TURN_SECONDS) * Math.PI * 2;
+    paint(rotation);
+    if (now - iconPainted > FAVICON_EVERY_MS) {
+      paintFavicon(world, rotation);
+      iconPainted = now;
+    }
     frame = requestAnimationFrame(tick);
   };
   frame = requestAnimationFrame(tick);
 
-  return () => cancelAnimationFrame(frame);
+  const stop = () => cancelAnimationFrame(frame);
+  running.set(canvas, stop);
+  return stop;
 }
