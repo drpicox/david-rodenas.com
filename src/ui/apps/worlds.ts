@@ -13,7 +13,7 @@ const SKY_SECONDS = 480;
 /** How far the stars slide for one full turn of the world, or one full turn of tilt. */
 const SKY_PIXELS_PER_TURN = 900;
 /** The near layer's tile; the sky is kept within one so the numbers never grow. */
-const SKY_TILE = { x: 340, y: 240 };
+const SKY_TILE = { x: 1600, y: 1000 };
 
 /** The 1999 pipeline with its dials on the outside, and a world you can take hold of. */
 export function mountWorlds(host: HTMLElement): () => void {
@@ -40,15 +40,21 @@ export function mountWorlds(host: HTMLElement): () => void {
   const hasSky = sky.dataset["sky"] === "stars";
   let skyX = 0;
   let skyY = 0;
+  let skyWritten = "";
   if (hasSky) sky.classList.add("sky-driven");
   // A turn about the vertical axis slides the sky sideways; a tilt slides it up or down.
+  // The style is only touched when it would move by half a pixel, so a slow drift does not repaint every frame.
   const slideSky = (turn: number, tilted = 0) => {
     if (!hasSky) return;
     const perRadian = SKY_PIXELS_PER_TURN / (Math.PI * 2);
     skyX = (((skyX - turn * perRadian) % SKY_TILE.x) + SKY_TILE.x) % SKY_TILE.x;
     skyY = (((skyY + tilted * perRadian) % SKY_TILE.y) + SKY_TILE.y) % SKY_TILE.y;
-    sky.style.setProperty("--sky-x", `${skyX.toFixed(2)}px`);
-    sky.style.setProperty("--sky-y", `${skyY.toFixed(2)}px`);
+    const wanted = `${(Math.round(skyX * 2) / 2).toFixed(1)}px ${(Math.round(skyY * 2) / 2).toFixed(1)}px`;
+    if (wanted === skyWritten) return;
+    skyWritten = wanted;
+    const [x, y] = wanted.split(" ");
+    sky.style.setProperty("--sky-x", x ?? "0px");
+    sky.style.setProperty("--sky-y", y ?? "0px");
   };
 
   const caption = el("p", { class: "hint" });
