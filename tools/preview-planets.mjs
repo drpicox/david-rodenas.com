@@ -17,7 +17,7 @@ try {
   const { renderSphere } = await vite.ssrLoadModule("/src/core/planet/renderSphere.ts");
   const { writePng } = await vite.ssrLoadModule("/tools/writePng.ts");
 
-  const SIZE = 160;
+  const SIZE = Number(process.env.SIZE ?? 160);
   const GAP = 12;
   const asked = process.argv.slice(2).map(Number).filter(Number.isFinite);
   const seeds = asked.length ? asked : [1, 2, 3, 4, 5, 6];
@@ -27,7 +27,8 @@ try {
   const sheet = new Uint8ClampedArray(width * height * 4);
 
   seeds.forEach((seed, column) => {
-    const pixels = renderSphere(generateWorld(seed), SIZE, { rotation: 0.6 });
+    const level = process.env.LEVEL ? Number(process.env.LEVEL) : undefined;
+    const pixels = renderSphere(generateWorld(seed, undefined, level), SIZE, { rotation: 0.6 });
     const offsetX = GAP + column * (SIZE + GAP);
     for (let y = 0; y < SIZE; y += 1) {
       for (let x = 0; x < SIZE; x += 1) {

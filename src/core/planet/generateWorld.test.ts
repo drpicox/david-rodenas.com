@@ -1,23 +1,33 @@
 import { describe, expect, it } from "vitest";
 import { colourise, fractalise, sea, temperatures } from "./filters";
 import { generateWorld, PIPELINE } from "./generateWorld";
-import { latitudeOf, type World } from "./World";
+import { acrossFace, latitudeOfVertex, type World } from "./World";
 
-function averageTemperatureOfRow(world: World, y: number): number {
+/** Mean warmth of the corners whose latitude falls in a band. */
+function averageTemperatureNear(world: World, latitude: number): number {
   let total = 0;
-  for (let x = 0; x < world.width; x += 1) total += world.temperature[y * world.width + x] ?? 0;
-  return total / world.width;
+  let counted = 0;
+  for (let vertex = 0; vertex < world.mesh.vertexCount; vertex += 1) {
+    if (Math.abs(latitudeOfVertex(world, vertex) - latitude) > 0.12) continue;
+    total += world.temperature[vertex] ?? 0;
+    counted += 1;
+  }
+  return counted === 0 ? 0 : total / counted;
 }
 
 function isPainted(world: World): boolean {
-  return world.colour.some((channel) => channel !== 0);
+  return world.faceColour.some((channel) => channel !== 0);
 }
 
 /** How much the painting says: one colour is a world nobody can read. */
 function coloursIn(world: World): number {
   const seen = new Set<number>();
-  for (let index = 0; index < world.colour.length; index += 3) {
-    seen.add(((world.colour[index] ?? 0) << 16) | ((world.colour[index + 1] ?? 0) << 8) | (world.colour[index + 2] ?? 0));
+  for (let index = 0; index < world.faceColour.length; index += 3) {
+    seen.add(
+      ((world.faceColour[index] ?? 0) << 16) |
+        ((world.faceColour[index + 1] ?? 0) << 8) |
+        (world.faceColour[index + 2] ?? 0),
+    );
   }
   return seen.size;
 }
@@ -31,21 +41,27 @@ describe("generateWorld", () => {
     expect(Array.from(generateWorld(7).elevation)).not.toEqual(Array.from(generateWorld(8).elevation));
   });
 
-  it("has no seam where the map wraps", () => {
+  it("is made of triangles you can count", () => {
     const world = generateWorld(3);
-    const middle = Math.floor(world.height / 2);
-    const first = world.elevation[middle * world.width] ?? 0;
-    const last = world.elevation[middle * world.width + world.width - 1] ?? 0;
-    const typicalStep = 2 / world.width;
-    expect(Math.abs(first - last)).toBeLessThan(typicalStep * 20);
+    expect(world.mesh.faceCount).toBe(20 * 4 ** world.subdivisions);
+    expect(world.faceColour.length).toBe(world.mesh.faceCount * 3);
+  });
+
+  it("keeps every corner on the surface of the sphere", () => {
+    const world = generateWorld(3);
+    for (let vertex = 0; vertex < world.mesh.vertexCount; vertex += 1) {
+      const [x, y, z] = [
+        world.mesh.vertices[vertex * 3] ?? 0,
+        world.mesh.vertices[vertex * 3 + 1] ?? 0,
+        world.mesh.vertices[vertex * 3 + 2] ?? 0,
+      ];
+      expect(Math.hypot(x, y, z)).toBeCloseTo(1, 5);
+    }
   });
 
   it("is colder at the pole than at the equator", () => {
     const world = generateWorld(11);
-    const equator = averageTemperatureOfRow(world, Math.floor(world.height / 2));
-    const pole = averageTemperatureOfRow(world, 0);
-    expect(pole).toBeLessThan(equator);
-    expect(latitudeOf(world, 0)).toBeGreaterThan(latitudeOf(world, Math.floor(world.height / 2)));
+    expect(averageTemperatureNear(world, 0.95)).toBeLessThan(averageTemperatureNear(world, 0.05));
   });
 
   it("leaves roughly the share of the surface under water that it was asked for", () => {
@@ -64,7 +80,13 @@ describe("the order of the pipeline", () => {
     const tooEarly = generateWorld(4, [colourise, fractalise, temperatures, sea()]);
     expect(isPainted(tooEarly)).toBe(true);
     expect(coloursIn(tooEarly)).toBe(1);
-    expect(coloursIn(generateWorld(4, PIPELINE))).toBeGreaterThan(1000);
+    expect(coloursIn(generateWorld(4, PIPELINE))).toBeGreaterThan(50);
+  });
+
+  it("paints one colour per face, with no blending across the edges", () => {
+    const world = generateWorld(6);
+    expect(acrossFace(world, world.elevation, 0)).not.toBeNaN();
+    expect(coloursIn(world)).toBeLessThanOrEqual(world.mesh.faceCount);
   });
 
   it("gives a different planet when the sea is chosen before the land is raised", () => {
