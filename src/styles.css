@@ -407,13 +407,13 @@ figure {
 }
 
 figure img {
-  max-width: 11rem;
+  max-width: min(11rem, 100%);
   height: auto;
   border: 1px solid var(--rule);
 }
 
 figure img.large {
-  max-width: 22rem;
+  max-width: min(22rem, 100%);
 }
 
 figure img.wide {
@@ -487,6 +487,8 @@ dl dd {
 
 .site-header > div {
   flex: 1;
+  /* Without this a flex item never shrinks below its content, and the nav pushes the page wider than the screen. */
+  min-width: 0;
 }
 
 /* In its place from the first paint, but invisible until a script can make it do something; then it fades in. */
@@ -561,7 +563,9 @@ dl dd {
 
 nav {
   display: flex;
-  gap: 0.8rem;
+  /* Five words do not fit beside the mark on a phone; they take a second line rather than the page taking a scrollbar. */
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
   font-size: 0.78rem;
   letter-spacing: 0.04em;
 }
@@ -705,13 +709,13 @@ nav {
 
 .app .charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   gap: 1em 1.5em;
 }
 
 .app .dials {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
   gap: 0.6em 1.2em;
   margin-bottom: 1.2em;
 }
@@ -908,7 +912,7 @@ nav {
 
 .app .maps {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   gap: 1em;
 }
 
@@ -937,7 +941,8 @@ nav {
 .site-footer {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 1rem;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
   align-items: baseline;
   margin-top: 4rem;
   padding-top: 1.2rem;
@@ -946,8 +951,11 @@ nav {
   color: var(--dim);
 }
 
-.site-footer .spacer {
-  flex: 1;
+/* The three links travel together: when the line is too short they take the next one as a block, in order. */
+.site-footer .social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
 .site-footer a {
@@ -957,6 +965,53 @@ nav {
 
 .site-footer a:hover {
   color: var(--accent);
+}
+
+/*
+ * A phone. The column already fits — it is 37rem with a 1rem gutter and it
+ * gives way — so there is little to say here: only the two places that ask
+ * for more room than a narrow screen has.
+ *
+ * 640px, not 40rem: inside a media query `rem` is the browser's 16px, not this
+ * page's 17.6px, and two units with the same name and different lengths is a
+ * bug waiting to be written.
+ */
+@media (max-width: 640px) {
+  /*
+   * The apps break out of the column with `100vw`, which counts the scrollbar
+   * the page cannot use. There is no room to break out of a full-width column
+   * anyway, so here they simply fill it.
+   */
+  .app {
+    --wide: 100%;
+    margin-left: 0;
+  }
+
+  /*
+   * The 2019 measure was drawn for a 37rem column. In 20rem the same numbers
+   * spend the whole first screen before a sentence starts, so three of them
+   * give way: the air above, the title, and the quote's own gutters.
+   */
+  .site-header {
+    padding: 1.4rem 0 2.2rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  blockquote {
+    margin: 1.8em 0.6em;
+    font-size: 1.3rem;
+  }
+
+  /* A 9rem picture floated in a 20rem column leaves a gutter of words. It stands on its own instead. */
+  p > img.large {
+    float: none;
+    display: block;
+    width: min(14rem, 100%);
+    margin: 0.2em auto 1.2em;
+  }
 }
 
 :focus-visible {

@@ -105,6 +105,14 @@ describe("the document and the shell", () => {
     expect(render("/")).toContain('href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer"');
   });
 
+  it("keeps the footer's links in one group, so a narrow screen wraps them together and not one by one", () => {
+    const social = /<span class="social">([\s\S]*?)<\/span>/.exec(render("/"))?.[1];
+    expect(social).toBeDefined();
+    expect(social).toContain("github.com/drpicox");
+    expect(social).toContain("drpicox.medium.com");
+    expect(social).toContain("linkedin.com/in/davidrodenas");
+  });
+
   it("has a theme button in the header, in its place from the start, that only a script makes visible", () => {
     expect(render("/")).toContain('<button class="theme-toggle" type="button" aria-hidden="true"');
   });

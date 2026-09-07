@@ -91,10 +91,7 @@ ${renderMain(site, page)}
 ${terminal(page)}
 <footer class="site-footer">
   <span>&copy; 2026 David Rodenas</span>
-  <span class="spacer"></span>
-  <a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a>
-  <a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a>
-  <a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+  <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
 </div>
 ${script}
