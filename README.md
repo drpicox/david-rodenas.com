@@ -39,12 +39,6 @@ not exist is listed honestly below.
 
 ### Where the content comes from
 
-The claims and figures are in `~/Desktop/CV/notes/` and the brief at
-`~/Desktop/CV/web-maquetes/00-BRIEF-CONTINGUT.md`. Nothing goes on the page
-that is not verified there — including the warnings about what must *not* be
-claimed.
-
-The two visual mockups this repo grew out of:
-
-- the grid, without the shell — `claude.ai/code/artifact/3f412bc1-49b0-4b9e-a526-b239a6bb596f`
-- the same grid with the shell — `claude.ai/code/artifact/bcd0d965-1306-4cb2-a28c-5aad8f64c359`
+Every figure on the site is traceable to a source, and nothing goes on a page
+that is not. The map of those sources is personal, so it lives in
+`SOURCES.local.md`, which is not committed.

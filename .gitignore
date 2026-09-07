@@ -2,5 +2,9 @@ node_modules/
 dist/
 *.tsbuildinfo
 .DS_Store
+
+# Rendered by tools/preview-planets.mjs, for looking at, not for keeping.
 tools/planets.png
-dist/
+
+# Personal: where the material comes from. Never committed, never pushed.
+*.local.md

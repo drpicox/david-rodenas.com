@@ -10,6 +10,15 @@ The site it replaces (2025) rendered everything in JavaScript at runtime, so
 search engines saw an empty page. That is the one requirement that outranks
 taste: **the content is in the HTML**. Everything below follows from it.
 
+## Before writing any content
+
+Read **`SOURCES.local.md`** first. It maps where the verified material lives
+and, more importantly, lists what must never be claimed. It is deliberately not
+committed — it points at personal files — so it will not be in a fresh clone.
+
+**Nothing goes on a page that is not verified there.** When a figure cannot be
+traced, write the weaker sentence.
+
 ## Commands
 
 - `npm test` — vitest, all of it
