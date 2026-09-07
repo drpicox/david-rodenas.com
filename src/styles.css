@@ -49,37 +49,44 @@
 }
 
 /*
- * One page insists on night. The stars are two layers, far larger than the
- * viewport, turning about its centre: by themselves, very slowly, from a CSS
- * animation; or, when a script is turning the world, by the same angle as the
- * hand that turns it. The second layer turns at another pace and breathes.
+ * One page insists on night. The stars are two tiled layers, larger than the
+ * viewport, that slide: a turn of the world about its axis slides them
+ * sideways, a tilt slides them up or down, and left alone they drift. The far
+ * layer moves at 0.6 of the near one, and its tile is 0.6 of the near one's,
+ * so when the near layer wraps by a tile the far one wraps by a tile too.
  */
-@property --sky-turn {
-  syntax: "<angle>";
+@property --sky-x {
+  syntax: "<length>";
   inherits: true;
-  initial-value: 0deg;
+  initial-value: 0px;
+}
+
+@property --sky-y {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
 }
 
 :root[data-sky="stars"] {
   --paper: #06080f;
   --sunken: #0e1220;
   --rule: #232a3a;
-  animation: sky-drift 2400s linear infinite;
+  animation: sky-drift 180s linear infinite;
 }
 
 :root[data-sky="stars"].sky-driven {
   animation: none;
 }
 
+@keyframes sky-drift {
+  to {
+    --sky-x: 340px;
+  }
+}
+
 /* The stars sit behind the body, so the body must not paint over them; the root's ground is enough. */
 :root[data-sky="stars"] body {
   background: transparent;
-}
-
-@keyframes sky-drift {
-  to {
-    --sky-turn: 360deg;
-  }
 }
 
 :root[data-sky="stars"] body::before,
@@ -88,9 +95,9 @@
   position: fixed;
   left: 50%;
   top: 50%;
-  width: 160vmax;
-  height: 160vmax;
-  margin: -80vmax 0 0 -80vmax;
+  width: 140vmax;
+  height: 140vmax;
+  margin: -70vmax 0 0 -70vmax;
   z-index: -1;
   pointer-events: none;
   background-repeat: repeat;
@@ -98,7 +105,7 @@
 }
 
 :root[data-sky="stars"] body::before {
-  transform: rotate(var(--sky-turn));
+  transform: translate(var(--sky-x), var(--sky-y));
   background-image:
     radial-gradient(1px 1px at 23px 31px, #fff 50%, transparent 100%),
     radial-gradient(1px 1px at 97px 143px, rgba(255, 255, 255, 0.75) 50%, transparent 100%),
@@ -111,14 +118,12 @@
 }
 
 :root[data-sky="stars"] body::after {
-  transform: rotate(calc(var(--sky-turn) * 0.6));
+  transform: translate(calc(var(--sky-x) * 0.6), calc(var(--sky-y) * 0.6));
   background-image:
-    radial-gradient(1.5px 1.5px at 71px 113px, #fff 50%, transparent 100%),
-    radial-gradient(1px 1px at 389px 41px, rgba(255, 255, 255, 0.8) 50%, transparent 100%),
-    radial-gradient(1px 1px at 251px 307px, rgba(255, 255, 255, 0.7) 50%, transparent 100%),
-    radial-gradient(2px 2px at 457px 223px, rgba(255, 255, 255, 0.9) 50%, transparent 100%),
-    radial-gradient(1px 1px at 149px 359px, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
-  background-size: 520px 380px;
+    radial-gradient(1px 1px at 41px 67px, rgba(255, 255, 255, 0.6) 50%, transparent 100%),
+    radial-gradient(1px 1px at 157px 23px, rgba(255, 255, 255, 0.45) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 103px 121px, rgba(255, 255, 255, 0.7) 50%, transparent 100%);
+  background-size: 204px 144px;
   animation: twinkle 5s ease-in-out infinite alternate;
 }
 

@@ -104,12 +104,13 @@ arrives, so typing into a page that is still loading loses nothing.
 night whatever the reader chose: the attributes are in the HTML, so it opens
 dark without waiting for a script, and the theme button changes the reader's
 choice for every other page without lifting the night from this one. The
-stars are two layers of tiled radial gradients, far larger than the viewport,
-turning about its centre: by a CSS animation, very slowly, until the worlds
-program takes over — then they drift on their own at one turn every eight
-minutes, and a hand on the world turns them by the same angle it turns the
-world. The second layer turns at another pace and breathes. It is the one
-exception, and it is the page that earns it.
+stars are two tiled layers that slide, the way a sky does behind a turning
+world: a turn about the axis slides them sideways, a tilt up or down, and left
+alone they drift, by a CSS animation until the worlds program takes over. The
+far layer moves at 0.6 of the near one and its tile is 0.6 of the near one's,
+so both wrap on the same step and the loop is invisible. Rotating them in the
+plane of the screen was the first try, and it was the wrong axis. It is the
+one exception, and it is the page that earns it.
 
 ### The favicon is the planet
 The same world, 32 pixels wide, painted into the tab's icon a few times a

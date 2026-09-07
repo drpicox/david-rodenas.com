@@ -8,8 +8,12 @@ import { spinPlanet } from "../spinPlanet";
 
 const SIZE = 360;
 const TURN_SECONDS = 60;
-/** The sky drifts on its own, much slower than the world; a hand on the world turns them together. */
+/** The sky drifts on its own, much slower than the world; a hand on the world moves them together. */
 const SKY_SECONDS = 480;
+/** How far the stars slide for one full turn of the world, or one full turn of tilt. */
+const SKY_PIXELS_PER_TURN = 900;
+/** The near layer's tile; the sky is kept within one so the numbers never grow. */
+const SKY_TILE = { x: 340, y: 240 };
 
 /** The 1999 pipeline with its dials on the outside, and a world you can take hold of. */
 export function mountWorlds(host: HTMLElement): () => void {
@@ -34,12 +38,17 @@ export function mountWorlds(host: HTMLElement): () => void {
   // The page's sky, if it has one, follows: the script takes over from the CSS drift.
   const sky = document.documentElement;
   const hasSky = sky.dataset["sky"] === "stars";
-  let skyTurn = 0;
+  let skyX = 0;
+  let skyY = 0;
   if (hasSky) sky.classList.add("sky-driven");
-  const turnSky = (degrees: number) => {
+  // A turn about the vertical axis slides the sky sideways; a tilt slides it up or down.
+  const slideSky = (turn: number, tilted = 0) => {
     if (!hasSky) return;
-    skyTurn = (skyTurn + degrees) % 360;
-    sky.style.setProperty("--sky-turn", `${skyTurn.toFixed(3)}deg`);
+    const perRadian = SKY_PIXELS_PER_TURN / (Math.PI * 2);
+    skyX = (((skyX - turn * perRadian) % SKY_TILE.x) + SKY_TILE.x) % SKY_TILE.x;
+    skyY = (((skyY + tilted * perRadian) % SKY_TILE.y) + SKY_TILE.y) % SKY_TILE.y;
+    sky.style.setProperty("--sky-x", `${skyX.toFixed(2)}px`);
+    sky.style.setProperty("--sky-y", `${skyY.toFixed(2)}px`);
   };
 
   const caption = el("p", { class: "hint" });
@@ -90,7 +99,7 @@ export function mountWorlds(host: HTMLElement): () => void {
       rotation += (seconds / TURN_SECONDS) * Math.PI * 2;
       paint();
     }
-    if (!dragging) turnSky((seconds / SKY_SECONDS) * 360);
+    if (!dragging) slideSky((seconds / SKY_SECONDS) * Math.PI * 2);
     lastFrame = now;
     frame = requestAnimationFrame(tick);
   };
@@ -104,8 +113,9 @@ export function mountWorlds(host: HTMLElement): () => void {
     const scale = canvas.clientWidth || SIZE;
     const turned = ((event.clientX - dragging.x) / scale) * Math.PI;
     rotation += turned;
-    turnSky((turned * 180) / Math.PI);
+    const before = tilt;
     tilt = Math.max(-1.2, Math.min(1.2, tilt - ((event.clientY - dragging.y) / scale) * Math.PI));
+    slideSky(turned, tilt - before);
     dragging = { x: event.clientX, y: event.clientY };
     paint();
   });
@@ -179,6 +189,7 @@ export function mountWorlds(host: HTMLElement): () => void {
   return () => {
     cancelAnimationFrame(frame);
     sky.classList.remove("sky-driven");
-    sky.style.removeProperty("--sky-turn");
+    sky.style.removeProperty("--sky-x");
+    sky.style.removeProperty("--sky-y");
   };
 }
