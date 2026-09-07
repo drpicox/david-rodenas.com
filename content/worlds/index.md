@@ -25,6 +25,5 @@ the filters:
 - **Sea** is the share of the surface under water. The sea is a minimum radius: everything below it is raised up to it.
 
 The pipeline runs in order, and the order is the meaning: raise the land, put
-in the sea, work out the climate from height and latitude, and only then paint
-from the 1999 table of colours by temperature and surface. Paint first and
-there is nothing to paint.
+in the sea, work out the climate from height and latitude, and only then
+paint. Paint first and there is nothing to paint.

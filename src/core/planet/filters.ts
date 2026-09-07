@@ -1,6 +1,6 @@
 import { subdivide } from "./icosphere";
 import { randomOf } from "./randomOf";
-import { acrossFace, withMesh, type Filter } from "./World";
+import { acrossFace, latitudeOfVertex, radiusOfFace, withMesh, type Filter } from "./World";
 
 /**
  * Split every edge and push the new midpoint along its own radius, by a
@@ -35,41 +35,35 @@ export const fractalise =
   };
 
 export interface Climate {
-  /** Kelvin at sea level on the equator. */
+  /** Warmth at sea level on the equator. */
   readonly equator: number;
-  /** Kelvin at the pole. */
+  /** Warmth at the pole, at sea level. */
   readonly pole: number;
-  /** Kelvin at the highest summit, wherever it is. */
+  /** Warmth at the highest summit, wherever it stands. */
   readonly peak: number;
 }
 
 /**
- * `PosarTemperatura`, as written: temperature falls in a straight line with
- * the radius, from the equator's number at the lowest point to the peak's at
- * the highest, and a latitude term takes it towards the pole's number. Which
- * is why a summit is cold wherever it stands: height alone gets it there.
- * Run after the sea, the lowest point is sea level, so the equator's number
- * is what the coast gets. The defaults in the source (200, 150, 150) freeze
- * everything; these are numbers that give the worlds in the 1999 pictures.
+ * Warmth from latitude and from height above the sea, between three fixed
+ * points — the equator, the pole and the summit — which is how the 1999
+ * `PosarTemperatura` asked for it. Height is a straight line to the summit's
+ * number, and the summit's number is below freezing: that is what puts snow
+ * on the Himalaya and on the Teide, neither of them anywhere near a pole.
+ * Run after the sea, so the lowest point is sea level.
  */
 export const temperatures =
-  ({ equator = 300, pole = 240, peak = 240 }: Partial<Climate> = {}): Filter =>
+  ({ equator = 1, pole = 0.05, peak = 0 }: Partial<Climate> = {}): Filter =>
   (world) => {
     const temperature = new Float32Array(world.mesh.vertexCount);
     const radii = world.mesh.radii;
     const lowest = radii.reduce((low, radius) => Math.min(low, radius), Infinity);
     const highest = radii.reduce((high, radius) => Math.max(high, radius), -Infinity);
-    const steps = highest - lowest || 1;
-
-    const perStep = (equator - peak) / steps;
-    const base = equator + perStep * lowest;
-    const perLatitude = (pole - equator) / lowest;
-    const perHeight = (peak - base) / highest;
+    const span = highest - lowest || 1;
 
     for (let vertex = 0; vertex < world.mesh.vertexCount; vertex += 1) {
-      const radius = radii[vertex] ?? 1;
-      const y = Math.abs((world.mesh.directions[vertex * 3 + 1] ?? 0) * radius);
-      temperature[vertex] = Math.max(0, Math.floor(base + perLatitude * y + perHeight * radius));
+      const height = ((radii[vertex] ?? 1) - lowest) / span;
+      const fromEquator = latitudeOfVertex(world, vertex) ** 2.2;
+      temperature[vertex] = equator + (pole - equator) * fromEquator + (peak - equator) * height;
     }
 
     return { ...world, temperature };
@@ -92,79 +86,32 @@ export const sea =
     return { ...world, mesh: { ...world.mesh, radii }, seaRadius };
   };
 
+const OCEAN = [24, 92, 168] as const;
+const SHALLOW = [62, 176, 206] as const;
+const SAND = [214, 196, 138] as const;
+const DESERT = [190, 158, 84] as const;
+const GRASS = [70, 138, 66] as const;
+const TAIGA = [74, 104, 76] as const;
+const ROCK = [136, 128, 116] as const;
+const ICE = [238, 243, 247] as const;
+
 type Rgb = readonly [number, number, number];
 
-// The palette of `TexturaTemperatura`, name for name.
-const GLAC: Rgb = [217, 249, 255];
-const PEDRA_FOSCA: Rgb = [47, 47, 28];
-const PEDRA_CLARA: Rgb = [177, 160, 143];
-const BOSC_FOSC: Rgb = [67, 88, 37];
-const BOSC_MIG: Rgb = [79, 172, 51];
-const BOSC_CLAR: Rgb = [163, 231, 61];
-const BOSC_MARRO: Rgb = [169, 160, 54];
-const VERMELL_MART: Rgb = [252, 64, 10];
-const MAGMA_FRED: Rgb = [90, 12, 12];
-const MAGMA_NORMAL: Rgb = [222, 73, 10];
-const MAGMA_CALENT: Rgb = [231, 203, 5];
-const BLANC_GROGOS: Rgb = [254, 247, 194];
-const BLANC_BLAVOS: Rgb = [194, 254, 231];
-const BLANC: Rgb = [255, 255, 255];
-const SORRA: Rgb = [218, 190, 80];
-const MAR_1: Rgb = [0, 0, 255];
-const MAR_2: Rgb = [0, 255, 255];
-
-/** Rows by temperature band, columns by surface type: low, middle, high. */
-const COLOURS: readonly (readonly [Rgb, Rgb, Rgb])[] = [
-  [GLAC, PEDRA_FOSCA, SORRA], // below 220 K
-  [SORRA, GLAC, PEDRA_FOSCA], // 273
-  [BOSC_MIG, BOSC_FOSC, PEDRA_FOSCA], // 283
-  [BOSC_CLAR, BOSC_MIG, PEDRA_FOSCA], // 293
-  [BOSC_MARRO, BOSC_CLAR, SORRA], // 303
-  [BOSC_CLAR, BOSC_MARRO, SORRA], // 323
-  [PEDRA_FOSCA, SORRA, BOSC_MARRO], // 373
-  [SORRA, PEDRA_CLARA, VERMELL_MART], // 473
-  [PEDRA_FOSCA, PEDRA_CLARA, SORRA], // 1000
-  [MAGMA_NORMAL, MAGMA_FRED, PEDRA_FOSCA], // 2000
-  [MAGMA_CALENT, MAGMA_NORMAL, MAGMA_FRED], // 2500
-  [MAGMA_NORMAL, MAGMA_CALENT, MAGMA_FRED], // 5000
-  [MAGMA_CALENT, BLANC_GROGOS, MAGMA_CALENT], // 5500
-  [BLANC_GROGOS, BLANC_BLAVOS, BLANC], // and beyond
-];
-const BANDS = [220, 273, 283, 293, 303, 323, 373, 473, 1000, 2000, 2500, 5000, 5500];
-
-function rowOf(kelvin: number): number {
-  const row = BANDS.findIndex((band) => kelvin < band);
-  return row < 0 ? BANDS.length : row;
+function mix(a: Rgb, b: Rgb, t: number): Rgb {
+  const amount = Math.min(1, Math.max(0, t));
+  return [a[0] + (b[0] - a[0]) * amount, a[1] + (b[1] - a[1]) * amount, a[2] + (b[2] - a[2]) * amount];
 }
 
-function columnOf(surface: number): 0 | 1 | 2 {
-  if (surface < 0.3) return 0;
-  if (surface > 0.8) return 2;
-  return 1;
-}
-
-/** `aleatoritzarColor`: the strongest channel is pushed up by the surface type, the other two down. */
-function tinted([r, g, b]: Rgb, surface: number): Rgb {
-  const room = (channel: number) => Math.floor((Math.min(channel, 255 - channel) * surface) / 5);
-  const strongest = r >= g && r >= b ? 0 : g >= r && g >= b ? 1 : 2;
-  const channels = [r, g, b].map((channel, index) => (index === strongest ? channel + room(channel) : channel - room(channel)));
-  return [channels[0] ?? 0, channels[1] ?? 0, channels[2] ?? 0];
-}
-
-/** `Mar.acolorir`: between two colours, by surface type, not by depth. */
-function seaColour(surface: number): Rgb {
-  return [
-    Math.floor(MAR_1[0] * surface + MAR_2[0] * (1 - surface)),
-    Math.floor(MAR_1[1] * surface + MAR_2[1] * (1 - surface)),
-    Math.floor(MAR_1[2] * surface + MAR_2[2] * (1 - surface)),
-  ];
+/** Warm and low is desert, temperate is green, cold is taiga and then ice. */
+function groundAt(warmth: number): Rgb {
+  if (warmth > 0.78) return DESERT;
+  if (warmth > 0.62) return mix(GRASS, DESERT, (warmth - 0.62) / 0.16);
+  if (warmth > 0.3) return GRASS;
+  return mix(TAIGA, GRASS, (warmth - 0.12) * 5.5);
 }
 
 /**
- * Paint it, one colour per face and no blending across the edges: the 1999
- * table, by the face's mean temperature and mean surface type, tinted as the
- * original tinted it; and the sea's own two colours where all three corners
- * sit on the water.
+ * Paint it, one colour per face and no blending across the edges.
  *
  * It runs last because it reads everything the others decided: before the sea
  * exists there is no coastline to find, and before the climate exists there is
@@ -172,18 +119,22 @@ function seaColour(surface: number): Rgb {
  */
 export const colourise: Filter = (world) => {
   const faceColour = new Uint8ClampedArray(world.mesh.faceCount * 3);
-  const waterline = world.seaRadius * 1.0000001;
+  const highest = world.mesh.radii.reduce((high, radius) => Math.max(high, radius), -Infinity);
+  const relief = Math.max(1e-6, highest - world.seaRadius);
 
   for (let face = 0; face < world.mesh.faceCount; face += 1) {
-    const surface = acrossFace(world, world.mesh.surface, face);
-    const a = world.mesh.faces[face * 3] ?? 0;
-    const b = world.mesh.faces[face * 3 + 1] ?? 0;
-    const c = world.mesh.faces[face * 3 + 2] ?? 0;
-    const underWater = [a, b, c].every((corner) => (world.mesh.radii[corner] ?? 1) <= waterline);
+    const above = (radiusOfFace(world, face) - world.seaRadius) / relief;
+    const warmth = acrossFace(world, world.temperature, face);
 
-    const rgb = underWater
-      ? seaColour(surface)
-      : tinted(COLOURS[rowOf(Math.floor(acrossFace(world, world.temperature, face)))]?.[columnOf(surface)] ?? BLANC, surface);
+    let rgb: Rgb;
+    if (above <= 0.002) {
+      rgb = mix(SHALLOW, OCEAN, 0.55);
+      if (warmth < 0.16) rgb = mix(rgb, ICE, (0.16 - warmth) * 6);
+    } else {
+      rgb = mix(SAND, groundAt(warmth), Math.min(1, above * 9));
+      rgb = mix(rgb, ROCK, Math.max(0, above - 0.55) * 2.2);
+      if (warmth < 0.26) rgb = mix(rgb, ICE, (0.26 - warmth) * 4);
+    }
 
     faceColour[face * 3] = rgb[0];
     faceColour[face * 3 + 1] = rgb[1];
