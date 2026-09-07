@@ -44,6 +44,76 @@ the world hire for it. The work is *platform* work, done five times in
 twenty-five years, and the language design is the recurring **method**. So the
 headline names the work and the prose keeps the searchable words.
 
+### The colour is navy, and there is no selector
+Decided 7 September 2026, the afternoon. A picker over five accents was built
+and then removed: every choice on the page is one more thing that is not the
+content. The navy is the 2019 blue, lifted so it carries links on the dark
+ground as well.
+
+### The first published version says three things, and keeps what was alive
+The book, the essays, and what the mark in the header is. The five platforms
+and the method underneath them came out: written as a list, they read as a CV,
+and this is not a CV. They come back when each has a page of its own that is
+worth reading, under `work/`, one file at a time.
+
+What the 2025 site had that existed nowhere else stays: the Bowling Game Kata
+with its slides, and the two simulators, rewritten without React or a chart
+library — the arithmetic in `core/simulators`, tested; the drawing in
+`ui/apps`, as inline SVG.
+
+The intro line under the headline is the 2015 one, brought back: *computer
+enthusiast, doctor and engineer*, plus the vice-deanship, which is verified.
+
+The book page is the only record of the book on the open internet — it is in
+no library catalogue — so it carries `schema.org/Book` markup, read from the
+front matter.
+
+### Navigation is `ls /`
+The header prints the directories at the root, by name, in the author's
+order. Adding a section is adding a directory; there is no list of routes to
+keep in step.
+
+### The prompt is real, or it is not there
+The 2025 site pretended: a line that looked typed and nothing to type into.
+Now every page ends in a prompt wired to a shell in `core/shell` — `ls`, `cd`,
+`cat`, `pwd`, `help`, `clear`, `theme`, the same seven the 2025 site had —
+over the same markdown the pages were rendered from, shipped to the browser as
+a virtual module. `cd` moves the page; `cat` prints one here. The shell has no
+DOM in it, so its tests run in node. Without JavaScript the prompt stays
+hidden, because a prompt that does nothing is a lie.
+
+The theme button in the header runs `theme` through that shell, so pressing
+it and typing it are the same thing.
+
+Once the script is there, a page change is not a page load. The markdown and
+the renderer are already in the browser, so a link or a `cd` swaps what is
+inside `<main>` (`renderMain`, the same function the build used), pushes the
+URL, and the header, the planet and the shell stay where they were. The
+programs on the old page are stopped and the ones on the new page started.
+Anything not in the site — a PDF, Medium — is a real link, and the back button
+works because it is `pushState`, nothing cleverer.
+
+For the first load, and for anything that still has to be a real load, the
+shell carries itself over: what it had printed and the rest of the line
+(`cd book && cat *` finishes on `/book/`), through session storage. And a
+two-line script in the head keeps every key pressed before the bundle
+arrives, so typing into a page that is still loading loses nothing.
+
+### The favicon is the planet
+The same world, 32 pixels wide, painted into the tab's icon a few times a
+second from the same rotation. Chrome and Firefox turn it; Safari shows the
+first frame. Until the script runs there is the old `favicon.ico`.
+
+### One external script: GoatCounter
+Analytics have to come from somewhere, and the 2025 site already counted at
+`drpicox.goatcounter.com`. It is the one thing on the page not written here;
+it loads last, asynchronously, and the page does not depend on it.
+
+### A `::name` line in the markdown is where a program mounts
+The words around it are still words, so the page reads whole without the
+program; the program gets a `div` to grow into. Three so far: the two
+simulators and the worlds.
+
 ---
 
 ## Open
@@ -67,10 +137,6 @@ reads as a chain rather than a stumble, because the two are far apart and the
 second is a phrasal verb.
 
 Runner-up worth trying out loud: **"I build to be built on."**
-
-### The title colour
-It should have some. A selector, remembered per reader, over a short list of
-considered accents — not a colour picker.
 
 ### Dark ground
 Not pure black. `#15181d` or thereabouts, with the title carrying a calm hue

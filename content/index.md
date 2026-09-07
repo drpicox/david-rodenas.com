@@ -6,31 +6,46 @@ order: 0
 
 # I build the foundations other engineers build on.
 
-Five times, in five places, over twenty-five years: a filter pipeline, a
-processor simulator's interconnect, a database kernel's task framework, a
-retailer's front-end factory, and a travel platform's plugin kernel. Every
-time, the users were engineers — and every time, somebody else's work plugged
-into mine.
+Computer enthusiast, doctor and engineer. Former vice-dean of COEINF, the
+professional college of computer engineers of Catalonia. I write every
+Saturday and I have not missed one since 2022.
 
-PhD, Barcelona. Platform engineering in research, in retail, and in travel
-tech. I write every Saturday and I have not missed one since 2022.
+## The book
 
-## Five times
+![The cover of the book](/book/BookGuide.jpeg) *The Emotional and Technical
+Guide to Rescue Stalled Software* (2024) is about conquering technical debt
+without sacrificing your sanity or your shipping schedule. Its rule fits on one
+line: never rewrite, never stop delivery. [About the book.](/book/)
 
-before 2000 :: **A university assignment.** A fractal planet generator built as a pipeline of composable filters -- icosahedron, fractalise, temperatures, colour, sea -- where the order is part of the meaning. I designed the pipeline, and that is what let the rest of the group split the work between them. Java 1.1.8 on MS-DOS: a plugin architecture, twenty-five years ago. It is still running, at the top of this page.
-2005–08 :: **Barcelona Supercomputing Center.** CellSim, a simulator of the Cell processor: I built the base, the modularity and the message protocol its components talk through. Another engineer implemented the accelerator units against that design, and at least three outside groups later plugged in modules of their own. Also the ACOTES phase inside the Mercurium compiler -- serial C turned into streaming code -- 10,803 lines, sole author of the phase.
-2008–09 :: **DAMA-UPC.** Made a graph database kernel concurrent: a lock-free buffer pool and a read/write lock of my own, and the task framework its Java API was driven through. 81.5 s to 10.1 s; 4.4× scaling where there had been none.
-2014–15 :: **Desigual.** An internal front-end factory: a generator with nine sub-generators, 22 versioned components, and documentation that installs itself into every project it creates. It rewrote your source safely and repeatedly, in 2014, before AST tooling was something you could pick up. Six production apps adopted it. Another team forked it.
-2017–26 :: **Travelport.** The plugin kernel, the devkit and the SDK documentation site a product line runs on. The docs cannot rot: every code sample in them compiles in the browser and runs against the real kernel. 22 packages, 396 releases, 32 breaking changes, no major version in three years.
+## Essays with more than half a million views
 
-The recurring method is the same one every time: when a platform gets hard to
-use, I give it a language. A template compiler from XML to React with
-reactivity tracked per variable (2018). A compiler from specifications written
-in plain English into JUnit and Jest (2022). An expression language whose type
-inference filters the dropdown, so an agent cannot write an expression that
-does not typecheck (2025). And once,
-[`commentDirectivesEnabled()`](https://github.com/angular/angular.js/pull/14850) --
-merged into the AngularJS core by its maintainer, public API since 1.6, still
-in the source today.
+More than 250 of them on [Medium](https://drpicox.medium.com), one every
+Saturday since 2022. The most read one, and the ones read longest, argue with
+the canon:
 
-> Engineers are your customers.
+- [The JavaScript framework war is over](https://medium.com/p/bd110ddab732)
+- [Software Development Is A Beautiful Mess](https://drpicox.medium.com/software-development-is-a-beautiful-mess-45edab1fab73)
+- [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)
+- [Confirmed: Code Coverage Is a Useless Management Metric](https://medium.com/better-programming/confirmed-code-coverage-is-a-useless-management-metric-35afa05e8549)
+- [The Craziest Piece of Software I've Ever Seen](https://drpicox.medium.com/the-craziest-piece-of-software-ive-ever-seen-4605085ceb5b)
+- [What Are Micro-Frontends Really For?](https://drpicox.medium.com/what-are-micro-frontends-for-aad66e9c2cf8)
+
+[Twenty of them, with a line on each.](/essays/)
+
+## The world at the top
+
+The mark in the header is not a picture. It is a planet, grown the moment this
+page opened, by the pipeline of a program I wrote before the year 2000 for a
+university graphics course: [Mons fractals](https://david-rodenas.com/mons-fractals/),
+Java 1.1.8 on MS-DOS, writing worlds out as VRML.
+
+It is a pipeline of filters, and the order is part of the meaning. Start from
+an icosahedron. Split every edge and push each new midpoint out or in by a
+fraction of the edge it came from, so the first rounds carve continents and the
+last ones only roughen a slope. Work out the climate from latitude and height.
+Put in the sea as a minimum radius: everything below it is raised up to it,
+which is why a coastline reads as a coastline and not as a change of colour.
+Only then paint it. Paint first and you get a ball of one colour.
+
+Reload, and it is a different world. The same pipeline runs here, rewritten in
+TypeScript with nothing underneath it, and you can [turn the dials yourself](/worlds/).

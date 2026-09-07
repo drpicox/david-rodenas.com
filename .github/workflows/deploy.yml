@@ -1,0 +1,54 @@
+# Builds the site and publishes dist/ as the whole of drpicox.github.io, which
+# is what serves david-rodenas.com. The same route the 2024 and 2025 sites took.
+#
+# Needs one secret in this repository: DEPLOY_TOKEN, a fine-grained personal
+# access token with "Contents: read and write" on drpicox/drpicox.github.io.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      - name: Check out what is published today
+        uses: actions/checkout@v4
+        with:
+          repository: drpicox/drpicox.github.io
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          path: published
+
+      # Everything in dist/ replaces everything published; CNAME and .nojekyll
+      # travel inside dist/ (they live in public/), so nothing has to be kept.
+      - name: Replace it with the build
+        run: |
+          find published -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R dist/. published/
+          cd published
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && echo "Nothing changed." && exit 0
+          git commit -m "Deploy david-rodenas.com from ${GITHUB_SHA::7}"
+          git push
