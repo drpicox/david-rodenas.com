@@ -13,8 +13,11 @@ taste: **the content is in the HTML**. Everything below follows from it.
 ## Before writing any content
 
 Read **`SOURCES.local.md`** first. It maps where the verified material lives
-and, more importantly, lists what must never be claimed. It is deliberately not
-committed — it points at personal files — so it will not be in a fresh clone.
+and, more importantly, lists what must never be claimed. Its companion
+**`HISTORY.local.md`** records the ten versions of this site since 2013 — their
+palettes, their type, their content, and what survived each rewrite — including
+the stylesheet of the 2019 one, which is the design this site inherits. Both
+are deliberately uncommitted, so neither will be in a fresh clone.
 
 **Nothing goes on a page that is not verified there.** When a figure cannot be
 traced, write the weaker sentence.
