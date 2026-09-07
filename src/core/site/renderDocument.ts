@@ -1,7 +1,9 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
 import { escapeHtml } from "../markdown/escapeHtml";
-import { renderMarkdown } from "../markdown/renderMarkdown";
+import { promptPath } from "../shell/promptPath";
+import { bookSchema } from "./bookSchema";
+import { renderMain } from "./renderMain";
 
 export interface DocumentAssets {
   /** Emitted by the bundler, injected here so this stays a pure function. */
@@ -10,42 +12,26 @@ export interface DocumentAssets {
   readonly origin: string;
 }
 
-const NAV = [
-  { route: "/work/", label: "WORK" },
-  { route: "/code/", label: "CODE" },
-  { route: "/writing/", label: "WRITING" },
-];
-
-function nav(current: string): string {
-  return NAV.map(({ route, label }) => {
-    const here = current === route || current.startsWith(route) ? ' aria-current="page"' : "";
-    return `<a class="navlink" href="${route}"${here}>${label}</a>`;
-  }).join("");
-}
-
-/** A directory prints what it holds; a page prints nothing here. */
-function listing(site: Site, page: Page): string {
-  const children = site.childrenOf(page.route);
-  if (children.length === 0) return "";
-  const items = children
-    .map(
-      (child) =>
-        `<li><a href="${child.route}">${escapeHtml(child.title)}</a>` +
-        (child.summary ? ` <span class="summary">${escapeHtml(child.summary)}</span>` : "") +
-        `</li>`,
-    )
+/** `ls /`, in capitals. Adding a page at the root is adding it to the navigation. */
+function nav(site: Site, current: string): string {
+  return site
+    .childrenOf("/")
+    .map(({ route, name }) => {
+      const here = current.startsWith(route) ? ' aria-current="page"' : "";
+      return `<a class="navlink" href="${route}"${here}>${escapeHtml(name.toUpperCase())}</a>`;
+    })
     .join("");
-  return `<ul class="listing">${items}</ul>`;
 }
 
-function trail(site: Site, page: Page): string {
-  const steps = site.trailTo(page.route);
-  if (steps.length <= 1) return "";
-  const path = steps
-    .slice(1)
-    .map((step) => step.name)
-    .join("/");
-  return `<p class="ran"><span class="ps1">~ $</span> cd ${escapeHtml(path)} &amp;&amp; cat *</p>`;
+/**
+ * The prompt is real: a script wires it to the shell, over this same content.
+ * Until then it stays hidden, because a prompt that does nothing is a lie.
+ */
+function terminal(page: Page): string {
+  return `<section class="terminal" hidden>
+<div class="screen" aria-live="polite"></div>
+<form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command" placeholder="help"></form>
+</section>`;
 }
 
 /**
@@ -73,6 +59,10 @@ export function renderDocument(site: Site, page: Page, assets: DocumentAssets): 
 <meta property="og:description" content="${escapeHtml(description)}">
 <meta property="og:url" content="${escapeHtml(canonical)}">
 <meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.ico">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}
+(function(){var k=[];window.__typed=k;function h(e){var f=e.target&&e.target.matches&&e.target.matches("input,textarea,select,[contenteditable]");if(f||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key.length===1||e.key==="Enter"||e.key==="Backspace"){k.push(e.key);e.preventDefault()}}window.addEventListener("keydown",h);window.__stopTyped=function(){window.removeEventListener("keydown",h)}})()</script>
+${bookSchema(page, assets.origin)}
 ${stylesheet}
 </head>
 <body>
@@ -83,23 +73,24 @@ ${stylesheet}
   </a>
   <div>
     <a class="brand" href="/">@drpicox</a>
-    <nav>${nav(page.route)}</nav>
+    <nav>${nav(site, page.route)}</nav>
   </div>
+  <button class="theme-toggle" type="button" aria-hidden="true" tabindex="-1" aria-label="Switch theme" title="theme">&#9680;</button>
 </header>
 <main>
-${trail(site, page)}
-${renderMarkdown(page.body)}
-${listing(site, page)}
+${renderMain(site, page)}
 </main>
+${terminal(page)}
 <footer class="site-footer">
   <span>&copy; 2026 David Rodenas</span>
   <span class="spacer"></span>
-  <a href="https://github.com/drpicox">GitHub</a>
-  <a href="https://drpicox.medium.com">Medium</a>
-  <a href="https://www.linkedin.com/in/davidrodenas/">LinkedIn</a>
+  <a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a>
+  <a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a>
+  <a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
 </footer>
 </div>
 ${script}
+<script data-goatcounter="https://drpicox.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
 `;

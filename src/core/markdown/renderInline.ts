@@ -7,12 +7,26 @@ function anchor(label: string, href: string): string {
   return `<a href="${escapeHtml(href)}"${rel}>${label}</a>`;
 }
 
+const SIZES = ["large", "wide"];
+
+/** The title of an image is where its size goes: `"large"` or `"wide"`. Any other title is left alone. */
+function image(alt: string, src: string, title?: string): string {
+  const size = title && SIZES.includes(title) ? ` class="${title}"` : "";
+  return `<img src="${escapeHtml(src)}" alt="${alt}"${size}>`;
+}
+
+/** An image is read before a link, because a link is what is left of it once the `!` is gone. */
 function renderMarkup(text: string): string {
   return escapeHtml(text)
+    .replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;)?\)/g, (_match, alt: string, src: string, title?: string) =>
+      image(alt, src, title),
+    )
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_match, label: string, href: string) => anchor(label, href))
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
-    .replace(/ -- /g, " — ");
+    .replace(/ -- /g, " — ")
+    .replace(/ {2,}\n/g, "<br>")
+    .replace(/\n/g, " ");
 }
 
 /**

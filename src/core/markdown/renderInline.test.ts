@@ -27,3 +27,31 @@ describe("renderInline", () => {
     expect(renderInline("**a** and *b*")).toBe("<strong>a</strong> and <em>b</em>");
   });
 });
+
+describe("renderInline images", () => {
+  it("places an image, with its words for whoever cannot see it", () => {
+    expect(renderInline("![The cover](/book/cover.jpeg)")).toBe('<img src="/book/cover.jpeg" alt="The cover">');
+  });
+
+  it("does not mistake an image for a link", () => {
+    expect(renderInline("![c](/a.png)")).not.toContain("<a ");
+  });
+});
+
+describe("line breaks", () => {
+  it("breaks the line where two trailing spaces ask for it, and joins it otherwise", () => {
+    expect(renderInline("title  \nsubtitle")).toBe("title<br>subtitle");
+    expect(renderInline("one\ntwo")).toBe("one two");
+  });
+});
+
+describe("image sizes", () => {
+  it("takes a size from the image's title: large or wide", () => {
+    expect(renderInline('![c](/c.jpeg "large")')).toBe('<img src="/c.jpeg" alt="c" class="large">');
+    expect(renderInline('![c](/c.jpeg "wide")')).toBe('<img src="/c.jpeg" alt="c" class="wide">');
+  });
+
+  it("ignores a title that is not a size", () => {
+    expect(renderInline('![c](/c.jpeg "the cover")')).toBe('<img src="/c.jpeg" alt="c">');
+  });
+});

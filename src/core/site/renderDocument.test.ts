@@ -6,6 +6,7 @@ const site = new Site([
   { file: "index.md", markdown: "---\ntitle: Home\n---\n# I build the foundations\n\nHello." },
   { file: "work/index.md", markdown: "---\ntitle: Work\nsummary: Five times\n---\n## Five times" },
   { file: "work/orion.md", markdown: "---\ntitle: Orion\nsummary: A plugin kernel\n---\nA kernel." },
+  { file: "notes.md", markdown: "---\ntitle: Loose notes\n---\nLoose." },
 ]);
 
 const assets = { origin: "https://david-rodenas.com", stylesheet: "/a.css", script: "/a.js" };
@@ -39,9 +40,44 @@ describe("renderDocument", () => {
     expect(render("/work/orion/")).not.toContain('class="listing"');
   });
 
+  it("does not list the root twice: its directory is the navigation", () => {
+    expect(render("/")).not.toContain('class="listing"');
+  });
+
+  it("navigates to what sits at the root by name, as ls would, in the author's order", () => {
+    const html = render("/");
+    expect(html).toContain('<a class="navlink" href="/notes/">NOTES</a>');
+    expect(html).toContain('<a class="navlink" href="/work/">WORK</a>');
+    expect(html.indexOf('href="/notes/"')).toBeLessThan(html.indexOf('href="/work/"'));
+  });
+
   it("marks where in the navigation the reader is", () => {
     expect(render("/work/orion/")).toContain('href="/work/" aria-current="page"');
     expect(render("/")).not.toContain("aria-current");
+  });
+
+  it("describes a book to the machines that catalogue books", () => {
+    const shelf = new Site([
+      { file: "index.md", markdown: "---\ntitle: Home\n---\nhi" },
+      {
+        file: "book/index.md",
+        markdown: "---\ntitle: A Guide\nisbn: 978-1\npublished: 2024-10-19\npages: 156\ncover: /book/c.jpeg\n---\nText.",
+      },
+    ]);
+    const page = shelf.at("/book/");
+    const html = renderDocument(shelf, page!, assets);
+    expect(html).toContain('<script type="application/ld+json">');
+    const json = JSON.parse(/<script type="application\/ld\+json">(.*?)<\/script>/s.exec(html)![1]!);
+    expect(json).toMatchObject({
+      "@type": "Book",
+      name: "A Guide",
+      isbn: "978-1",
+      datePublished: "2024-10-19",
+      numberOfPages: 156,
+      image: "https://david-rodenas.com/book/c.jpeg",
+      author: { "@type": "Person", name: "David Rodenas" },
+    });
+    expect(render("/work/orion/")).not.toContain("ld+json");
   });
 
   it("shows the command that would have got you here", () => {
@@ -54,5 +90,41 @@ describe("renderDocument", () => {
     const page = risky.at("/");
     expect(page).toBeDefined();
     expect(renderDocument(risky, page!, assets)).not.toContain('onload="x');
+  });
+});
+
+describe("the document and the shell", () => {
+  it("offers a real prompt, at the page's own path, hidden until a script can answer it", () => {
+    expect(render("/")).toContain('<section class="terminal" hidden>');
+    expect(render("/")).toContain('<span class="ps1">~ $</span>');
+    expect(render("/work/orion/")).toContain('<span class="ps1">~/work/orion $</span>');
+  });
+
+  it("sends the footer's links to their own tab", () => {
+    expect(render("/")).toContain('href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer"');
+  });
+
+  it("has a theme button in the header, in its place from the start, that only a script makes visible", () => {
+    expect(render("/")).toContain('<button class="theme-toggle" type="button" aria-hidden="true"');
+  });
+
+  it("applies a remembered theme before anything is painted", () => {
+    const html = render("/");
+    expect(html.indexOf('localStorage.getItem("theme")')).toBeLessThan(html.indexOf("<body>"));
+  });
+});
+
+describe("counting visits", () => {
+  it("keeps the GoatCounter the 2025 site had, loaded last and asynchronously", () => {
+    const html = render("/");
+    expect(html).toContain('data-goatcounter="https://drpicox.goatcounter.com/count"');
+    expect(html.indexOf("gc.zgo.at/count.js")).toBeGreaterThan(html.indexOf("</main>"));
+  });
+});
+
+describe("typing before the script arrives", () => {
+  it("is caught from the first byte of the page, so nothing typed is lost", () => {
+    const html = render("/");
+    expect(html.indexOf("window.__typed")).toBeLessThan(html.indexOf("<body>"));
   });
 });

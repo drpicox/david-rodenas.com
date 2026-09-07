@@ -49,3 +49,52 @@ describe("renderMarkdown", () => {
     expect(renderMarkdown("---")).toBe("<hr>");
   });
 });
+
+describe("an app block", () => {
+  it("leaves a named place for a program to mount into", () => {
+    expect(renderMarkdown("::technical-debt")).toBe('<div class="app" data-app="technical-debt"></div>');
+  });
+
+  it("is only a line that is nothing but the name", () => {
+    expect(renderMarkdown("::not an app")).toBe("<p>::not an app</p>");
+  });
+});
+
+describe("an image on its own", () => {
+  it("is a figure, not a paragraph, so it can stand centred while an inline one floats", () => {
+    expect(renderMarkdown("![The cover](/c.jpeg)")).toBe('<figure><img src="/c.jpeg" alt="The cover"></figure>');
+    expect(renderMarkdown("![The cover](/c.jpeg) beside words")).toMatch(/^<p><img /);
+  });
+});
+
+describe("a list item over several lines", () => {
+  it("continues on an indented line, and breaks where asked", () => {
+    expect(renderMarkdown("- [A](/a/)  \n  what A is\n- B")).toBe('<ul><li><a href="/a/">A</a><br>what A is</li><li>B</li></ul>');
+  });
+
+  it("breaks a paragraph too", () => {
+    expect(renderMarkdown("first  \nsecond")).toBe("<p>first<br>second</p>");
+  });
+});
+
+describe("a loose list", () => {
+  it("is one list even with blank lines between its items", () => {
+    expect(renderMarkdown("- a\n\n- b\n\n- c")).toBe("<ul><li>a</li><li>b</li><li>c</li></ul>");
+    expect(renderMarkdown("- a  \n  more a\n\n- b")).toBe("<ul><li>a<br>more a</li><li>b</li></ul>");
+  });
+
+  it("ends where something that is not an item begins", () => {
+    expect(renderMarkdown("- a\n\nAfter.")).toBe("<ul><li>a</li></ul>\n<p>After.</p>");
+  });
+});
+
+describe("space", () => {
+  it("is a line of backslashes: one paragraph's height per backslash", () => {
+    expect(renderMarkdown("a\n\n\\\n\nb")).toBe('<p>a</p>\n<div class="space" style="--n:1"></div>\n<p>b</p>');
+    expect(renderMarkdown("\\\\\\")).toBe('<div class="space" style="--n:3"></div>');
+  });
+
+  it("keeps a sized image a figure", () => {
+    expect(renderMarkdown('![c](/c.jpeg "wide")')).toBe('<figure><img src="/c.jpeg" alt="c" class="wide"></figure>');
+  });
+});

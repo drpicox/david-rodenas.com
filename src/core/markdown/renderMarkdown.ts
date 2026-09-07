@@ -5,12 +5,22 @@ import { renderInline } from "./renderInline";
  * A block is a run of lines that becomes one element. Splitting on blank lines
  * first means every rule below only has to look at lines it already owns.
  */
+const ITEM = /^(?:[-*]|\d+\.)\s/;
+
+/** A blank line inside a list is air, not an end: the list goes on if the next line is another item. */
+function listGoesOn(current: string[], lines: string[], from: number): boolean {
+  if (!ITEM.test(current[0] ?? "")) return false;
+  const next = lines.slice(from).find((line) => line.trim() !== "");
+  return next !== undefined && ITEM.test(next);
+}
+
 function blocksOf(markdown: string): string[][] {
   const blocks: string[][] = [];
+  const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   let current: string[] = [];
   let fenced = false;
 
-  for (const line of markdown.replace(/\r\n?/g, "\n").split("\n")) {
+  lines.forEach((line, index) => {
     if (line.startsWith("```")) {
       fenced = !fenced;
       current.push(line);
@@ -18,15 +28,16 @@ function blocksOf(markdown: string): string[][] {
         blocks.push(current);
         current = [];
       }
-      continue;
+      return;
     }
     if (!fenced && line.trim() === "") {
+      if (listGoesOn(current, lines, index + 1)) return;
       if (current.length) blocks.push(current);
       current = [];
-      continue;
+      return;
     }
     current.push(line);
-  }
+  });
   if (current.length) blocks.push(current);
   return blocks;
 }
@@ -55,13 +66,25 @@ function code(lines: string[]): string | null {
   return `<pre><code>${escapeHtml(body)}</code></pre>`;
 }
 
+/** An indented line continues the item above it; the break it asked for is kept for renderInline. */
+function itemsOf(lines: string[], marker: RegExp): string[] {
+  const items: string[] = [];
+  for (const line of lines) {
+    if (marker.test(line)) items.push(line.replace(marker, ""));
+    else if (items.length) items[items.length - 1] += `\n${line.trim()}`;
+  }
+  return items;
+}
+
 function list(lines: string[]): string | null {
-  const ordered = lines.every((line) => /^\d+\.\s/.test(line));
-  const bulleted = lines.every((line) => /^[-*]\s/.test(line));
+  const first = lines[0] ?? "";
+  const ordered = /^\d+\.\s/.test(first);
+  const bulleted = /^[-*]\s/.test(first);
   if (!ordered && !bulleted) return null;
+  const marker = ordered ? /^\d+\.\s+/ : /^[-*]\s+/;
+  if (!lines.every((line) => marker.test(line) || /^\s/.test(line))) return null;
   const tag = ordered ? "ol" : "ul";
-  const items = lines
-    .map((line) => line.replace(/^(?:\d+\.|[-*])\s+/, ""))
+  const items = itemsOf(lines, marker)
     .map((item) => `<li>${renderInline(item)}</li>`)
     .join("");
   return `<${tag}>${items}</${tag}>`;
@@ -86,15 +109,34 @@ function quote(lines: string[]): string | null {
   return `<blockquote>${renderInline(body)}</blockquote>`;
 }
 
+/** `::name` — a place on the page where a program mounts. The words around it are still words. */
+function app(lines: string[]): string | null {
+  const match = /^::([a-z0-9-]+)$/.exec(lines[0] ?? "");
+  if (!match || lines.length !== 1) return null;
+  return `<div class="app" data-app="${match[1]}"></div>`;
+}
+
 function rule(lines: string[]): string | null {
   return lines.length === 1 && /^-{3,}$/.test(lines[0] ?? "") ? "<hr>" : null;
 }
 
-function paragraph(lines: string[]): string {
-  return `<p>${renderInline(lines.join(" "))}</p>`;
+/** A line of backslashes is air: one paragraph's height for each. */
+function space(lines: string[]): string | null {
+  const match = lines.length === 1 && /^(\\+)$/.exec(lines[0] ?? "");
+  return match ? `<div class="space" style="--n:${match[1]?.length ?? 1}"></div>` : null;
 }
 
-const RULES = [rule, heading, code, quote, definitions, list];
+/** An image with nothing beside it is a figure; one among words stays in the paragraph. */
+function figure(lines: string[]): string | null {
+  const alone = lines.length === 1 && /^!\[[^\]]*\]\([^)\s]+(?:\s+"[^"]*")?\)$/.test(lines[0] ?? "");
+  return alone ? `<figure>${renderInline(lines[0] ?? "")}</figure>` : null;
+}
+
+function paragraph(lines: string[]): string {
+  return `<p>${renderInline(lines.join("\n"))}</p>`;
+}
+
+const RULES = [rule, space, heading, code, quote, app, figure, definitions, list];
 
 /**
  * Markdown, reduced to what this site actually writes in. Anything wider than
