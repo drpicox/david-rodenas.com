@@ -344,6 +344,11 @@ dl dd {
   opacity: 1;
 }
 
+/* A page that insists on its own theme has no use for the button. */
+:root[data-page-theme] .theme-toggle {
+  display: none;
+}
+
 .theme-toggle:hover {
   color: var(--accent);
   border-color: var(--accent);

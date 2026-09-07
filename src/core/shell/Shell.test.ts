@@ -8,6 +8,7 @@ const site = new Site([
   { file: "essays/index.md", markdown: "---\ntitle: Essays\norder: 2\n---\nSome essays." },
   { file: "simulators/index.md", markdown: "---\ntitle: Simulators\norder: 3\n---\nTwo." },
   { file: "simulators/technical-debt.md", markdown: "---\ntitle: Debt\n---\nInterest." },
+  { file: "night/index.md", markdown: "---\ntitle: Night\ntheme: dark\n---\nStars." },
 ]);
 
 describe("Shell", () => {
@@ -19,7 +20,7 @@ describe("Shell", () => {
 
   it("lists what is here: the page as README.md, the directories with a slash", () => {
     const [out] = new Shell(site, "/").run("ls");
-    expect(out?.text).toBe("README.md\nbook/\nessays/\nsimulators/");
+    expect(out?.text).toBe("README.md\nbook/\nessays/\nsimulators/\nnight/");
   });
 
   it("lists somewhere else, and complains about nowhere", () => {
@@ -38,7 +39,7 @@ describe("Shell", () => {
 
   it("lists long with -l: a mode, the name, and the title, wherever the flag sits", () => {
     const long = new Shell(site, "/").run("ls -l")[0]?.text ?? "";
-    expect(long.split("\n")[0]).toBe("total 4");
+    expect(long.split("\n")[0]).toBe("total 5");
     expect(long).toContain("--r-  README.md");
     expect(long).toContain("dr-x  book/");
     expect(long).toContain("The Book");
@@ -82,6 +83,12 @@ describe("Shell", () => {
     expect(shell.run("theme")).toEqual([{ theme: "toggle", text: "theme: toggled" }]);
     expect(shell.run("theme system")[0]?.theme).toBe("system");
     expect(shell.run("theme purple")[0]?.error).toBe(true);
+  });
+
+  it("will not change the theme on a page that insists on its own", () => {
+    const shell = new Shell(site, "/night/");
+    expect(shell.run("theme light")).toEqual([{ text: "theme: this page keeps its own, dark. It works everywhere else.", error: true }]);
+    expect(shell.run("theme")[0]?.theme).toBeUndefined();
   });
 
   it("runs a whole line, and stops at the first error", () => {
