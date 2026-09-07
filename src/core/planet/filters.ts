@@ -1,6 +1,6 @@
 import { fractalNoiseAt } from "./noiseAt";
 import { randomOf } from "./randomOf";
-import { directionOf, latitudeOf, type Filter, type World } from "./World";
+import { directionOf, latitudeOf, type Filter } from "./World";
 
 /**
  * Raise the land. Two noise fields, not one: the second decides how rough the

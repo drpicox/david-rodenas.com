@@ -1,0 +1,307 @@
+/*
+ * The 2019 grid, kept: a 37rem column, a lot of air, one accent.
+ * The narrow measure is the asset — nothing superfluous fits in it.
+ */
+
+:root {
+  --paper: #ffffff;
+  --ink: #16181c;
+  --dim: #6b7280;
+  --rule: #d8dbe1;
+  --sunken: #f2f4f8;
+  --lead: var(--ink);
+
+  /* The one colour on the page. Swapped by the accent picker. */
+  --accent: #1a4b9c;
+  --accent-soft: #6b83b8;
+  --title: var(--accent);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #15181d;
+    --ink: #ccd2da;
+    --dim: #868e9a;
+    --rule: #2a3038;
+    --sunken: #1c2027;
+    --lead: #e5eaf2;
+    --accent: #7fa6ea;
+    --accent-soft: #61748f;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #15181d;
+  --ink: #ccd2da;
+  --dim: #868e9a;
+  --rule: #2a3038;
+  --sunken: #1c2027;
+  --lead: #e5eaf2;
+  --accent: #7fa6ea;
+  --accent-soft: #61748f;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  font-size: 1.1rem;
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.65;
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 37rem;
+  margin: 0 auto;
+  padding: 0 1rem 5rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+p {
+  margin: 0 0 1.6em;
+}
+
+ul,
+ol,
+dl {
+  margin: 0 0 1.8em;
+}
+
+li {
+  margin: 0.5em 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--title);
+  line-height: 1.25;
+  margin: 3.2rem 0 1.2rem;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-top: 2.4rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+  border-bottom: 0.12rem solid var(--rule);
+  padding-bottom: 0.3rem;
+}
+
+h3 {
+  font-size: 1.1rem;
+}
+
+.lead {
+  font-size: 1.15em;
+  color: var(--lead);
+}
+
+blockquote {
+  margin: 2.2em 1.5em;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.5rem;
+  color: var(--dim);
+}
+
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82em;
+}
+
+pre {
+  background: var(--sunken);
+  padding: 0.9em 1em;
+  overflow-x: auto;
+  border-left: 0.12rem solid var(--rule);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 3rem 0;
+}
+
+/* The work list: year on one line, what it was underneath. */
+dl dt {
+  color: var(--dim);
+  font-size: 0.8em;
+  margin-top: 1.8em;
+}
+
+dl dt:first-child {
+  margin-top: 0;
+}
+
+dl dd {
+  margin: 0.2em 0 0;
+}
+
+/* ---- header ---- */
+
+.site-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 0 3rem;
+}
+
+.mark {
+  flex: none;
+  line-height: 0;
+}
+
+.planet {
+  width: 4.25rem;
+  height: 4.25rem;
+  display: block;
+}
+
+.brand {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+nav {
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
+.navlink {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.navlink:hover {
+  color: var(--ink);
+}
+
+.navlink[aria-current] {
+  color: var(--accent);
+}
+
+/* ---- the command that would have got you here ---- */
+
+.ran {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: var(--dim);
+  margin-bottom: 0.6em;
+}
+
+.ran .ps1 {
+  color: var(--accent);
+}
+
+/* ---- directory listing ---- */
+
+.listing {
+  list-style: none;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.listing li {
+  margin: 0;
+  padding: 0.7em 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.listing a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.listing .summary {
+  display: block;
+  color: var(--dim);
+  font-size: 0.85em;
+}
+
+/* ---- accents ---- */
+
+.accents {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 3rem 0 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.accents button {
+  width: 0.95rem;
+  height: 0.95rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--swatch);
+  cursor: pointer;
+}
+
+.accents button[aria-pressed="true"] {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* ---- footer ---- */
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  align-items: baseline;
+  margin-top: 4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.site-footer .spacer {
+  flex: 1;
+}
+
+.site-footer a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
