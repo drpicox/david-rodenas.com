@@ -1,0 +1,22 @@
+{
+  "name": "david-rodenas-com",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "david-rodenas.com — a static site with no runtime dependencies.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "jsdom": "^29.1.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.5",
+    "vitest": "^3.2.4"
+  }
+}

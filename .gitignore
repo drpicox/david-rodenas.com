@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+tools/planets.png
