@@ -113,7 +113,12 @@ the loop is invisible. The tiles are large (1600 × 1000 and 960 × 600) with
 one star per cell of a jittered grid, drawn once from a seeded generator, so
 neither a repeat nor an empty patch shows. Rotating the sky in the plane of
 the screen was the first try, and it was the wrong axis; sliding a layer
-larger than the viewport was the second, and it slid off the screen. It is the
+larger than the viewport was the second, and it slid off the screen. The sky
+goes with the hand, not against it, because that is what felt right.
+
+The world has inertia: let go while moving and it keeps the hand's pace,
+losing it with a time constant of 1.4 seconds until it is back at its idle
+turn, the sky going with it. Stop before letting go and it stops. It is the
 one exception, and it is the page that earns it.
 
 ### The favicon is the planet

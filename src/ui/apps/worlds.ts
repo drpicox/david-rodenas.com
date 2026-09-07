@@ -14,6 +14,11 @@ const SKY_SECONDS = 480;
 const SKY_PIXELS_PER_TURN = 900;
 /** The near layer's tile; the sky is kept within one so the numbers never grow. */
 const SKY_TILE = { x: 1600, y: 1000 };
+/** A flung world keeps turning and loses speed with a time constant of this many seconds. */
+const MOMENTUM_SECONDS = 1.4;
+const IDLE_SPEED = (Math.PI * 2) / TURN_SECONDS;
+/** No hand is that fast; anything above is a glitch, and a world spinning like a top is no fun to look at. */
+const TOP_SPEED = Math.PI * 4;
 
 /** The 1999 pipeline with its dials on the outside, and a world you can take hold of. */
 export function mountWorlds(host: HTMLElement): () => void {
@@ -32,7 +37,9 @@ export function mountWorlds(host: HTMLElement): () => void {
   let rotation = 0.6;
   let tilt = -0.38;
   let spinning = !stillPreferred;
-  let dragging: { x: number; y: number } | null = null;
+  let dragging: { x: number; y: number; at: number } | null = null;
+  /** Radians per second the hand was turning the world at, kept after it lets go. */
+  let momentum = 0;
   let lastFrame = performance.now();
 
   // The page's sky, if it has one, follows: the script takes over from the CSS drift.
@@ -47,8 +54,8 @@ export function mountWorlds(host: HTMLElement): () => void {
   const slideSky = (turn: number, tilted = 0) => {
     if (!hasSky) return;
     const perRadian = SKY_PIXELS_PER_TURN / (Math.PI * 2);
-    skyX = (((skyX - turn * perRadian) % SKY_TILE.x) + SKY_TILE.x) % SKY_TILE.x;
-    skyY = (((skyY + tilted * perRadian) % SKY_TILE.y) + SKY_TILE.y) % SKY_TILE.y;
+    skyX = (((skyX + turn * perRadian) % SKY_TILE.x) + SKY_TILE.x) % SKY_TILE.x;
+    skyY = (((skyY - tilted * perRadian) % SKY_TILE.y) + SKY_TILE.y) % SKY_TILE.y;
     const wanted = `${(Math.round(skyX * 2) / 2).toFixed(1)}px ${(Math.round(skyY * 2) / 2).toFixed(1)}px`;
     if (wanted === skyWritten) return;
     skyWritten = wanted;
@@ -98,20 +105,31 @@ export function mountWorlds(host: HTMLElement): () => void {
     context.putImageData(image, 0, 0);
   };
 
+  // Left alone the world turns at its idle pace. Flung, it turns at the hand's
+  // pace and slows until it is back at the idle one, and the sky goes with it.
   let frame = 0;
   const tick = (now: number) => {
-    const seconds = (now - lastFrame) / 1000;
-    if (spinning && !dragging) {
-      rotation += (seconds / TURN_SECONDS) * Math.PI * 2;
-      paint();
+    const seconds = Math.min(0.1, (now - lastFrame) / 1000);
+    if (!dragging) {
+      if (momentum !== 0) {
+        momentum *= Math.exp(-seconds / MOMENTUM_SECONDS);
+        const floor = spinning ? IDLE_SPEED : 0;
+        if (Math.abs(momentum) <= floor || Math.abs(momentum) < 0.01) momentum = 0;
+      }
+      const speed = momentum !== 0 ? momentum : spinning ? IDLE_SPEED : 0;
+      if (speed !== 0) {
+        rotation += speed * seconds;
+        paint();
+      }
+      slideSky((momentum !== 0 ? momentum : 0) * seconds + (seconds / SKY_SECONDS) * Math.PI * 2);
     }
-    if (!dragging) slideSky((seconds / SKY_SECONDS) * Math.PI * 2);
     lastFrame = now;
     frame = requestAnimationFrame(tick);
   };
 
   canvas.addEventListener("pointerdown", (event) => {
-    dragging = { x: event.clientX, y: event.clientY };
+    dragging = { x: event.clientX, y: event.clientY, at: event.timeStamp };
+    momentum = 0;
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointermove", (event) => {
@@ -122,14 +140,21 @@ export function mountWorlds(host: HTMLElement): () => void {
     const before = tilt;
     tilt = Math.max(-1.2, Math.min(1.2, tilt - ((event.clientY - dragging.y) / scale) * Math.PI));
     slideSky(turned, tilt - before);
-    dragging = { x: event.clientX, y: event.clientY };
+    // The hand's pace, smoothed a little so one jittery event does not decide the fling.
+    const elapsed = Math.max(0.004, (event.timeStamp - dragging.at) / 1000);
+    momentum = Math.max(-TOP_SPEED, Math.min(TOP_SPEED, momentum * 0.4 + (turned / elapsed) * 0.6));
+    dragging = { x: event.clientX, y: event.clientY, at: event.timeStamp };
     paint();
   });
-  canvas.addEventListener("pointerup", () => {
+  canvas.addEventListener("pointerup", (event) => {
+    // A hand that stopped before letting go leaves no momentum behind.
+    if (dragging && event.timeStamp - dragging.at > 120) momentum = 0;
     dragging = null;
+    lastFrame = performance.now();
   });
   canvas.addEventListener("pointercancel", () => {
     dragging = null;
+    momentum = 0;
   });
 
   const seedInput = el("input", {

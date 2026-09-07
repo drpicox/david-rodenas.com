@@ -82,6 +82,7 @@ describe("Shell", () => {
     expect(shell.run("theme dark")).toEqual([{ theme: "dark", text: "theme: dark" }]);
     expect(shell.run("theme")).toEqual([{ theme: "toggle", text: "theme: toggled" }]);
     expect(shell.run("theme system")[0]?.theme).toBe("system");
+    expect(shell.run("theme auto")).toEqual([{ theme: "system", text: "theme: system" }]);
     expect(shell.run("theme purple")[0]?.error).toBe(true);
   });
 
