@@ -99,6 +99,14 @@ shell carries itself over: what it had printed and the rest of the line
 two-line script in the head keeps every key pressed before the bundle
 arrives, so typing into a page that is still loading loses nothing.
 
+### A page may insist on its own sky
+`theme: dark` and `sky: stars` in the front matter, and the worlds page is
+night whatever the reader chose: the attributes are in the HTML, so it opens
+dark without waiting for a script, and the theme button changes the reader's
+choice for every other page without lifting the night from this one. The
+stars are two layers of tiled radial gradients, one of them breathing. It is
+the one exception, and it is the page that earns it.
+
 ### The favicon is the planet
 The same world, 32 pixels wide, painted into the tab's icon a few times a
 second from the same rotation. Chrome and Firefox turn it; Safari shows the

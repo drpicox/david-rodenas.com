@@ -23,6 +23,14 @@ function nav(site: Site, current: string): string {
     .join("");
 }
 
+/** A page may insist on a theme and a sky: `theme: dark`, `sky: stars`. Most do not. */
+function rootAttributes(page: Page): string {
+  const theme = page.fields["theme"];
+  const sky = page.fields["sky"];
+  const forced = theme === "dark" || theme === "light" ? ` data-theme="${theme}" data-page-theme="${theme}"` : "";
+  return forced + (sky ? ` data-sky="${escapeHtml(sky)}"` : "");
+}
+
 /**
  * The prompt is real: a script wires it to the shell, over this same content.
  * Until then it stays hidden, because a prompt that does nothing is a lie.
@@ -47,7 +55,7 @@ export function renderDocument(site: Site, page: Page, assets: DocumentAssets): 
   const script = assets.script ? `<script type="module" src="${assets.script}"></script>` : "";
 
   return `<!doctype html>
-<html lang="en">
+<html lang="en"${rootAttributes(page)}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,7 +68,7 @@ export function renderDocument(site: Site, page: Page, assets: DocumentAssets): 
 <meta property="og:url" content="${escapeHtml(canonical)}">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}
+<script>try{var h=document.documentElement,t=localStorage.getItem("theme");if(!h.dataset.pageTheme&&(t==="light"||t==="dark"))h.dataset.theme=t}catch(e){}
 (function(){var k=[];window.__typed=k;function h(e){var f=e.target&&e.target.matches&&e.target.matches("input,textarea,select,[contenteditable]");if(f||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key.length===1||e.key==="Enter"||e.key==="Backspace"){k.push(e.key);e.preventDefault()}}window.addEventListener("keydown",h);window.__stopTyped=function(){window.removeEventListener("keydown",h)}})()</script>
 ${bookSchema(page, assets.origin)}
 ${stylesheet}

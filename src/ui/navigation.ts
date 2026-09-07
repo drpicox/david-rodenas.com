@@ -1,5 +1,6 @@
 import type { Site } from "../core/content/Site";
 import { renderMain } from "../core/site/renderMain";
+import { settleTheme } from "./settleTheme";
 
 export type GoTo = (route: string, push?: boolean) => boolean;
 
@@ -17,6 +18,13 @@ export function mountNavigation(site: Site, onArrive: (route: string) => void): 
     const page = site.at(route);
     if (!page) return false;
     main.innerHTML = renderMain(site, page);
+    const root = document.documentElement;
+    const theme = page.fields["theme"];
+    if (theme === "dark" || theme === "light") root.dataset["pageTheme"] = theme;
+    else delete root.dataset["pageTheme"];
+    if (page.fields["sky"]) root.dataset["sky"] = page.fields["sky"];
+    else delete root.dataset["sky"];
+    settleTheme();
     document.title = page.route === "/" ? "David Rodenas" : `${page.title} — David Rodenas`;
     for (const link of document.querySelectorAll<HTMLAnchorElement>("nav .navlink")) {
       const here = route.startsWith(link.getAttribute("href") ?? "\0");

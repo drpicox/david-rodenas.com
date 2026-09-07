@@ -112,6 +112,7 @@ describe("the document and the shell", () => {
   it("applies a remembered theme before anything is painted", () => {
     const html = render("/");
     expect(html.indexOf('localStorage.getItem("theme")')).toBeLessThan(html.indexOf("<body>"));
+    expect(html).toContain("dataset.pageTheme");
   });
 });
 
@@ -127,5 +128,21 @@ describe("typing before the script arrives", () => {
   it("is caught from the first byte of the page, so nothing typed is lost", () => {
     const html = render("/");
     expect(html.indexOf("window.__typed")).toBeLessThan(html.indexOf("<body>"));
+  });
+});
+
+describe("a page with its own sky", () => {
+  const sky = new Site([
+    { file: "index.md", markdown: "---\ntitle: Home\n---\nhi" },
+    { file: "worlds/index.md", markdown: "---\ntitle: Worlds\ntheme: dark\nsky: stars\n---\nstars" },
+  ]);
+
+  it("is dark from the first byte, and says so, and has stars", () => {
+    const html = renderDocument(sky, sky.at("/worlds/")!, assets);
+    expect(html).toContain('<html lang="en" data-theme="dark" data-page-theme="dark" data-sky="stars">');
+  });
+
+  it("leaves every other page to the reader's choice", () => {
+    expect(renderDocument(sky, sky.at("/")!, assets)).toContain('<html lang="en">');
   });
 });
