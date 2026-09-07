@@ -1,10 +1,10 @@
 export interface Mesh {
-  /** Unit vectors, three numbers per vertex. */
-  readonly vertices: Float32Array;
+  /** Unit direction of each vertex, three numbers per vertex. */
+  readonly directions: Float32Array;
+  /** Distance from the centre of each vertex. Relief lives here. */
+  readonly radii: Float32Array;
   /** Three vertex indices per face. */
   readonly faces: Uint32Array;
-  /** Unit vector of the middle of each face, three numbers per face. */
-  readonly centroids: Float32Array;
   readonly faceCount: number;
   readonly vertexCount: number;
 }
@@ -25,74 +25,123 @@ const TRIANGLES: readonly (readonly [number, number, number])[] = [
   [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1],
 ];
 
-/**
- * An icosahedron, subdivided.
- *
- * This is where the planet starts, and it is why the finished world has flat
- * faces instead of a smooth skin: every face is one triangle of this solid,
- * and the count of them is a decision, not an accident. Level 0 is the twenty
- * faces of the solid itself; each level after that quarters them.
- */
-export function buildIcosphere(subdivisions: number): Mesh {
-  let points = CORNERS.map(([x, y, z]) => {
+interface Vertex {
+  direction: [number, number, number];
+  radius: number;
+}
+
+/** The solid the whole thing starts from: twenty faces, all at radius one. */
+export function icosahedron(): Mesh {
+  const vertices = CORNERS.map(([x, y, z]) => {
     const length = Math.hypot(x, y, z);
-    return [x / length, y / length, z / length] as [number, number, number];
+    return { direction: [x / length, y / length, z / length] as [number, number, number], radius: 1 };
   });
-  let triangles = TRIANGLES.map((face) => [...face] as [number, number, number]);
+  return meshOf(vertices, TRIANGLES.map((face) => [...face] as [number, number, number]));
+}
 
-  for (let level = 0; level < subdivisions; level += 1) {
-    const middles = new Map<string, number>();
+/**
+ * How far the midpoint of an edge is pushed out or pulled in when the edge is
+ * split. The length is passed in because that is what makes the result
+ * fractal: it halves at every level, so the first splits carve continents and
+ * the last ones only roughen a slope.
+ */
+export type Displace = (length: number) => number;
 
-    const middleOf = (a: number, b: number): number => {
-      const key = a < b ? `${a}:${b}` : `${b}:${a}`;
-      const known = middles.get(key);
-      if (known !== undefined) return known;
+/**
+ * Subdivide, displacing each new midpoint along its own radius.
+ *
+ * This is the 1999 algorithm and not the usual one: the corners that already
+ * existed keep the height they had, and only the new points move. Smoothing
+ * the old ones as well would average the mountains away, which is exactly what
+ * a fractal landscape must not do.
+ */
+export function subdivide(mesh: Mesh, displace: Displace): Mesh {
+  const vertices: Vertex[] = Array.from({ length: mesh.vertexCount }, (_unused, index) => ({
+    direction: [
+      mesh.directions[index * 3] ?? 0,
+      mesh.directions[index * 3 + 1] ?? 0,
+      mesh.directions[index * 3 + 2] ?? 0,
+    ],
+    radius: mesh.radii[index] ?? 1,
+  }));
 
-      const [ax, ay, az] = points[a]!;
-      const [bx, by, bz] = points[b]!;
-      const [mx, my, mz] = [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2];
-      const length = Math.hypot(mx, my, mz);
-      points.push([mx / length, my / length, mz / length]);
+  const middles = new Map<string, number>();
 
-      const index = points.length - 1;
-      middles.set(key, index);
-      return index;
-    };
+  const middleOf = (a: number, b: number): number => {
+    const key = a < b ? `${a}:${b}` : `${b}:${a}`;
+    const known = middles.get(key);
+    if (known !== undefined) return known;
 
-    triangles = triangles.flatMap(([a, b, c]) => {
-      const ab = middleOf(a, b);
-      const bc = middleOf(b, c);
-      const ca = middleOf(c, a);
-      return [
-        [a, ab, ca],
-        [b, bc, ab],
-        [c, ca, bc],
-        [ab, bc, ca],
-      ] as [number, number, number][];
+    const first = vertices[a]!;
+    const second = vertices[b]!;
+    const [ax, ay, az] = first.direction;
+    const [bx, by, bz] = second.direction;
+
+    const length = Math.hypot(
+      ax * first.radius - bx * second.radius,
+      ay * first.radius - by * second.radius,
+      az * first.radius - bz * second.radius,
+    );
+
+    const [mx, my, mz] = [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2];
+    const scale = Math.hypot(mx, my, mz) || 1;
+
+    vertices.push({
+      direction: [mx / scale, my / scale, mz / scale],
+      radius: (first.radius + second.radius) / 2 + displace(length),
     });
+
+    const index = vertices.length - 1;
+    middles.set(key, index);
+    return index;
+  };
+
+  const faces: [number, number, number][] = [];
+  for (let face = 0; face < mesh.faceCount; face += 1) {
+    const a = mesh.faces[face * 3]!;
+    const b = mesh.faces[face * 3 + 1]!;
+    const c = mesh.faces[face * 3 + 2]!;
+    const ab = middleOf(a, b);
+    const bc = middleOf(b, c);
+    const ca = middleOf(c, a);
+    faces.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]);
   }
 
-  const vertices = new Float32Array(points.length * 3);
-  points.forEach(([x, y, z], index) => {
-    vertices[index * 3] = x;
-    vertices[index * 3 + 1] = y;
-    vertices[index * 3 + 2] = z;
+  return meshOf(vertices, faces);
+}
+
+function meshOf(vertices: readonly Vertex[], faces: readonly (readonly [number, number, number])[]): Mesh {
+  const directions = new Float32Array(vertices.length * 3);
+  const radii = new Float32Array(vertices.length);
+  vertices.forEach(({ direction, radius }, index) => {
+    directions[index * 3] = direction[0];
+    directions[index * 3 + 1] = direction[1];
+    directions[index * 3 + 2] = direction[2];
+    radii[index] = radius;
   });
 
-  const faces = new Uint32Array(triangles.length * 3);
-  const centroids = new Float32Array(triangles.length * 3);
-  triangles.forEach(([a, b, c], face) => {
-    faces[face * 3] = a;
-    faces[face * 3 + 1] = b;
-    faces[face * 3 + 2] = c;
-    const x = (vertices[a * 3]! + vertices[b * 3]! + vertices[c * 3]!) / 3;
-    const y = (vertices[a * 3 + 1]! + vertices[b * 3 + 1]! + vertices[c * 3 + 1]!) / 3;
-    const z = (vertices[a * 3 + 2]! + vertices[b * 3 + 2]! + vertices[c * 3 + 2]!) / 3;
-    const length = Math.hypot(x, y, z);
-    centroids[face * 3] = x / length;
-    centroids[face * 3 + 1] = y / length;
-    centroids[face * 3 + 2] = z / length;
+  const indices = new Uint32Array(faces.length * 3);
+  faces.forEach(([a, b, c], face) => {
+    indices[face * 3] = a;
+    indices[face * 3 + 1] = b;
+    indices[face * 3 + 2] = c;
   });
 
-  return { vertices, faces, centroids, faceCount: triangles.length, vertexCount: points.length };
+  return {
+    directions,
+    radii,
+    faces: indices,
+    faceCount: faces.length,
+    vertexCount: vertices.length,
+  };
+}
+
+/** Where a vertex actually sits in space: its direction, out to its radius. */
+export function positionOf(mesh: Mesh, vertex: number): [number, number, number] {
+  const radius = mesh.radii[vertex] ?? 1;
+  return [
+    (mesh.directions[vertex * 3] ?? 0) * radius,
+    (mesh.directions[vertex * 3 + 1] ?? 0) * radius,
+    (mesh.directions[vertex * 3 + 2] ?? 0) * radius,
+  ];
 }

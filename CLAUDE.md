@@ -26,7 +26,9 @@ taste: **the content is in the HTML**. Everything below follows from it.
   - `markdown/` — the small subset of markdown this site writes in
   - `content/` — front matter, and `Site`: what is at an address, what a
     directory holds
-  - `planet/` — the MGC filter pipeline, and a sphere renderer
+  - `planet/` — the 1999 MGC filter pipeline (an icosahedron, fractalised
+    by midpoint displacement, with the sea as a minimum radius) and a
+    flat-shaded rasteriser with a depth buffer
   - `shell/` — the commands, over the same `Site`
   - `bigrams/` — the language model of the demo
 - `src/ui/` — the only code that touches the DOM

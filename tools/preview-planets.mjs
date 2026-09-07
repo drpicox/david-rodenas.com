@@ -27,8 +27,7 @@ try {
   const sheet = new Uint8ClampedArray(width * height * 4);
 
   seeds.forEach((seed, column) => {
-    const level = process.env.LEVEL ? Number(process.env.LEVEL) : undefined;
-    const pixels = renderSphere(generateWorld(seed, undefined, level), SIZE, { rotation: 0.6 });
+    const pixels = renderSphere(generateWorld(seed), SIZE, { rotation: 0.6 });
     const offsetX = GAP + column * (SIZE + GAP);
     for (let y = 0; y < SIZE; y += 1) {
       for (let x = 0; x < SIZE; x += 1) {

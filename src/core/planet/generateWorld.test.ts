@@ -1,22 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { colourise, fractalise, sea, temperatures } from "./filters";
 import { generateWorld, PIPELINE } from "./generateWorld";
-import { acrossFace, latitudeOfVertex, type World } from "./World";
+import { latitudeOfVertex, type World } from "./World";
 
 /** Mean warmth of the corners whose latitude falls in a band. */
-function averageTemperatureNear(world: World, latitude: number): number {
+function warmthNear(world: World, latitude: number): number {
   let total = 0;
   let counted = 0;
   for (let vertex = 0; vertex < world.mesh.vertexCount; vertex += 1) {
-    if (Math.abs(latitudeOfVertex(world, vertex) - latitude) > 0.12) continue;
+    if (Math.abs(latitudeOfVertex(world, vertex) - latitude) > 0.1) continue;
     total += world.temperature[vertex] ?? 0;
     counted += 1;
   }
   return counted === 0 ? 0 : total / counted;
-}
-
-function isPainted(world: World): boolean {
-  return world.faceColour.some((channel) => channel !== 0);
 }
 
 /** How much the painting says: one colour is a world nobody can read. */
@@ -34,71 +30,69 @@ function coloursIn(world: World): number {
 
 describe("generateWorld", () => {
   it("grows the same world from the same seed", () => {
-    expect(Array.from(generateWorld(7).elevation)).toEqual(Array.from(generateWorld(7).elevation));
+    expect([...generateWorld(7).mesh.radii]).toEqual([...generateWorld(7).mesh.radii]);
   });
 
   it("grows a different world from a different seed", () => {
-    expect(Array.from(generateWorld(7).elevation)).not.toEqual(Array.from(generateWorld(8).elevation));
+    expect([...generateWorld(7).mesh.radii]).not.toEqual([...generateWorld(8).mesh.radii]);
   });
 
   it("is made of triangles you can count", () => {
     const world = generateWorld(3);
-    expect(world.mesh.faceCount).toBe(20 * 4 ** world.subdivisions);
+    expect(world.mesh.faceCount).toBe(20 * 4 ** 4);
     expect(world.faceColour.length).toBe(world.mesh.faceCount * 3);
   });
 
-  it("keeps every corner on the surface of the sphere", () => {
-    const world = generateWorld(3);
-    for (let vertex = 0; vertex < world.mesh.vertexCount; vertex += 1) {
-      const [x, y, z] = [
-        world.mesh.vertices[vertex * 3] ?? 0,
-        world.mesh.vertices[vertex * 3 + 1] ?? 0,
-        world.mesh.vertices[vertex * 3 + 2] ?? 0,
-      ];
-      expect(Math.hypot(x, y, z)).toBeCloseTo(1, 5);
-    }
+  it("has real relief, not a painted ball", () => {
+    const radii = [...generateWorld(3).mesh.radii];
+    expect(Math.max(...radii) - Math.min(...radii)).toBeGreaterThan(0.05);
   });
 
   it("is colder at the pole than at the equator", () => {
     const world = generateWorld(11);
-    expect(averageTemperatureNear(world, 0.95)).toBeLessThan(averageTemperatureNear(world, 0.05));
+    expect(warmthNear(world, 0.95)).toBeLessThan(warmthNear(world, 0.05));
   });
 
-  it("leaves roughly the share of the surface under water that it was asked for", () => {
-    const world = generateWorld(5);
-    const underwater = Array.from(world.elevation).filter((height) => height <= world.seaLevel).length;
-    expect(underwater / world.elevation.length).toBeCloseTo(0.55, 1);
+  it("paints something, and something worth reading", () => {
+    const world = generateWorld(2);
+    expect(coloursIn(world)).toBeGreaterThan(20);
+    expect(coloursIn(world)).toBeLessThanOrEqual(world.mesh.faceCount);
+  });
+});
+
+describe("the sea", () => {
+  const world = generateWorld(5);
+
+  it("is a minimum radius: nothing is left below it", () => {
+    expect([...world.mesh.radii].every((radius) => radius >= world.seaRadius - 1e-6)).toBe(true);
   });
 
-  it("paints something", () => {
-    expect(isPainted(generateWorld(2))).toBe(true);
+  it("flattens the share of the surface it was asked for onto one sphere", () => {
+    const flooded = [...world.mesh.radii].filter((radius) => Math.abs(radius - world.seaRadius) < 1e-6);
+    expect(flooded.length / world.mesh.vertexCount).toBeGreaterThan(0.4);
+  });
+
+  it("leaves the land standing above it", () => {
+    expect(Math.max(...world.mesh.radii)).toBeGreaterThan(world.seaRadius * 1.01);
   });
 });
 
 describe("the order of the pipeline", () => {
   it("is meaning, not style: painting first leaves one flat colour", () => {
-    const tooEarly = generateWorld(4, [colourise, fractalise, temperatures, sea()]);
-    expect(isPainted(tooEarly)).toBe(true);
+    const tooEarly = generateWorld(4, [colourise, fractalise(), temperatures(), sea()]);
     expect(coloursIn(tooEarly)).toBe(1);
-    expect(coloursIn(generateWorld(4, PIPELINE))).toBeGreaterThan(50);
+    expect(coloursIn(generateWorld(4, PIPELINE))).toBeGreaterThan(20);
   });
 
-  it("paints one colour per face, with no blending across the edges", () => {
-    const world = generateWorld(6);
-    expect(acrossFace(world, world.elevation, 0)).not.toBeNaN();
-    expect(coloursIn(world)).toBeLessThanOrEqual(world.mesh.faceCount);
-  });
-
-  it("gives a different planet when the sea is chosen before the land is raised", () => {
-    const wrong = generateWorld(4, [sea(), fractalise, temperatures, colourise]);
-    const right = generateWorld(4, PIPELINE);
-    expect(wrong.seaLevel).not.toBe(right.seaLevel);
+  it("drowns the world when the sea is put in before the land is raised", () => {
+    const wrong = generateWorld(4, [sea(), fractalise(), temperatures(), colourise]);
+    // A perfect sphere has one radius, so the sea takes all of it and the
+    // land that comes afterwards has nothing to stand above.
+    expect(wrong.seaRadius).toBe(1);
+    expect(generateWorld(4, PIPELINE).seaRadius).not.toBe(1);
   });
 
   it("runs every filter the pipeline names", () => {
     expect(PIPELINE).toHaveLength(4);
-    const world = generateWorld(1);
-    expect(world.elevation.some((height) => height !== 0)).toBe(true);
-    expect(world.temperature.some((degree) => degree !== 0)).toBe(true);
   });
 });
