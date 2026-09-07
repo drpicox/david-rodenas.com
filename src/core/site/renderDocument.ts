@@ -41,7 +41,7 @@ function terminal(page: Page): string {
  */
 export function renderDocument(site: Site, page: Page, assets: DocumentAssets): string {
   const title = page.route === "/" ? "David Rodenas" : `${page.title} — David Rodenas`;
-  const description = page.summary || "David Rodenas, PhD. I build the foundations other engineers build on.";
+  const description = page.summary || "David Rodenas, PhD. I lay the foundations other engineers build on.";
   const canonical = `${assets.origin}${page.route}`;
   const stylesheet = assets.stylesheet ? `<link rel="stylesheet" href="${assets.stylesheet}">` : "";
   const script = assets.script ? `<script type="module" src="${assets.script}"></script>` : "";

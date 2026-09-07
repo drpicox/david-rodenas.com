@@ -52,11 +52,14 @@ export function slugOf(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
+/** A heading is one line, unless every line but the last asks for a break: then it is one heading, broken where it says. */
 function heading(lines: string[]): string | null {
   const match = /^(#{1,4})\s+(.*)$/.exec(lines[0] ?? "");
-  if (!match || lines.length !== 1) return null;
+  if (!match) return null;
+  const breaks = lines.slice(0, -1).every((line) => / {2,}$/.test(line));
+  if (!breaks) return null;
   const level = match[1]?.length ?? 1;
-  const text = match[2] ?? "";
+  const text = [match[2] ?? "", ...lines.slice(1)].join("\n");
   return `<h${level} id="${slugOf(text)}">${renderInline(text)}</h${level}>`;
 }
 

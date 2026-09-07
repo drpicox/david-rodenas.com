@@ -24,6 +24,14 @@ describe("renderMarkdown", () => {
     expect(renderMarkdown("## Five times")).toBe('<h2 id="five-times">Five times</h2>');
   });
 
+  it("lets a heading break where it asks to, and keeps one id for the whole", () => {
+    expect(renderMarkdown("# I lay  \nthe foundations")).toBe('<h1 id="i-lay-the-foundations">I lay<br>the foundations</h1>');
+  });
+
+  it("does not read a heading into the paragraph under it", () => {
+    expect(renderMarkdown("# Title\nwords")).toBe("<p># Title words</p>");
+  });
+
   it("keeps a fenced block verbatim, blank lines and all", () => {
     expect(renderMarkdown("```\na\n\nb\n```")).toBe("<pre><code>a\n\nb</code></pre>");
   });

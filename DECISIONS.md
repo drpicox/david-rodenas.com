@@ -132,9 +132,13 @@ simulators and the worlds.
 **Current recommendation: foundations.** The junior reading of the word
 ("foundations" as "the basics") does not survive the sentence — "the
 foundations other engineers build on" can only mean the architectural sense.
-It keeps the building metaphor he reached for himself. The echo of *build*
-reads as a chain rather than a stumble, because the two are far apart and the
-second is a phrasal verb.
+It keeps the building metaphor he reached for himself.
+
+The verb is now **lay**, not *build*: "I lay the foundations" is the idiom, and
+it removes the *build… build* echo instead of arguing that it read as a chain.
+The headline is set on three lines, broken by hand — *I lay / the foundations
+/ other engineers build on.* — so the first line is two words and the weight
+falls on the last.
 
 Runner-up worth trying out loud: **"I build to be built on."**
 

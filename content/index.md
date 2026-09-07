@@ -1,10 +1,12 @@
 ---
 title: David Rodenas
-summary: PhD. I build the foundations other engineers build on.
+summary: PhD. I lay the foundations other engineers build on.
 order: 0
 ---
 
-# I build the foundations other engineers build on.
+# I lay  
+the foundations  
+other engineers build on.
 
 Computer enthusiast, doctor and engineer. Former vice-dean of COEINF, the
 professional college of computer engineers of Catalonia. I write every
