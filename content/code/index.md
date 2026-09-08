@@ -15,13 +15,13 @@ still there. They shipped in 1.5.9 and 1.6.0 and they are in 1.8.3, the last
 release the framework ever had, in April 2022. The commit message says what
 they were for: *this can result in a compilation speed-up of around 10%*. They
 are [in the compiler](https://github.com/angular/angular.js/blob/master/src/ng/compile.js)
-today, and the argument that got them in is
-[in the pull request](https://github.com/angular/angular.js/pull/14850).
+today; [the change itself](https://github.com/angular/angular.js/commit/4c2964d01b55ebb279ea526ae9f44343e513bb8f)
+and [the argument that got it in](https://github.com/angular/angular.js/pull/14850) are both there to read.
 
-```
+```js
 app.config(function ($compileProvider) {
-  // Nobody writes directives as comments or CSS classes any more,
-  // so stop the compiler looking for them in every node.
+  // Nobody writes directives as comments or classes
+  // any more: stop the compiler looking for them.
   $compileProvider.commentDirectivesEnabled(false);
   $compileProvider.cssClassDirectivesEnabled(false);
 });
@@ -51,8 +51,10 @@ it belongs further down this page and to a different change.
 [The second compiler change](https://github.com/angular/angular.js/commit/3aedb1a70d9f925cf866ed7ba07f59c7eb13baa3)
 is smaller and I like it more: a `try/catch` inside the function that
 collected comment directives was stopping V8 from optimising the whole
-function, so I moved it into a function of its own. Nineteen lines. The
-comment I left explaining why is still in the source.
+function, so I moved it into a function of its own. Nineteen lines, and
+measured on a customer's code over two hundred runs, [about 5% off parsing
+and compiling](https://github.com/angular/angular.js/pull/14848). It shipped in 1.5.8. The comment I left
+explaining why is still in the source.
 
 ## ngClass, and the hundredfold number
 
@@ -67,9 +69,12 @@ copy.
 Everyone who knew this wrote the second line instead, so the watcher saw a
 boolean:
 
-```
-<li ng-class="{ lent: book.lendTo }">    <!-- copies the whole person -->
-<li ng-class="{ lent: !!book.lendTo }">  <!-- copies true -->
+```html
+<!-- copies the person, their books, their people -->
+<li ng-class="{ lent: book.lendTo }">
+
+<!-- copies true -->
+<li ng-class="{ lent: !!book.lendTo }">
 ```
 
 Everyone who did not know spent the afternoon finding out why the page had
@@ -82,8 +87,8 @@ It shipped in 1.6.1, in [a commit](https://github.com/angular/angular.js/commit/
 written by another maintainer on top of [mine](https://github.com/angular/angular.js/pull/14404), and the
 changelog entry for it links to my pull request. His commit message:
 
-> In large based on #14404. Kudos to @drpicox for the initial idea and a big
-> part of the implementation.
+> "In large based on #14404. Kudos to @drpicox for the initial idea and a big
+> part of the implementation." -- Georgios Kalpakas, [in the commit that shipped it](https://github.com/angular/angular.js/commit/b82097085d53ad89940828d3c0825518569b1e4a)
 
 He asked for a benchmark, so I wrote that too: [`ng-class-bp`](https://github.com/angular/angular.js/pull/15243),
 reviewed and merged into AngularJS's own benchmark suite, where it still is.
@@ -108,10 +113,11 @@ the component's name and it hands you the controller, with its bindings,
 without compiling a template or touching the DOM. It is the API the component
 guide teaches.
 
-```
-it("greets whoever it is given", inject(function ($componentController) {
-  var ctrl = $componentController("greeting", null, { name: "Ada" });
-  expect(ctrl.text()).toBe("Hello, Ada");
+```js
+it("greets", inject(function ($componentController) {
+  var bindings = { name: "Ada" };
+  var hello = $componentController("hello", {}, bindings);
+  expect(hello.text()).toBe("Hello, Ada");
 }));
 ```
 
@@ -136,7 +142,7 @@ today](https://github.com/angular/angular.js/blob/master/src/ngMock/angular-mock
 `ngRef` publishes a controller, or an element, into scope, so that the template
 around a component can talk to it:
 
-```
+```html
 <todo-list ng-ref="todos"></todo-list>
 <p>{{ todos.remaining() }} left</p>
 ```
@@ -148,15 +154,15 @@ later a maintainer [opened his own](https://github.com/angular/angular.js/pull/1
 changes, and merged that.
 The directive shipped in 1.7.1 three days after that. His commit message:
 
-> Thanks to @drpicox for the original implementation: PR #14080.
+> "Thanks to @drpicox for the original implementation: PR #14080." -- Martin Staffa, [in the commit](https://github.com/angular/angular.js/commit/bf841d35120bf3c4655fde46af4105c85a0f1cdc)
 
 ## Whose name is on the commit
 
 There is no count of anything on this page, and this is why. On that project a
 maintainer would take your pull request, rebase it, and land it himself:
 
-> @drpicox I can also make these changes, so just tell me if you'll do it or I
-> should. :) -- [a maintainer, July 2016](https://github.com/angular/angular.js/pull/14850#issuecomment-234206359)
+> "@drpicox I can also make these changes, so just tell me if you'll do it or I
+> should. :)" -- Martin Staffa, [July 2016](https://github.com/angular/angular.js/pull/14850#issuecomment-234206359)
 
 Every commit of mine on the main branch was put there by a maintainer's hand,
 and GitHub records almost all of my pull requests as never merged -- two of
@@ -164,8 +170,8 @@ them my own scaffolding for another. The merge button measures who pressed it.
 What it does not measure, one of them wrote down while turning down a different
 idea of mine:
 
-> But totally 👍 for all the great ideas and work that you've been putting in
-> to this and other features lately-ish. Really great stuff! -- [another, September 2016](https://github.com/angular/angular.js/pull/15112)
+> "But totally 👍 for all the great ideas and work that you've been putting in
+> to this and other features lately-ish. Really great stuff!" -- Georgios Kalpakas, [September 2016](https://github.com/angular/angular.js/pull/15112)
 
 ## Elsewhere
 
