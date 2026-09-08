@@ -20,8 +20,8 @@ today, and the argument that got them in is
 
 ```
 app.config(function ($compileProvider) {
-  // Nobody writes directives as <!-- comments --> or as CSS classes any more,
-  // so stop the compiler looking for them in every node it visits.
+  // Nobody writes directives as comments or CSS classes any more,
+  // so stop the compiler looking for them in every node.
   $compileProvider.commentDirectivesEnabled(false);
   $compileProvider.cssClassDirectivesEnabled(false);
 });
@@ -68,8 +68,8 @@ Everyone who knew this wrote the second line instead, so the watcher saw a
 boolean:
 
 ```
-<li ng-class="{ lent: book.lendTo }">     <!-- copies the person, and their books, every digest -->
-<li ng-class="{ lent: !!book.lendTo }">   <!-- copies true -->
+<li ng-class="{ lent: book.lendTo }">    <!-- copies the whole person -->
+<li ng-class="{ lent: !!book.lendTo }">  <!-- copies true -->
 ```
 
 Everyone who did not know spent the afternoon finding out why the page had
