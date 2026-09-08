@@ -174,6 +174,28 @@ template-literal interpolation, JSX and every other language are out of scope
 until a page needs them, and a page that needs them gets a token added, with a
 test, not a library.
 
+### Diagrams are drawn at build time, by a layout engine written here
+
+The teaching page needed a flowchart, and an ASCII one in a `<pre>` was hard
+to read and David said so. Mermaid is the obvious tool and it is two and a
+half megabytes in the browser, with d3, dagre and cytoscape inside it — the
+opposite of this site. Rendering Mermaid at build time needs a headless
+browser as a dependency, which is heavier still.
+
+So `platform/markdown/flow/` is a small layered-graph layout of its own: a
+parser for a subset of Mermaid's flowchart syntax (`A[label] --> B`,
+`-->|label|`, `TD`/`LR`), so a diagram written here reads the same there;
+ranks by longest path, a waypoint for every row an edge skips so an arrow
+bends round a box rather than through it, rows ordered by the barycentre of
+their neighbours, boxes pulled towards their neighbours and pushed apart
+where they overlap; and inline SVG coloured by the page's own variables, so
+it follows the theme. About two hundred lines, twenty-two tests, nothing in
+the browser. A ```` ```flow ```` fence is a diagram; every other fence is a
+listing.
+
+What it does not do, on purpose: subgraphs, shapes other than a box, edge
+styles, cycles. A page that needs one of those gets it added with a test.
+
 ## Open
 
 ### The noun in the headline

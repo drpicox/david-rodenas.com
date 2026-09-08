@@ -1,3 +1,4 @@
+import { renderFlow } from "./flow/renderFlow";
 import { highlight } from "./highlight";
 import { renderInline } from "./renderInline";
 
@@ -63,11 +64,16 @@ function heading(lines: string[]): string | null {
   return `<h${level} id="${slugOf(text)}">${renderInline(text)}</h${level}>`;
 }
 
-/** A fence may name its language — ```js, ```html — and the block is coloured by it, at build time. */
+/**
+ * A fence may name its language — ```js, ```html — and the block is coloured
+ * by it, at build time. One language is not code at all: ```flow is a
+ * flowchart, and comes out as a drawing.
+ */
 function code(lines: string[]): string | null {
   if (!lines[0]?.startsWith("```")) return null;
   const language = lines[0].slice(3).trim();
   const body = lines.slice(1, -1).join("\n");
+  if (language === "flow") return renderFlow(body);
   return `<pre><code>${highlight(body, language)}</code></pre>`;
 }
 

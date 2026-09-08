@@ -113,6 +113,13 @@ describe("a fenced block's language", () => {
     );
   });
 
+  it("draws a flow fence as a diagram rather than a listing", () => {
+    const html = renderMarkdown("```flow\nA[post] --> B[test]\n```");
+    expect(html).toMatch(/^<figure class="flow"><svg /);
+    expect(html).toContain(">post<");
+    expect(html).not.toContain("<pre>");
+  });
+
   it("leaves a fence with no language plain, box characters and all", () => {
     expect(renderMarkdown("```\n┌─┐ <b>\n```")).toBe("<pre><code>┌─┐ &lt;b&gt;</code></pre>");
   });
