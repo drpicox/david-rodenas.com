@@ -46,7 +46,17 @@ blog post the team wanted to write anyway, in their own words rather than in
 Gherkin's, and compiled into the tests rather than interpreted at run time.
 
 One rule, enforced in code: *the writer of a post cannot be the coder who
-implements it.*
+implements it.* And the compiler read the steps and refused the vague ones.
+Every post had to have at least one step with *should* in it, and to end on
+one. A step could not say *given* and *should* at once. A step with *there is*,
+*has* or *needs* in it had to say which it was, setup or assertion, or it was
+sent back. Every refusal said what it had found, what it had expected, and what
+to do about it.
+
+That makes it a harness, in the sense the word has since taken for working
+with a coding agent: it did not write the code, it made sure the specification
+was one a machine could hold you to, and it told you plainly when it was not.
+The same guidance would do an AI good today.
 
 ## The server answers once
 
