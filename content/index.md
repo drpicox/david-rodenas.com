@@ -19,7 +19,9 @@ Guide to Rescue Stalled Software* (2024) is about conquering technical debt
 without sacrificing your sanity or your shipping schedule. Its rule fits on one
 line: never rewrite, never stop delivery. [About the book.](/book/)
 
-## Essays with more than half a million views
+## Essays
+
+> More than half a million views.
 
 More than 250 of them on [Medium](https://drpicox.medium.com), one every
 Saturday since 2022. The most read one, and the ones read longest, argue with
@@ -33,6 +35,20 @@ the canon:
 - [What Are Micro-Frontends Really For?](https://drpicox.medium.com/what-are-micro-frontends-for-aad66e9c2cf8)
 
 [Twenty of them, with a line on each.](/essays/)
+
+## Two public APIs of AngularJS are mine
+
+> One of thirteen. It is the one that got in.
+
+In 2016 a core maintainer merged a pull request of mine into the AngularJS
+compiler: `$compileProvider.commentDirectivesEnabled()` and
+`cssClassDirectivesEnabled()`, still in 1.8.3, the last release the framework
+ever had. He had asked for numbers he could check, so I wrote the benchmark
+that produced them, and that is still in the repository too.
+
+A second maintainer put my name in the history a second time, for work of mine
+that shipped under his. [The whole account, including what did not
+land.](/code/)
 
 ## The world at the top
 
