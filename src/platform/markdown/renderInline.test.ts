@@ -26,6 +26,34 @@ describe("renderInline", () => {
   it("does bold and italic", () => {
     expect(renderInline("**a** and *b*")).toBe("<strong>a</strong> and <em>b</em>");
   });
+
+  // A link is one thing, so a code span inside its label must not cut it in half.
+  it("reads a code span inside a link's label", () => {
+    expect(renderInline("[`compile.js`](/code/)")).toBe('<a href="/code/"><code>compile.js</code></a>');
+    expect(renderInline("read [the `ngRef` directive](/code/) now")).toBe(
+      'read <a href="/code/">the <code>ngRef</code> directive</a> now',
+    );
+  });
+
+  it("marks up a link's label like any other words", () => {
+    expect(renderInline("[**loud**](/a/)")).toBe('<a href="/a/"><strong>loud</strong></a>');
+  });
+
+  // A code span is still stronger than a link: what is inside it is not markup.
+  it("reads no link inside a code span", () => {
+    expect(renderInline("`[a](/b/)`")).toBe("<code>[a](/b/)</code>");
+  });
+
+  // The reason there are two passes: the marks are read after the links, not before.
+  it("lets emphasis hold a link inside it", () => {
+    expect(renderInline("*see [the page](/code/) first*")).toBe(
+      '<em>see <a href="/code/">the page</a> first</em>',
+    );
+  });
+
+  it("escapes an address once, not twice", () => {
+    expect(renderInline("[q](https://example.com/?a=1&b=2)")).toContain('href="https://example.com/?a=1&amp;b=2"');
+  });
 });
 
 describe("renderInline images", () => {
