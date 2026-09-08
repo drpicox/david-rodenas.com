@@ -40,8 +40,9 @@ the canon:
 
 > I made its compiler faster.
 
-Two performance changes in the AngularJS compiler are mine, and they are in
-1.8.3, the last release the framework ever had. So is my implementation of
+Two performance changes in the AngularJS compiler are mine. They shipped in
+2016 and were never taken out: six years of releases later they are still in
+1.8.3, the last one the framework had. So is my implementation of
 `$componentController`, the helper its testing module gives you to unit-test a
 component. So are two benchmark suites I wrote when maintainers asked for
 numbers they could check -- one of which measured the `ngClass` rewrite built
