@@ -66,9 +66,12 @@ function emphasise(html: string): string {
         : piece
             .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
             .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
-            .replace(/ -- /g, " — ")
+            // The lines are joined before the dash is read, because a paragraph is
+            // wrapped in the source and about half of the dashes land at the end of
+            // a line, where the space that ought to follow is a newline instead.
             .replace(/ {2,}\n/g, "<br>")
-            .replace(/\n/g, " "),
+            .replace(/\n/g, " ")
+            .replace(/ -- /g, " — "),
     )
     .join("");
 }

@@ -66,6 +66,21 @@ describe("renderInline images", () => {
   });
 });
 
+describe("the em dash", () => {
+  it("takes a pair of hyphens between spaces", () => {
+    expect(renderInline("a -- b")).toBe("a — b");
+  });
+
+  // A paragraph is wrapped in the source, so half of them land at the end of a line.
+  it("takes one that the line wrapped away from its second space", () => {
+    expect(renderInline("a --\nb")).toBe("a — b");
+  });
+
+  it("leaves a hyphenated word alone", () => {
+    expect(renderInline("deep-watching")).toBe("deep-watching");
+  });
+});
+
 describe("line breaks", () => {
   it("breaks the line where two trailing spaces ask for it, and joins it otherwise", () => {
     expect(renderInline("title  \nsubtitle")).toBe("title<br>subtitle");
