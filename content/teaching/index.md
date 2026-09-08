@@ -60,24 +60,12 @@ The same guidance would do an AI good today.
 
 ## The server answers once
 
-```
-               post.md
-        title · writer · steps
-                  │
-           yarn create-tests
-                  │
-        ┌─────────┴─────────┐
-        ▼                   ▼
-  Post_Test.java      Post_Test.spec.js
-     (server)             (client)
-        │                   ▲
-     mvn test               │  replays them,
-        │                   │  in order
-        ▼                   │
-  apiCalls/post.json ───────┘
-  every request the test made
-  and every answer it got,
-  saved only when green
+```flow
+post[post.md\ntitle · writer · steps] --> gen[yarn create-tests]
+gen --> java[Post_Test.java\nthe server's test]
+gen --> js[Post_Test.spec.js\nthe client's test]
+java -->|mvn test| calls[apiCalls/post.json\nevery request and answer,\nsaved only when green]
+calls -->|replayed, in order| js
 ```
 
 The server is implemented first. While its test runs, every request the test
@@ -113,7 +101,17 @@ permutations for forty-eight people -- and the repositories were harvested
 every ten minutes throughout, ten times, so the grade could see when each
 thing happened as well as whether it worked.
 
-## The pipeline runs the posts
+## From a post to production
+
+```flow
+write[write the post] --> tests[yarn create-tests\nwrites both tests, red]
+tests --> fill[fill in the Context\nuntil both are green]
+fill --> pr[commit · push · pull request]
+pr --> ci[GitHub Actions\ncreate-tests · mvn test\njest --coverage · build]
+ci -->|every line covered| review[review · merge to main]
+review -->|the week's release manager| deploy[deploy.sh\nboth suites again, then push]
+deploy --> heroku[Heroku]
+```
 
 On every push and every pull request, the repository compiled the posts into
 tests, ran the Java suite, ran the JavaScript suite with coverage, refused any
