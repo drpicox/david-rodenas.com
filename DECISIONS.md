@@ -152,6 +152,28 @@ simulators and the worlds.
 
 ---
 
+### Code is coloured at build time, by a tokeniser written here
+
+The pages with code on them — the AngularJS one, the teaching one — read
+better with the strings and keywords picked out, and David asked for it.
+The usual answer is a highlighter library. Prism and highlight.js are runtime
+dependencies, and the browser would have to run them over every `<pre>`; the
+whole point of this site is that nothing runs in the browser that was not
+written here, and that a page is finished before any script arrives.
+
+So the colouring is done once, at build time, by `platform/markdown/highlight`:
+a small tokeniser that knows the two languages the content is written in,
+JavaScript and HTML, and marks strings, comments, keywords, numbers, tags and
+attributes with a `<span>` each. It is a few dozen lines with tests, it ships
+as HTML and a handful of CSS rules, and a language it does not know is left
+plain. A fence names its language — ```` ```js ````, ```` ```html ```` — or it is
+left alone, which is what the ASCII diagram on the teaching page wants.
+
+What it does not try to be: a general highlighter. Regular expressions,
+template-literal interpolation, JSX and every other language are out of scope
+until a page needs them, and a page that needs them gets a token added, with a
+test, not a library.
+
 ## Open
 
 ### The noun in the headline

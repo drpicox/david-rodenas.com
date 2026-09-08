@@ -1,4 +1,4 @@
-import { escapeHtml } from "./escapeHtml";
+import { highlight } from "./highlight";
 import { renderInline } from "./renderInline";
 
 /**
@@ -63,10 +63,12 @@ function heading(lines: string[]): string | null {
   return `<h${level} id="${slugOf(text)}">${renderInline(text)}</h${level}>`;
 }
 
+/** A fence may name its language — ```js, ```html — and the block is coloured by it, at build time. */
 function code(lines: string[]): string | null {
   if (!lines[0]?.startsWith("```")) return null;
+  const language = lines[0].slice(3).trim();
   const body = lines.slice(1, -1).join("\n");
-  return `<pre><code>${escapeHtml(body)}</code></pre>`;
+  return `<pre><code>${highlight(body, language)}</code></pre>`;
 }
 
 /** An indented line continues the item above it; the break it asked for is kept for renderInline. */

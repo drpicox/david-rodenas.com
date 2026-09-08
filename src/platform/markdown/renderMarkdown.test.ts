@@ -105,4 +105,16 @@ describe("space", () => {
   it("keeps a sized image a figure", () => {
     expect(renderMarkdown('![c](/c.jpeg "wide")')).toBe('<figure><img src="/c.jpeg" alt="c" class="wide"></figure>');
   });
+
+describe("a fenced block's language", () => {
+  it("colours the block by the language its fence names", () => {
+    expect(renderMarkdown("```js\nreturn 1\n```")).toBe(
+      '<pre><code><span class="hl-k">return</span> <span class="hl-n">1</span></code></pre>',
+    );
+  });
+
+  it("leaves a fence with no language plain, box characters and all", () => {
+    expect(renderMarkdown("```\n┌─┐ <b>\n```")).toBe("<pre><code>┌─┐ &lt;b&gt;</code></pre>");
+  });
+});
 });

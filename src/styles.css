@@ -14,6 +14,7 @@
   /* The one colour on the page: the navy of the 2019 site, lifted a little. */
   --accent: #1a4b9c;
   --accent-soft: #6b83b8;
+  --hl-string: #2f6f4e;
   --warn: #b4443c;
   --title: var(--accent);
 
@@ -30,6 +31,7 @@
     --lead: #e5eaf2;
     --accent: #7fa6ea;
     --accent-soft: #61748f;
+  --hl-string: #93c9a2;
     --warn: #e0806f;
     color-scheme: dark;
   }
@@ -44,6 +46,7 @@
   --lead: #e5eaf2;
   --accent: #7fa6ea;
   --accent-soft: #61748f;
+  --hl-string: #93c9a2;
   --warn: #e0806f;
   color-scheme: dark;
 }
@@ -444,6 +447,20 @@ code {
 pre code {
   overflow-wrap: normal;
 }
+
+/*
+ * Code is coloured at build time by a tokeniser of our own (see DECISIONS.md),
+ * so these are the only classes it ever emits: keyword, string, comment,
+ * number, tag, attribute. Two hues from the page's own palette and the dim
+ * grey, so a block of code looks like part of the page and not a pasted
+ * screenshot of an editor.
+ */
+.hl-k { color: var(--accent); }
+.hl-t { color: var(--accent); }
+.hl-s { color: var(--hl-string); }
+.hl-a { color: var(--hl-string); }
+.hl-n { color: var(--hl-string); }
+.hl-c { color: var(--dim); font-style: italic; }
 
 pre {
   background: var(--sunken);
