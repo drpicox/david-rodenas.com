@@ -32,22 +32,46 @@ function run(theme: Theme, cwd: string, args: readonly string[]) {
 describe("theme", () => {
   it("asks for a toggle when it is given nothing, and says what it became", () => {
     const theme = fakeTheme();
-    expect(run(theme, "/", []).text).toBe("theme: dark");
+    expect(run(theme, "/", []).text).toContain("theme: dark");
     expect(theme.asked).toEqual(["toggle"]);
   });
 
   it("passes a named choice straight through", () => {
     const theme = fakeTheme();
     theme.settled = "light";
-    expect(run(theme, "/", ["light"]).text).toBe("theme: light");
+    expect(run(theme, "/", ["light"]).text).toContain("theme: light");
     expect(theme.asked).toEqual(["light"]);
   });
 
   it("takes auto to mean the system's choice", () => {
     const theme = fakeTheme();
     theme.settled = "system";
-    expect(run(theme, "/", ["auto"]).text).toBe("theme: system");
+    expect(run(theme, "/", ["auto"]).text).toContain("theme: system");
     expect(theme.asked).toEqual(["system"]);
+  });
+
+  // Whoever can click should not have to know that `theme system` is a thing to type.
+  it("offers the choices it did not take, as things to click", () => {
+    const theme = fakeTheme();
+    theme.settled = "dark";
+    const outcome = run(theme, "/", ["dark"]);
+    expect(outcome.text).toBe("theme: dark\n  light  system");
+    expect(outcome.html).toContain('data-run="theme light"');
+    expect(outcome.html).toContain('data-run="theme system"');
+    // Not the one it is already on: clicking it would do nothing and say so.
+    expect(outcome.html).not.toContain('data-run="theme dark"');
+  });
+
+  it("offers the other two when the system is deciding", () => {
+    const theme = fakeTheme();
+    theme.settled = "system";
+    expect(run(theme, "/", ["system"]).text).toBe("theme: system\n  light  dark");
+  });
+
+  it("offers nothing to click when it refused", () => {
+    const theme = fakeTheme();
+    expect(run(theme, "/", ["puce"]).html).toBeUndefined();
+    expect(run(theme, "/worlds/", []).html).toBeUndefined();
   });
 
   it("refuses a choice that is not one, and does not touch the page", () => {
