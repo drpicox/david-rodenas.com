@@ -1,7 +1,7 @@
 ---
 title: The Bowling Game Kata
 summary: Robert C. Martin's kata, with slides and a repository to do it in JavaScript or Java.
-order: 3
+order: 5
 ---
 
 # The Bowling Game Kata

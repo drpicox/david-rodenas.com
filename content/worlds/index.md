@@ -1,7 +1,7 @@
 ---
 title: Worlds
 summary: The fractal planet generator of 1999, in the browser, with the dials exposed.
-order: 5
+order: 7
 theme: dark
 sky: stars
 ---
