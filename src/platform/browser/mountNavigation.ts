@@ -1,6 +1,7 @@
+import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
+import { APPEARANCE, declaredAppearance } from "../page/declaredAppearance";
 import { renderMain } from "../page/renderMain";
-import { settleTheme } from "./settleTheme";
 
 export type GoTo = (route: string, push?: boolean) => boolean;
 
@@ -10,7 +11,7 @@ export type GoTo = (route: string, push?: boolean) => boolean;
  * what is inside `<main>`; the header, the planet and the shell stay put.
  * Anything not in the site — a PDF, another site — is a real navigation.
  */
-export function mountNavigation(site: Site, onArrive: (route: string) => void): GoTo {
+export function mountNavigation(site: Site, onArrive: (page: Page) => void): GoTo {
   const main = document.querySelector("main");
   if (!main) return () => false;
 
@@ -18,13 +19,13 @@ export function mountNavigation(site: Site, onArrive: (route: string) => void): 
     const page = site.at(route);
     if (!page) return false;
     main.innerHTML = renderMain(site, page);
-    const root = document.documentElement;
-    const theme = page.fields["theme"];
-    if (theme === "dark" || theme === "light") root.dataset["pageTheme"] = theme;
-    else delete root.dataset["pageTheme"];
-    if (page.fields["sky"]) root.dataset["sky"] = page.fields["sky"];
-    else delete root.dataset["sky"];
-    settleTheme();
+    // What the new page declares about how it looks; what that means is the features' business.
+    const declared = declaredAppearance(page);
+    for (const attribute of APPEARANCE) {
+      const value = declared[attribute];
+      if (value) document.documentElement.setAttribute(attribute, value);
+      else document.documentElement.removeAttribute(attribute);
+    }
     document.title = page.route === "/" ? "David Rodenas" : `${page.title} — David Rodenas`;
     for (const link of document.querySelectorAll<HTMLAnchorElement>("nav .navlink")) {
       const here = route.startsWith(link.getAttribute("href") ?? "\0");
@@ -36,7 +37,7 @@ export function mountNavigation(site: Site, onArrive: (route: string) => void): 
       window.scrollTo({ top: 0 });
     }
     window.goatcounter?.count?.({ path: route, title: document.title });
-    onArrive(route);
+    onArrive(page);
     return true;
   };
 

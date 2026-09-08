@@ -1,6 +1,7 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
 import { escapeHtml } from "../markdown/escapeHtml";
+import { declaredAppearance } from "./declaredAppearance";
 import { promptPath } from "../shell/promptPath";
 import { bookSchema } from "./bookSchema";
 import { renderMain } from "./renderMain";
@@ -23,12 +24,18 @@ function nav(site: Site, current: string): string {
     .join("");
 }
 
-/** A page may insist on a theme and a sky: `theme: dark`, `sky: stars`. Most do not. */
+/**
+ * A page may insist on a theme and a sky: `theme: dark`, `sky: stars`. Most do
+ * not. `data-theme` is written as well as `data-page-theme`, because the first
+ * paint happens before any script has had a chance to settle the two.
+ */
 function rootAttributes(page: Page): string {
-  const theme = page.fields["theme"];
-  const sky = page.fields["sky"];
-  const forced = theme === "dark" || theme === "light" ? ` data-theme="${theme}" data-page-theme="${theme}"` : "";
-  return forced + (sky ? ` data-sky="${escapeHtml(sky)}"` : "");
+  const declared = declaredAppearance(page);
+  const forced = declared["data-page-theme"];
+  const written = { ...(forced ? { "data-theme": forced } : {}), ...declared };
+  return Object.entries(written)
+    .map(([name, value]) => ` ${name}="${escapeHtml(value)}"`)
+    .join("");
 }
 
 /**

@@ -1,6 +1,6 @@
 import type { Site } from "../content/Site";
 import type { Command, ShellContext } from "./Command";
-import { allCommands } from "./commands/allCommands";
+import { siteCommands } from "./commands/siteCommands";
 import type { Outcome } from "./Outcome";
 import { parseCommandLine } from "./parseCommandLine";
 import { promptPath } from "./promptPath";
@@ -14,7 +14,7 @@ import { resolvePath } from "./resolvePath";
 export class Shell {
   private readonly context: ShellContext;
 
-  constructor(site: Site, cwd: string, commands: readonly Command[] = allCommands) {
+  constructor(site: Site, cwd: string, commands: readonly Command[] = siteCommands) {
     this.context = { site, cwd, commands };
   }
 

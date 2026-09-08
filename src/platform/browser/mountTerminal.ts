@@ -2,9 +2,9 @@ import type { Site } from "../content/Site";
 import { CommandHistory } from "../shell/CommandHistory";
 import type { Outcome } from "../shell/Outcome";
 import { parseCommandLine } from "../shell/parseCommandLine";
+import type { Command } from "../shell/Command";
 import { Shell } from "../shell/Shell";
 import { el } from "./el";
-import { applyTheme } from "./applyTheme";
 
 export interface Terminal {
   /** Runs a line as if it had been typed, echo and all. */
@@ -16,6 +16,8 @@ export interface Terminal {
 export interface TerminalOptions {
   /** Moves the page without leaving it; false when only a real navigation will do. */
   readonly navigate?: (route: string) => boolean;
+  /** The site's own commands and whatever the features brought. */
+  readonly commands?: readonly Command[];
 }
 
 const SCREEN_KEY = "shell-screen";
@@ -71,7 +73,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
   if (!section || !screen || !form || !input || !ps1) return null;
 
-  const shell = new Shell(site, route);
+  const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
   let hint: HTMLElement | null = null;
 
@@ -86,12 +88,6 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
 
   const perform = (outcome: Outcome) => {
     if (outcome.clear) screen.replaceChildren();
-    if (outcome.theme) {
-      // The shell cannot know which way a toggle went; the page can.
-      const became = applyTheme(outcome.theme);
-      print(el("pre", {}, `theme: ${became}`));
-      return;
-    }
     if (outcome.html) {
       const block = el("div", { class: outcome.text ? "listing-out" : "cat" });
       block.innerHTML = outcome.html;

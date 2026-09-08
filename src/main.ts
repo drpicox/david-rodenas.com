@@ -1,40 +1,41 @@
 import "./styles.css";
-import { mountApps } from "./features/mountApps";
-import { savedHeaderWorld } from "./features/world/browser/headerWorld";
+import { allFeatures } from "./features/allFeatures";
+import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
-import { siteInBrowser } from "./platform/browser/siteInBrowser";
-import { spinPlanet } from "./features/world/browser/spinPlanet";
 import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
+import { siteInBrowser } from "./platform/browser/siteInBrowser";
+import { siteCommands } from "./platform/shell/commands/siteCommands";
 
 /**
- * Everything here is an improvement on a page that already works. The words
- * arrived in the HTML; this makes the mark turn, wires the prompt to the
- * shell, and starts the programs the page has left room for.
+ * The composition root, and the only file allowed to know that there is more
+ * than one feature. Everything here is an improvement on a page that already
+ * works: the words arrived in the HTML, and this collects what the features
+ * brought, wires the prompt to the shell, and starts them.
  */
 function mount(): void {
-  const canvas = document.querySelector<HTMLCanvasElement>("canvas.planet");
-  if (canvas) spinPlanet(canvas, savedHeaderWorld() ?? undefined);
+  const commands = [...siteCommands, ...allFeatures.flatMap((feature) => feature.commands ?? [])];
+  const apps = Object.assign({}, ...allFeatures.map((feature) => feature.apps ?? {}));
 
-  const route = window.location.pathname.endsWith("/") ? window.location.pathname : `${window.location.pathname}/`;
+  const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);
+  const route = here(window.location.pathname);
+  const page = siteInBrowser.at(route);
 
   // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
-  let stopApps = mountApps();
+  let stopApps = mountApps(apps);
   let terminal: Terminal | null = null;
   const goTo = mountNavigation(siteInBrowser, (arrived) => {
     stopApps();
-    stopApps = mountApps();
-    terminal?.moveTo(arrived);
+    stopApps = mountApps(apps);
+    for (const feature of allFeatures) feature.arrive?.(arrived);
+    terminal?.moveTo(arrived.route);
   });
 
-  terminal = mountTerminal(siteInBrowser, siteInBrowser.at(route) ? route : "/", { navigate: goTo });
+  terminal = mountTerminal(siteInBrowser, page ? route : "/", { navigate: goTo, commands });
 
-  const toggle = document.querySelector<HTMLButtonElement>(".theme-toggle");
-  if (toggle && terminal) {
-    toggle.classList.add("ready");
-    toggle.removeAttribute("aria-hidden");
-    toggle.removeAttribute("tabindex");
-    toggle.addEventListener("click", () => terminal?.run("theme"));
-  }
+  // A feature that has something to say about the page it started on says it now.
+  if (page) for (const feature of allFeatures) feature.arrive?.(page);
+  const prompt = { run: (line: string) => terminal?.run(line) };
+  for (const feature of allFeatures) feature.install?.(prompt);
 }
 
 if (document.readyState === "loading") {

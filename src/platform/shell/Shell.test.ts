@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../content/Site";
+import type { Command } from "./Command";
+import { siteCommands } from "./commands/siteCommands";
 import { Shell } from "./Shell";
 
 const site = new Site([
@@ -71,25 +73,27 @@ describe("Shell", () => {
 
   it("helps, in general and in particular", () => {
     const help = new Shell(site, "/").run("help")[0]?.text ?? "";
-    for (const name of ["ls", "cd", "cat", "pwd", "help", "clear", "theme"]) expect(help).toContain(name);
+    for (const name of ["ls", "cd", "cat", "pwd", "help", "clear"]) expect(help).toContain(name);
     expect(new Shell(site, "/").run("help cd")[0]?.text).toContain("cd [dir]");
     expect(new Shell(site, "/").run("help nope")[0]?.error).toBe(true);
   });
 
-  it("clears, and changes the theme, by asking the page to", () => {
-    const shell = new Shell(site, "/");
-    expect(shell.run("clear")).toEqual([{ clear: true }]);
-    expect(shell.run("theme dark")).toEqual([{ theme: "dark", text: "theme: dark" }]);
-    expect(shell.run("theme")).toEqual([{ theme: "toggle", text: "theme: toggled" }]);
-    expect(shell.run("theme system")[0]?.theme).toBe("system");
-    expect(shell.run("theme auto")).toEqual([{ theme: "system", text: "theme: system" }]);
-    expect(shell.run("theme purple")[0]?.error).toBe(true);
+  it("clears, by asking the page to", () => {
+    expect(new Shell(site, "/").run("clear")).toEqual([{ clear: true }]);
   });
 
-  it("will not change the theme on a page that insists on its own", () => {
-    const shell = new Shell(site, "/night/");
-    expect(shell.run("theme light")).toEqual([{ text: "theme: this page keeps its own, dark. It works everywhere else.", error: true }]);
-    expect(shell.run("theme")[0]?.theme).toBeUndefined();
+  // The shell is handed its commands, so a feature's are indistinguishable from the site's own.
+  it("runs a command it was handed, and helps with it", () => {
+    const shout: Command = {
+      name: "shout",
+      usage: "shout [word]",
+      description: "say it louder",
+      run: (_context, [word = ""]) => ({ text: word.toUpperCase() }),
+    };
+    const shell = new Shell(site, "/", [...siteCommands, shout]);
+    expect(shell.run("shout hello")).toEqual([{ text: "HELLO" }]);
+    expect(shell.run("help")[0]?.text).toContain("say it louder");
+    expect(shell.complete("sh")).toEqual(["shout"]);
   });
 
   it("runs a whole line, and stops at the first error", () => {
