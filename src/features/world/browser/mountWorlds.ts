@@ -4,17 +4,12 @@ import type { World } from "../World";
 import { HEADER_RECIPE, type WorldRecipe } from "../WorldRecipe";
 import { el } from "../../../platform/browser/el";
 import { forgetHeaderWorld, rememberHeaderWorld, savedHeaderWorld } from "./headerWorld";
+import { turning } from "../turning";
 import { spinPlanet } from "./spinPlanet";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 
 const SIZE = 360;
 const TURN_SECONDS = 60;
-/** The sky drifts on its own, much slower than the world; a hand on the world moves them together. */
-const SKY_SECONDS = 480;
-/** How far the stars slide for one full turn of the world, or one full turn of tilt. */
-const SKY_PIXELS_PER_TURN = 900;
-/** The near layer's tile; the sky is kept within one so the numbers never grow. */
-const SKY_TILE = { x: 1600, y: 1000 };
 /** A flung world keeps turning and loses speed with a time constant of this many seconds. */
 const MOMENTUM_SECONDS = 1.4;
 const IDLE_SPEED = (Math.PI * 2) / TURN_SECONDS;
@@ -44,28 +39,6 @@ export function mountWorlds(host: HTMLElement): () => void {
   /** Radians per second the hand was turning the world at, kept after it lets go. Positive is rightwards. */
   let momentum = 0;
   let lastFrame = performance.now();
-
-  // The page's sky, if it has one, follows: the script takes over from the CSS drift.
-  const sky = document.documentElement;
-  const hasSky = sky.dataset["sky"] === "stars";
-  let skyX = 0;
-  let skyY = 0;
-  let skyWritten = "";
-  if (hasSky) sky.classList.add("sky-driven");
-  // A turn about the vertical axis slides the sky sideways; a tilt slides it up or down.
-  // The style is only touched when it would move by half a pixel, so a slow drift does not repaint every frame.
-  const slideSky = (turn: number, tilted = 0) => {
-    if (!hasSky) return;
-    const perRadian = SKY_PIXELS_PER_TURN / (Math.PI * 2);
-    skyX = (((skyX + turn * perRadian) % SKY_TILE.x) + SKY_TILE.x) % SKY_TILE.x;
-    skyY = (((skyY - tilted * perRadian) % SKY_TILE.y) + SKY_TILE.y) % SKY_TILE.y;
-    const wanted = `${(Math.round(skyX * 2) / 2).toFixed(1)}px ${(Math.round(skyY * 2) / 2).toFixed(1)}px`;
-    if (wanted === skyWritten) return;
-    skyWritten = wanted;
-    const [x, y] = wanted.split(" ");
-    sky.style.setProperty("--sky-x", x ?? "0px");
-    sky.style.setProperty("--sky-y", y ?? "0px");
-  };
 
   const caption = el("p", { class: "hint" });
 
@@ -129,7 +102,8 @@ export function mountWorlds(host: HTMLElement): () => void {
         rotation += IDLE_SPEED * seconds;
         paint();
       }
-      slideSky((momentum !== 0 ? momentum : 0) * seconds + (seconds / SKY_SECONDS) * Math.PI * 2);
+      // Whoever wants to move with the world is listening; the world does not know who.
+      turning.send({ byRadians: momentum * seconds, tiltedBy: 0, seconds });
     }
     lastFrame = now;
     frame = requestAnimationFrame(tick);
@@ -147,7 +121,7 @@ export function mountWorlds(host: HTMLElement): () => void {
     rotation -= turned;
     const before = tilt;
     tilt = Math.max(-1.2, Math.min(1.2, tilt - ((event.clientY - dragging.y) / scale) * Math.PI));
-    slideSky(turned, tilt - before);
+    turning.send({ byRadians: turned, tiltedBy: tilt - before, seconds: 0 });
     // The hand's pace, smoothed a little so one jittery event does not decide the fling.
     const elapsed = Math.max(0.004, (event.timeStamp - dragging.at) / 1000);
     momentum = Math.max(-TOP_SPEED, Math.min(TOP_SPEED, momentum * 0.4 + (turned / elapsed) * 0.6));
@@ -228,8 +202,5 @@ export function mountWorlds(host: HTMLElement): () => void {
   return () => {
     cancelAnimationFrame(frame);
     view.stop();
-    sky.classList.remove("sky-driven");
-    sky.style.removeProperty("--sky-x");
-    sky.style.removeProperty("--sky-y");
   };
 }

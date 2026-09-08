@@ -1,5 +1,6 @@
 import type { Feature } from "../platform/plugin/Feature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
+import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
 import { worldFeature } from "./world/worldFeature";
@@ -13,6 +14,7 @@ import { worldFeature } from "./world/worldFeature";
 export const allFeatures: readonly Feature[] = [
   worldFeature,
   themeFeature,
+  skyFeature,
   technicalDebtFeature,
   developerMeetingsFeature,
 ];
