@@ -21,7 +21,7 @@ line: never rewrite, never stop delivery. [About the book.](/book/)
 
 ## Essays
 
-> More than half a million views.
+> > More than half a million views.
 
 More than 250 of them on [Medium](https://drpicox.medium.com), one every
 Saturday since 2022. The most read one, and the ones read longest, argue with
