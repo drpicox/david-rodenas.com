@@ -38,16 +38,15 @@ the canon:
 
 ## Two public APIs of AngularJS are mine
 
-> Six commits in AngularJS are mine.
+> I made its compiler faster.
 
-Two more are a maintainer's and say in the message that the work is, because on
-that project a maintainer would rebase a pull request and land it under his own
-name. `$compileProvider.commentDirectivesEnabled()` and
-`cssClassDirectivesEnabled()` are mine and are still in 1.8.3, the last release
-the framework ever had. So is the compiler benchmark I wrote when a maintainer
-asked for numbers he could check, and so is the one I wrote for `ngClass` --
-which measured the new code at more than a hundred times faster on the case
-that mattered. [The whole account.](/code/)
+Two performance changes in the AngularJS compiler are mine, and they are in
+1.8.3, the last release the framework ever had. So is my implementation of
+`$componentController`, the helper its testing module gives you to unit-test a
+component. So are two benchmark suites I wrote when maintainers asked for
+numbers they could check -- one of which measured the `ngClass` rewrite built
+on my work at more than a hundred times faster on the case that mattered. None
+of it is documentation. [The whole account.](/code/)
 
 ## The world at the top
 
