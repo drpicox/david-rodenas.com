@@ -44,11 +44,17 @@ function site(): Plugin {
 
     configureServer(server) {
       server.watcher.add(CONTENT);
-      server.watcher.on("change", (path) => {
-        if (!path.includes(`/${CONTENT}/`)) return;
-        const cached = server.moduleGraph.getModuleById(`\0${VIRTUAL_SITE}`);
-        if (cached) server.moduleGraph.invalidateModule(cached);
-      });
+      // Adding a page counts, and so does removing one. Watching only `change`
+      // meant a new markdown file was served as a page while the shell in the
+      // browser still said `cd: no such directory`, until the server restarted.
+      for (const event of ["change", "add", "unlink"] as const) {
+        server.watcher.on(event, (path) => {
+          if (!path.includes(`/${CONTENT}/`)) return;
+          const cached = server.moduleGraph.getModuleById(`\0${VIRTUAL_SITE}`);
+          if (cached) server.moduleGraph.invalidateModule(cached);
+          server.ws.send({ type: "full-reload" });
+        });
+      }
       server.middlewares.use((request, response, next) => {
         const route = (request.url ?? "/").split("?")[0] ?? "/";
         const withSlash = route.endsWith("/") ? route : `${route}/`;

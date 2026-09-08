@@ -429,6 +429,20 @@ blockquote {
 code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   font-size: 0.82em;
+  /*
+   * An identifier is one word to a browser, and some of them are longer than a
+   * phone is wide — `$compileProvider.cssClassDirectivesEnabled()` is forty-two
+   * characters. `anywhere` breaks it only when there is no other way, and takes
+   * the long word into account when the column is measured, which `break-word`
+   * does not: without it a paragraph reserves the whole width of the word and
+   * the page scrolls sideways.
+   */
+  overflow-wrap: anywhere;
+}
+
+/* Inside a block of code the line scrolls instead, which is what a listing wants. */
+pre code {
+  overflow-wrap: normal;
 }
 
 pre {
