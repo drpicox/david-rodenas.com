@@ -1,5 +1,5 @@
 import { growWorld } from "../core/planet/growWorld";
-import { renderSphere } from "../core/planet/renderSphere";
+import { SphereRaster } from "../core/planet/SphereRaster";
 import { HEADER_RECIPE, type WorldRecipe } from "../core/planet/WorldRecipe";
 import { paintFavicon } from "./favicon";
 
@@ -26,11 +26,13 @@ export function spinPlanet(canvas: HTMLCanvasElement, recipe?: WorldRecipe): () 
   const size = canvas.width;
   const world = growWorld(chosen);
   const image = context.createImageData(size, size);
+  // The rasteriser paints into the canvas's own pixels, so a frame costs no memory at all.
+  const raster = new SphereRaster(size, image.data);
   canvas.dataset["seed"] = String(chosen.seed);
   canvas.title = `World ${chosen.seed}, ${world.mesh.faceCount.toLocaleString("en")} triangles`;
 
   const paint = (rotation: number) => {
-    image.data.set(renderSphere(world, size, { rotation }));
+    raster.paint(world, { rotation });
     context.putImageData(image, 0, 0);
     canvas.classList.add("grown");
   };

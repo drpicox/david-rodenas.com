@@ -1,5 +1,5 @@
 import { growWorld } from "../../core/planet/growWorld";
-import { renderSphere } from "../../core/planet/renderSphere";
+import { SphereRaster } from "../../core/planet/SphereRaster";
 import type { World } from "../../core/planet/World";
 import { HEADER_RECIPE, type WorldRecipe } from "../../core/planet/WorldRecipe";
 import { el } from "../dom";
@@ -31,6 +31,8 @@ export function mountWorlds(host: HTMLElement): () => void {
     seed: Math.floor(Math.random() * 0xffffff),
   };
   const image = context.createImageData(SIZE, SIZE);
+  // The rasteriser paints into the canvas's own pixels, so a frame costs no memory at all.
+  const raster = new SphereRaster(SIZE, image.data);
   const stillPreferred = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let world: World;
@@ -101,7 +103,7 @@ export function mountWorlds(host: HTMLElement): () => void {
   }, "Let the header grow its own");
 
   const paint = () => {
-    image.data.set(renderSphere(world, SIZE, { rotation, tilt }));
+    raster.paint(world, { rotation, tilt });
     context.putImageData(image, 0, 0);
   };
 
