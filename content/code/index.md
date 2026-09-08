@@ -25,8 +25,9 @@ today, and the argument that got them in is
 A maintainer asked, reasonably, for numbers he could check. So I wrote a
 benchmark for the compiler in benchpress -- AngularJS's own measuring harness --
 and posted what it said: about 12% off compiling Bootstrap's carousel template,
-about 10% off its theme. That is the whole of the case; there is no larger
-figure, and I have seen larger ones attributed to me.
+about 10% off its theme. Ten per cent is what this change is worth, and I have
+seen much larger figures attributed to me for it. The large number is real, but
+it belongs further down this page and to a different change.
 
 The benchmark outlasted the argument. `benchmarks/bootstrap-compile-bp/` is
 still in the repository, and so is a second one I wrote for `ngClass`. So is
@@ -43,20 +44,39 @@ instead. The commit is his. The message is this:
 
 > Thanks to @drpicox for the original implementation: PR #14080.
 
-## And the one that did not land
+## The hundredfold one, which is not mine either
 
-I spent months on the performance of `ngClass`. All three of those pull
-requests were closed unmerged, and the improvement that shipped in 1.6.1 was
-written by someone else. It is worth being exact about, because the version I
-have seen on my own old CV is not: there is no thirty per cent, and there is no
-hundred. What there is, is the commit message of the change that did ship:
+The bigger number is not in the compiler. It is in `ngClass`, and I spent
+months on it, and all three of those pull requests were closed unmerged.
+
+The reason it was worth months is the shape of the problem rather than the size
+of the patch. `ng-class="{friendly: user.friends}"` needs exactly one thing
+from `user.friends`: whether it is there. AngularJS was deep-watching it --
+copying the whole object graph behind it and comparing the copy -- on every
+digest, for every element. The cost was proportional to your data. It should
+have been proportional to the number of class names, and that is what the fix
+made it.
+
+What shipped, in 1.6.1, was written by another maintainer, on top of mine. His
+commit message:
 
 > In large based on #14404. Kudos to @drpicox for the initial idea and a big
 > part of the implementation.
 
-The changelog entry for that release links to my pull request. One `ngClass`
-change is mine outright and unglamorous: a fix for watching an array with an
-object inside it, in 1.5.5, backported to 1.4.11.
+Then he asked for a benchmark, so I wrote that too, and it is still in the
+repository. On a single element bound to a large object -- the pathological
+case, and a common one -- it measured **more than a hundred times faster**:
+about 1.5 milliseconds a digest down to between 0.02 and 0.08. On long lists,
+five to ten times, from seven or thirteen milliseconds down to about one.
+
+Those are my numbers on my own benchmark and nobody reproduced them. And the
+same benchmark says that on data already written the careful way, by hand, the
+new code is about 25% *slower*. Which is the honest summary of the whole thing:
+it does automatically what an experienced Angular programmer would have done
+manually, and it is worth having for the same reason type inference is.
+
+One `ngClass` change is mine outright and unglamorous: a fix for watching an
+array with an object inside it, in 1.5.5, backported to 1.4.11.
 
 ## The count, plainly
 
