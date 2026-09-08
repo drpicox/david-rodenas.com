@@ -46,11 +46,20 @@ The comment I left explaining why is still in the source.
 
 ## ngClass, and the hundredfold number
 
-`ng-class="{friendly: user.friends}"` needs exactly one thing from
-`user.friends`: whether it is there. AngularJS was deep-watching it -- copying
-the whole object graph behind it and comparing the copy -- on every digest, for
-every element. The cost was proportional to your data. It should have been
-proportional to the number of class names, and that is what the fix made it.
+`ng-class="{lent: book.lendTo}"` needs exactly one thing from `book.lendTo`:
+whether it is there. But `lendTo` might be a person, and a person has books,
+and those books have people. AngularJS was deep-watching the expression --
+copying that whole graph and comparing the copy -- on every digest, for every
+element on the page. The cost was proportional to your data, and as I wrote in
+the pull request at the time, the data could be big enough to take seconds to
+copy.
+
+Everyone who knew this wrote `!!book.lendTo` instead, so the watcher saw a
+boolean. Everyone who did not know spent the afternoon finding out why the
+page had frozen, and the answer was a `!!` somebody had forgotten -- or had
+never heard of. The fix makes the cost proportional to the number of class
+names, so the `!!` stopped being a thing you had to know. That is the whole
+of it, and it is why it was worth months.
 
 It shipped in 1.6.1, in a commit written by another maintainer on top of mine,
 and the changelog entry for it links to my pull request. His commit message:
@@ -59,10 +68,12 @@ and the changelog entry for it links to my pull request. His commit message:
 > part of the implementation.
 
 He asked for a benchmark, so I wrote that too, and it is still in the
-repository. On a single element bound to a large object -- the pathological
-case, and a common one -- it measured **more than a hundred times faster**:
-about 1.5 milliseconds a digest down to between 0.02 and 0.08. On long lists,
-five to ten times, from seven or thirteen milliseconds down to about one.
+repository. It has the case twice: once written the way everyone writes it,
+and once with the `!!`. On a single element bound to a large object the fix
+measured **more than a hundred times faster** -- about 1.5 milliseconds a
+digest down to between 0.02 and 0.08, which is to say down to what the `!!`
+had been buying by hand. On long lists, five to ten times, from seven or
+thirteen milliseconds down to about one.
 
 Those are my numbers on my own benchmark and nobody reproduced them. And the
 same benchmark says that on data already written the careful way, by hand, the
