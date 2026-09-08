@@ -1,5 +1,6 @@
 import type { Site } from "../content/Site";
 import { CommandHistory } from "../shell/CommandHistory";
+import { editLine } from "../shell/editLine";
 import type { Outcome } from "../shell/Outcome";
 import { parseCommandLine } from "../shell/parseCommandLine";
 import type { Command } from "../shell/Command";
@@ -142,6 +143,9 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     run(line);
   });
 
+  // The last kill, waiting to be put back somewhere else.
+  let killed = "";
+
   input.addEventListener("keydown", (event) => {
     if (event.key === "Tab") {
       event.preventDefault();
@@ -152,6 +156,14 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       input.value = history.next(input.value);
+    } else if (event.ctrlKey && !event.metaKey && !event.altKey) {
+      const edited = editLine(event.key, input.value, input.selectionStart ?? input.value.length, killed);
+      if (!edited) return;
+      event.preventDefault();
+      clearHint();
+      input.value = edited.line;
+      input.setSelectionRange(edited.caret, edited.caret);
+      killed = edited.killed;
     } else {
       clearHint();
     }
