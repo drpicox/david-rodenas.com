@@ -5,6 +5,7 @@ import { HEADER_RECIPE, type WorldRecipe } from "../../core/planet/WorldRecipe";
 import { el } from "../dom";
 import { forgetHeaderWorld, rememberHeaderWorld, savedHeaderWorld } from "../headerWorld";
 import { spinPlanet } from "../spinPlanet";
+import { watchOnScreen } from "../watchOnScreen";
 
 const SIZE = 360;
 const TURN_SECONDS = 60;
@@ -110,9 +111,11 @@ export function mountWorlds(host: HTMLElement): () => void {
   // Left alone the world turns at its idle pace. Flung, it turns at the hand's
   // pace and slows until it is back at the idle one, and the sky goes with it.
   let frame = 0;
+  const view = watchOnScreen(canvas);
   const tick = (now: number) => {
     const seconds = Math.min(0.1, (now - lastFrame) / 1000);
-    if (!dragging) {
+    // Scrolled past the dials, the world keeps its momentum but costs nothing to keep.
+    if (!dragging && view.onScreen()) {
       if (momentum !== 0) {
         momentum *= Math.exp(-seconds / MOMENTUM_SECONDS);
         const floor = spinning ? IDLE_SPEED : 0;
@@ -224,6 +227,7 @@ export function mountWorlds(host: HTMLElement): () => void {
   frame = requestAnimationFrame(tick);
   return () => {
     cancelAnimationFrame(frame);
+    view.stop();
     sky.classList.remove("sky-driven");
     sky.style.removeProperty("--sky-x");
     sky.style.removeProperty("--sky-y");

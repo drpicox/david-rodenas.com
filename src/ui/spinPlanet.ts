@@ -2,6 +2,7 @@ import { growWorld } from "../core/planet/growWorld";
 import { SphereRaster } from "../core/planet/SphereRaster";
 import { HEADER_RECIPE, type WorldRecipe } from "../core/planet/WorldRecipe";
 import { paintFavicon } from "./favicon";
+import { watchOnScreen } from "./watchOnScreen";
 
 const TURN_SECONDS = 90;
 /** The tab's icon turns too, but a few times a second is plenty for 32 pixels. */
@@ -47,9 +48,11 @@ export function spinPlanet(canvas: HTMLCanvasElement, recipe?: WorldRecipe): () 
   let frame = 0;
   let iconPainted = -Infinity;
   const started = performance.now();
+  // Scrolled past, the mark is not worth rasterising; the tab's icon still is.
+  const view = watchOnScreen(canvas);
   const tick = (now: number) => {
     const rotation = ((now - started) / 1000 / TURN_SECONDS) * Math.PI * 2;
-    paint(rotation);
+    if (view.onScreen()) paint(rotation);
     if (now - iconPainted > FAVICON_EVERY_MS) {
       paintFavicon(world, rotation);
       iconPainted = now;
@@ -58,7 +61,10 @@ export function spinPlanet(canvas: HTMLCanvasElement, recipe?: WorldRecipe): () 
   };
   frame = requestAnimationFrame(tick);
 
-  const stop = () => cancelAnimationFrame(frame);
+  const stop = () => {
+    cancelAnimationFrame(frame);
+    view.stop();
+  };
   running.set(canvas, stop);
   return stop;
 }
