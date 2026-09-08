@@ -55,8 +55,10 @@ describe("theme", () => {
     const theme = fakeTheme();
     theme.settled = "dark";
     const outcome = run(theme, "/", ["dark"]);
-    expect(outcome.text).toBe("theme: dark\n  light  system");
+    expect(outcome.text).toBe("theme: dark\n  theme light   theme system");
     expect(outcome.html).toContain('data-run="theme light"');
+    // What is offered is the command itself, so that reading it teaches what typing it would do.
+    expect(outcome.html).toContain(">theme light</a>");
     expect(outcome.html).toContain('data-run="theme system"');
     // Not the one it is already on: clicking it would do nothing and say so.
     expect(outcome.html).not.toContain('data-run="theme dark"');
@@ -65,7 +67,7 @@ describe("theme", () => {
   it("offers the other two when the system is deciding", () => {
     const theme = fakeTheme();
     theme.settled = "system";
-    expect(run(theme, "/", ["system"]).text).toBe("theme: system\n  light  dark");
+    expect(run(theme, "/", ["system"]).text).toBe("theme: system\n  theme light   theme dark");
   });
 
   it("offers nothing to click when it refused", () => {

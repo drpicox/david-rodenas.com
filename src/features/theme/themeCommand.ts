@@ -18,14 +18,23 @@ function isChoice(value: string): value is ThemeChoice {
  * where it landed and then offers the other two, in both forms, the way `ls`
  * does: plain for whoever is reading text, and a thing to click for whoever
  * can. Clicking one runs the very command it names.
+ *
+ * What is offered is the whole command and not the bare word. `light  system`
+ * under a line reading `theme: dark` is three words with no grammar between
+ * them, and it is not clear whether they are what the theme is or what it
+ * could be. `theme light` is a thing you could have typed, so the same line
+ * answers both "what else is there" and "how would I ask for it" — and for
+ * whoever clicks instead, the echo above the next answer is the command they
+ * would have typed anyway.
  */
 function settled(became: "light" | "dark" | "system"): Outcome {
   const others = CHOICES.filter((choice) => choice !== became);
+  const offer = (choice: string) => `theme ${choice}`;
   return {
-    text: `theme: ${became}\n  ${others.join("  ")}`,
+    text: `theme: ${became}\n  ${others.map(offer).join("   ")}`,
     html: `<pre>theme: ${became}\n  ${others
-      .map((choice) => `<a href="#" data-run="theme ${escapeHtml(choice)}">${escapeHtml(choice)}</a>`)
-      .join("  ")}</pre>`,
+      .map((choice) => `<a href="#" data-run="${escapeHtml(offer(choice))}">${escapeHtml(offer(choice))}</a>`)
+      .join("   ")}</pre>`,
   };
 }
 
