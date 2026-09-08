@@ -1,6 +1,6 @@
 ---
 title: Talks
-summary: Twenty-one years of them: two international conferences as first author, the Barcelona JavaScript circuit of 2013–2017, and ten public talks about algorithms since 2024.
+summary: Twenty-one years of them: two international conferences as first author, the Barcelona JavaScript circuit of 2013–2017, and since 2022 talks about algorithms for people who do not write them.
 order: 4
 ---
 
@@ -51,12 +51,15 @@ Denver. Brown bags and TAST sessions. Sessions on TDD and BDD for teams in two
 countries, one of which someone recorded and passed around. And in October 2022,
 *TDD is not a stupid idea, it's brilliant* -- BarcelonaJS, in the office.
 
-## Since 2024: algorithms, for people who do not write them
+## Since 2022: algorithms, for people who do not write them
 
-Two talks, ten times, in seven towns. They are about data, algorithms and
-generative AI, for families and teachers -- the audience that has to make
-decisions about all three and was never given the vocabulary.
+Data, algorithms and generative AI, for neighbours, families and teachers --
+the audience that has to make decisions about all three and was never given
+the vocabulary. Since 2024 mostly with [Aixeca el cap](https://aixecaelcap.cat/),
+a platform for a responsible use of screens, of which I am a member.
 
+2022-10-15 :: **Algorismes i Intel·ligència Artificial, influència en la vida quotidiana** -- the opening talk of the XXII Fòrum TIC Social, the open-air evening that Llefi@net, the citizens' network of Llefià, has held in Plaça Trafalgar in Badalona every summer since 2000. [The slides](https://llefia.org/wpforum/wp-content/uploads/sites/10/2022/10/Algorismes_i_IA_a-_la_vida_quotidiana.pdf) and [their account of the evening](https://llefia.org/blog/2022/11/19/cronica-xxii-forum-tic-social-de-badalona/) are on llefia.org.
+2024-07-06 :: **Impacte social de la Intel·ligència Artificial**, the same forum two summers on, in conversation with Ariel Guersenzvaig and Xavier Vinaixa. [Documents and video.](https://llefia.org/blog/2024/07/07/documents-i-videos-xxiii-forum-tic-social-2024/)
 2025-02-05 :: **Els nostres fills no són un experiment**, invited to *III Jornada. L'educació a debat*, at the Universitat Pompeu Fabra. [The session is on the university's channel.](https://youtu.be/4i-mpwbL7Fg)
-2024 → 2026 :: **Vols una galeta?** -- Badalona, Sabadell, Barcelona, Altafulla, Sant Celoni, Teià, el Masnou. It grew from 125 slides to 188, and then I cut it to 54, which took eight drafts of the script and is the version I would give again.
+2025 → 2026 :: **Vols una galeta?** -- Sabadell, Barcelona, Altafulla, Sant Celoni, Teià, el Masnou. It grew from 125 slides to 188, and then I cut it to 54, which took eight drafts of the script and is the version I would give again.
 2026-03-27 :: **Qui crIA els teus fills?**, Escolàpies, el Masnou. Commissioned and paid for by the parents' association -- the only one anybody has ever paid me for. They then recommended me to the town council, which is how the last one happened.
