@@ -9,9 +9,11 @@ of standing up
 and explaining.
 
 The archive holds more than sixty decks between 2013 and 2024, and about forty
-occasions I can date and name. **None of the slides has ever been published.**
-That is a fact about me, not an oversight: I have always written them for a
-room, and then closed the laptop.
+occasions I can date and name. The early ones were written as repositories, so
+they could be read and run, and they are still on GitHub: [GruntJS](https://github.com/drpicox/tutorial-gruntjs-v1),
+[Promises](https://github.com/drpicox/tutorial-promises-v1), [JS & Patterns](https://github.com/drpicox/tutorial-jspatterns-v1),
+[AngularJS for designers](https://github.com/drpicox/tutorial-angulardesigners-v1). Most of the rest
+were written for a room.
 
 ## The one I am proudest of, and never put on a CV
 
@@ -25,9 +27,9 @@ hierarchical injector, why TypeScript, what the web looks like in five years.
 The years of the meetups. I spoke at BarcelonaJS and helped organise it, and
 co-organised the WeNode conference in 2014.
 
-2013-05 :: **GruntJS**, BarcelonaJS.
-2013-09 :: **Promises**, BarcelonaJS.
-2014-05-25 :: **JS & Patterns**, BarcelonaJS. Given again a year later.
+2013-05 :: **[GruntJS](https://github.com/drpicox/tutorial-gruntjs-v1)**, BarcelonaJS.
+2013-09 :: **[Promises](https://github.com/drpicox/tutorial-promises-v1)**, BarcelonaJS -- promises against callbacks, when that was the argument.
+2014-05-25 :: **[JS & Patterns](https://github.com/drpicox/tutorial-jspatterns-v1)**, BarcelonaJS. Given again a year later.
 2016-01-29/31 :: Three talks across one weekend at the **first AngularCamp Barcelona** -- an un-conference backed by Google Developers, born out of the AngularBeers meetup: *Angular Community and API Decisions*, *MVC: the Model, the great forgotten*, and *Modules in Angular 2*.
 2016-03 and 2016-07 :: **MVS: MVC in Angular**, twice, the second time with exercises.
 2016-06 :: **The Bowling Game Kata**, twice in a fortnight. It is [still here](/kata/).
