@@ -1,6 +1,6 @@
 ---
 title: Two public APIs of AngularJS are mine
-summary: One pull request merged into the AngularJS compiler, two provider options still in the framework's final release, and the benchmark written to argue for them.
+summary: Six commits in AngularJS are mine and two more credit me by name; two provider options are still in the framework's final release.
 order: 3
 ---
 
@@ -8,17 +8,28 @@ order: 3
 of AngularJS  
 are mine.
 
-In 2016 I opened thirteen pull requests against `angular/angular.js`. One of
-them was merged, by a core maintainer, on 8 August 2016: 1,115 lines across
-eight files, adding `$compileProvider.commentDirectivesEnabled()` and
-`$compileProvider.cssClassDirectivesEnabled()`. The commit message says what
-they were for: *this can result in a compilation speed-up of around 10%*.
-
-Both are still there. They shipped in AngularJS 1.5.9 and 1.6.0, and they are
-in 1.8.3 -- the last release the framework ever had, in April 2022. They are
-[in the compiler](https://github.com/angular/angular.js/blob/master/src/ng/compile.js)
+`$compileProvider.commentDirectivesEnabled()` and
+`$compileProvider.cssClassDirectivesEnabled()` went into the AngularJS
+compiler on 8 August 2016 -- 1,115 lines across eight files -- and they are
+still there. They shipped in 1.5.9 and 1.6.0 and they are in 1.8.3, the last
+release the framework ever had, in April 2022. The commit message says what
+they were for: *this can result in a compilation speed-up of around 10%*. They
+are [in the compiler](https://github.com/angular/angular.js/blob/master/src/ng/compile.js)
 today, and the argument that got them in is
 [in the pull request](https://github.com/angular/angular.js/pull/14850).
+
+## Whose commit it is
+
+Six commits on AngularJS's default branch are mine. Two more are a
+maintainer's, and say in the message that the work is.
+
+That is worth explaining, because the obvious number is the wrong one. On that
+project a maintainer would take a pull request, rebase it, land it under his
+own name and close the original -- sometimes because a release was going out,
+sometimes because it had been sitting there long enough. So the merge button
+records who pressed it, not who wrote the thing. By pull requests merged I have
+one. By code in the framework I have eight pieces of it, across six releases:
+1.4.11, 1.5.5, 1.5.8, 1.5.9, 1.6.1 and 1.7.1.
 
 ## The benchmark is the part I would keep
 
@@ -34,20 +45,20 @@ still in the repository, and so is a second one I wrote for `ngClass`. So is
 the documentation: the *Disable comment and css class directives* section of
 AngularJS's **Running in Production** guide is mine.
 
-## ngRef, which is mine and is not
+## ngRef, and how long it took
 
-The `ngRef` directive shipped in AngularJS 1.7.1 in June 2018 -- a way to
-publish a controller or an element into scope. I proposed it in February 2016.
-It took two and a quarter years and fifty-eight comments, and in the end a
-maintainer rebased my work, changed two things about it, and merged that
-instead. The commit is his. The message is this:
+`ngRef` publishes a controller, or an element, into scope. I proposed it on 18
+February 2016. It was discussed for two years and three months and fifty-eight
+comments. On 1 June 2018 my pull request was closed. Four days later a
+maintainer opened his own, rebased from mine with two changes, and merged that.
+The directive shipped in 1.7.1 three days after that. His commit message:
 
 > Thanks to @drpicox for the original implementation: PR #14080.
 
-## The hundredfold one, which is not mine either
+## The hundredfold one
 
-The bigger number is not in the compiler. It is in `ngClass`, and I spent
-months on it, and all three of those pull requests were closed unmerged.
+The bigger number is not in the compiler. It is in `ngClass`, and it is the
+work I would show first.
 
 The reason it was worth months is the shape of the problem rather than the size
 of the patch. `ng-class="{friendly: user.friends}"` needs exactly one thing
@@ -57,8 +68,8 @@ digest, for every element. The cost was proportional to your data. It should
 have been proportional to the number of class names, and that is what the fix
 made it.
 
-What shipped, in 1.6.1, was written by another maintainer, on top of mine. His
-commit message:
+It shipped in 1.6.1, in a commit written by another maintainer on top of mine,
+and the changelog entry for it links to my pull request. His commit message:
 
 > In large based on #14404. Kudos to @drpicox for the initial idea and a big
 > part of the implementation.
@@ -78,14 +89,12 @@ manually, and it is worth having for the same reason type inference is.
 One `ngClass` change is mine outright and unglamorous: a fix for watching an
 array with an object inside it, in 1.5.5, backported to 1.4.11.
 
-## The count, plainly
+## Why it is worth a page
 
-Thirteen pull requests to the framework. **One merged.** Six commits on the
-default branch. Four releases carrying code I wrote, and two more crediting it
-by name. That is a smaller number than a CV would like and a larger one than
-most people get, and the reason it is worth a page is not the arithmetic: it is
-that I went into the compiler of a framework I did not own, measured the thing
-I thought was slow, and convinced the people who did own it.
+Not the arithmetic. It is that I went into the compiler and the digest loop of
+a framework I did not own, measured the things I thought were slow, and
+convinced the people who did own it -- twice with a benchmark they asked me to
+write, and once over two years.
 
 ## Elsewhere
 

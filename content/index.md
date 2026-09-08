@@ -38,19 +38,16 @@ the canon:
 
 ## Two public APIs of AngularJS are mine
 
-> Thirteen pull requests. One of them got in.
+> Six commits in AngularJS are mine.
 
-The one that got in was merged into the AngularJS compiler by a core maintainer
-in 2016, and is still there: `$compileProvider.commentDirectivesEnabled()` and
-`cssClassDirectivesEnabled()`, in 1.8.3, the last release the framework ever
-had. He had asked for numbers he could check, so I wrote the benchmark that
-produced them, and that is still in the repository too.
-
-The twelve that did not get in are the more interesting half. A second
-maintainer rewrote one of them and shipped it under his own name with my name
-in the commit message, and the benchmark I wrote for it measured the new code
-at more than a hundred times faster on the case that mattered. [The whole
-account.](/code/)
+Two more are a maintainer's and say in the message that the work is, because on
+that project a maintainer would rebase a pull request and land it under his own
+name. `$compileProvider.commentDirectivesEnabled()` and
+`cssClassDirectivesEnabled()` are mine and are still in 1.8.3, the last release
+the framework ever had. So is the compiler benchmark I wrote when a maintainer
+asked for numbers he could check, and so is the one I wrote for `ngClass` --
+which measured the new code at more than a hundred times faster on the case
+that mattered. [The whole account.](/code/)
 
 ## The world at the top
 
