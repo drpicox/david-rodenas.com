@@ -1,10 +1,10 @@
-import "../styles.css";
-import { mountApps } from "./apps/mountApps";
-import { savedHeaderWorld } from "./headerWorld";
-import { mountNavigation } from "./navigation";
-import { siteInBrowser } from "./siteInBrowser";
-import { spinPlanet } from "./spinPlanet";
-import { mountTerminal, type Terminal } from "./terminal";
+import "./styles.css";
+import { mountApps } from "./features/mountApps";
+import { savedHeaderWorld } from "./features/world/browser/headerWorld";
+import { mountNavigation } from "./platform/browser/mountNavigation";
+import { siteInBrowser } from "./platform/browser/siteInBrowser";
+import { spinPlanet } from "./features/world/browser/spinPlanet";
+import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
 
 /**
  * Everything here is an improvement on a page that already works. The words

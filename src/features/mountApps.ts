@@ -1,6 +1,6 @@
-import { mountDeveloperMeetings } from "./developerMeetings";
-import { mountTechnicalDebt } from "./technicalDebt";
-import { mountWorlds } from "./worlds";
+import { mountDeveloperMeetings } from "./developer-meetings/browser/mountDeveloperMeetings";
+import { mountTechnicalDebt } from "./technical-debt/browser/mountTechnicalDebt";
+import { mountWorlds } from "./world/browser/mountWorlds";
 
 type Unmount = () => void;
 

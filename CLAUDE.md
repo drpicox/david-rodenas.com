@@ -34,28 +34,40 @@ traced, write the weaker sentence.
 
 ## Architecture
 
-- `src/core/` — **no DOM, ever.** Tested in plain node. Everything the site
-  knows how to do lives here, which is what lets the same code render pages at
-  build time and answer commands in the browser.
-  - `markdown/` — the small subset of markdown this site writes in
+The top level says what this is: a frame, and the features standing in it.
+
+- `src/platform/` — **the frame.** Everything that would still be here if
+  every feature were deleted, and it never imports from `src/features/`.
   - `content/` — front matter, and `Site`: what is at an address, what a
     directory holds
-  - `planet/` — the 1999 MGC filter pipeline (an icosahedron, fractalised
-    by midpoint displacement, with the sea as a minimum radius) and a
-    flat-shaded rasteriser with a depth buffer
-  - `shell/` — the commands, over the same `Site`
-  - `bigrams/` — the language model of the demo
-- `src/ui/` — the only code that touches the DOM
+  - `markdown/` — the small subset of markdown this site writes in
+  - `shell/` — the shell over a `Site`, and the commands that are about the
+    site itself: `ls`, `cd`, `cat`, `pwd`, `help`, `clear`
+  - `page/` — the whole HTML document, and the `<main>` inside it
+  - `browser/` — the terminal, the navigation between pages, and `el`
+- `src/features/` — **one folder each, and deleting the folder deletes the
+  feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
+  `developer-meetings/`. A feature owns everything about itself: its rules,
+  its commands, its screen, its storage.
+- `src/main.ts` — the composition root, and the only file allowed to know
+  about more than one feature at a time.
 - `content/` — the site, in markdown. A file is a page is a URL.
 - `tools/` — things a person runs to look at something
+
+See **`ARCHITECTURE.md`** for the diagrams: what the modules are and how they
+talk to each other.
 
 ## Rules
 
 - **TDD, the whole cycle.** Red, green, refactor. The refactor is not optional.
 - **One export per file, and the file is named after it.** A file that needs a
   second export usually wanted to be two files.
-- `src/core` must never import from `src/ui`. The dependency only points one
-  way, and the tests in node are what keep it honest.
+- **A folder named `browser/` is the only place the DOM exists.** Everywhere
+  else is plain node, and is tested there. This is what lets the same code
+  render pages at build time and answer commands in the browser, and it is the
+  one requirement that outranks the folder layout.
+- `src/platform` must never import from `src/features`. The dependency only
+  points one way.
 - A test asserts a claim about the world, not the shape of the code. When a
   test fails, first ask whether the claim was wrong — twice tonight it was.
 - **No dependency that is not a requirement.** `eclipsi26` and `heatwave` ship

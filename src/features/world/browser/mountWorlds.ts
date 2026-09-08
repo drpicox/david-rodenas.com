@@ -1,11 +1,11 @@
-import { growWorld } from "../../core/planet/growWorld";
-import { SphereRaster } from "../../core/planet/SphereRaster";
-import type { World } from "../../core/planet/World";
-import { HEADER_RECIPE, type WorldRecipe } from "../../core/planet/WorldRecipe";
-import { el } from "../dom";
-import { forgetHeaderWorld, rememberHeaderWorld, savedHeaderWorld } from "../headerWorld";
-import { spinPlanet } from "../spinPlanet";
-import { watchOnScreen } from "../watchOnScreen";
+import { growWorld } from "../growWorld";
+import { SphereRaster } from "../SphereRaster";
+import type { World } from "../World";
+import { HEADER_RECIPE, type WorldRecipe } from "../WorldRecipe";
+import { el } from "../../../platform/browser/el";
+import { forgetHeaderWorld, rememberHeaderWorld, savedHeaderWorld } from "./headerWorld";
+import { spinPlanet } from "./spinPlanet";
+import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 
 const SIZE = 360;
 const TURN_SECONDS = 60;

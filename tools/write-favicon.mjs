@@ -15,9 +15,9 @@ import { createServer } from "vite";
 const vite = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "warn" });
 
 try {
-  const { growWorld } = await vite.ssrLoadModule("/src/core/planet/growWorld.ts");
-  const { HEADER_RECIPE } = await vite.ssrLoadModule("/src/core/planet/WorldRecipe.ts");
-  const { renderSphere } = await vite.ssrLoadModule("/src/core/planet/renderSphere.ts");
+  const { growWorld } = await vite.ssrLoadModule("/src/features/world/growWorld.ts");
+  const { HEADER_RECIPE } = await vite.ssrLoadModule("/src/features/world/WorldRecipe.ts");
+  const { renderSphere } = await vite.ssrLoadModule("/src/features/world/renderSphere.ts");
   const { writePng } = await vite.ssrLoadModule("/tools/writePng.ts");
 
   const SIZE = 32;

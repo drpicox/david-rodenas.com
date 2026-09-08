@@ -1,5 +1,5 @@
-import { SphereRaster } from "../core/planet/SphereRaster";
-import type { World } from "../core/planet/World";
+import { SphereRaster } from "../SphereRaster";
+import type { World } from "../World";
 
 const SIZE = 32;
 let scratch: HTMLCanvasElement | null = null;

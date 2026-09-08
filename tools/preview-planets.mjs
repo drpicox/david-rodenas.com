@@ -13,8 +13,8 @@ import { createServer } from "vite";
 const vite = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "warn" });
 
 try {
-  const { generateWorld } = await vite.ssrLoadModule("/src/core/planet/generateWorld.ts");
-  const { renderSphere } = await vite.ssrLoadModule("/src/core/planet/renderSphere.ts");
+  const { generateWorld } = await vite.ssrLoadModule("/src/features/world/generateWorld.ts");
+  const { renderSphere } = await vite.ssrLoadModule("/src/features/world/renderSphere.ts");
   const { writePng } = await vite.ssrLoadModule("/tools/writePng.ts");
 
   const SIZE = Number(process.env.SIZE ?? 160);

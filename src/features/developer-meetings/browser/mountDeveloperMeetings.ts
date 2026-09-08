@@ -3,10 +3,10 @@ import {
   HOURS_PER_DAY,
   simulateMeetings,
   type MeetingType,
-} from "../../core/simulators/simulateMeetings";
-import { summariseMeetings, type MeetingsSummary } from "../../core/simulators/summariseMeetings";
-import { barChart } from "../charts/barChart";
-import { el } from "../dom";
+} from "../simulateMeetings";
+import { summariseMeetings, type MeetingsSummary } from "../summariseMeetings";
+import { barChart } from "../../../platform/browser/charts/barChart";
+import { el } from "../../../platform/browser/el";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const HOURS = Array.from({ length: HOURS_PER_DAY }, (_, hour) => `${9 + hour}:00`);

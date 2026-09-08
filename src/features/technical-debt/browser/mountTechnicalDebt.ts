@@ -1,7 +1,7 @@
-import { simulateTechnicalDebt } from "../../core/simulators/simulateTechnicalDebt";
-import { barChart } from "../charts/barChart";
-import { lineChart } from "../charts/lineChart";
-import { el } from "../dom";
+import { simulateTechnicalDebt } from "../simulateTechnicalDebt";
+import { barChart } from "../../../platform/browser/charts/barChart";
+import { lineChart } from "../../../platform/browser/charts/lineChart";
+import { el } from "../../../platform/browser/el";
 
 interface Dial {
   readonly key: "baseTime" | "shortcutFactor" | "interestRate" | "timeHorizon";

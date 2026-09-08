@@ -1,5 +1,5 @@
-import type { Site } from "../core/content/Site";
-import { renderMain } from "../core/site/renderMain";
+import type { Site } from "../content/Site";
+import { renderMain } from "../page/renderMain";
 import { settleTheme } from "./settleTheme";
 
 export type GoTo = (route: string, push?: boolean) => boolean;

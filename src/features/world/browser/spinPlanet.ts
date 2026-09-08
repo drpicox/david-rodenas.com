@@ -1,8 +1,8 @@
-import { growWorld } from "../core/planet/growWorld";
-import { SphereRaster } from "../core/planet/SphereRaster";
-import { HEADER_RECIPE, type WorldRecipe } from "../core/planet/WorldRecipe";
+import { growWorld } from "../growWorld";
+import { SphereRaster } from "../SphereRaster";
+import { HEADER_RECIPE, type WorldRecipe } from "../WorldRecipe";
 import { paintFavicon } from "./favicon";
-import { watchOnScreen } from "./watchOnScreen";
+import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 
 const TURN_SECONDS = 90;
 /** The tab's icon turns too, but a few times a second is plenty for 32 pixels. */

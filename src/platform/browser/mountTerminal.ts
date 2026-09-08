@@ -1,10 +1,10 @@
-import type { Site } from "../core/content/Site";
-import { CommandHistory } from "../core/shell/CommandHistory";
-import type { Outcome } from "../core/shell/Outcome";
-import { parseCommandLine } from "../core/shell/parseCommandLine";
-import { Shell } from "../core/shell/Shell";
-import { el } from "./dom";
-import { applyTheme } from "./theme";
+import type { Site } from "../content/Site";
+import { CommandHistory } from "../shell/CommandHistory";
+import type { Outcome } from "../shell/Outcome";
+import { parseCommandLine } from "../shell/parseCommandLine";
+import { Shell } from "../shell/Shell";
+import { el } from "./el";
+import { applyTheme } from "./applyTheme";
 
 export interface Terminal {
   /** Runs a line as if it had been typed, echo and all. */

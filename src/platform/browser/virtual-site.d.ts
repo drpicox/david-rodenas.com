@@ -1,4 +1,4 @@
 declare module "virtual:site" {
-  import type { Source } from "../core/content/Page";
+  import type { Source } from "../content/Page";
   export const sources: readonly Source[];
 }

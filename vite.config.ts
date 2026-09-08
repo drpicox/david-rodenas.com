@@ -2,8 +2,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { defineConfig, type Plugin } from "vite";
-import { Site } from "./src/core/content/Site";
-import { renderDocument } from "./src/core/site/renderDocument";
+import { Site } from "./src/platform/content/Site";
+import { renderDocument } from "./src/platform/page/renderDocument";
 
 const CONTENT = "content";
 const ORIGIN = "https://david-rodenas.com";
@@ -58,7 +58,7 @@ function site(): Plugin {
         const html = renderDocument(readSite(), page, {
           origin: ORIGIN,
           stylesheet: "/src/styles.css",
-          script: "/src/ui/main.ts",
+          script: "/src/main.ts",
         });
         server.transformIndexHtml(withSlash, html).then((transformed) => {
           response.setHeader("Content-Type", "text/html");
@@ -115,7 +115,7 @@ export default defineConfig({
   plugins: [site()],
   build: {
     outDir: "dist",
-    rollupOptions: { input: "src/ui/main.ts" },
+    rollupOptions: { input: "src/main.ts" },
   },
   test: {
     environment: "node",

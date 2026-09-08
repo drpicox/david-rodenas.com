@@ -1,4 +1,4 @@
-import type { WorldRecipe } from "../core/planet/WorldRecipe";
+import type { WorldRecipe } from "../WorldRecipe";
 
 const KEY = "header-world";
 
