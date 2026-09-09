@@ -4,6 +4,7 @@ import { escapeHtml } from "../markdown/escapeHtml";
 import { declaredAppearance } from "./declaredAppearance";
 import { promptPath } from "../shell/promptPath";
 import { bookSchema } from "./bookSchema";
+import { isHere } from "./isHere";
 import { renderMain } from "./renderMain";
 
 export interface DocumentAssets {
@@ -13,15 +14,24 @@ export interface DocumentAssets {
   readonly origin: string;
 }
 
-/** `ls /`, in capitals. Adding a page at the root is adding it to the navigation. */
+/**
+ * The output of `ls` at the root, as the navigation: README.md, which is the
+ * home page, and then the directories. Adding a page at the root is adding it
+ * to the navigation, and the header says which command would have printed it.
+ */
 function nav(site: Site, current: string): string {
-  return site
-    .childrenOf("/")
+  const entries = [
+    { route: "/", name: "README.md" },
+    ...site.childrenOf("/").map(({ route, name }) => ({ route, name: `${name}/` })),
+  ];
+  const links = entries
     .map(({ route, name }) => {
-      const here = current.startsWith(route) ? ' aria-current="page"' : "";
-      return `<a class="navlink" href="${route}"${here}>${escapeHtml(name.toUpperCase())}</a>`;
+      const here = isHere(current, route) ? ' aria-current="page"' : "";
+      return `<a class="navlink" href="${route}"${here}>${escapeHtml(name)}</a>`;
     })
     .join("");
+  return `<p class="ran"><span class="ps1">~ $</span> ls</p>
+    <nav>${links}</nav>`;
 }
 
 /**
@@ -41,11 +51,19 @@ function rootAttributes(page: Page): string {
 /**
  * The prompt is real: a script wires it to the shell, over this same content.
  * Until then it stays hidden, because a prompt that does nothing is a lie.
+ *
+ * It is the last line of the page, outside the column, so that it can stay at
+ * hand at the bottom of the window while the page scrolls under it and land
+ * in its place when the page runs out. The cursor is drawn here rather than
+ * by the input: a terminal's cursor is a block, and it is there before you
+ * click. The suggestion is what to type first.
  */
 function terminal(page: Page): string {
   return `<section class="terminal" hidden>
+<div class="column">
 <div class="screen" aria-live="polite"></div>
-<form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command" placeholder="help"></form>
+<form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><span class="line"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command"><span class="cursor" aria-hidden="true"></span><span class="suggest" aria-hidden="true">help</span></span></form>
+</div>
 </section>`;
 }
 
@@ -88,19 +106,19 @@ ${stylesheet}
   </a>
   <div>
     <a class="brand" href="/">@drpicox</a>
-    <nav>${nav(site, page.route)}</nav>
+    ${nav(site, page.route)}
   </div>
   <button class="theme-toggle" type="button" aria-hidden="true" tabindex="-1" aria-label="Switch theme" title="theme">&#9680;</button>
 </header>
 <main>
 ${renderMain(site, page)}
 </main>
-${terminal(page)}
 <footer class="site-footer">
   <span>&copy; 2026 David Rodenas</span>
   <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
 </div>
+${terminal(page)}
 ${script}
 <script data-goatcounter="https://drpicox.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>

@@ -6,6 +6,7 @@ import { parseCommandLine } from "../shell/parseCommandLine";
 import type { Command } from "../shell/Command";
 import { Shell } from "../shell/Shell";
 import { el } from "./el";
+import { followCaret } from "./followCaret";
 
 export interface Terminal {
   /** Runs a line as if it had been typed, echo and all. */
@@ -71,15 +72,19 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const screen = section?.querySelector<HTMLElement>(".screen");
   const form = section?.querySelector<HTMLFormElement>("form.prompt");
   const input = form?.querySelector<HTMLInputElement>("input");
+  const line = form?.querySelector<HTMLElement>(".line");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !form || !input || !ps1) return null;
+  if (!section || !screen || !form || !input || !line || !ps1) return null;
 
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
+  const syncCursor = followCaret(input, line);
   let hint: HTMLElement | null = null;
 
+  // The newest line is the one to read, so the screen keeps its end in view, as a terminal does.
   const print = (node: HTMLElement) => {
     screen.append(node);
+    screen.scrollTop = screen.scrollHeight;
   };
 
   const clearHint = () => {
@@ -116,7 +121,6 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       if (outcome.error) break;
     }
     ps1.textContent = shell.prompt;
-    input.scrollIntoView({ block: "nearest" });
   };
 
   const complete = () => {
@@ -136,11 +140,12 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const line = input.value.trim();
+    const typed = input.value.trim();
     input.value = "";
-    if (!line) return;
-    history.add(line);
-    run(line);
+    syncCursor();
+    if (!typed) return;
+    history.add(typed);
+    run(typed);
   });
 
   // The last kill, waiting to be put back somewhere else.
@@ -203,6 +208,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     }
     input.value = typed.unfinished;
     input.focus();
+    syncCursor();
   }
 
   const moveTo = (to: string) => {

@@ -150,6 +150,41 @@ The words around it are still words, so the page reads whole without the
 program; the program gets a `div` to grow into. Three so far: the two
 simulators and the worlds.
 
+### The prompt is at hand, and the header is `ls`
+
+Decided 9 September 2026. Readers shown the site had not noticed there was a
+terminal in it until they were told: the prompt was one grey line at the end
+of three screens of prose, and it read as a caption. The grammar was there and
+nobody saw it.
+
+Three changes, all of them true statements rather than costume, so the
+decision above about the terminal being a grammar still holds:
+
+- **The prompt is the last line of the page and sticks to the bottom of the
+  window**, outside the column, on the page's own paper most of the way to
+  opaque. It is at hand on every screen of every page and lands in its place
+  when the page runs out. What the shell prints goes above it, on a screen
+  that grows to half the window and then scrolls, the way a terminal's does.
+  The cursor is a block drawn by the page, an outline until the prompt is
+  focused and then solid and blinking; the input's own caret is hidden. The
+  block stands `--caret` columns in and a column is `1ch`, which is the whole
+  of the arithmetic, because the font is monospace. The first thing to type,
+  `help`, is suggested in the dim after the cursor and gone at the first key.
+- **The navigation is the output of `ls` at the root**, and the header says
+  so: `~ $ ls`, then `README.md` and the directories with their slashes, in
+  the prompt's own type. It was the same list in capitals; now it says what it
+  is. `README.md` is the home page and is marked current only there.
+- **The home page opens with `~ $ cat README.md`**, as every other page opens
+  with `cd … && cat *`. So a page reads as one session from the first line to
+  the last: `ls`, `cd`, `cat`, the words, and the prompt waiting.
+
+On a phone the planet and the name share the first row and the listing takes
+the whole width underneath, three lines instead of six.
+
+What was not done, on purpose: no palette, no scanlines, no window around the
+screen, no title bar. The terminal is noticed because the page keeps telling
+the truth about itself in three places instead of one.
+
 ---
 
 ### Code is coloured at build time, by a tokeniser written here

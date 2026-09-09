@@ -16,6 +16,10 @@ describe("renderMain", () => {
     expect(html).toContain('<a href="/work/orion/">Orion</a>');
   });
 
+  it("opens the home page with the command that prints it, so the page reads as a session from its first line", () => {
+    expect(renderMain(site, site.at("/")!)).toContain('<p class="ran"><span class="ps1">~ $</span> cat README.md</p>');
+  });
+
   it("is what the whole document carries, so a page can be swapped in place", () => {
     expect(renderMain(site, site.at("/")!)).toContain("<h1");
     expect(renderMain(site, site.at("/")!)).not.toContain("<main>");

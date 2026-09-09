@@ -19,15 +19,18 @@ function listing(site: Site, page: Page): string {
   return `<ul class="listing">${items}</ul>`;
 }
 
-/** The command that would have got you here. Now that there is a shell, it would. */
+/**
+ * The command that would have got you here. Now that there is a shell, it
+ * would. At home there is nowhere to go, only the page to print.
+ */
 function trail(site: Site, page: Page): string {
   const steps = site.trailTo(page.route);
-  if (steps.length <= 1) return "";
   const path = steps
     .slice(1)
     .map((step) => step.name)
     .join("/");
-  return `<p class="ran"><span class="ps1">~ $</span> cd ${escapeHtml(path)} &amp;&amp; cat *</p>`;
+  const command = steps.length <= 1 ? "cat README.md" : `cd ${escapeHtml(path)} &amp;&amp; cat *`;
+  return `<p class="ran"><span class="ps1">~ $</span> ${command}</p>`;
 }
 
 /**

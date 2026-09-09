@@ -45,16 +45,21 @@ describe("renderDocument", () => {
     expect(render("/")).not.toContain('class="listing"');
   });
 
-  it("navigates to what sits at the root by name, as ls would, in the author's order", () => {
+  it("navigates with the output of `ls` at the root: README.md, then the directories in the author's order", () => {
     const html = render("/");
-    expect(html).toContain('<a class="navlink" href="/notes/">NOTES</a>');
-    expect(html).toContain('<a class="navlink" href="/work/">WORK</a>');
+    expect(html).toContain('<span class="ps1">~ $</span> ls');
+    expect(html).toContain('<a class="navlink" href="/" aria-current="page">README.md</a>');
+    expect(html).toContain('<a class="navlink" href="/notes/">notes/</a>');
+    expect(html).toContain('<a class="navlink" href="/work/">work/</a>');
+    expect(html.indexOf('href="/"')).toBeLessThan(html.indexOf('href="/notes/"'));
     expect(html.indexOf('href="/notes/"')).toBeLessThan(html.indexOf('href="/work/"'));
   });
 
-  it("marks where in the navigation the reader is", () => {
+  it("marks where in the navigation the reader is, and README.md only at home", () => {
     expect(render("/work/orion/")).toContain('href="/work/" aria-current="page"');
-    expect(render("/")).not.toContain("aria-current");
+    expect(render("/work/orion/")).not.toContain('href="/" aria-current');
+    expect(render("/")).toContain('href="/" aria-current="page"');
+    expect(render("/")).not.toContain('href="/work/" aria-current');
   });
 
   it("describes a book to the machines that catalogue books", () => {
@@ -81,9 +86,9 @@ describe("renderDocument", () => {
     expect(render("/work/orion/")).not.toContain("ld+json");
   });
 
-  it("shows the command that would have got you here", () => {
-    expect(render("/work/orion/")).toContain("cd work/orion");
-    expect(render("/")).not.toContain('class="ran"');
+  it("shows the command that would have got you here, and at home the one that prints the page", () => {
+    expect(render("/work/orion/")).toContain("cd work/orion &amp;&amp; cat *");
+    expect(render("/")).toContain("cat README.md");
   });
 
   it("escapes what content could otherwise smuggle into the head", () => {
@@ -97,8 +102,21 @@ describe("renderDocument", () => {
 describe("the document and the shell", () => {
   it("offers a real prompt, at the page's own path, hidden until a script can answer it", () => {
     expect(render("/")).toContain('<section class="terminal" hidden>');
-    expect(render("/")).toContain('<span class="ps1">~ $</span>');
+    expect(render("/")).toContain('<span class="ps1">~ $</span><span class="line"><input');
     expect(render("/work/orion/")).toContain('<span class="ps1">~/work/orion $</span>');
+  });
+
+  it("keeps the prompt as the last line of the page, after the footer, so it can stay at hand while the page scrolls", () => {
+    const html = render("/");
+    expect(html.indexOf('<section class="terminal"')).toBeGreaterThan(html.indexOf("</footer>"));
+    expect(html.indexOf('<section class="terminal"')).toBeGreaterThan(html.indexOf('</div>\n<section'));
+  });
+
+  it("draws a block cursor of its own in the prompt, and suggests what to type", () => {
+    const html = render("/");
+    expect(html).toContain('<span class="cursor" aria-hidden="true"></span>');
+    expect(html).toContain('<span class="suggest" aria-hidden="true">help</span>');
+    expect(html).not.toContain("placeholder=");
   });
 
   it("sends the footer's links to their own tab", () => {
