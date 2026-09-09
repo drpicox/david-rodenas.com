@@ -26,16 +26,14 @@ export interface TerminalOptions {
   readonly commands?: readonly Command[];
 }
 
-const SCREEN_KEY = "shell-screen";
 const PENDING_KEY = "shell-pending";
 
-/** What the shell had printed and had still to do, carried over a `cd` to the next page. */
-function carry(screen: HTMLElement, pending: string): void {
+/** What the shell had still to do, carried over a `cd` to the next page. What it had printed is not: a new page is a clear screen. */
+function carry(pending: string): void {
   try {
-    sessionStorage.setItem(SCREEN_KEY, screen.innerHTML);
     if (pending) sessionStorage.setItem(PENDING_KEY, pending);
   } catch {
-    // The next page simply starts clean.
+    // The next page simply starts without it.
   }
 }
 
@@ -85,7 +83,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
   const syncCursor = followCaret(input, line);
-  resizeScreen(grip, column, section);
+  const releaseHeight = resizeScreen(grip, column, section);
   let hint: HTMLElement | null = null;
 
   // The newest line is the prompt, so the column keeps its end in view, as a terminal does.
@@ -99,8 +97,15 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     hint = null;
   };
 
+  // A clear screen is also a screen back to its own size: as tall as what it holds, which is nothing.
+  const wipe = () => {
+    clearHint();
+    screen.replaceChildren();
+    releaseHeight();
+  };
+
   const perform = (outcome: Outcome) => {
-    if (outcome.clear) screen.replaceChildren();
+    if (outcome.clear) wipe();
     if (outcome.html) {
       const block = el("div", { class: outcome.text ? "listing-out" : "cat" });
       block.innerHTML = outcome.html;
@@ -122,7 +127,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       if (!outcome) continue;
       if (outcome.navigate) {
         if (options.navigate?.(outcome.navigate)) continue;
-        carry(screen, commands.slice(index + 1).join(" && "));
+        carry(commands.slice(index + 1).join(" && "));
         window.location.assign(outcome.navigate);
         return;
       }
@@ -203,9 +208,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
 
   section.hidden = false;
 
-  // Pick up where the last page left off: its screen, the rest of its line, and what was typed since.
-  const carried = takeCarried(SCREEN_KEY);
-  if (carried) screen.innerHTML = carried;
+  // Pick up where the last page left off: the rest of its line, and what was typed since.
   const pending = takeCarried(PENDING_KEY);
   if (pending) run(pending);
   const typed = replayTyped();
@@ -221,8 +224,11 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     syncCursor();
   }
 
+  // Arriving at a page is a clear: the screen starts empty there, as it does on a real load.
   const moveTo = (to: string) => {
-    if (shell.moveTo(to)) ps1.textContent = shell.prompt;
+    if (!shell.moveTo(to)) return;
+    ps1.textContent = shell.prompt;
+    wipe();
   };
 
   return { run, moveTo };

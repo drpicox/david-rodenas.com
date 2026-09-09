@@ -105,8 +105,9 @@ Anything not in the site — a PDF, Medium — is a real link, and the back butt
 works because it is `pushState`, nothing cleverer.
 
 For the first load, and for anything that still has to be a real load, the
-shell carries itself over: what it had printed and the rest of the line
-(`cd book && cat *` finishes on `/book/`), through session storage. And a
+shell carries itself over: the rest of the line (`cd book && cat *` finishes
+on `/book/`), through session storage. It carried what it had printed as
+well, until arriving at a page became a `clear` (see below). And a
 two-line script in the head keeps every key pressed before the bundle
 arrives, so typing into a page that is still loading loses nothing.
 
@@ -186,13 +187,19 @@ Three more, the same afternoon, after David looked at it:
 - **The name is the user in the first prompt**: `@drpicox ~ $ ls`, in one
   line beside the planet, in place of a 1.9rem headline over the listing. The
   header had grown too tall, and a prompt is where a name goes anyway.
-- **The screen is as tall as the reader wants.** The top edge of the terminal
-  is a grip: drag it and the screen keeps that height, the way a terminal
-  keeps its rows, on every page, remembered in local storage; a double-click,
-  or a drag down to nothing, gives it back to the page. Left alone it is as
-  tall as what it holds, up to half the window. The prompt is the line after
-  the last thing printed, as in a terminal, and the blank rows are below it,
-  not between it and the output.
+- **The screen grows with what is printed, and `clear` shrinks it.** Left
+  alone it is as tall as what it holds, up to half the window, and then it
+  scrolls. The top edge is a grip for when that is not enough: drag it and
+  the screen keeps that height, the way a terminal keeps its rows, until a
+  double-click, a drag down to nothing, or a `clear` gives it back. Nothing
+  is remembered: a first version kept the height in local storage and David
+  did not want it — the shape the screen should have is the shape of what is
+  on it. The prompt is the line after the last thing printed, as in a
+  terminal, and the blank rows are below it, not between it and the output.
+- **Arriving at a page is a `clear`.** A `cd`, a link, a real load: the
+  screen starts empty on the new page, as a terminal's does when a program
+  takes it over. The rest of a line — `cd book && ls` finishes on `/book/` —
+  still carries over; what had been printed does not.
 - **`cat` shows the page in the viewer**, whole, where the page is read, and
   not in the terminal's screen. The address and the prompt stay where they
   were — `cat` looks, `cd` goes — and the page opens with the very command

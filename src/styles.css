@@ -926,7 +926,7 @@ nav {
 .terminal .suggest {
   position: absolute;
   top: 0;
-  left: calc(1ch + 0.5em);
+  left: calc(1ch + 0.15em);
   color: var(--dim);
   pointer-events: none;
   display: none;
