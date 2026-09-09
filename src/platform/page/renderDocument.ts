@@ -30,7 +30,7 @@ function nav(site: Site, current: string): string {
       return `<a class="navlink" href="${route}"${here}>${escapeHtml(name)}</a>`;
     })
     .join("");
-  return `<p class="ran"><span class="ps1">~ $</span> ls</p>
+  return `<p class="ran"><a class="brand" href="/">@drpicox</a> <span class="ps1">~ $</span> ls</p>
     <nav>${links}</nav>`;
 }
 
@@ -56,10 +56,12 @@ function rootAttributes(page: Page): string {
  * hand at the bottom of the window while the page scrolls under it and land
  * in its place when the page runs out. The cursor is drawn here rather than
  * by the input: a terminal's cursor is a block, and it is there before you
- * click. The suggestion is what to type first.
+ * click. The suggestion is what to type first. The grip along the top edge
+ * is where a hand takes the screen and makes it as tall as it likes.
  */
 function terminal(page: Page): string {
   return `<section class="terminal" hidden>
+<div class="grip" title="Drag to resize the terminal. Double-click to reset."></div>
 <div class="column">
 <div class="screen" aria-live="polite"></div>
 <form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><span class="line"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command"><span class="cursor" aria-hidden="true"></span><span class="suggest" aria-hidden="true">help</span></span></form>
@@ -105,7 +107,6 @@ ${stylesheet}
     <canvas class="planet" width="160" height="160" aria-hidden="true"></canvas>
   </a>
   <div>
-    <a class="brand" href="/">@drpicox</a>
     ${nav(site, page.route)}
   </div>
   <button class="theme-toggle" type="button" aria-hidden="true" tabindex="-1" aria-label="Switch theme" title="theme">&#9680;</button>

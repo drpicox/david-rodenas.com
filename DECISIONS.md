@@ -181,6 +181,26 @@ decision above about the terminal being a grammar still holds:
 On a phone the planet and the name share the first row and the listing takes
 the whole width underneath, three lines instead of six.
 
+Three more, the same afternoon, after David looked at it:
+
+- **The name is the user in the first prompt**: `@drpicox ~ $ ls`, in one
+  line beside the planet, in place of a 1.9rem headline over the listing. The
+  header had grown too tall, and a prompt is where a name goes anyway.
+- **The screen is as tall as the reader wants.** The top edge of the terminal
+  is a grip: drag it and the screen keeps that height, blank or not, the way a
+  terminal keeps its rows, on every page, remembered in local storage; a
+  double-click gives it back to the page. Left alone it is as tall as what it
+  holds, up to half the window.
+- **`cat` shows the page in the viewer**, whole, where the page is read, and
+  not in the terminal's screen. The address and the prompt stay where they
+  were — `cat` looks, `cd` goes — and the page opens with the very command
+  that was typed, `~/talks $ cat ../book/README.md`, so what is shown always
+  says how it got there. The shell says `view`; `html` is still returned for
+  a screen with no viewer to hand it to.
+
+And the page fills the window, so that on a short page the prompt is still at
+the bottom and not adrift under the footer.
+
 What was not done, on purpose: no palette, no scanlines, no window around the
 screen, no title bar. The terminal is noticed because the page keeps telling
 the truth about itself in three places instead of one.

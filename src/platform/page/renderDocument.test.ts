@@ -47,7 +47,7 @@ describe("renderDocument", () => {
 
   it("navigates with the output of `ls` at the root: README.md, then the directories in the author's order", () => {
     const html = render("/");
-    expect(html).toContain('<span class="ps1">~ $</span> ls');
+    expect(html).toContain('<p class="ran"><a class="brand" href="/">@drpicox</a> <span class="ps1">~ $</span> ls</p>');
     expect(html).toContain('<a class="navlink" href="/" aria-current="page">README.md</a>');
     expect(html).toContain('<a class="navlink" href="/notes/">notes/</a>');
     expect(html).toContain('<a class="navlink" href="/work/">work/</a>');
@@ -110,6 +110,12 @@ describe("the document and the shell", () => {
     const html = render("/");
     expect(html.indexOf('<section class="terminal"')).toBeGreaterThan(html.indexOf("</footer>"));
     expect(html.indexOf('<section class="terminal"')).toBeGreaterThan(html.indexOf('</div>\n<section'));
+  });
+
+  it("has a grip above the screen, so a reader can make the terminal as tall as they like", () => {
+    const html = render("/");
+    expect(html).toContain('<div class="grip"');
+    expect(html.indexOf('class="grip"')).toBeLessThan(html.indexOf('class="screen"'));
   });
 
   it("draws a block cursor of its own in the prompt, and suggests what to type", () => {

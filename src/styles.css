@@ -357,7 +357,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* The page fills the window, so that the prompt, its last line, is at the bottom even when the page is short. */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
+  flex: 1;
+  width: 100%;
   max-width: 37rem;
   margin: 0 auto;
   padding: 0 1rem 3rem;
@@ -592,7 +601,7 @@ dl dd {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 0 3rem;
+  padding: 1.8rem 0 2.6rem;
 }
 
 .mark {
@@ -668,13 +677,19 @@ dl dd {
   }
 }
 
+/*
+ * The name is the user in the first prompt of the session, the way a shell
+ * puts it: `@drpicox ~ $ ls`. It was a headline on its own; beside the planet
+ * a headline was one thing too many, and a prompt is where a name goes.
+ */
 .brand {
-  display: inline-block;
-  font-size: 1.9rem;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink);
   text-decoration: none;
-  letter-spacing: -0.01em;
+}
+
+.brand:hover {
+  color: var(--accent);
 }
 
 /*
@@ -720,7 +735,8 @@ nav {
 }
 
 .site-header .ran {
-  margin: 0.15rem 0 0.2rem;
+  font-size: 0.95rem;
+  margin: 0 0 0.15rem;
 }
 
 /* ---- directory listing ---- */
@@ -757,6 +773,10 @@ nav {
  * goes above the prompt, as it does in a terminal, on a screen that grows to
  * half the window and then scrolls. The ground is the page's own paper, most
  * of the way to opaque, so the words underneath are felt and not read.
+ *
+ * The grip is the top edge. A drag sets `--screen-height`, which the screen
+ * then keeps, blank or not, the way a terminal keeps its rows; without it the
+ * screen is as tall as what it holds, up to half the window.
  */
 .terminal {
   position: sticky;
@@ -773,6 +793,22 @@ nav {
   border-top: 1px solid var(--rule);
 }
 
+.terminal .grip {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  height: 9px;
+  cursor: row-resize;
+  touch-action: none;
+}
+
+/* A hand near the edge is shown the edge. */
+.terminal .grip:hover,
+.terminal .grip:active {
+  background: linear-gradient(transparent 4px, var(--accent-soft) 4px, var(--accent-soft) 5px, transparent 5px);
+}
+
 .terminal .column {
   max-width: 37rem;
   margin: 0 auto;
@@ -780,7 +816,8 @@ nav {
 }
 
 .terminal .screen {
-  max-height: 50vh;
+  height: var(--screen-height);
+  max-height: min(var(--screen-height, 50vh), 85vh);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -1223,12 +1260,12 @@ nav {
   }
 
   .site-header .ran {
-    grid-column: 1 / -1;
-    margin: 0.8rem 0 0;
+    margin: 0;
   }
 
   .site-header nav {
     grid-column: 1 / -1;
+    margin-top: 0.4rem;
   }
 
   .theme-toggle {

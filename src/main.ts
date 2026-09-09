@@ -23,14 +23,14 @@ function mount(): void {
   // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
   let stopApps = mountApps(apps);
   let terminal: Terminal | null = null;
-  const goTo = mountNavigation(siteInBrowser, (arrived) => {
+  const { goTo, view } = mountNavigation(siteInBrowser, (shown, moved) => {
     stopApps();
     stopApps = mountApps(apps);
-    for (const feature of allFeatures) feature.arrive?.(arrived);
-    terminal?.moveTo(arrived.route);
+    for (const feature of allFeatures) feature.arrive?.(shown);
+    if (moved) terminal?.moveTo(shown.route);
   });
 
-  terminal = mountTerminal(siteInBrowser, page ? route : "/", { navigate: goTo, commands });
+  terminal = mountTerminal(siteInBrowser, page ? route : "/", { navigate: goTo, view, commands });
 
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);

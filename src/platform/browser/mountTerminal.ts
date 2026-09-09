@@ -5,8 +5,10 @@ import type { Outcome } from "../shell/Outcome";
 import { parseCommandLine } from "../shell/parseCommandLine";
 import type { Command } from "../shell/Command";
 import { Shell } from "../shell/Shell";
+import type { Ran } from "../page/renderMain";
 import { el } from "./el";
 import { followCaret } from "./followCaret";
+import { resizeScreen } from "./resizeScreen";
 
 export interface Terminal {
   /** Runs a line as if it had been typed, echo and all. */
@@ -18,6 +20,8 @@ export interface Terminal {
 export interface TerminalOptions {
   /** Moves the page without leaving it; false when only a real navigation will do. */
   readonly navigate?: (route: string) => boolean;
+  /** Shows a page in the viewer, under the command that asked for it; false when there is no viewer, and the screen prints it instead. */
+  readonly view?: (route: string, ran: Ran) => boolean;
   /** The site's own commands and whatever the features brought. */
   readonly commands?: readonly Command[];
 }
@@ -70,15 +74,17 @@ function replayTyped(): { finished: string[]; unfinished: string } | null {
 export function mountTerminal(site: Site, route: string, options: TerminalOptions = {}): Terminal | null {
   const section = document.querySelector<HTMLElement>(".terminal");
   const screen = section?.querySelector<HTMLElement>(".screen");
+  const grip = section?.querySelector<HTMLElement>(".grip");
   const form = section?.querySelector<HTMLFormElement>("form.prompt");
   const input = form?.querySelector<HTMLInputElement>("input");
   const line = form?.querySelector<HTMLElement>(".line");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !form || !input || !line || !ps1) return null;
+  if (!section || !screen || !grip || !form || !input || !line || !ps1) return null;
 
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
   const syncCursor = followCaret(input, line);
+  resizeScreen(grip, screen, section);
   let hint: HTMLElement | null = null;
 
   // The newest line is the one to read, so the screen keeps its end in view, as a terminal does.
@@ -109,7 +115,9 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     print(el("p", { class: "echo" }, el("span", { class: "ps1" }, shell.prompt), ` ${line}`));
     const commands = parseCommandLine(line).map((words) => words.join(" "));
     for (let index = 0; index < commands.length; index += 1) {
-      const [outcome] = shell.run(commands[index] ?? "");
+      const command = commands[index] ?? "";
+      const prompt = shell.prompt;
+      const [outcome] = shell.run(command);
       if (!outcome) continue;
       if (outcome.navigate) {
         if (options.navigate?.(outcome.navigate)) continue;
@@ -117,6 +125,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
         window.location.assign(outcome.navigate);
         return;
       }
+      if (outcome.view && options.view?.(outcome.view, { prompt, command })) continue;
       perform(outcome);
       if (outcome.error) break;
     }

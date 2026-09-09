@@ -67,6 +67,18 @@ describe("Shell", () => {
     expect(shell.run("cat nothing.md")).toEqual([{ text: "cat: nothing.md: no such file", error: true }]);
   });
 
+  it("says which page a cat shows, so a viewer can show it whole without the shell moving", () => {
+    const shell = new Shell(site, "/");
+    expect(shell.run("cat book/README.md")[0]?.view).toBe("/book/");
+    expect(shell.run("cat README.md")[0]?.view).toBe("/");
+    expect(shell.prompt).toBe("~ $");
+  });
+
+  it("reads the home page as /README.md from anywhere, not the page it happens to be on", () => {
+    expect(new Shell(site, "/book/").run("cat /README.md")[0]?.view).toBe("/");
+    expect(new Shell(site, "/book/").run("cat /")[0]?.view).toBe("/");
+  });
+
   it("knows where it is", () => {
     expect(new Shell(site, "/book/").run("pwd")).toEqual([{ text: "~/book" }]);
   });

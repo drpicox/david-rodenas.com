@@ -16,4 +16,6 @@ export interface Outcome {
   readonly error?: boolean;
   readonly navigate?: string;
   readonly clear?: boolean;
+  /** A page to show whole, in the viewer, without the shell moving: what `cat` is. `html` stays for a screen with no viewer. */
+  readonly view?: string;
 }

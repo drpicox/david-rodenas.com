@@ -4,7 +4,10 @@ import { resolvePath } from "../resolvePath";
 
 /** Every directory holds one file, README.md, which is the page. `*` is that file too. */
 function directoryOf(file: string): string {
-  return file.replace(/(?:^|\/)(?:README\.md|\*)$/, "") || ".";
+  const directory = file.replace(/(?:^|\/)(?:README\.md|\*)$/, "");
+  if (directory) return directory;
+  // `/README.md` leaves nothing behind the slash it took; that nothing is the root, not here.
+  return file.startsWith("/") ? "/" : ".";
 }
 
 export const cat: Command = {
@@ -17,6 +20,6 @@ export const cat: Command = {
     if (!page || /\.md$/.test(file) !== /README\.md$/.test(file)) {
       return { text: `cat: ${file}: no such file`, error: true };
     }
-    return { html: renderMarkdown(page.body) };
+    return { view: page.route, html: renderMarkdown(page.body) };
   },
 };
