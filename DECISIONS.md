@@ -187,10 +187,12 @@ Three more, the same afternoon, after David looked at it:
   line beside the planet, in place of a 1.9rem headline over the listing. The
   header had grown too tall, and a prompt is where a name goes anyway.
 - **The screen is as tall as the reader wants.** The top edge of the terminal
-  is a grip: drag it and the screen keeps that height, blank or not, the way a
-  terminal keeps its rows, on every page, remembered in local storage; a
-  double-click gives it back to the page. Left alone it is as tall as what it
-  holds, up to half the window.
+  is a grip: drag it and the screen keeps that height, the way a terminal
+  keeps its rows, on every page, remembered in local storage; a double-click,
+  or a drag down to nothing, gives it back to the page. Left alone it is as
+  tall as what it holds, up to half the window. The prompt is the line after
+  the last thing printed, as in a terminal, and the blank rows are below it,
+  not between it and the output.
 - **`cat` shows the page in the viewer**, whole, where the page is read, and
   not in the terminal's screen. The address and the prompt stay where they
   were — `cat` looks, `cd` goes — and the page opens with the very command

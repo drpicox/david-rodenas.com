@@ -774,9 +774,11 @@ nav {
  * half the window and then scrolls. The ground is the page's own paper, most
  * of the way to opaque, so the words underneath are felt and not read.
  *
- * The grip is the top edge. A drag sets `--screen-height`, which the screen
- * then keeps, blank or not, the way a terminal keeps its rows; without it the
- * screen is as tall as what it holds, up to half the window.
+ * The grip is the top edge. A drag sets `--screen-height`, and the column —
+ * what was printed and the prompt after it, as in a terminal — keeps that
+ * height, with the blank rows below the prompt and not between it and the
+ * output; without it the column is as tall as what it holds, up to half the
+ * window, and then it scrolls, keeping its last line in view.
  */
 .terminal {
   position: sticky;
@@ -813,9 +815,6 @@ nav {
   max-width: 37rem;
   margin: 0 auto;
   padding: 0.55rem 1rem;
-}
-
-.terminal .screen {
   height: var(--screen-height);
   max-height: min(var(--screen-height, 50vh), 85vh);
   overflow-y: auto;

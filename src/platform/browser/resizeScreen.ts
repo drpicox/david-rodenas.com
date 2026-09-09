@@ -1,15 +1,19 @@
 const HEIGHT_KEY = "shell-height";
 
-/** Not so short that a line is lost, not so tall that the page is. */
+/** Not so tall that the page is lost. */
 function clamp(height: number): number {
-  return Math.min(Math.max(height, 40), window.innerHeight * 0.85);
+  return Math.min(Math.max(height, 0), window.innerHeight * 0.85);
 }
+
+/** Dragged down to less than a line, the screen is not kept that small; it is given back. */
+const A_LINE = 24;
 
 /**
  * A hand on the grip drags the top edge of the screen up or down, and the
  * screen keeps that height from then on, on every page, until a double-click
- * gives it back to the page. The height is a variable on the terminal so the
- * stylesheet owns what it means; this only says the number.
+ * — or a drag down to nothing — gives it back to the page. The height is a
+ * variable on the terminal so the stylesheet owns what it means; this only
+ * says the number.
  */
 export function resizeScreen(grip: HTMLElement, screen: HTMLElement, terminal: HTMLElement): void {
   const set = (height: number | null) => {
@@ -44,7 +48,8 @@ export function resizeScreen(grip: HTMLElement, screen: HTMLElement, terminal: H
     }
     const from = { y: down.clientY, height: screen.getBoundingClientRect().height };
     const move = (event: PointerEvent) => {
-      height = clamp(from.height + (from.y - event.clientY));
+      const dragged = clamp(from.height + (from.y - event.clientY));
+      height = dragged < A_LINE ? null : dragged;
       set(height);
     };
     const up = () => {

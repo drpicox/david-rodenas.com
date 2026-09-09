@@ -74,23 +74,24 @@ function replayTyped(): { finished: string[]; unfinished: string } | null {
 export function mountTerminal(site: Site, route: string, options: TerminalOptions = {}): Terminal | null {
   const section = document.querySelector<HTMLElement>(".terminal");
   const screen = section?.querySelector<HTMLElement>(".screen");
+  const column = section?.querySelector<HTMLElement>(".column");
   const grip = section?.querySelector<HTMLElement>(".grip");
   const form = section?.querySelector<HTMLFormElement>("form.prompt");
   const input = form?.querySelector<HTMLInputElement>("input");
   const line = form?.querySelector<HTMLElement>(".line");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !grip || !form || !input || !line || !ps1) return null;
+  if (!section || !screen || !column || !grip || !form || !input || !line || !ps1) return null;
 
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
   const syncCursor = followCaret(input, line);
-  resizeScreen(grip, screen, section);
+  resizeScreen(grip, column, section);
   let hint: HTMLElement | null = null;
 
-  // The newest line is the one to read, so the screen keeps its end in view, as a terminal does.
+  // The newest line is the prompt, so the column keeps its end in view, as a terminal does.
   const print = (node: HTMLElement) => {
     screen.append(node);
-    screen.scrollTop = screen.scrollHeight;
+    column.scrollTop = column.scrollHeight;
   };
 
   const clearHint = () => {
