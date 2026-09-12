@@ -196,6 +196,56 @@ listing.
 What it does not do, on purpose: subgraphs, shapes other than a box, edge
 styles, cycles. A page that needs one of those gets it added with a test.
 
+### The grammar has to be seen: the quiet terminal
+Decided 12 September 2026. "The terminal is a grammar, not a costume" stayed
+true and nobody noticed the terminal: one grey line at the end of the page,
+read as a caption. A first attempt (`terminal-at-hand`) stuck the prompt to
+the bottom of the window with a grip and a blur, and read as a web page with
+a terminal bolted on. The answer is not more terminal but the grammar made
+visible, in the bones of the page and not on its skin — the shuttle keeps its
+distance without looking like it is keeping its distance.
+
+**Two voices.** The machine speaks in the monospace and speaks first: the
+name, `~ $ ls` and the names it printed, the command that printed the page,
+the listings, the footer, the prompt. The author speaks in the text face,
+inside `<main>`. The prose is *not* monospace: two thousand words are read
+and not typed, and the 2019 measure was drawn for a text face. So the frame
+is set in the machine's type and the words in the author's, and the eye
+learns in one screen which is which.
+
+**The page is a session.** It opens with what `ls` printed at the root —
+`README.md`, then the directories with their slashes — goes on with the
+command that printed the page, `cat README.md` at home and `cd x && cat
+README.md` elsewhere, prints a directory's listing at its own prompt as `ls`
+would, name first, and ends with a prompt: the last line of the page, after
+the footer, where a session ends. Arriving on a page clears the shell's
+screen, because the page itself now says which command printed it.
+
+**The cursor is in the HTML.** A block, `1ch` wide, in the prompt from the
+first paint; an outline while the prompt is not focused, the way a terminal
+shows the window that is not being typed into; solid and blinking when it
+is. It is painted by difference, so it is ink on paper in either theme and
+the character under it shows through inverted. It is shown only on a page
+the head has marked as scripted (`html.js`), because a prompt that does
+nothing is a lie — and the head has already caught whatever was typed before
+the script arrived, so the cursor is not lying either. After it, in grey,
+the rest of the line the reader is probably typing, fish-style: what was
+typed before wins over what could be completed, `→` takes it, and an empty
+line is offered `help`.
+
+**What "not a costume" turned out to require:** the column is 72 of the
+machine's columns (`72ch`), within a few pixels of the 2019 measure; the
+rules are hairlines; the theme button is a bare glyph; no ligatures in the
+monospace, because a terminal shows `->` as two characters and the cursor is
+placed by counting them; no fade on the prompt, because a cursor that
+arrives is a cursor that was not there. Nothing else was added. No window
+chrome, no phosphor, no scanlines, no box-drawing.
+
+**Kept on purpose:** the world in the header — a 2026 terminal shows images
+inline, and the mark is the site's; the navy; the 37rem-ish measure; the
+three-line headline; the theme feature exactly as it was, both themes
+excellent because the palette did not change.
+
 ## Open
 
 ### The noun in the headline
