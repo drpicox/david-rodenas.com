@@ -47,7 +47,7 @@ The top level says what this is: a frame, and the features standing in it.
   - `browser/` — the terminal, the navigation between pages, and `el`
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
-  `developer-meetings/`. A feature owns everything about itself: its rules,
+  `developer-meetings/`, `headline/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.

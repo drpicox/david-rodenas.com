@@ -281,6 +281,22 @@ inline, and the mark is the site's; the navy; the 37rem-ish measure; the
 three-line headline; the theme feature exactly as it was, both themes
 excellent because the palette did not change.
 
+### The headline is typed over, and the words are in the HTML first
+Decided 12 September 2026. David asked for the home headline to sit with a
+cursor at its end, then be taken back a character at a time and retyped as
+something else, from a handful of lines chosen by lot. The headline itself
+does not move: it is in the HTML from the first byte, exactly as before,
+and the feature only adds a cursor and starts after a few seconds — a
+reader without a script, a search engine, or someone who asked for less
+motion sees the headline as it was, and the heading keeps its real words in
+`aria-label` for anyone being read to. Every line it turns into is a
+shortening of a claim already on the home page, verified there; the list
+adds nothing. The heading keeps the room of the lines it opened with —
+three on a desktop, four on a phone — so the page under it never jumps,
+and its lines are not balanced while typing, because balancing would
+re-break them at every character. The timing runs on animation frames, so
+a tab in the background does not type to nobody.
+
 ## Open
 
 ### The noun in the headline

@@ -48,6 +48,7 @@ graph LR
     sky["<b>sky</b><br/>two layers of stars,<br/>drifting or driven"]
     debt["<b>technical-debt</b><br/>what shortcuts cost,<br/>compounded"]
     meetings["<b>developer-meetings</b><br/>what a week of meetings<br/>costs a week of work"]
+    headline["<b>headline</b><br/>the home headline, typed over<br/>with what else the page says"]
   end
 
   sky -. "follows whatever turns" .-> world

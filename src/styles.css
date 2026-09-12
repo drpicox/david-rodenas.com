@@ -838,6 +838,32 @@ nav {
   margin-top: 1.2rem;
 }
 
+/*
+ * The home headline is typed over by the headline feature. It keeps the
+ * room of the three lines it opened with, so the page under it does not
+ * jump as a shorter line is typed; and its cursor is a block of its own ink
+ * at the end of the text, solid while a hand is on the keys and blinking
+ * while it waits, as a terminal's is.
+ */
+h1.typing {
+  min-height: calc(3 * 1.2em);
+  /* Balanced lines would be re-broken at every character typed, and the words would shuffle; they break where they must. */
+  text-wrap: wrap;
+}
+
+h1 .caret {
+  display: inline-block;
+  width: 0.5ch;
+  height: 0.9em;
+  margin-left: 0.1ch;
+  vertical-align: -0.08em;
+  background: currentColor;
+}
+
+h1 .caret.idle {
+  animation: blink 1.1s step-end infinite;
+}
+
 /* ---- directory listing ---- */
 
 /*
@@ -1448,6 +1474,11 @@ main,
   /* The headline's longest line is twenty-five columns and breaks where the author broke it, so it must fit a phone whole. */
   h1 {
     font-size: 1.35rem;
+  }
+
+  /* The longest of the typed headlines takes four lines at this width; the room is kept so nothing under it moves. */
+  h1.typing {
+    min-height: calc(4 * 1.2em);
   }
 
   /* Nineteen characters of name leave no room beside them for a title; the name takes its own line. */

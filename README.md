@@ -38,6 +38,7 @@ and `src/architecture.test.ts` keeps it that way.
 | `features/theme` | light, dark, system: the command, the button, and the rule that weighs a reader's choice against a page's own |
 | `features/sky` | two layers of stars, drifting on their own or driven by a hand on a world |
 | `features/technical-debt`, `features/developer-meetings` | the two simulators |
+| `features/headline` | the home headline, typed over with what else the page says |
 | `content/` | home, the book, the essays, the code, the talks, the kata, the simulators, the worlds |
 | `.github/workflows/deploy.yml` | build, test, and publish `dist/` as `drpicox.github.io` |
 
