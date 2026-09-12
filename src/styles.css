@@ -376,7 +376,11 @@ body {
 .container {
   max-width: 72ch;
   margin: 0 auto;
-  padding: 0 1rem 4rem;
+  padding: 0 1rem;
+  /* The page is at least a window tall, so that its last line, the prompt, is at the bottom even when the page is short. */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   font-family: var(--mono);
   font-size: var(--mono-size);
   line-height: 1.6;
@@ -385,6 +389,8 @@ body {
 }
 
 main {
+  /* What is left of the window after the header and the footer goes to the words; the prompt keeps the last line. */
+  flex: 1;
   font-family: var(--text);
   font-size: 1.1rem;
   line-height: 1.65;
@@ -830,14 +836,44 @@ nav {
  * Shown only on a page the head has marked as scripted: without a script
  * the prompt would be a lie, and with one it is there from the first paint.
  * There is no fade — a cursor that arrives is a cursor that was not there.
+ *
+ * The prompt is the last line of the page, and the one that is always at
+ * hand: it keeps to the bottom of the window while the page scrolls past,
+ * and settles into its place when the page runs out. It stands on the
+ * page's own paper, and the words above it thin out into that paper over a
+ * line's height rather than being cut by a rule — there is one rule on the
+ * page already, over the footer, and the prompt lands right under it. What
+ * the shell prints goes above the prompt, as it does in a terminal, up to
+ * two fifths of the window; after that it scrolls, and keeps its last line.
  */
 .terminal {
   display: none;
-  margin-top: 2rem;
+  position: sticky;
+  bottom: 0;
+  margin-top: 1.6rem;
+  padding: 0.5rem 0 1rem;
+  background: var(--paper);
 }
 
 .js .terminal {
   display: block;
+}
+
+.terminal::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 1.4rem;
+  background: linear-gradient(to bottom, transparent, var(--paper));
+  pointer-events: none;
+}
+
+.terminal .screen {
+  max-height: 40vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .terminal .screen > * {

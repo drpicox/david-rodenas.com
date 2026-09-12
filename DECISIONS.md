@@ -213,13 +213,23 @@ and not typed, and the 2019 measure was drawn for a text face. So the frame
 is set in the machine's type and the words in the author's, and the eye
 learns in one screen which is which.
 
-**The page is a session.** It opens with what `ls` printed at the root —
-`README.md`, then the directories with their slashes — goes on with the
-command that printed the page, `cat README.md` at home and `cd x && cat
+**The page is a session.** It opens on one line, the way a shell puts the
+user in the prompt — `@drpicox ~ $ ls` — and what that `ls` printed at the
+root: `README.md`, then the directories with their slashes. It goes on with
+the command that printed the page, `cat README.md` at home and `cd x && cat
 README.md` elsewhere, prints a directory's listing at its own prompt as `ls`
 would, name first, and ends with a prompt: the last line of the page, after
 the footer, where a session ends. Arriving on a page clears the shell's
 screen, because the page itself now says which command printed it.
+
+**The prompt is at hand.** Asked for by David after seeing the first cut:
+the last line keeps to the bottom of the window while the page scrolls
+past, and settles into its place when the page runs out. What made the
+earlier attempt read as bolted on was not the sticking but the grip and the
+blur; here the prompt stands on the page's own paper, the words above it
+thin into that paper over a line's height, and nothing else is added. What
+the shell prints goes above the prompt, up to two fifths of the window, and
+then scrolls.
 
 **The cursor is in the HTML.** A block, `1ch` wide, in the prompt from the
 first paint; an outline while the prompt is not focused, the way a terminal

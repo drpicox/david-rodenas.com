@@ -140,7 +140,8 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     }
     ps1.textContent = shell.prompt;
     refreshLine();
-    input.scrollIntoView({ block: "nearest" });
+    // The screen keeps its last line in view, as a terminal does, and the prompt is already at hand.
+    screen.scrollTop = screen.scrollHeight;
   };
 
   const complete = () => {
