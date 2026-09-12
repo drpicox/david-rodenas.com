@@ -18,6 +18,8 @@ export interface Terminal {
 export interface TerminalOptions {
   /** Moves the address without touching the paper; false when only a real navigation will do. */
   readonly moveTo?: (route: string) => boolean;
+  /** Takes the page off the paper as well, when the screen is cleared: the whole paper is the console. */
+  readonly clearPage?: () => void;
   /** The site's own commands and whatever the features brought. */
   readonly commands?: readonly Command[];
 }
@@ -121,7 +123,10 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   };
 
   const perform = (outcome: Outcome) => {
-    if (outcome.clear) screen.replaceChildren();
+    if (outcome.clear) {
+      screen.replaceChildren();
+      options.clearPage?.();
+    }
     if (outcome.html) {
       const block = el("div", { class: outcome.text ? "listing-out" : "cat" });
       block.innerHTML = outcome.html;

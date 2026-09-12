@@ -291,11 +291,27 @@ reader without a script, a search engine, or someone who asked for less
 motion sees the headline as it was, and the heading keeps its real words in
 `aria-label` for anyone being read to. Every line it turns into is a
 shortening of a claim already on the home page, verified there; the list
-adds nothing. The heading keeps the room of the lines it opened with —
-three on a desktop, four on a phone — so the page under it never jumps,
-and its lines are not balanced while typing, because balancing would
-re-break them at every character. The timing runs on animation frames, so
-a tab in the background does not type to nobody.
+adds nothing, and no line of it is longer than the longest line of the
+headline it replaces, so none wraps where it did not. The heading keeps
+the room of the three lines it opened with, so the page under it never
+jumps, and its lines are not balanced while typing, because balancing
+would re-break them at every character. The lines come in rounds drawn by
+lot — every line once, the first headline among them, never the one just
+shown — after David saw the first headline come back too often when each
+turn was drawn on its own. Every line is three lines long, like the
+headline it replaces, so no line of the heading is left empty under a
+shorter one; and where the site has a page for what a line says, the line
+is a quiet link to it — the words in their own ink, underlined only under
+a hand — so a headline that raises a question leads to the answer. The
+timing runs on animation frames, so a tab in the background does not type
+to nobody, and stopping puts the first headline back whole.
+
+### clear clears the paper
+Decided 12 September 2026. With the paper as the console, `clear` that only
+wiped what the shell had printed left the page standing, which is not what
+clear means. It now takes the page off the paper too, and stops the
+programs that were running on it; the header, the prompt the paper ends on
+and the footer stay, and `cat README.md` prints the page again.
 
 ## Open
 

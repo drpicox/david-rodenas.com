@@ -31,7 +31,13 @@ function mount(): void {
     if (!kept) terminal?.moveTo(arrived.route);
   });
 
-  terminal = mountTerminal(siteInBrowser, page ? route : "/", { moveTo: (route) => goTo(route, { keep: true }), commands });
+  // clear takes the page off the paper too, and the programs on it stop with it.
+  const clearPage = () => {
+    stopApps();
+    stopApps = () => {};
+    document.querySelector("main")?.replaceChildren();
+  };
+  terminal = mountTerminal(siteInBrowser, page ? route : "/", { moveTo: (route) => goTo(route, { keep: true }), clearPage, commands });
 
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);

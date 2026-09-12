@@ -851,6 +851,18 @@ h1.typing {
   text-wrap: wrap;
 }
 
+/* Where a headline leads somewhere, the words are the link, in their own ink; a hand over them is told. */
+h1.typing a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1.typing a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 0.06em;
+  text-underline-offset: 0.12em;
+}
+
 h1 .caret {
   display: inline-block;
   width: 0.5ch;
@@ -1474,11 +1486,6 @@ main,
   /* The headline's longest line is twenty-five columns and breaks where the author broke it, so it must fit a phone whole. */
   h1 {
     font-size: 1.35rem;
-  }
-
-  /* The longest of the typed headlines takes four lines at this width; the room is kept so nothing under it moves. */
-  h1.typing {
-    min-height: calc(4 * 1.2em);
   }
 
   /* Nineteen characters of name leave no room beside them for a title; the name takes its own line. */
