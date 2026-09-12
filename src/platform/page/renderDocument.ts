@@ -4,6 +4,7 @@ import { escapeHtml } from "../markdown/escapeHtml";
 import { declaredAppearance } from "./declaredAppearance";
 import { promptPath } from "../shell/promptPath";
 import { bookSchema } from "./bookSchema";
+import { isHere } from "./isHere";
 import { renderMain } from "./renderMain";
 
 export interface DocumentAssets {
@@ -13,15 +14,22 @@ export interface DocumentAssets {
   readonly origin: string;
 }
 
-/** `ls /`, in capitals. Adding a page at the root is adding it to the navigation. */
+/**
+ * The navigation is what `ls` prints at the root, and it says so: README.md,
+ * which is the home page, then the directories, each with its slash. Adding a
+ * page at the root is adding it to the navigation. Where the reader is, is
+ * lit — the one liberty taken with `ls`, which has no idea where you are.
+ */
 function nav(site: Site, current: string): string {
-  return site
-    .childrenOf("/")
+  const entries = [{ route: "/", name: "README.md" }, ...site.childrenOf("/").map(({ route, name }) => ({ route, name: `${name}/` }))];
+  const links = entries
     .map(({ route, name }) => {
-      const here = current.startsWith(route) ? ' aria-current="page"' : "";
-      return `<a class="navlink" href="${route}"${here}>${escapeHtml(name.toUpperCase())}</a>`;
+      const here = isHere(current, route) ? ' aria-current="page"' : "";
+      return `<a class="navlink" href="${route}"${here}>${escapeHtml(name)}</a>`;
     })
     .join("");
+  return `<p class="ran"><span class="ps1">~ $</span> ls</p>
+    <nav>${links}</nav>`;
 }
 
 /**
@@ -39,13 +47,21 @@ function rootAttributes(page: Page): string {
 }
 
 /**
- * The prompt is real: a script wires it to the shell, over this same content.
- * Until then it stays hidden, because a prompt that does nothing is a lie.
+ * The last line of the page is a prompt, and it is real: a script wires it to
+ * the shell, over this same content. It is in the HTML with its cursor, so
+ * that it is there from the first paint and not a moment later; and it is
+ * shown only on a page the head has marked as scripted, because a prompt that
+ * does nothing is a lie. Whatever is typed before the script arrives is kept
+ * by the head and replayed, so the cursor is not lying either.
+ *
+ * The cursor is drawn here rather than by the input: a terminal's cursor is a
+ * block, and it is there before you click. The suggestion after it is what to
+ * type first.
  */
 function terminal(page: Page): string {
-  return `<section class="terminal" hidden>
+  return `<section class="terminal">
 <div class="screen" aria-live="polite"></div>
-<form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command" placeholder="help"></form>
+<form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><span class="line"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command"><span class="cursor" aria-hidden="true"></span><span class="suggest" aria-hidden="true">help</span></span></form>
 </section>`;
 }
 
@@ -75,7 +91,7 @@ export function renderDocument(site: Site, page: Page, assets: DocumentAssets): 
 <meta property="og:url" content="${escapeHtml(canonical)}">
 <meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="/favicon.png">
-<script>try{var h=document.documentElement,t=localStorage.getItem("theme");if(!h.dataset.pageTheme&&(t==="light"||t==="dark"))h.dataset.theme=t}catch(e){}
+<script>document.documentElement.classList.add("js");try{var h=document.documentElement,t=localStorage.getItem("theme");if(!h.dataset.pageTheme&&(t==="light"||t==="dark"))h.dataset.theme=t}catch(e){}
 (function(){var k=[];window.__typed=k;function h(e){var f=e.target&&e.target.matches&&e.target.matches("input,textarea,select,[contenteditable]");if(f||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key.length===1||e.key==="Enter"||e.key==="Backspace"){k.push(e.key);e.preventDefault()}}window.addEventListener("keydown",h);window.__stopTyped=function(){window.removeEventListener("keydown",h)}})()</script>
 ${bookSchema(page, assets.origin)}
 ${stylesheet}
@@ -86,20 +102,20 @@ ${stylesheet}
   <a class="mark" href="/" aria-label="Home">
     <canvas class="planet" width="160" height="160" aria-hidden="true"></canvas>
   </a>
-  <div>
+  <div class="session">
     <a class="brand" href="/">@drpicox</a>
-    <nav>${nav(site, page.route)}</nav>
+    ${nav(site, page.route)}
   </div>
   <button class="theme-toggle" type="button" aria-hidden="true" tabindex="-1" aria-label="Switch theme" title="theme">&#9680;</button>
 </header>
 <main>
 ${renderMain(site, page)}
 </main>
-${terminal(page)}
 <footer class="site-footer">
   <span>&copy; 2026 David Rodenas</span>
   <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
+${terminal(page)}
 </div>
 ${script}
 <script data-goatcounter="https://drpicox.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
