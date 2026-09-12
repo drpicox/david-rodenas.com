@@ -712,7 +712,15 @@ dl dd {
   }
 }
 
+/*
+ * The name is a little larger than the line it opens, and the line does not
+ * grow for it: its own line-height is 1, so its inline box is shorter than
+ * the line box it sits in, and the extra size goes into the leading the line
+ * already had. It stays on the baseline, so `~ $ ls` reads as the same line.
+ */
 .brand {
+  font-size: 1.2em;
+  line-height: 1;
   font-weight: 600;
   color: var(--ink);
   text-decoration: none;
