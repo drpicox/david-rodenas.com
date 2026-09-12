@@ -720,19 +720,45 @@ dl dd {
   color: var(--accent);
 }
 
-/* Until the world has grown there is a grey one, breathing, so the page never opens with a hole. */
+/*
+ * The world is drawn in character cells: twenty-four across, twelve down,
+ * two pixels to a cell as the half-blocks allow, in the sixteen colours a
+ * text-mode card had. The type is set small enough for the block to be the
+ * size the round mark was — about four rems. A half-block fills its em and
+ * no more, so the line is 1 or light shows between the rows; the block is
+ * then stretched by a fifth, the way a text-mode screen stretched its cells
+ * to twice their width, so a pixel comes out square. Until the world has
+ * grown there is a dim disc of shade, breathing, so the page never opens
+ * with a hole; without a script it is all there is, and it is a shape.
+ */
 .planet {
-  width: 4rem;
-  height: 4rem;
   display: block;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 35%, var(--rule), var(--sunken) 70%);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--rule);
+  font-family: var(--mono);
+  font-size: 0.29rem;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow: visible;
+  transform: scaleY(1.2);
+  transform-origin: top;
+  /* The stretch is paint, not layout; the room it needs is asked for here. */
+  margin-bottom: calc(12 * 0.2em);
   animation: breathe 1.6s ease-in-out infinite;
 }
 
 .planet.grown {
-  background: none;
   animation: none;
+}
+
+.planet span {
+  /* A cell's colours belong to it alone; the theme's ink is not to bleed in. */
+  display: inline-block;
+  width: 1ch;
 }
 
 @keyframes breathe {
@@ -1416,8 +1442,7 @@ main,
   }
 
   .planet {
-    width: 2.6rem;
-    height: 2.6rem;
+    font-size: 0.19rem;
   }
 
   /* The headline's longest line is twenty-five columns and breaks where the author broke it, so it must fit a phone whole. */

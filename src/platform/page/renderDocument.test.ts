@@ -45,6 +45,17 @@ describe("renderDocument", () => {
     expect(render("/")).not.toContain('class="listing"');
   });
 
+  it("leaves a disc of character cells for the world, so a reader without a script sees a shape and not a hole", () => {
+    const html = render("/");
+    const mark = /<pre class="planet" aria-hidden="true">([\s\S]*?)<\/pre>/.exec(html)?.[1] ?? "";
+    const lines = mark.split("\n");
+    expect(lines).toHaveLength(12);
+    expect(Math.max(...lines.map((line) => line.length))).toBe(24);
+    expect(lines[6]).toMatch(/^░+$/);
+    expect(lines[0]?.trim()).toMatch(/^░+$/);
+    expect(lines[0]!.length).toBeLessThan(lines[6]!.length);
+  });
+
   it("opens the session on one line, the way a shell puts the user in the prompt: @drpicox ~ $ ls", () => {
     const html = render("/work/");
     expect(html).toContain('<p class="ran"><a class="brand" href="/">@drpicox</a> <span class="ps1">~ $</span> ls</p>');

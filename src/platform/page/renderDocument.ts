@@ -5,6 +5,7 @@ import { declaredAppearance } from "./declaredAppearance";
 import { promptPath } from "../shell/promptPath";
 import { bookSchema } from "./bookSchema";
 import { isHere } from "./isHere";
+import { placeholderDisc } from "./placeholderDisc";
 import { renderMain } from "./renderMain";
 
 export interface DocumentAssets {
@@ -13,6 +14,10 @@ export interface DocumentAssets {
   readonly stylesheet?: string;
   readonly origin: string;
 }
+
+/** The mark is a block of character cells: this many across, this many down. A cell is twice as tall as it is wide. */
+const MARK_COLUMNS = 24;
+const MARK_ROWS = 12;
 
 /**
  * The session opens the way a shell puts the user in the prompt, on one line:
@@ -122,9 +127,7 @@ ${stylesheet}
 <body>
 <div class="container">
 <header class="site-header">
-  <a class="mark" href="/" aria-label="Home">
-    <canvas class="planet" width="160" height="160" aria-hidden="true"></canvas>
-  </a>
+  <a class="mark" href="/" aria-label="Home"><pre class="planet" aria-hidden="true">${placeholderDisc(MARK_COLUMNS, MARK_ROWS)}</pre></a>
   <div class="session">
     ${nav(site, page.route)}
   </div>

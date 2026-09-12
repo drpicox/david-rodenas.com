@@ -42,7 +42,7 @@ export function mountWorlds(host: HTMLElement): () => void {
 
   const caption = el("p", { class: "hint" });
 
-  const headerCanvas = document.querySelector<HTMLCanvasElement>("canvas.planet");
+  const headerMark = document.querySelector<HTMLElement>(".planet");
   const headerTriangles = (20 * 4 ** HEADER_RECIPE.levels).toLocaleString("en");
 
   const grow = () => {
@@ -62,7 +62,7 @@ export function mountWorlds(host: HTMLElement): () => void {
     type: "button",
     onclick: () => {
       rememberHeaderWorld({ ...dials });
-      if (headerCanvas) spinPlanet(headerCanvas, { ...dials });
+      if (headerMark) spinPlanet(headerMark, { ...dials });
       grow();
     },
   }, "Put it in the header");
@@ -71,7 +71,7 @@ export function mountWorlds(host: HTMLElement): () => void {
     hidden: true,
     onclick: () => {
       forgetHeaderWorld();
-      if (headerCanvas) spinPlanet(headerCanvas);
+      if (headerMark) spinPlanet(headerMark);
       grow();
     },
   }, "Let the header grow its own");
