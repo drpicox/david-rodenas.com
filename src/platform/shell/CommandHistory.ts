@@ -3,14 +3,19 @@
  * when the cursor leaves a line is kept with it, so browsing loses nothing.
  */
 export class CommandHistory {
-  private lines: string[] = [];
+  private typed: string[] = [];
   private drafts: string[] = [];
   private index = 0;
 
+  /** Everything typed so far, oldest first. */
+  get lines(): readonly string[] {
+    return this.typed;
+  }
+
   add(line: string): void {
-    this.lines.push(line);
-    this.drafts = [...this.lines, ""];
-    this.index = this.lines.length;
+    this.typed.push(line);
+    this.drafts = [...this.typed, ""];
+    this.index = this.typed.length;
   }
 
   previous(current: string): string {

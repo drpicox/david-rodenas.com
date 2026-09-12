@@ -5,6 +5,7 @@ import type { Outcome } from "../shell/Outcome";
 import { parseCommandLine } from "../shell/parseCommandLine";
 import type { Command } from "../shell/Command";
 import { Shell } from "../shell/Shell";
+import { suggest } from "../shell/suggest";
 import { el } from "./el";
 
 export interface Terminal {
@@ -21,23 +22,21 @@ export interface TerminalOptions {
   readonly commands?: readonly Command[];
 }
 
-const SCREEN_KEY = "shell-screen";
 const PENDING_KEY = "shell-pending";
 
-/** What the shell had printed and had still to do, carried over a `cd` to the next page. */
-function carry(screen: HTMLElement, pending: string): void {
+/** What the shell had still to do, carried over a `cd` to the next page. */
+function carry(pending: string): void {
   try {
-    sessionStorage.setItem(SCREEN_KEY, screen.innerHTML);
     if (pending) sessionStorage.setItem(PENDING_KEY, pending);
   } catch {
     // The next page simply starts clean.
   }
 }
 
-function takeCarried(key: string): string {
+function takeCarried(): string {
   try {
-    const value = sessionStorage.getItem(key) ?? "";
-    sessionStorage.removeItem(key);
+    const value = sessionStorage.getItem(PENDING_KEY) ?? "";
+    sessionStorage.removeItem(PENDING_KEY);
     return value;
   } catch {
     return "";
@@ -64,15 +63,22 @@ function replayTyped(): { finished: string[]; unfinished: string } | null {
 
 /**
  * Wires the prompt on the page to the shell. The shell decides; this prints,
- * and does the few things only a page can do: move, clear, change colour.
+ * and does the few things only a page can do: move, clear, keep the cursor
+ * where the caret is.
+ *
+ * Arriving on a page — by `cd`, by a link, by a real load — starts with an
+ * empty screen. The page itself says which command printed it, so what the
+ * shell had printed before would be telling the story out of order.
  */
 export function mountTerminal(site: Site, route: string, options: TerminalOptions = {}): Terminal | null {
   const section = document.querySelector<HTMLElement>(".terminal");
   const screen = section?.querySelector<HTMLElement>(".screen");
   const form = section?.querySelector<HTMLFormElement>("form.prompt");
   const input = form?.querySelector<HTMLInputElement>("input");
+  const line = form?.querySelector<HTMLElement>(".line");
+  const suggestion = form?.querySelector<HTMLElement>(".suggest");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !form || !input || !ps1) return null;
+  if (!section || !screen || !form || !input || !line || !suggestion || !ps1) return null;
 
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
@@ -85,6 +91,20 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const clearHint = () => {
     hint?.remove();
     hint = null;
+  };
+
+  // The block cursor stands where the caret is, and the suggestion where the typing ends.
+  const refreshLine = () => {
+    const caret = input.selectionStart ?? input.value.length;
+    line.style.setProperty("--caret", String(caret));
+    line.style.setProperty("--typed", String(input.value.length));
+    suggestion.textContent = caret === input.value.length ? suggest(input.value, history.lines, shell.complete(input.value)) : "";
+  };
+
+  const setLine = (value: string, caret = value.length) => {
+    input.value = value;
+    input.setSelectionRange(caret, caret);
+    refreshLine();
   };
 
   const perform = (outcome: Outcome) => {
@@ -107,8 +127,11 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       const [outcome] = shell.run(commands[index] ?? "");
       if (!outcome) continue;
       if (outcome.navigate) {
-        if (options.navigate?.(outcome.navigate)) continue;
-        carry(screen, commands.slice(index + 1).join(" && "));
+        if (options.navigate?.(outcome.navigate)) {
+          screen.replaceChildren();
+          continue;
+        }
+        carry(commands.slice(index + 1).join(" && "));
         window.location.assign(outcome.navigate);
         return;
       }
@@ -116,18 +139,19 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       if (outcome.error) break;
     }
     ps1.textContent = shell.prompt;
+    refreshLine();
     input.scrollIntoView({ block: "nearest" });
   };
 
   const complete = () => {
     clearHint();
     if (input.value.trim() === "") {
-      input.value = "help";
+      setLine("help");
       return;
     }
     const options = shell.complete(input.value);
     if (options.length === 1) {
-      input.value = options[0] ?? input.value;
+      setLine(options[0] ?? input.value);
     } else if (options.length > 1) {
       hint = el("p", { class: "hint" }, options.map((option) => option.split(" ").pop()).join("  "));
       print(hint);
@@ -137,7 +161,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const line = input.value.trim();
-    input.value = "";
+    setLine("");
     if (!line) return;
     history.add(line);
     run(line);
@@ -152,21 +176,29 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       complete();
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
-      input.value = history.previous(input.value);
+      setLine(history.previous(input.value));
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
-      input.value = history.next(input.value);
+      setLine(history.next(input.value));
+    } else if (event.key === "ArrowRight" && input.selectionStart === input.value.length && suggestion.textContent) {
+      // At the end of the line, the arrow takes the suggestion, as fish does.
+      event.preventDefault();
+      setLine(input.value + suggestion.textContent);
     } else if (event.ctrlKey && !event.metaKey && !event.altKey) {
       const edited = editLine(event.key, input.value, input.selectionStart ?? input.value.length, killed);
       if (!edited) return;
       event.preventDefault();
       clearHint();
-      input.value = edited.line;
-      input.setSelectionRange(edited.caret, edited.caret);
+      setLine(edited.line, edited.caret);
       killed = edited.killed;
     } else {
       clearHint();
     }
+  });
+
+  for (const type of ["input", "keyup", "click", "focus", "select"]) input.addEventListener(type, refreshLine);
+  document.addEventListener("selectionchange", () => {
+    if (document.activeElement === input) refreshLine();
   });
 
   // A listed README.md is a command to run here, not a page to leave for.
@@ -186,12 +218,13 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     input.focus({ preventScroll: false });
   });
 
-  section.hidden = false;
+  // A click on the prompt's line, not only on the input, is a click into the prompt.
+  form.addEventListener("click", () => input.focus());
 
-  // Pick up where the last page left off: its screen, the rest of its line, and what was typed since.
-  const carried = takeCarried(SCREEN_KEY);
-  if (carried) screen.innerHTML = carried;
-  const pending = takeCarried(PENDING_KEY);
+  refreshLine();
+
+  // Pick up where the last page left off: the rest of its line, and what was typed since.
+  const pending = takeCarried();
   if (pending) run(pending);
   const typed = replayTyped();
   if (typed) {
@@ -201,12 +234,15 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
         run(line.trim());
       }
     }
-    input.value = typed.unfinished;
+    setLine(typed.unfinished);
     input.focus();
   }
 
   const moveTo = (to: string) => {
-    if (shell.moveTo(to)) ps1.textContent = shell.prompt;
+    if (!shell.moveTo(to)) return;
+    screen.replaceChildren();
+    ps1.textContent = shell.prompt;
+    refreshLine();
   };
 
   return { run, moveTo };

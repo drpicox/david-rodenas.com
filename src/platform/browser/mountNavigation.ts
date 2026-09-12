@@ -1,6 +1,7 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
 import { APPEARANCE, declaredAppearance } from "../page/declaredAppearance";
+import { isHere } from "../page/isHere";
 import { renderMain } from "../page/renderMain";
 
 export type GoTo = (route: string, push?: boolean) => boolean;
@@ -28,7 +29,7 @@ export function mountNavigation(site: Site, onArrive: (page: Page) => void): GoT
     }
     document.title = page.route === "/" ? "David Rodenas" : `${page.title} — David Rodenas`;
     for (const link of document.querySelectorAll<HTMLAnchorElement>("nav .navlink")) {
-      const here = route.startsWith(link.getAttribute("href") ?? "\0");
+      const here = isHere(route, link.getAttribute("href") ?? "\0");
       if (here) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     }

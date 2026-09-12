@@ -14,6 +14,13 @@ describe("CommandHistory", () => {
     expect(history.next("ca")).toBe("ca");
   });
 
+  it("tells what was typed, in order, for whoever wants to guess the next line", () => {
+    const history = new CommandHistory();
+    history.add("ls");
+    history.add("cd book");
+    expect(history.lines).toEqual(["ls", "cd book"]);
+  });
+
   it("keeps an edit made while browsing", () => {
     const history = new CommandHistory();
     history.add("ls");

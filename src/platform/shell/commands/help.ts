@@ -12,7 +12,8 @@ export const help: Command = {
     }
     const width = Math.max(...commands.map((command) => command.usage.length));
     const lines = commands.map((command) => `${command.usage.padEnd(width)}  ${command.description}`);
-    const keys = "Tab completes. Arrows recall. ^K kills to the end of the line, ^U back to the start, ^Y puts it back.";
+    const keys =
+      "Tab completes; → takes the grey suggestion. ↑↓ recall. ^K kills to the end of the line, ^U back to the start, ^Y puts it back.";
     return { text: ["Commands:", ...lines, "", keys].join("\n") };
   },
 };
