@@ -18,6 +18,17 @@
   --warn: #b4443c;
   --title: var(--accent);
 
+  /*
+   * Two voices. The machine speaks in the monospace, and it speaks first: the
+   * frame, the prompts, the listings, the code. The author speaks in the text
+   * face, inside <main>, because two thousand words are read and not typed.
+   * No ligatures in the monospace: a terminal shows `->` as two characters,
+   * and the cursor is placed by counting them.
+   */
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "DejaVu Sans Mono", "Roboto Mono", monospace;
+  --mono-size: 0.9rem;
+  --text: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
   color-scheme: light;
 }
 
@@ -350,21 +361,44 @@ html,
 body {
   margin: 0;
   font-size: 1.1rem;
-  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--text);
   line-height: 1.65;
   background: var(--paper);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * The column is seventy-two columns: the width of what a machine prints, in
+ * the machine's own type, and within a few pixels of the 2019 measure. The
+ * frame is set in that type; the words are in the text face, below.
+ */
 .container {
-  max-width: 37rem;
+  max-width: 72ch;
   margin: 0 auto;
-  padding: 0 1rem 5rem;
+  padding: 0 1rem 4rem;
+  font-family: var(--mono);
+  font-size: var(--mono-size);
+  line-height: 1.6;
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-variant-ligatures: none;
+}
+
+main {
+  font-family: var(--text);
+  font-size: 1.1rem;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 a {
   color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
 }
 
 p {
@@ -409,7 +443,7 @@ h1 {
 
 h2 {
   font-size: 1.35rem;
-  border-bottom: 0.12rem solid var(--rule);
+  border-bottom: 1px solid var(--rule);
   padding-bottom: 0.3rem;
 }
 
@@ -430,8 +464,9 @@ blockquote {
 }
 
 code {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 0.82em;
+  font-feature-settings: "liga" 0, "calt" 0;
   /*
    * An identifier is one word to a browser, and some of them are longer than a
    * phone is wide — `$compileProvider.cssClassDirectivesEnabled()` is forty-two
@@ -485,7 +520,7 @@ figure.flow svg {
 
 .flow text {
   fill: var(--ink);
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 13px;
 }
 
@@ -512,7 +547,7 @@ pre {
   background: var(--sunken);
   padding: 0.9em 1em;
   overflow-x: auto;
-  border-left: 0.12rem solid var(--rule);
+  border: 1px solid var(--rule);
 }
 
 /* An image on its own stands centred; one among words sits small, to the right. */
@@ -571,10 +606,11 @@ hr {
   margin: 3rem 0;
 }
 
-/* The work list: year on one line, what it was underneath. */
+/* The work list: year on one line, in the machine's type, what it was underneath. */
 dl dt {
   color: var(--dim);
-  font-size: 0.8em;
+  font-family: var(--mono);
+  font-size: 0.78rem;
   margin-top: 1.8em;
 }
 
@@ -586,24 +622,34 @@ dl dd {
   margin: 0.2em 0 0;
 }
 
-/* ---- header ---- */
+/* ---- header: the first lines of the session ---- */
 
+/*
+ * A terminal opens with the user, then the first command and what it
+ * printed. So the header: the name beside the world, then `~ $ ls`, then the
+ * names it printed. The page reads as one session from its first line to
+ * its last, and the type of the frame is the type of the machine.
+ */
 .site-header {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 2rem 0 3rem;
+  align-items: flex-start;
+  gap: 1.1rem;
+  padding: 2rem 0 2.6rem;
 }
 
 .mark {
   flex: none;
   line-height: 0;
+  margin-top: 0.15rem;
 }
 
-.site-header > div {
+.session {
   flex: 1;
-  /* Without this a flex item never shrinks below its content, and the nav pushes the page wider than the screen. */
+  /* Without this a flex item never shrinks below its content, and the listing pushes the page wider than the screen. */
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
 }
 
 /* In its place from the first paint, but invisible until a script can make it do something; then it fades in. */
@@ -613,12 +659,11 @@ dl dd {
   transition: opacity 0.6s ease;
   flex: none;
   align-self: flex-start;
-  margin-top: 0.4rem;
-  width: 2rem;
-  height: 2rem;
+  margin-top: 0.05rem;
+  width: 1.6rem;
+  height: 1.6rem;
   padding: 0;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
+  border: 0;
   background: none;
   color: var(--dim);
   font-size: 1rem;
@@ -638,13 +683,12 @@ dl dd {
 
 .theme-toggle:hover {
   color: var(--accent);
-  border-color: var(--accent);
 }
 
 /* Until the world has grown there is a grey one, breathing, so the page never opens with a hole. */
 .planet {
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 4rem;
+  height: 4rem;
   display: block;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 35%, var(--rule), var(--sunken) 70%);
@@ -656,12 +700,6 @@ dl dd {
   animation: none;
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
 @keyframes breathe {
   50% {
     opacity: 0.45;
@@ -669,93 +707,145 @@ dl dd {
 }
 
 .brand {
-  font-size: 1.9rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--ink);
   text-decoration: none;
-  letter-spacing: -0.01em;
 }
 
+.brand:hover {
+  color: var(--accent);
+}
+
+/*
+ * The navigation is what `ls` printed: the names as they are, two columns
+ * apart, wrapping as a listing does. The one where the reader is, is
+ * underlined; the rest are what they were on the page's own words — links.
+ */
 nav {
   display: flex;
-  /* Five words do not fit beside the mark on a phone; they take a second line rather than the page taking a scrollbar. */
   flex-wrap: wrap;
-  gap: 0.35rem 0.8rem;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  gap: 0 2ch;
 }
 
 .navlink {
-  color: var(--dim);
+  color: var(--ink);
   text-decoration: none;
 }
 
 .navlink:hover {
-  color: var(--ink);
+  text-decoration: underline;
 }
 
 .navlink[aria-current] {
   color: var(--accent);
+  text-decoration: underline;
 }
 
-/* ---- the command that would have got you here ---- */
+/* ---- a line of the session: the prompt it was typed at, and the command ---- */
 
 .ran {
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.78rem;
-  color: var(--dim);
-  margin-bottom: 0.6em;
+  font-family: var(--mono);
+  font-size: var(--mono-size);
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0 0 1.6rem;
 }
 
-.ran .ps1 {
+.site-header .ran {
+  margin: 0;
+}
+
+/* `ls` and what it printed are one thing; the air goes after them. */
+.ran:has(+ .listing) {
+  margin-bottom: 0.5rem;
+}
+
+.ps1 {
   color: var(--accent);
+}
+
+/* The command that printed the page, and then the page: a headline needs less than a paragraph's worth of air. */
+.ran + h1 {
+  margin-top: 1.2rem;
 }
 
 /* ---- directory listing ---- */
 
+/*
+ * What `ls` printed at this page's prompt: the name first, in the type of
+ * the machine, then what it is, in the author's. One link per line, the
+ * whole line.
+ */
 .listing {
   list-style: none;
   padding: 0;
+  margin: 0 0 2rem;
   border-top: 1px solid var(--rule);
 }
 
 .listing li {
   margin: 0;
-  padding: 0.7em 0;
   border-bottom: 1px solid var(--rule);
 }
 
-.listing a {
+.listing .entry {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 2ch;
+  padding: 0.75em 0;
+  color: inherit;
   text-decoration: none;
+  font-family: var(--mono);
+  font-size: var(--mono-size);
+  line-height: 1.6;
+}
+
+.listing code {
+  font: inherit;
+  color: var(--accent);
+}
+
+.listing .title {
+  grid-column: 2;
+  font-family: var(--text);
+  font-size: 1rem;
   font-weight: 600;
+  color: var(--ink);
 }
 
 .listing .summary {
-  display: block;
+  grid-column: 2;
+  font-family: var(--text);
+  font-size: 0.9rem;
   color: var(--dim);
-  font-size: 0.85em;
 }
 
-/* ---- the shell ---- */
+.listing .entry:hover .title {
+  text-decoration: underline;
+}
 
+/* ---- the shell: the last line of the page ---- */
+
+/*
+ * Shown only on a page the head has marked as scripted: without a script
+ * the prompt would be a lie, and with one it is there from the first paint.
+ * There is no fade — a cursor that arrives is a cursor that was not there.
+ */
 .terminal {
-  animation: fade-in 0.6s ease;
-  margin-top: 3rem;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.82rem;
+  display: none;
+  margin-top: 2rem;
+}
+
+.js .terminal {
+  display: block;
 }
 
 .terminal .screen > * {
-  margin: 0 0 0.6em;
+  margin: 0 0 0.4em;
 }
 
 .terminal .echo {
-  color: var(--dim);
-}
-
-.terminal .echo .ps1,
-.terminal .prompt .ps1 {
-  color: var(--accent);
+  color: var(--ink);
 }
 
 .terminal pre {
@@ -775,13 +865,18 @@ nav {
 }
 
 .terminal .error {
-  color: #b4443c;
+  color: var(--warn);
 }
 
+.terminal .hint {
+  color: var(--dim);
+}
+
+/* A page printed by `cat` here is a page, in the author's type, one column in from the machine's. */
 .terminal .cat {
-  padding-left: 1em;
-  border-left: 0.12rem solid var(--rule);
-  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding-left: 2ch;
+  border-left: 1px solid var(--rule);
+  font-family: var(--text);
   font-size: 1rem;
 }
 
@@ -792,24 +887,76 @@ nav {
 
 .terminal .prompt {
   display: flex;
-  gap: 0.5em;
+  gap: 1ch;
   align-items: baseline;
   margin: 0;
+  cursor: text;
 }
 
-.terminal .prompt input {
+.terminal .prompt .ps1 {
+  flex: none;
+}
+
+.terminal .line {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+
+/*
+ * The input hides its own caret; the block after it is the cursor, standing
+ * `--caret` columns in, which the script keeps up to date. A column is `1ch`
+ * because the type is monospace, and that is the whole of the arithmetic.
+ *
+ * The block is white and painted by difference, so it is the page's ink on
+ * the page's paper in either theme, and the character under it shows
+ * through inverted, as it does in a terminal. Focused, it is solid and
+ * blinks; left alone, it is an outline, the way a terminal shows the window
+ * that is not the one being typed into.
+ */
+.terminal .prompt input {
+  width: 100%;
   border: 0;
   outline: 0;
   padding: 0;
+  margin: 0;
   background: none;
   color: var(--ink);
   font: inherit;
+  letter-spacing: 0;
+  caret-color: transparent;
 }
 
-.terminal .hint {
+.terminal .cursor {
+  position: absolute;
+  top: 0.12em;
+  left: calc(var(--caret, 0) * 1ch);
+  width: 1ch;
+  height: 1.25em;
+  border: 1px solid #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+.terminal .prompt:focus-within .cursor {
+  background: #fff;
+  animation: blink 1.2s step-end infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* What the line would probably become, in grey after what was typed; → takes it. */
+.terminal .suggest {
+  position: absolute;
+  top: 0;
+  left: calc(var(--typed, 0) * 1ch);
   color: var(--dim);
+  white-space: pre;
+  pointer-events: none;
 }
 
 /* ---- the programs on the pages ---- */
@@ -1059,10 +1206,9 @@ nav {
   justify-content: space-between;
   gap: 0.5rem 1rem;
   align-items: baseline;
-  margin-top: 4rem;
-  padding-top: 1.2rem;
+  margin-top: 3.5rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--rule);
-  font-size: 0.8rem;
   color: var(--dim);
 }
 
@@ -1107,12 +1253,65 @@ nav {
    * spend the whole first screen before a sentence starts, so three of them
    * give way: the air above, the title, and the quote's own gutters.
    */
+  /*
+   * Nine names beside a world make a column six lines tall. Here the world
+   * and the name share the first row, and what `ls` printed takes the whole
+   * width underneath. `display: contents` lets the grid place the name and
+   * the listing separately although they arrive in one box.
+   */
   .site-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 0.9rem;
+    row-gap: 0.1rem;
     padding: 1.4rem 0 2.2rem;
+  }
+
+  .session {
+    display: contents;
+  }
+
+  .mark {
+    margin: 0;
+    grid-area: 1 / 1;
+  }
+
+  .brand {
+    grid-area: 1 / 2;
+  }
+
+  .theme-toggle {
+    margin: 0;
+    grid-area: 1 / 3;
+  }
+
+  .site-header .ran,
+  .site-header nav {
+    grid-column: 1 / -1;
+  }
+
+  .site-header .ran {
+    margin-top: 0.6rem;
+  }
+
+  .planet {
+    width: 2.6rem;
+    height: 2.6rem;
   }
 
   h1 {
     font-size: 2rem;
+  }
+
+  /* Nineteen characters of name leave no room beside them for a title; the name takes its own line. */
+  .listing .entry {
+    grid-template-columns: 1fr;
+  }
+
+  .listing .title,
+  .listing .summary {
+    grid-column: 1;
   }
 
   blockquote {
@@ -1138,5 +1337,22 @@ nav {
   * {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* On paper there is nobody to type, and no colours to switch. */
+@media print {
+  .js .terminal,
+  .theme-toggle {
+    display: none;
+  }
+
+  .container {
+    max-width: none;
+    padding: 0;
+  }
+
+  a {
+    color: inherit;
   }
 }
