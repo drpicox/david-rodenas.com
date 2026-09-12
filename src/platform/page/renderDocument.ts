@@ -15,7 +15,8 @@ export interface DocumentAssets {
 }
 
 /**
- * The navigation is what `ls` prints at the root, and it says so: README.md,
+ * The session opens the way a shell puts the user in the prompt, on one line:
+ * `@drpicox ~ $ ls`. The navigation is what that `ls` printed: README.md,
  * which is the home page, then the directories, each with its slash. Adding a
  * page at the root is adding it to the navigation. Where the reader is, is
  * lit — the one liberty taken with `ls`, which has no idea where you are.
@@ -28,7 +29,7 @@ function nav(site: Site, current: string): string {
       return `<a class="navlink" href="${route}"${here}>${escapeHtml(name)}</a>`;
     })
     .join("");
-  return `<p class="ran"><span class="ps1">~ $</span> ls</p>
+  return `<p class="ran"><a class="brand" href="/">@drpicox</a> <span class="ps1">~ $</span> ls</p>
     <nav>${links}</nav>`;
 }
 
@@ -103,7 +104,6 @@ ${stylesheet}
     <canvas class="planet" width="160" height="160" aria-hidden="true"></canvas>
   </a>
   <div class="session">
-    <a class="brand" href="/">@drpicox</a>
     ${nav(site, page.route)}
   </div>
   <button class="theme-toggle" type="button" aria-hidden="true" tabindex="-1" aria-label="Switch theme" title="theme">&#9680;</button>

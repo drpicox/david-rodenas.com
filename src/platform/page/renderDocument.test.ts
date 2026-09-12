@@ -45,6 +45,12 @@ describe("renderDocument", () => {
     expect(render("/")).not.toContain('class="listing"');
   });
 
+  it("opens the session on one line, the way a shell puts the user in the prompt: @drpicox ~ $ ls", () => {
+    const html = render("/work/");
+    expect(html).toContain('<p class="ran"><a class="brand" href="/">@drpicox</a> <span class="ps1">~ $</span> ls</p>');
+    expect(html).not.toContain('<a class="brand" href="/">@drpicox</a>\n');
+  });
+
   it("navigates with what ls prints at the root: the home page by its file name, then the directories, in the author's order", () => {
     const html = render("/work/");
     expect(html).toContain('<span class="ps1">~ $</span> ls</p>');

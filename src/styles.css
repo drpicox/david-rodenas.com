@@ -1255,9 +1255,10 @@ nav {
    */
   /*
    * Nine names beside a world make a column six lines tall. Here the world
-   * and the name share the first row, and what `ls` printed takes the whole
-   * width underneath. `display: contents` lets the grid place the name and
-   * the listing separately although they arrive in one box.
+   * and the first line of the session share the first row, and what `ls`
+   * printed takes the whole width underneath. `display: contents` lets the
+   * grid place the line and the listing separately although they arrive in
+   * one box.
    */
   .site-header {
     display: grid;
@@ -1277,8 +1278,12 @@ nav {
     grid-area: 1 / 1;
   }
 
-  .brand {
+  .site-header .ran {
     grid-area: 1 / 2;
+    /* `@drpicox ~ $ ls` is nineteen columns; a phone has them. It stays one line. */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .theme-toggle {
@@ -1286,13 +1291,9 @@ nav {
     grid-area: 1 / 3;
   }
 
-  .site-header .ran,
   .site-header nav {
     grid-column: 1 / -1;
-  }
-
-  .site-header .ran {
-    margin-top: 0.6rem;
+    margin-top: 0.4rem;
   }
 
   .planet {
