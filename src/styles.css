@@ -373,12 +373,19 @@ body {
  * the machine's own type, and within a few pixels of the 2019 measure. The
  * frame is set in that type; the words are in the text face, below.
  */
+/* The page is at least a window tall, so that its last line, the prompt, is at the bottom even when the page is short. */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .container {
+  flex: 1;
+  width: 100%;
   max-width: 72ch;
   margin: 0 auto;
   padding: 0 1rem;
-  /* The page is at least a window tall, so that its last line, the prompt, is at the bottom even when the page is short. */
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: var(--mono);
@@ -906,22 +913,33 @@ main,
  *
  * The prompt is the last line of the page, and the one that is always at
  * hand: it keeps to the bottom of the window while the page scrolls past,
- * and settles into its place when the page runs out. It stands on the
- * page's own paper under a hairline, the same rule the footer has over it,
- * so the line that is always there looks like a line of the page.
+ * and settles into its place when the page runs out. It runs from one edge
+ * of the window to the other on a ground a shade off the paper, under a
+ * hairline, so that the line that is always there reads as the machine's
+ * and not as a line of the text; its words keep to the column.
  */
 .terminal {
   display: none;
   position: sticky;
   bottom: 0;
   margin-top: 1rem;
-  padding: 0.6rem 0 0.9rem;
   border-top: 1px solid var(--rule);
-  background: var(--paper);
+  background: var(--sunken);
+  font-family: var(--mono);
+  font-size: var(--mono-size);
+  line-height: 1.6;
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-variant-ligatures: none;
 }
 
 .js .terminal {
   display: block;
+}
+
+.terminal .column {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: 0.6rem 1rem 0.9rem;
 }
 
 /* What Tab could make of the line, under it, as a shell lists candidates under the prompt. */

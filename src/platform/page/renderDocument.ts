@@ -74,11 +74,15 @@ function paperEnd(page: Page): string {
  *
  * What the shell answers is not printed here but on the paper, in the
  * `screen` at the end of the page: the whole page is the console, and this
- * is only its last line, kept at hand.
+ * is only its last line, kept at hand. It stands outside the column so that
+ * it can run from one edge of the window to the other, and carries the
+ * column inside it so that its words line up with the page's.
  */
 function terminal(page: Page): string {
   return `<section class="terminal">
+<div class="column">
 <form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><span class="line"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command"><span class="cursor" aria-hidden="true"></span><span class="suggest" aria-hidden="true">help</span></span></form>
+</div>
 </section>`;
 }
 
@@ -132,8 +136,8 @@ ${paperEnd(page)}
   <span>&copy; 2026 David Rodenas</span>
   <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
-${terminal(page)}
 </div>
+${terminal(page)}
 ${script}
 <script data-goatcounter="https://drpicox.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>

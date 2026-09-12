@@ -165,7 +165,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     } else if (options.length > 1) {
       // The candidates belong to the line being typed, so they show under the prompt, not on the paper.
       hint = el("p", { class: "hint" }, options.map((option) => option.split(" ").pop()).join("  "));
-      section.append(hint);
+      form.insertAdjacentElement("afterend", hint);
       // The prompt grew by a line and would cover the last line of the paper; the paper moves up with it.
       window.scrollTo({ top: document.documentElement.scrollHeight });
     }

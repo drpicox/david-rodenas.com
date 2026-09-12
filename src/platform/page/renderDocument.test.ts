@@ -120,6 +120,11 @@ describe("the document and the shell", () => {
     expect(html.indexOf('<section class="terminal">')).toBeGreaterThan(html.indexOf("</footer>"));
   });
 
+  it("runs the prompt line from edge to edge: it stands outside the column, and carries the column inside it", () => {
+    const html = render("/");
+    expect(html).toContain('</footer>\n</div>\n<section class="terminal">\n<div class="column">');
+  });
+
   it("ends the paper with the prompt it is at, so the page reads as a session down to its last line", () => {
     const html = render("/work/orion/");
     const end = html.indexOf('<p class="ran end"><span class="ps1">~/work/orion $</span></p>');
