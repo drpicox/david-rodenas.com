@@ -721,7 +721,7 @@ dl dd {
 .brand {
   font-size: 1.2em;
   line-height: 1;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--ink);
   text-decoration: none;
 }
@@ -838,7 +838,59 @@ nav {
   text-decoration: underline;
 }
 
-/* ---- the shell: the last line of the page ---- */
+/* ---- the shell: what it says goes on the paper, and its prompt is the last line ---- */
+
+/*
+ * The whole page is the console. What the shell answers is printed at the
+ * end of the paper, after the footer, in the machine's type; the page grows
+ * with it and scrolls so the last line stands over the prompt, and `clear`
+ * takes it away again. Nothing is printed inside the prompt.
+ */
+.screen:not(:empty) {
+  padding-top: 0.8rem;
+}
+
+.screen > * {
+  margin: 0 0 0.4em;
+}
+
+.screen .echo {
+  color: var(--ink);
+}
+
+.screen pre {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+  white-space: pre-wrap;
+}
+
+.screen .listing-out a {
+  text-decoration: none;
+}
+
+.screen .listing-out a:hover {
+  text-decoration: underline;
+}
+
+.screen .error {
+  color: var(--warn);
+}
+
+
+/* A page printed by `cat` here is a page, in the author's type, one column in from the machine's. */
+.screen .cat {
+  padding-left: 2ch;
+  border-left: 1px solid var(--rule);
+  font-family: var(--text);
+  font-size: 1rem;
+}
+
+.screen .cat h1 {
+  font-size: 1.6rem;
+  margin-top: 0.6rem;
+}
 
 /*
  * Shown only on a page the head has marked as scripted: without a script
@@ -848,18 +900,16 @@ nav {
  * The prompt is the last line of the page, and the one that is always at
  * hand: it keeps to the bottom of the window while the page scrolls past,
  * and settles into its place when the page runs out. It stands on the
- * page's own paper, and the words above it thin out into that paper over a
- * line's height rather than being cut by a rule — there is one rule on the
- * page already, over the footer, and the prompt lands right under it. What
- * the shell prints goes above the prompt, as it does in a terminal, up to
- * two fifths of the window; after that it scrolls, and keeps its last line.
+ * page's own paper under a hairline, the same rule the footer has over it,
+ * so the line that is always there looks like a line of the page.
  */
 .terminal {
   display: none;
   position: sticky;
   bottom: 0;
-  margin-top: 1.6rem;
-  padding: 0.5rem 0 1rem;
+  margin-top: 1rem;
+  padding: 0.6rem 0 0.9rem;
+  border-top: 1px solid var(--rule);
   background: var(--paper);
 }
 
@@ -867,66 +917,10 @@ nav {
   display: block;
 }
 
-.terminal::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  height: 1.4rem;
-  background: linear-gradient(to bottom, transparent, var(--paper));
-  pointer-events: none;
-}
-
-.terminal .screen {
-  max-height: 40vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-
-.terminal .screen > * {
-  margin: 0 0 0.4em;
-}
-
-.terminal .echo {
-  color: var(--ink);
-}
-
-.terminal pre {
-  background: none;
-  border: 0;
-  padding: 0;
-  font-size: inherit;
-  white-space: pre-wrap;
-}
-
-.terminal .listing-out a {
-  text-decoration: none;
-}
-
-.terminal .listing-out a:hover {
-  text-decoration: underline;
-}
-
-.terminal .error {
-  color: var(--warn);
-}
-
+/* What Tab could make of the line, under it, as a shell lists candidates under the prompt. */
 .terminal .hint {
   color: var(--dim);
-}
-
-/* A page printed by `cat` here is a page, in the author's type, one column in from the machine's. */
-.terminal .cat {
-  padding-left: 2ch;
-  border-left: 1px solid var(--rule);
-  font-family: var(--text);
-  font-size: 1rem;
-}
-
-.terminal .cat h1 {
-  font-size: 1.6rem;
-  margin-top: 0.6rem;
+  margin: 0.3em 0 0;
 }
 
 .terminal .prompt {

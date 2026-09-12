@@ -112,6 +112,13 @@ describe("the document and the shell", () => {
     expect(html.indexOf('class="terminal"')).toBeGreaterThan(html.indexOf("</footer>"));
   });
 
+  it("prints what the shell says on the paper itself, after the footer and before the prompt, not inside the prompt", () => {
+    const html = render("/");
+    const screen = html.indexOf('<div class="screen"');
+    expect(screen).toBeGreaterThan(html.indexOf("</footer>"));
+    expect(screen).toBeLessThan(html.indexOf('<section class="terminal">'));
+  });
+
   it("shows the prompt only where a script can answer it: the head marks the page as scripted before it is painted", () => {
     const html = render("/");
     expect(html.indexOf('classList.add("js")')).toBeLessThan(html.indexOf("<body>"));

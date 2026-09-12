@@ -222,14 +222,18 @@ would, name first, and ends with a prompt: the last line of the page, after
 the footer, where a session ends. Arriving on a page clears the shell's
 screen, because the page itself now says which command printed it.
 
-**The prompt is at hand.** Asked for by David after seeing the first cut:
-the last line keeps to the bottom of the window while the page scrolls
-past, and settles into its place when the page runs out. What made the
-earlier attempt read as bolted on was not the sticking but the grip and the
-blur; here the prompt stands on the page's own paper, the words above it
-thin into that paper over a line's height, and nothing else is added. What
-the shell prints goes above the prompt, up to two fifths of the window, and
-then scrolls.
+**The prompt is at hand, and the paper is the console.** Asked for by David
+after seeing the first cut, in two steps. First: the last line keeps to the
+bottom of the window while the page scrolls past, and settles into its
+place when the page runs out, under a hairline — the same rule the footer
+has over it. Second: what the shell answers is not printed inside that
+line but on the paper, at the end of the page after the footer, in the
+machine's type; the page grows with it and scrolls so the last line stands
+over the prompt, and `clear` takes it away. A console inside the prompt was
+a second console on a page that already was one. The one thing that does
+show under the prompt is what Tab could make of the line being typed, as a
+shell lists candidates under its prompt: it belongs to the line, not to the
+paper.
 
 **The cursor is in the HTML.** A block, `1ch` wide, in the prompt from the
 first paint; an outline while the prompt is not focused, the way a terminal

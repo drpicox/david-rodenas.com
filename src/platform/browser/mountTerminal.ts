@@ -72,7 +72,8 @@ function replayTyped(): { finished: string[]; unfinished: string } | null {
  */
 export function mountTerminal(site: Site, route: string, options: TerminalOptions = {}): Terminal | null {
   const section = document.querySelector<HTMLElement>(".terminal");
-  const screen = section?.querySelector<HTMLElement>(".screen");
+  // The screen is the end of the paper, not part of the prompt: what the shell says is printed on the page.
+  const screen = document.querySelector<HTMLElement>(".screen");
   const form = section?.querySelector<HTMLFormElement>("form.prompt");
   const input = form?.querySelector<HTMLInputElement>("input");
   const line = form?.querySelector<HTMLElement>(".line");
@@ -140,8 +141,8 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     }
     ps1.textContent = shell.prompt;
     refreshLine();
-    // The screen keeps its last line in view, as a terminal does, and the prompt is already at hand.
-    screen.scrollTop = screen.scrollHeight;
+    // What was printed is the end of the paper; the paper scrolls so the last line stands over the prompt.
+    window.scrollTo({ top: document.documentElement.scrollHeight });
   };
 
   const complete = () => {
@@ -154,8 +155,11 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     if (options.length === 1) {
       setLine(options[0] ?? input.value);
     } else if (options.length > 1) {
+      // The candidates belong to the line being typed, so they show under the prompt, not on the paper.
       hint = el("p", { class: "hint" }, options.map((option) => option.split(" ").pop()).join("  "));
-      print(hint);
+      section.append(hint);
+      // The prompt grew by a line and would cover the last line of the paper; the paper moves up with it.
+      window.scrollTo({ top: document.documentElement.scrollHeight });
     }
   };
 

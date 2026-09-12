@@ -58,10 +58,13 @@ function rootAttributes(page: Page): string {
  * The cursor is drawn here rather than by the input: a terminal's cursor is a
  * block, and it is there before you click. The suggestion after it is what to
  * type first.
+ *
+ * What the shell answers is not printed here but on the paper, in the
+ * `screen` that stands just before this: the whole page is the console, and
+ * the prompt is only its last line.
  */
 function terminal(page: Page): string {
   return `<section class="terminal">
-<div class="screen" aria-live="polite"></div>
 <form class="prompt"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span><span class="line"><input type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Command"><span class="cursor" aria-hidden="true"></span><span class="suggest" aria-hidden="true">help</span></span></form>
 </section>`;
 }
@@ -115,6 +118,7 @@ ${renderMain(site, page)}
   <span>&copy; 2026 David Rodenas</span>
   <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
+<div class="screen" aria-live="polite"></div>
 ${terminal(page)}
 </div>
 ${script}
