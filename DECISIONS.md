@@ -301,8 +301,10 @@ shown — after David saw the first headline come back too often when each
 turn was drawn on its own. Every line is three lines long, like the
 headline it replaces, so no line of the heading is left empty under a
 shorter one; and where the site has a page for what a line says, the line
-is a quiet link to it — the words in their own ink, underlined only under
-a hand — so a headline that raises a question leads to the answer. The
+is a link to it — the words in their own ink, never underlined, a heading
+underlined reads as a mistake — and what says it leads somewhere is an
+arrow after the cursor, in the soft accent, that arrives with the last
+letter; so a headline that raises a question leads to the answer. The
 timing runs on animation frames, so a tab in the background does not type
 to nobody, and stopping puts the first headline back whole.
 

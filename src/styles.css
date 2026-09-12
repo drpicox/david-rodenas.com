@@ -851,16 +851,26 @@ h1.typing {
   text-wrap: wrap;
 }
 
-/* Where a headline leads somewhere, the words are the link, in their own ink; a hand over them is told. */
+/*
+ * Where a headline leads somewhere, the words are the link, in their own
+ * ink and without a line under them — a heading underlined reads as a
+ * mistake. What says it leads somewhere is the arrow after the cursor, in
+ * the soft accent, which takes the full accent under a hand.
+ */
 h1.typing a {
   color: inherit;
   text-decoration: none;
 }
 
-h1.typing a:hover {
-  text-decoration: underline;
-  text-decoration-thickness: 0.06em;
-  text-underline-offset: 0.12em;
+h1.typing a::after {
+  content: "\2192";
+  margin-left: 0.6ch;
+  color: var(--accent-soft);
+  font-weight: 400;
+}
+
+h1.typing a:hover::after {
+  color: var(--accent);
 }
 
 h1 .caret {

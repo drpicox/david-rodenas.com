@@ -33,14 +33,14 @@ export function mountHeadline(next: (current: Headline, original: Headline) => H
   cursor.className = "caret idle";
   cursor.setAttribute("aria-hidden", "true");
 
-  // The words, their line breaks, and — where the headline leads somewhere — a link around them; the cursor after.
+  // The words, their line breaks and the cursor; and, once a headline that leads somewhere is whole, a link around them all, with its arrow.
   const show = (text: string, href?: string) => {
     const parts = text.split("\n").flatMap((line, at) => (at === 0 ? [line] : [document.createElement("br"), line]));
     if (href) {
       const link = document.createElement("a");
       link.href = href;
-      link.append(...parts);
-      heading.replaceChildren(link, cursor);
+      link.append(...parts, cursor);
+      heading.replaceChildren(link);
     } else {
       heading.replaceChildren(...parts, cursor);
     }
@@ -62,8 +62,8 @@ export function mountHeadline(next: (current: Headline, original: Headline) => H
       cursor.classList.remove("idle");
     }
     const frame = frames.shift() ?? current.text;
-    // While the old words are still being taken back the link is not yet the new one; from the first new letter it is.
-    show(frame, frames.length < (current.text.length || 1) ? current.href : undefined);
+    // Half a headline leads nowhere; the link and its arrow arrive with the last letter.
+    show(frame, frames.length === 0 ? current.href : undefined);
     if (frames.length === 0) {
       cursor.classList.add("idle");
       due = now + HOLD_MS;
