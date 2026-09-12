@@ -48,6 +48,19 @@ function rootAttributes(page: Page): string {
 }
 
 /**
+ * The end of the paper: what the shell has printed, and then the prompt the
+ * paper is at, the way a session ends on screen. The prompt here is the
+ * one on the paper; the one that is typed into is at the bottom of the
+ * window, and a click here sends the hand there. Shown only where a script
+ * can answer it, for the same reason as the prompt below. The footer comes
+ * after, outside the session: it is the page's colophon, not a line of it.
+ */
+function paperEnd(page: Page): string {
+  return `<div class="screen" aria-live="polite"></div>
+<p class="ran end"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span></p>`;
+}
+
+/**
  * The last line of the page is a prompt, and it is real: a script wires it to
  * the shell, over this same content. It is in the HTML with its cursor, so
  * that it is there from the first paint and not a moment later; and it is
@@ -60,8 +73,8 @@ function rootAttributes(page: Page): string {
  * type first.
  *
  * What the shell answers is not printed here but on the paper, in the
- * `screen` that stands just before this: the whole page is the console, and
- * the prompt is only its last line.
+ * `screen` at the end of the page: the whole page is the console, and this
+ * is only its last line, kept at hand.
  */
 function terminal(page: Page): string {
   return `<section class="terminal">
@@ -114,11 +127,11 @@ ${stylesheet}
 <main>
 ${renderMain(site, page)}
 </main>
+${paperEnd(page)}
 <footer class="site-footer">
   <span>&copy; 2026 David Rodenas</span>
   <span class="social"><a href="https://github.com/drpicox" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://drpicox.medium.com" target="_blank" rel="noopener noreferrer">Medium</a><a href="https://www.linkedin.com/in/davidrodenas/" target="_blank" rel="noopener noreferrer">LinkedIn</a></span>
 </footer>
-<div class="screen" aria-live="polite"></div>
 ${terminal(page)}
 </div>
 ${script}

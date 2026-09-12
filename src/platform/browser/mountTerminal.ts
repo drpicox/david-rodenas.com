@@ -79,7 +79,15 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const line = form?.querySelector<HTMLElement>(".line");
   const suggestion = form?.querySelector<HTMLElement>(".suggest");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !form || !input || !line || !suggestion || !ps1) return null;
+  // The prompt the paper ends on: it says where the session is, and a click on it sends the hand to the input.
+  const end = document.querySelector<HTMLElement>(".ran.end");
+  const endPs1 = end?.querySelector<HTMLElement>(".ps1");
+  if (!section || !screen || !form || !input || !line || !suggestion || !ps1 || !end || !endPs1) return null;
+
+  const showPrompt = () => {
+    ps1.textContent = shell.prompt;
+    endPs1.textContent = shell.prompt;
+  };
 
   const shell = new Shell(site, route, options.commands);
   const history = new CommandHistory();
@@ -139,7 +147,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       perform(outcome);
       if (outcome.error) break;
     }
-    ps1.textContent = shell.prompt;
+    showPrompt();
     refreshLine();
     // What was printed is the end of the paper; the paper scrolls so the last line stands over the prompt.
     window.scrollTo({ top: document.documentElement.scrollHeight });
@@ -223,8 +231,9 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     input.focus({ preventScroll: false });
   });
 
-  // A click on the prompt's line, not only on the input, is a click into the prompt.
+  // A click on the prompt's line, not only on the input, is a click into the prompt — and so is one on the paper's.
   form.addEventListener("click", () => input.focus());
+  end.addEventListener("click", () => input.focus());
 
   refreshLine();
 
@@ -246,7 +255,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const moveTo = (to: string) => {
     if (!shell.moveTo(to)) return;
     screen.replaceChildren();
-    ps1.textContent = shell.prompt;
+    showPrompt();
     refreshLine();
   };
 

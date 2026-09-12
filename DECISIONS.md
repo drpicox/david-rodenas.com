@@ -233,7 +233,12 @@ over the prompt, and `clear` takes it away. A console inside the prompt was
 a second console on a page that already was one. The one thing that does
 show under the prompt is what Tab could make of the line being typed, as a
 shell lists candidates under its prompt: it belongs to the line, not to the
-paper.
+paper. The paper itself ends on the prompt it is at, `~/essays $`, as a
+screen does, and a click on it sends the hand to the input below; the
+footer comes after it, outside the session — it is the colophon, not a line
+of it — so it no longer climbs the page as the shell prints. A page shown by
+`cat` is set exactly as the page above it: the paper does not know the
+difference.
 
 **The cursor is in the HTML.** A block, `1ch` wide, in the prompt from the
 first paint; an outline while the prompt is not focused, the way a terminal

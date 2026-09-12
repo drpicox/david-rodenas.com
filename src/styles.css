@@ -391,10 +391,6 @@ body {
 main {
   /* What is left of the window after the header and the footer goes to the words; the prompt keeps the last line. */
   flex: 1;
-  font-family: var(--text);
-  font-size: 1.1rem;
-  line-height: 1.65;
-  font-variant-numeric: tabular-nums;
 }
 
 ::selection {
@@ -879,17 +875,28 @@ nav {
 }
 
 
-/* A page printed by `cat` here is a page, in the author's type, one column in from the machine's. */
+/* A page printed by `cat` here is a page, set exactly as the one above it: the paper does not know the difference. */
+main,
 .screen .cat {
-  padding-left: 2ch;
-  border-left: 1px solid var(--rule);
   font-family: var(--text);
-  font-size: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  font-variant-numeric: tabular-nums;
 }
 
-.screen .cat h1 {
-  font-size: 1.6rem;
-  margin-top: 0.6rem;
+/*
+ * The paper ends on the prompt it is at, as a screen does. It is shown only
+ * where a script can answer a click on it, because the hand it sends to the
+ * input needs one; and a hand over it is told it can.
+ */
+.ran.end {
+  display: none;
+  margin: 0;
+  cursor: text;
+}
+
+.js .ran.end {
+  display: block;
 }
 
 /*
@@ -1244,7 +1251,7 @@ nav {
   justify-content: space-between;
   gap: 0.5rem 1rem;
   align-items: baseline;
-  margin-top: 3.5rem;
+  margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid var(--rule);
   color: var(--dim);

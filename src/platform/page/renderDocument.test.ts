@@ -112,11 +112,19 @@ describe("the document and the shell", () => {
     expect(html.indexOf('class="terminal"')).toBeGreaterThan(html.indexOf("</footer>"));
   });
 
-  it("prints what the shell says on the paper itself, after the footer and before the prompt, not inside the prompt", () => {
+  it("prints what the shell says on the paper itself, after the page and before the footer, not inside the prompt", () => {
     const html = render("/");
     const screen = html.indexOf('<div class="screen"');
-    expect(screen).toBeGreaterThan(html.indexOf("</footer>"));
-    expect(screen).toBeLessThan(html.indexOf('<section class="terminal">'));
+    expect(screen).toBeGreaterThan(html.indexOf("</main>"));
+    expect(screen).toBeLessThan(html.indexOf("<footer"));
+    expect(html.indexOf('<section class="terminal">')).toBeGreaterThan(html.indexOf("</footer>"));
+  });
+
+  it("ends the paper with the prompt it is at, so the page reads as a session down to its last line", () => {
+    const html = render("/work/orion/");
+    const end = html.indexOf('<p class="ran end"><span class="ps1">~/work/orion $</span></p>');
+    expect(end).toBeGreaterThan(html.indexOf('<div class="screen"'));
+    expect(end).toBeLessThan(html.indexOf("<footer"));
   });
 
   it("shows the prompt only where a script can answer it: the head marks the page as scripted before it is painted", () => {
