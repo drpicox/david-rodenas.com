@@ -13,10 +13,12 @@ export const cat: Command = {
   description: "print a page, README.md or * for the one here",
   run({ site, cwd }, [file]) {
     if (!file) return { text: "cat: usage: cat <file>", error: true };
-    const page = site.at(resolvePath(cwd, directoryOf(file)));
+    const route = resolvePath(cwd, directoryOf(file));
+    const page = site.at(route);
     if (!page || /\.md$/.test(file) !== /README\.md$/.test(file)) {
       return { text: `cat: ${file}: no such file`, error: true };
     }
-    return { html: renderMarkdown(page.body) };
+    // The page printed is the page the reader is now looking at, so the address follows it.
+    return { html: renderMarkdown(page.body), at: route };
   },
 };

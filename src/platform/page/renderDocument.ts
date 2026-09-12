@@ -49,15 +49,17 @@ function rootAttributes(page: Page): string {
 
 /**
  * The end of the paper: what the shell has printed, and then the prompt the
- * paper is at, the way a session ends on screen. The prompt here is the
- * one on the paper; the one that is typed into is at the bottom of the
- * window, and a click here sends the hand there. Shown only where a script
- * can answer it, for the same reason as the prompt below. The footer comes
- * after, outside the session: it is the page's colophon, not a line of it.
+ * paper is at, the way a session ends on screen. The line being typed into
+ * the prompt at the bottom of the window appears here too, as it is typed,
+ * with a ghost of the cursor: the two are one line, seen in two places. A
+ * click here sends the hand to the one that takes the keys. Shown only
+ * where a script can answer it, for the same reason as the prompt below.
+ * The footer comes after, outside the session: it is the page's colophon,
+ * not a line of it.
  */
 function paperEnd(page: Page): string {
   return `<div class="screen" aria-live="polite"></div>
-<p class="ran end"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span></p>`;
+<p class="ran end"><span class="ps1">${escapeHtml(promptPath(page.route))} $</span> <span class="line"><span class="typed"></span><span class="ghost" aria-hidden="true"></span></span></p>`;
 }
 
 /**

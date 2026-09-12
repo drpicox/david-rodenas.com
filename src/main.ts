@@ -23,14 +23,15 @@ function mount(): void {
   // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
   let stopApps = mountApps(apps);
   let terminal: Terminal | null = null;
-  const goTo = mountNavigation(siteInBrowser, (arrived) => {
+  const goTo = mountNavigation(siteInBrowser, (arrived, kept) => {
     stopApps();
     stopApps = mountApps(apps);
     for (const feature of allFeatures) feature.arrive?.(arrived);
-    terminal?.moveTo(arrived.route);
+    // A move the shell made itself is not news to the shell; a link's is.
+    if (!kept) terminal?.moveTo(arrived.route);
   });
 
-  terminal = mountTerminal(siteInBrowser, page ? route : "/", { navigate: goTo, commands });
+  terminal = mountTerminal(siteInBrowser, page ? route : "/", { moveTo: (route) => goTo(route, { keep: true }), commands });
 
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);

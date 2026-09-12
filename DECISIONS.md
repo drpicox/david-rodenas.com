@@ -240,6 +240,22 @@ of it — so it no longer climbs the page as the shell prints. A page shown by
 `cat` is set exactly as the page above it: the paper does not know the
 difference.
 
+**The session moves, the paper stays.** Asked for by David: a `cd` used to
+rebuild the page and wipe what the shell had printed, as a link does. Now a
+`cd` changes where the session is — the address, the title, the lit name in
+the navigation, what the page declares about its looks — and nothing on the
+paper. A `cat` prints the page on the paper and the address follows it,
+because the page printed is the page being read; the paper then scrolls to
+the first line of what was printed, not the last. A link still turns the
+page, as a link should. The line being typed shows on the paper too, at the
+prompt the paper ends on, with a ghost of the cursor: the two prompts are
+one line seen in two places, and only the one that takes the keys blinks.
+
+**The titles are in the machine's type.** Heavy, a step smaller than the
+text face was, and a little tight. They are the one place the two voices
+meet — a heading the machine could have printed over words it could not —
+and they give the page the character the monospace frame promised.
+
 **The cursor is in the HTML.** A block, `1ch` wide, in the prompt from the
 first paint; an outline while the prompt is not focused, the way a terminal
 shows the window that is not being typed into; solid and blinking when it

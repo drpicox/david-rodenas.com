@@ -434,30 +434,43 @@ li a:has(+ br):hover {
   text-decoration: underline;
 }
 
+/*
+ * The titles are set in the machine's type, heavy and a little tight: they
+ * are the one place the two voices meet, a heading the machine could have
+ * printed over words it could not. A monospace runs wide, so each size is a
+ * step under what the text face had at the same weight on the page.
+ */
 h1,
 h2,
 h3 {
   color: var(--title);
-  line-height: 1.25;
+  font-family: var(--mono);
+  font-feature-settings: "liga" 0, "calt" 0;
+  font-variant-ligatures: none;
+  line-height: 1.2;
   margin: 3.2rem 0 1.2rem;
   text-wrap: balance;
 }
 
 h1 {
-  font-size: 2.6rem;
+  font-size: 2.2rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
   margin-top: 2.4rem;
 }
 
 h2 {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   border-bottom: 1px solid var(--rule);
   padding-bottom: 0.3rem;
 }
 
 h3 {
-  font-size: 1.1rem;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .lead {
@@ -892,9 +905,13 @@ main,
 }
 
 /*
- * The paper ends on the prompt it is at, as a screen does. It is shown only
- * where a script can answer a click on it, because the hand it sends to the
- * input needs one; and a hand over it is told it can.
+ * The paper ends on the prompt it is at, as a screen does, and the line
+ * being typed below shows here as it is typed, with a ghost of the cursor:
+ * a block the colour of the ink, mostly see-through, standing where the
+ * caret is, and never blinking — the one that blinks is the one that takes
+ * the keys. Shown only where a script can answer a click on it, because
+ * the hand it sends to the input needs one; and a hand over it is told it
+ * can.
  */
 .ran.end {
   display: none;
@@ -904,6 +921,25 @@ main,
 
 .js .ran.end {
   display: block;
+}
+
+.end .line {
+  position: relative;
+  display: inline-block;
+  min-width: 1ch;
+  white-space: pre;
+  vertical-align: baseline;
+}
+
+.end .ghost {
+  position: absolute;
+  top: 0.12em;
+  left: calc(var(--caret, 0) * 1ch);
+  width: 1ch;
+  height: 1.25em;
+  background: var(--ink);
+  opacity: 0.28;
+  pointer-events: none;
 }
 
 /*
@@ -1364,8 +1400,9 @@ main,
     height: 2.6rem;
   }
 
+  /* The headline's longest line is twenty-five columns and breaks where the author broke it, so it must fit a phone whole. */
   h1 {
-    font-size: 2rem;
+    font-size: 1.35rem;
   }
 
   /* Nineteen characters of name leave no room beside them for a title; the name takes its own line. */

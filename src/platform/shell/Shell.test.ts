@@ -50,11 +50,11 @@ describe("Shell", () => {
     expect(new Shell(site, "/").run("ls -x")[0]?.error).toBe(true);
   });
 
-  it("changes directory by asking the page to move", () => {
+  it("changes directory, and says where the session now is so the address can follow without the paper changing", () => {
     const shell = new Shell(site, "/");
-    expect(shell.run("cd book")).toEqual([{ navigate: "/book/" }]);
+    expect(shell.run("cd book")).toEqual([{ at: "/book/" }]);
     expect(shell.prompt).toBe("~/book $");
-    expect(shell.run("cd")).toEqual([{ navigate: "/" }]);
+    expect(shell.run("cd")).toEqual([{ at: "/" }]);
     expect(shell.run("cd nowhere")).toEqual([{ text: "cd: nowhere: no such directory", error: true }]);
   });
 
@@ -62,6 +62,8 @@ describe("Shell", () => {
     const shell = new Shell(site, "/");
     expect(shell.run("cat README.md")[0]?.html).toContain("<h1");
     expect(shell.run("cat book/README.md")[0]?.html).toContain("A book.");
+    expect(shell.run("cat book/README.md")[0]?.at).toBe("/book/");
+    expect(shell.prompt).toBe("~ $");
     expect(shell.run("cat book")[0]?.html).toContain("A book.");
     expect(new Shell(site, "/book/").run("cat *")[0]?.html).toContain("A book.");
     expect(shell.run("cat nothing.md")).toEqual([{ text: "cat: nothing.md: no such file", error: true }]);

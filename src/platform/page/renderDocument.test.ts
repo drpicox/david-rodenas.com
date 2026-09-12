@@ -127,7 +127,9 @@ describe("the document and the shell", () => {
 
   it("ends the paper with the prompt it is at, so the page reads as a session down to its last line", () => {
     const html = render("/work/orion/");
-    const end = html.indexOf('<p class="ran end"><span class="ps1">~/work/orion $</span></p>');
+    const end = html.indexOf(
+      '<p class="ran end"><span class="ps1">~/work/orion $</span> <span class="line"><span class="typed"></span><span class="ghost" aria-hidden="true"></span></span></p>',
+    );
     expect(end).toBeGreaterThan(html.indexOf('<div class="screen"'));
     expect(end).toBeLessThan(html.indexOf("<footer"));
   });

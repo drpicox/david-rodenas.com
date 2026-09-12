@@ -16,8 +16,8 @@ export interface Terminal {
 }
 
 export interface TerminalOptions {
-  /** Moves the page without leaving it; false when only a real navigation will do. */
-  readonly navigate?: (route: string) => boolean;
+  /** Moves the address without touching the paper; false when only a real navigation will do. */
+  readonly moveTo?: (route: string) => boolean;
   /** The site's own commands and whatever the features brought. */
   readonly commands?: readonly Command[];
 }
@@ -79,10 +79,12 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   const line = form?.querySelector<HTMLElement>(".line");
   const suggestion = form?.querySelector<HTMLElement>(".suggest");
   const ps1 = form?.querySelector<HTMLElement>(".ps1");
-  // The prompt the paper ends on: it says where the session is, and a click on it sends the hand to the input.
+  // The prompt the paper ends on: it says where the session is, shows the line as it is typed, and a click on it sends the hand to the input.
   const end = document.querySelector<HTMLElement>(".ran.end");
   const endPs1 = end?.querySelector<HTMLElement>(".ps1");
-  if (!section || !screen || !form || !input || !line || !suggestion || !ps1 || !end || !endPs1) return null;
+  const endLine = end?.querySelector<HTMLElement>(".line");
+  const mirror = end?.querySelector<HTMLElement>(".typed");
+  if (!section || !screen || !form || !input || !line || !suggestion || !ps1 || !end || !endPs1 || !endLine || !mirror) return null;
 
   const showPrompt = () => {
     ps1.textContent = shell.prompt;
@@ -102,11 +104,13 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     hint = null;
   };
 
-  // The block cursor stands where the caret is, and the suggestion where the typing ends.
+  // The block cursor stands where the caret is, and the suggestion where the typing ends. The paper shows the same line, with a ghost of the cursor.
   const refreshLine = () => {
     const caret = input.selectionStart ?? input.value.length;
     line.style.setProperty("--caret", String(caret));
     line.style.setProperty("--typed", String(input.value.length));
+    mirror.textContent = input.value;
+    endLine.style.setProperty("--caret", String(caret));
     suggestion.textContent = caret === input.value.length ? suggest(input.value, history.lines, shell.complete(input.value)) : "";
   };
 
@@ -127,30 +131,30 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     }
   };
 
-  // One command at a time, so that a `cd` can hand the rest of the line to the next page.
+  // One command at a time, so that a move the page cannot make here can hand the rest of the line to the next page.
   const run = (line: string) => {
     clearHint();
-    print(el("p", { class: "echo" }, el("span", { class: "ps1" }, shell.prompt), ` ${line}`));
+    const echo = el("p", { class: "echo" }, el("span", { class: "ps1" }, shell.prompt), ` ${line}`);
+    print(echo);
+    let printedPage = false;
     const commands = parseCommandLine(line).map((words) => words.join(" "));
     for (let index = 0; index < commands.length; index += 1) {
       const [outcome] = shell.run(commands[index] ?? "");
       if (!outcome) continue;
-      if (outcome.navigate) {
-        if (options.navigate?.(outcome.navigate)) {
-          screen.replaceChildren();
-          continue;
-        }
+      perform(outcome);
+      if (outcome.html && !outcome.text) printedPage = true;
+      if (outcome.at && !options.moveTo?.(outcome.at)) {
         carry(commands.slice(index + 1).join(" && "));
-        window.location.assign(outcome.navigate);
+        window.location.assign(outcome.at);
         return;
       }
-      perform(outcome);
       if (outcome.error) break;
     }
     showPrompt();
     refreshLine();
-    // What was printed is the end of the paper; the paper scrolls so the last line stands over the prompt.
-    window.scrollTo({ top: document.documentElement.scrollHeight });
+    // A page printed is read from its first line; anything else is the end of the paper, which scrolls so its last line stands over the prompt.
+    if (printedPage) echo.scrollIntoView({ block: "start" });
+    else window.scrollTo({ top: document.documentElement.scrollHeight });
   };
 
   const complete = () => {

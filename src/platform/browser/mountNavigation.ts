@@ -4,22 +4,32 @@ import { APPEARANCE, declaredAppearance } from "../page/declaredAppearance";
 import { isHere } from "../page/isHere";
 import { renderMain } from "../page/renderMain";
 
-export type GoTo = (route: string, push?: boolean) => boolean;
+export interface Move {
+  /** Whether the address goes into the history; false when the history is what brought us here. */
+  readonly push?: boolean;
+  /** Keep the paper: the shell moved the session, so only the address and what depends on it change. */
+  readonly keep?: boolean;
+}
+
+export type GoTo = (route: string, move?: Move) => boolean;
 
 /**
  * Moving between pages without leaving the one that is open. The markdown is
- * already here and so is the renderer, so a link or a `cd` only has to swap
- * what is inside `<main>`; the header, the planet and the shell stay put.
- * Anything not in the site — a PDF, another site — is a real navigation.
+ * already here and so is the renderer, so a link only has to swap what is
+ * inside `<main>`; the header, the planet and the shell stay put. When the
+ * shell itself moves — a `cd`, a `cat` — the paper is kept: the address, the
+ * title, the lit name in the navigation and what the page declares about
+ * its looks follow, and nothing printed is lost. Anything not in the site —
+ * a PDF, another site — is a real navigation.
  */
-export function mountNavigation(site: Site, onArrive: (page: Page) => void): GoTo {
+export function mountNavigation(site: Site, onArrive: (page: Page, kept: boolean) => void): GoTo {
   const main = document.querySelector("main");
   if (!main) return () => false;
 
-  const goTo: GoTo = (route, push = true) => {
+  const goTo: GoTo = (route, { push = true, keep = false } = {}) => {
     const page = site.at(route);
     if (!page) return false;
-    main.innerHTML = renderMain(site, page);
+    if (!keep) main.innerHTML = renderMain(site, page);
     // What the new page declares about how it looks; what that means is the features' business.
     const declared = declaredAppearance(page);
     for (const attribute of APPEARANCE) {
@@ -34,11 +44,12 @@ export function mountNavigation(site: Site, onArrive: (page: Page) => void): GoT
       else link.removeAttribute("aria-current");
     }
     if (push) {
-      window.history.pushState({ route }, "", route);
-      window.scrollTo({ top: 0 });
+      if (route === window.location.pathname) window.history.replaceState({ route }, "", route);
+      else window.history.pushState({ route }, "", route);
+      if (!keep) window.scrollTo({ top: 0 });
     }
     window.goatcounter?.count?.({ path: route, title: document.title });
-    onArrive(page);
+    onArrive(page, keep);
     return true;
   };
 
@@ -56,7 +67,7 @@ export function mountNavigation(site: Site, onArrive: (page: Page) => void): GoT
 
   window.addEventListener("popstate", () => {
     const route = window.location.pathname.endsWith("/") ? window.location.pathname : `${window.location.pathname}/`;
-    goTo(route, false);
+    goTo(route, { push: false });
   });
 
   return goTo;
