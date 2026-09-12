@@ -380,6 +380,19 @@ body {
   flex-direction: column;
 }
 
+/*
+ * The machine's type is set a little tight. A column is then not `1ch` but
+ * `1ch` plus the tracking, and everything that counts columns — the cursor,
+ * its ghost, the suggestion — counts in `--col`, or it would drift one
+ * tracking's worth per character typed.
+ */
+.container,
+.terminal {
+  --track: -0.025em;
+  --col: calc(1ch + var(--track));
+  letter-spacing: var(--track);
+}
+
 .container {
   flex: 1;
   width: 100%;
@@ -901,6 +914,7 @@ main,
   font-family: var(--text);
   font-size: 1.1rem;
   line-height: 1.65;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
 }
 
@@ -926,16 +940,21 @@ main,
 .end .line {
   position: relative;
   display: inline-block;
-  min-width: 1ch;
+  min-width: var(--col);
   white-space: pre;
   vertical-align: baseline;
+}
+
+/* An empty box has no baseline and sits on the line's bottom; a zero-width space gives it one, so the ghost stays on the line. */
+.end .typed:empty::after {
+  content: "\200B";
 }
 
 .end .ghost {
   position: absolute;
   top: 0.12em;
-  left: calc(var(--caret, 0) * 1ch);
-  width: 1ch;
+  left: calc(var(--caret, 0) * var(--col));
+  width: var(--col);
   height: 1.25em;
   background: var(--ink);
   opacity: 0.28;
@@ -986,7 +1005,7 @@ main,
 
 .terminal .prompt {
   display: flex;
-  gap: 1ch;
+  gap: var(--col);
   align-items: baseline;
   margin: 0;
   cursor: text;
@@ -1004,7 +1023,7 @@ main,
 
 /*
  * The input hides its own caret; the block after it is the cursor, standing
- * `--caret` columns in, which the script keeps up to date. A column is `1ch`
+ * `--caret` columns in, which the script keeps up to date. A column is `--col`
  * because the type is monospace, and that is the whole of the arithmetic.
  *
  * The block is white and painted by difference, so it is the page's ink on
@@ -1022,15 +1041,16 @@ main,
   background: none;
   color: var(--ink);
   font: inherit;
-  letter-spacing: 0;
+  /* The same tracking as the line it is a part of, or the cursor, which counts columns, would not stand over the letters. */
+  letter-spacing: inherit;
   caret-color: transparent;
 }
 
 .terminal .cursor {
   position: absolute;
   top: 0.12em;
-  left: calc(var(--caret, 0) * 1ch);
-  width: 1ch;
+  left: calc(var(--caret, 0) * var(--col));
+  width: var(--col);
   height: 1.25em;
   border: 1px solid #fff;
   mix-blend-mode: difference;
@@ -1052,7 +1072,7 @@ main,
 .terminal .suggest {
   position: absolute;
   top: 0;
-  left: calc(var(--typed, 0) * 1ch);
+  left: calc(var(--typed, 0) * var(--col));
   color: var(--dim);
   white-space: pre;
   pointer-events: none;

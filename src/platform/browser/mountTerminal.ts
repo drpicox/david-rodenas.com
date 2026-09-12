@@ -214,6 +214,13 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   });
 
   for (const type of ["input", "keyup", "click", "focus", "select"]) input.addEventListener(type, refreshLine);
+
+  // The first key of a line brings the paper to where the line is appearing, so the typing is seen where it lands.
+  let wasEmpty = true;
+  input.addEventListener("input", () => {
+    if (wasEmpty && input.value !== "") window.scrollTo({ top: document.documentElement.scrollHeight });
+    wasEmpty = input.value === "";
+  });
   document.addEventListener("selectionchange", () => {
     if (document.activeElement === input) refreshLine();
   });
