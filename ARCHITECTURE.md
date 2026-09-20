@@ -49,6 +49,7 @@ graph LR
     debt["<b>technical-debt</b><br/>what shortcuts cost,<br/>compounded"]
     meetings["<b>developer-meetings</b><br/>what a week of meetings<br/>costs a week of work"]
     headline["<b>headline</b><br/>the home headline, typed over<br/>with what else the page says"]
+    air["<b>air-quality</b><br/>NO2 by the hour and the month,<br/>and the open data it keeps"]
   end
 
   sky -. "follows whatever turns" .-> world
