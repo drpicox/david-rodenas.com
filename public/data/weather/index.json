@@ -1,0 +1,9 @@
+{
+"measures":"daily minimum and maximum temperature, daily rain, most rain in one hour",
+"network":"Xarxa d'Estacions Meteorològiques Automàtiques (XEMA)",
+"attribution":"Servei Meteorològic de Catalunya (XEMA). Dades obertes de la Generalitat de Catalunya.",
+"dataset":"https://analisi.transparenciacatalunya.cat/d/7bvh-jvq2",
+"stations":[{"code":"WU","name":"Badalona - Museu","municipality":"Badalona","altitude":42,"setting":"urban, by the sea"},{"code":"X4","name":"Barcelona - el Raval","municipality":"Barcelona","altitude":33,"setting":"dense city, on a roof"},{"code":"X8","name":"Barcelona - Zona Universitària","municipality":"Barcelona","altitude":82,"setting":"city edge"},{"code":"D5","name":"Barcelona - Observatori Fabra","municipality":"Barcelona","altitude":410,"setting":"wooded hill above the city"},{"code":"UP","name":"Cabrils","municipality":"Cabrils","altitude":81,"setting":"coastal slope, half rural"},{"code":"XF","name":"Sabadell - Parc Agrari","municipality":"Sabadell","altitude":259,"setting":"farmland beside a city"},{"code":"XJ","name":"Girona","municipality":"Girona","altitude":72,"setting":"market gardens by the city"},{"code":"XE","name":"Tarragona - Complex Educatiu","municipality":"Tarragona","altitude":6,"setting":"coast"},{"code":"VK","name":"Raimat","municipality":"Lleida","altitude":286,"setting":"inland plain, vineyards"}],
+"years":[1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
+"refreshed":"2026-09-20"
+}

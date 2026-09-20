@@ -5,6 +5,7 @@ import { headlineFeature } from "./headline/headlineFeature";
 import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
+import { weatherFeature } from "./weather/weatherFeature";
 import { worldFeature } from "./world/worldFeature";
 
 /**
@@ -21,4 +22,5 @@ export const allFeatures: readonly Feature[] = [
   developerMeetingsFeature,
   headlineFeature,
   airQualityFeature,
+  weatherFeature,
 ];
