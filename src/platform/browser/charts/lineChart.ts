@@ -1,3 +1,5 @@
+import { niceTicks } from "../../charts/niceTicks";
+
 export interface Series {
   readonly name: string;
   readonly className: string;
@@ -26,15 +28,6 @@ export function chartFrame(top: number, labels: ChartLabels, count: number, tick
     .map((tick) => `<text x="${PAD.left + ((tick - 1) / Math.max(1, count - 1)) * innerW}" y="${H - PAD.bottom + 14}" text-anchor="middle">${tick}</text>`)
     .join("");
   return `${grid}${xTicks}<text x="${PAD.left + innerW / 2}" y="${H - 6}" text-anchor="middle">${labels.x}</text><text transform="translate(9 ${PAD.top + innerH / 2}) rotate(-90)" text-anchor="middle">${labels.y}</text>`;
-}
-
-export function niceTicks(top: number): number[] {
-  if (top <= 0) return [0];
-  const step = 10 ** Math.floor(Math.log10(top));
-  const unit = top / step >= 5 ? step : top / step >= 2 ? step / 2 : step / 5;
-  const ticks: number[] = [];
-  for (let tick = 0; tick <= top; tick += unit) ticks.push(Math.round(tick * 100) / 100);
-  return ticks;
 }
 
 /** Two or three lines over a common x, as inline SVG markup. */

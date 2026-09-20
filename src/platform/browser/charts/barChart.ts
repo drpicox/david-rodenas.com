@@ -1,4 +1,5 @@
-import { chartFrame, niceTicks, type ChartLabels, type Series } from "./lineChart";
+import { niceTicks } from "../../charts/niceTicks";
+import { chartFrame, type ChartLabels, type Series } from "./lineChart";
 
 const W = 480;
 const H = 240;
