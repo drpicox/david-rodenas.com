@@ -18,6 +18,10 @@
   --warn: #b4443c;
   --title: var(--accent);
 
+  /* The heat maps: one hue, from the paper through this to the far end. Halfway up and the top, by lightness. */
+  --heat: #5f8bd6;
+  --heat-top: #0c2250;
+
   /*
    * Two voices. The machine speaks in the monospace, and it speaks first: the
    * frame, the prompts, the listings, the code. The author speaks in the text
@@ -44,6 +48,8 @@
     --accent-soft: #61748f;
   --hl-string: #93c9a2;
     --warn: #e0806f;
+    --heat: #3b63b0;
+    --heat-top: #e3ecff;
     color-scheme: dark;
   }
 }
@@ -59,6 +65,8 @@
   --accent-soft: #61748f;
   --hl-string: #93c9a2;
   --warn: #e0806f;
+  --heat: #3b63b0;
+  --heat-top: #e3ecff;
   color-scheme: dark;
 }
 
@@ -1549,4 +1557,136 @@ main,
   a {
     color: inherit;
   }
+}
+
+/* ---- open data: the heat map is a table, and the colour is one number a cell ---- */
+
+.app figure.no2 {
+  margin: 0;
+}
+
+.app figure figcaption {
+  margin-bottom: 0.8em;
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+.app figure figcaption strong {
+  color: var(--ink);
+}
+
+/*
+ * One hue in two steps, from the paper through --heat to --heat-top: further
+ * from the surface is more, in either theme. Two steps because the accent
+ * alone is too near the paper in one theme or the other, and the half of the
+ * scale where a city's air actually lives needs room to differ.
+ */
+
+.app table.heat {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 1px;
+  table-layout: fixed;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.heat th {
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app table.heat th[scope="row"] {
+  width: 2.2em;
+  text-align: right;
+  padding-right: 0.4em;
+}
+
+.app table.heat td {
+  height: 1.55em;
+  padding: 0;
+  text-align: center;
+  color: var(--ink);
+  background: color-mix(
+    in oklab,
+    var(--heat-top) calc(max(0, var(--v) - 0.5) * 200%),
+    color-mix(in oklab, var(--heat) calc(min(1, var(--v) * 2) * 100%), var(--paper))
+  );
+  border-radius: 1px;
+}
+
+.app table.heat td.deep {
+  color: var(--paper);
+}
+
+.app table.heat td.none {
+  background: var(--sunken);
+}
+
+.app table.heat td:hover {
+  outline: 1px solid var(--ink);
+}
+
+.app .scale {
+  width: min(22rem, 100%);
+  margin: 0.8em 0 1.6em auto;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--dim);
+}
+
+.app .scale .ramp {
+  height: 0.6em;
+  background: linear-gradient(to right in oklab, var(--paper), var(--heat) 50%, var(--heat-top));
+  border: 1px solid var(--rule);
+}
+
+.app .scale .ticks {
+  display: flex;
+  justify-content: space-between;
+}
+
+.app figure h4 {
+  margin: 0 0 0.3em;
+  text-align: left;
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+.app svg.years .bar {
+  fill: var(--accent-soft);
+  opacity: 0.45;
+}
+
+.app svg.years .bar.chosen {
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.app svg.years .bar.partial {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+
+.app svg.years .hit {
+  fill: transparent;
+  cursor: pointer;
+}
+
+.app svg.years .hit:hover {
+  fill: color-mix(in oklab, var(--ink) 8%, transparent);
+}
+
+.app svg.years line.reference {
+  stroke: var(--warn);
+  stroke-dasharray: 4 3;
+}
+
+.app svg.years text.reference {
+  fill: var(--warn);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
 }

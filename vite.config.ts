@@ -2,7 +2,9 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { defineConfig, type Plugin } from "vite";
+import { allFeatures } from "./src/features/allFeatures";
 import { Site } from "./src/platform/content/Site";
+import { fillStills } from "./src/platform/page/fillStills";
 import { renderDocument } from "./src/platform/page/renderDocument";
 
 const CONTENT = "content";
@@ -20,6 +22,18 @@ function sourcesIn(directory: string): { file: string; markdown: string }[] {
 
 function readSite(): Site {
   return new Site(sourcesIn(CONTENT));
+}
+
+const PUBLIC = "public";
+const stills = Object.assign({}, ...allFeatures.map((feature) => feature.stills ?? {}));
+
+/**
+ * The document, with each program's place already holding its still. A still
+ * reads the data the browser will later fetch, from where it will be served.
+ */
+function render(built: Site, page: Parameters<typeof renderDocument>[1], assets: Parameters<typeof renderDocument>[2]): string {
+  const read = (path: string) => readFileSync(join(PUBLIC, path), "utf8");
+  return fillStills(renderDocument(built, page, assets), (name) => stills[name]?.(read));
 }
 
 /**
@@ -61,7 +75,7 @@ function site(): Plugin {
         const page = readSite().at(withSlash);
         if (!page) return next();
 
-        const html = renderDocument(readSite(), page, {
+        const html = render(readSite(), page, {
           origin: ORIGIN,
           stylesheet: "/src/styles.css",
           script: "/src/main.ts",
@@ -88,14 +102,14 @@ function site(): Plugin {
         this.emitFile({
           type: "asset",
           fileName: `${page.route.slice(1)}index.html`,
-          source: renderDocument(built, page, assets),
+          source: render(built, page, assets),
         });
       }
 
       // GitHub Pages serves this for anything it cannot find.
       const home = built.at("/");
       if (home) {
-        this.emitFile({ type: "asset", fileName: "404.html", source: renderDocument(built, home, assets) });
+        this.emitFile({ type: "asset", fileName: "404.html", source: render(built, home, assets) });
       }
 
       this.emitFile({

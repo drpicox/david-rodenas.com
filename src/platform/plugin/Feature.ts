@@ -5,6 +5,13 @@ import type { Command } from "../shell/Command";
 /** A program a page makes room for: `::name` in the markdown becomes its host. Returns how to stop it. */
 export type App = (host: HTMLElement) => (() => void) | void;
 
+/**
+ * What a program's place holds before any script runs, written into the HTML
+ * at build time. `read` gives the text of a file the site serves, by the path
+ * the browser would ask for it at — so a still and its program read the same data.
+ */
+export type Still = (read: (path: string) => string) => string;
+
 /** What a feature is handed when it is installed: the site's one control surface. */
 export interface Prompt {
   /** Runs a line as if it had been typed, echo and all. */
@@ -25,6 +32,8 @@ export interface Feature {
   readonly commands?: readonly Command[];
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
+  /** What stands in a program's place in the HTML, by the program's name. Runs in node: no DOM. */
+  readonly stills?: Readonly<Record<string, Still>>;
   /** Open data it keeps a copy of in the repository, refreshed before a build when the year has changed. */
   readonly sources?: readonly YearlySource<unknown>[];
   /** Once, when the page is first set up. Returns how to undo it. */
