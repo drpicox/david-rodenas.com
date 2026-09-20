@@ -1,4 +1,5 @@
 import type { Feature } from "../platform/plugin/Feature";
+import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
 import { headlineFeature } from "./headline/headlineFeature";
 import { skyFeature } from "./sky/skyFeature";
@@ -19,4 +20,5 @@ export const allFeatures: readonly Feature[] = [
   technicalDebtFeature,
   developerMeetingsFeature,
   headlineFeature,
+  airQualityFeature,
 ];

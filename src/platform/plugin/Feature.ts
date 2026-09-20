@@ -1,4 +1,5 @@
 import type { Page } from "../content/Page";
+import type { YearlySource } from "../data/YearlySource";
 import type { Command } from "../shell/Command";
 
 /** A program a page makes room for: `::name` in the markdown becomes its host. Returns how to stop it. */
@@ -24,6 +25,8 @@ export interface Feature {
   readonly commands?: readonly Command[];
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
+  /** Open data it keeps a copy of in the repository, refreshed before a build when the year has changed. */
+  readonly sources?: readonly YearlySource<unknown>[];
   /** Once, when the page is first set up. Returns how to undo it. */
   install?(prompt: Prompt): (() => void) | void;
   /** Whenever the page changes without a reload, and once for the page it started on. */
