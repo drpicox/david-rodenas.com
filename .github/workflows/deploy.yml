@@ -9,9 +9,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # The open data is a finished year at a time, and the build asks for a year
+  # it does not hold. Mid-January, so that a year still gets fetched when
+  # nobody happens to push: by then the portals have the whole of December.
+  schedule:
+    - cron: "10 5 15 1 *"
 
+# Write, because a year fetched by the build is committed back (see below).
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: deploy
@@ -31,6 +37,20 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+
+      # The build fetched whatever finished year was missing into public/data.
+      # Keeping it is what makes the next build ask for nothing; losing it only
+      # costs asking again, so a failure here never stops the deploy. A push
+      # made with the workflow's own token does not start another workflow.
+      - name: Keep the year the build fetched
+        continue-on-error: true
+        run: |
+          git add public/data
+          git diff --cached --quiet && echo "No new year." && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Open data: the year that ended, fetched by the build"
+          git push
 
       - name: Check out what is published today
         uses: actions/checkout@v4

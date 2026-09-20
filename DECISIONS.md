@@ -152,6 +152,57 @@ simulators and the worlds.
 
 ---
 
+### Open data is kept in the repository, a finished year at a time
+Two pages are made of public measurements: hourly NO2 from the Generalitat's
+air-quality network, and the Meteocat's daily extremes and rain. The analyses
+they come from asked the portal for everything on every visit, or needed
+Python and half a gigabyte of cache. Here:
+
+- **What is kept is sums, and the files are both the history and what is
+  served.** `public/data/<source>/<station>.json` holds every finished year of
+  one station — sums and counts for NO2, monthly histograms for the weather —
+  one year to a line, so a new year is a one-line diff. There is no second
+  copy to fall out of step, and the daily series stays at its source.
+- **The portal is asked only when the year has changed.** `npm run build`
+  runs `tools/refresh-data.mjs` first, which asks for the finished years a
+  source does not hold. That is nothing at all, with no network, on every
+  build but the first of a year. The running year is never shown: half a bar
+  at the end of a chart is misinformation made of correct numbers.
+- **It fails safe, because it will fail.** A year is written only when all of
+  it arrived and made sense — not cut short at a limit, no day twice, reaching
+  December, no quality mark nobody has decided how to read. Anything else is
+  logged, the files are left as they were, and the build goes on with what it
+  holds. It stops at the first year that fails rather than asking thirty more
+  times. `--year 2024` asks again for a year that is held, because the
+  Meteocat corrects backwards.
+- **In CI the workflow commits the year back**, so the next build asks for
+  nothing; if that push fails, the deploy still happens and the next build
+  asks again. One scheduled run in mid-January fetches the year even when
+  nobody pushes.
+- **No dependency was added.** `fetch`, `fs` and the portal's own SoQL: for
+  NO2 the portal does the adding up, and thirty-five years of nine stations
+  arrive in thirteen seconds.
+
+### A figure made of data is content, so it is in the HTML
+A `::name` program draws when the script runs, which is after a search engine
+and a reader without JavaScript have left. A feature may now bring a **still**
+for its program: markup written into the program's place at build time, from
+the same files the browser will fetch, by the same pure function the program
+redraws with — so the two cannot disagree. The heat maps are real `<table>`s
+with the numbers in them; the colour is one custom property a cell, mixed by
+the stylesheet, so neither theme's ramp is written in the markup. Stills are
+filled into the finished document, not inside the markdown renderer, because
+that renderer also runs in the browser, where the program is about to draw
+and the data is not at hand.
+
+### One hue, two steps, a fixed scale
+The NO2 table the original used ran green–yellow–red–purple. Here a heat map
+is one hue from the paper through `--heat` to `--heat-top` — further from the
+surface is more, in either theme — and the scale is fixed (0 to 80 µg/m³), so
+the same colour is the same air at any station in any year. Heat gets a warm
+hue; everything else the site's blue. The two reference lines on the NO2
+years are the EU's annual limit (40) and the WHO's 2021 guideline (10).
+
 ### Code is coloured at build time, by a tokeniser written here
 
 The pages with code on them — the AngularJS one, the teaching one — read

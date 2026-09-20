@@ -38,6 +38,10 @@ and `src/architecture.test.ts` keeps it that way.
 | `features/theme` | light, dark, system: the command, the button, and the rule that weighs a reader's choice against a page's own |
 | `features/sky` | two layers of stars, drifting on their own or driven by a hand on a world |
 | `features/technical-debt`, `features/developer-meetings` | the two simulators |
+| `features/air-quality` | NO2 by hour of the day and month of the year, and the yearly source it keeps |
+| `features/weather` | days over a threshold, year by year, at nine Meteocat stations, and the yearly source it keeps |
+| `platform/data` | open data kept a finished year at a time: which years are missing, how to ask, how to fail without losing anything |
+| `platform/charts` | charts of years as plain SVG strings, so the build and the browser draw the same thing |
 | `features/headline` | the home headline, typed over with what else the page says |
 | `content/` | home, the book, the essays, the code, the talks, the kata, the simulators, the worlds |
 | `.github/workflows/deploy.yml` | build, test, and publish `dist/` as `drpicox.github.io` |
@@ -84,6 +88,16 @@ Pushing to `main` runs the workflow, which replaces everything in
 `DEPLOY_TOKEN`: a fine-grained personal access token with *Contents: read and
 write* on `drpicox.github.io`. `CNAME` and `.nojekyll` live in `public/`, so
 the built directory is complete on its own.
+
+### The open data
+
+`public/data/` holds the sums the two open-data pages are drawn from, one file
+a station, one line a year. `npm run build` first runs `npm run data`, which
+asks the Generalitat's portal for any finished year that is missing — nothing,
+on every build but the first of a new year — and never fails the build: if the
+portal does, the files stay as they are. `node tools/refresh-data.mjs --year
+2024` asks again for a year already held. In CI the workflow commits a newly
+fetched year back to `main`.
 
 ### Not done
 

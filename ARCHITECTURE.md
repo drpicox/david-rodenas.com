@@ -71,12 +71,15 @@ graph LR
 
   feature -- "commands" --> shell["the Shell<br/><i>alongside the site's own</i>"]
   feature -- "apps" --> apps["mountApps<br/><i>a ::name in the markdown</i>"]
+  feature -- "stills" --> stills["fillStills<br/><i>what a program's place holds<br/>in the HTML, before any script</i>"]
+  feature -- "sources" --> sources["refreshSource<br/><i>open data, a finished year<br/>at a time, before a build</i>"]
   feature -- "install(prompt)" --> once["once, when the page is set up"]
   feature -- "arrive(page)" --> moved["every time the page changes<br/>without a reload"]
 ```
 
-`main.ts` collects those four things from `allFeatures` and hands them to the
-frame. The frame knows the shape and no feature by name.
+`main.ts` collects the browser's four from `allFeatures` and hands them to the
+frame; `vite.config.ts` collects the stills, and `tools/refresh-data.mjs` the
+sources — the two that happen in node. The frame knows the shape and no feature by name.
 
 ---
 

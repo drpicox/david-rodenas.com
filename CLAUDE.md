@@ -26,7 +26,10 @@ traced, write the weaker sentence.
 
 - `npm test` — vitest, all of it
 - `npm run dev` — dev server
-- `npm run build` — typecheck, then a static build into `dist/`
+- `npm run build` — `npm run data`, typecheck, then a static build into `dist/`
+- `npm run data` — fetch any finished year of open data that `public/data/`
+  does not hold yet; runs before every build, asks nothing unless the year has
+  changed, and never fails (`--year 2024` asks again, `--only no2` picks one)
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
 - `node tools/write-favicon.mjs [seed]` — grow one still world into
@@ -45,13 +48,18 @@ The top level says what this is: a frame, and the features standing in it.
     site itself: `ls`, `cd`, `cat`, `pwd`, `help`, `clear`
   - `page/` — the whole HTML document, and the `<main>` inside it
   - `browser/` — the terminal, the navigation between pages, and `el`
+  - `data/` — open data kept a finished year at a time: `YearlySource`, and
+    the refresh that cannot lose what is already held
+  - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
-  `developer-meetings/`, `headline/`. A feature owns everything about itself: its rules,
+  `developer-meetings/`, `headline/`, `air-quality/`, `weather/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.
 - `content/` — the site, in markdown. A file is a page is a URL.
+- `public/data/` — the open data the features keep, one file a station, one
+  line a year. Written by `npm run data`, never by hand.
 - `tools/` — things a person runs to look at something
 
 See **`ARCHITECTURE.md`** for the diagrams: what the modules are and how they
