@@ -49,7 +49,7 @@ export const no2Source: YearlySource<No2Station> = {
   about: {
     measures: "NO2, hourly, µg/m³",
     network: "Xarxa de Vigilància i Previsió de la Contaminació Atmosfèrica",
-    publisher: "Generalitat de Catalunya, open data",
+    attribution: "Generalitat de Catalunya, Xarxa de Vigilància i Previsió de la Contaminació Atmosfèrica. Dades obertes.",
     dataset: `https://analisi.transparenciacatalunya.cat/d/${DATASET}`,
     stations: no2Stations,
   },

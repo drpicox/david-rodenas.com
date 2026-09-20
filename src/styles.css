@@ -21,6 +21,8 @@
   /* The heat maps: one hue, from the paper through this to the far end. Halfway up and the top, by lightness. */
   --heat: #5f8bd6;
   --heat-top: #0c2250;
+  --heat-warm: #e08a5b;
+  --heat-warm-top: #5c1609;
 
   /*
    * Two voices. The machine speaks in the monospace, and it speaks first: the
@@ -50,6 +52,8 @@
     --warn: #e0806f;
     --heat: #3b63b0;
     --heat-top: #e3ecff;
+    --heat-warm: #a8492c;
+    --heat-warm-top: #ffe6d8;
     color-scheme: dark;
   }
 }
@@ -67,6 +71,8 @@
   --warn: #e0806f;
   --heat: #3b63b0;
   --heat-top: #e3ecff;
+  --heat-warm: #a8492c;
+  --heat-warm-top: #ffe6d8;
   color-scheme: dark;
 }
 
@@ -1567,6 +1573,7 @@ main,
 
 .app figure figcaption {
   margin-bottom: 0.8em;
+  text-align: left;
   font-size: 0.85rem;
   color: var(--dim);
 }
@@ -1689,4 +1696,86 @@ main,
   paint-order: stroke;
   stroke: var(--paper);
   stroke-width: 3px;
+}
+
+/* ---- the weather: the same table and the same bars, and a warm ramp for heat ---- */
+
+.app figure.weather {
+  margin: 0;
+}
+
+.app .dials select {
+  display: block;
+  width: 100%;
+  margin-top: 0.2em;
+}
+
+.app figure.weather svg.years .bar {
+  opacity: 1;
+  fill: var(--accent);
+}
+
+.app figure.weather svg.years .bar.partial {
+  fill: none;
+}
+
+.app svg.years .dot {
+  fill: var(--accent);
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.app svg.years .dot.partial {
+  fill: var(--paper);
+  stroke: var(--accent);
+  stroke-width: 1;
+}
+
+.app svg.years polyline.line {
+  stroke: var(--accent-soft);
+  stroke-width: 1.5;
+}
+
+.app svg.years line.span {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.app svg.years text.span {
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+}
+
+.app table.heat.warm {
+  --heat: var(--heat-warm);
+  --heat-top: var(--heat-warm-top);
+}
+
+.app table.heat.calendar th[scope="row"] {
+  width: 3.2em;
+}
+
+.app figure + h4,
+.app figure svg.years,
+.app figure table.heat {
+  margin-bottom: 1.6em;
+}
+
+.app p.record {
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+.app p.source {
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+/* A chart of years is drawn 720 units wide; on a phone a unit is half a pixel, and the labels need to grow to stay read. */
+@media (max-width: 40rem) {
+  .app svg.years text {
+    font-size: 17px;
+  }
 }

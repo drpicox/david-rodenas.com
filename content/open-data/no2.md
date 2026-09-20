@@ -53,8 +53,3 @@ I first drew this table in 2021, for myself, in a small app that asked the
 portal for everything on every visit. This page is that analysis again, with
 the asking moved out of the reader's way: the site keeps the sums, a finished
 year at a time, and asks the portal only when a year has ended.
-
-Source: [Qualitat de l'aire als punts de mesurament automàtics de la Xarxa de
-Vigilància i Previsió de la Contaminació
-Atmosfèrica](https://analisi.transparenciacatalunya.cat/d/tasf-thgu),
-Generalitat de Catalunya, open data. Every finished year since 1991.

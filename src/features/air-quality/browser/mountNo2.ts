@@ -1,4 +1,5 @@
 import { el } from "../../../platform/browser/el";
+import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
 import type { No2Selection } from "../No2Selection";
 import type { No2Station } from "../No2Station";
 import { no2Stations } from "../no2Stations";
@@ -18,8 +19,9 @@ const DAYS: readonly (readonly [No2Selection["days"], string])[] = [
  */
 export function mountNo2(host: HTMLElement): () => void {
   const held = new Map<string, Promise<No2Station>>();
+  const source = sourceLineOf(host, "/data/no2/index.json");
   const figure = el("div");
-  figure.append(...host.childNodes);
+  figure.append(...host.querySelectorAll("figure"));
 
   let station: No2Station | null = null;
   let selection: No2Selection = { from: 0, to: 9999, days: "all" };
@@ -78,7 +80,7 @@ export function mountNo2(host: HTMLElement): () => void {
     el("label", {}, "Years ", fromSelect, " to ", toSelect),
     everyYear,
   );
-  host.replaceChildren(controls, figure);
+  host.replaceChildren(controls, figure, source);
   void choose(stationSelect.value);
 
   return () => {

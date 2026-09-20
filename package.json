@@ -6,7 +6,8 @@
   "description": "david-rodenas.com — a static site with no runtime dependencies.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b --noEmit && vite build",
+    "data": "node tools/refresh-data.mjs",
+    "build": "npm run data && tsc -b --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
