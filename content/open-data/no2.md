@@ -20,22 +20,26 @@ before the number is read: green is clean, red is the European annual limit of
 
 ## What is in it
 
-At Barcelona's Eixample, over its whole record:
+At Barcelona's Poblenou, a station away from the big roads, over its whole
+record:
 
 - **Two ridges.** The morning one peaks at hour 09 and is there all year. The
-  evening one, around hours 20 and 21, is as high as the morning's from
-  October to February, and lower from spring to the end of summer.
-- **August.** Its mean is 43 µg/m³; no other month is below 51. The city
+  evening one, around hours 20 to 22, is the higher of the two from November
+  to February, and by July it is less than half of what it was in January.
+- **The afternoon.** Between the ridges is a valley, deepest at hours 16 and
+  17 in August, at 15 µg/m³: a quarter of a January evening.
+- **August.** Its mean is 28 µg/m³; no other month is below 33. The city
   leaves, and it shows at every hour.
 - **The week.** From Monday to Friday the mean is about a quarter higher than
-  on Saturdays and Sundays. Choose the weekends and the morning ridge is gone,
-  while the small hours are higher than on a working day: the night before
-  was a Friday or a Saturday.
-- **The years.** 70 µg/m³ in 1999, 49.5 in 2019, 35.2 in 2020. The year of
-  the lockdowns was the first under the European limit of 40; 2022 went back
-  over it, and 2025 closed at 29.1.
+  on Saturdays and Sundays. Choose the weekends and the morning ridge is gone.
+- **The years.** 57.4 µg/m³ in 2003, 36.7 in 2019, 29.0 in 2020, 22.0 in 2025.
+  It has not been over the European limit of 40 since 2017.
 
-The same shape, lower, is at every urban station here.
+Choose the **Eixample**, which measures traffic, and the same shape is there
+in purple: 70 µg/m³ in 1999, 49.5 in 2019, 35.2 in 2020. The year of the
+lockdowns was its first under the limit; 2022 went back over it, and 2025
+closed at 29.1. The same shape, higher or lower, is at every urban station
+here.
 
 ## Height
 
@@ -49,7 +53,7 @@ up there.
 
 The other green table is La Castanya, in the Montseny, where the yearly mean
 has stayed under 4 µg/m³ since 2013: that is what air with no road under it
-measures. Those two are the only stations of these ten that ended 2025 under
+measures. Those two are the only stations of these eleven that ended 2025 under
 the 10 µg/m³ the WHO has recommended since 2021.
 
 ## What it is not

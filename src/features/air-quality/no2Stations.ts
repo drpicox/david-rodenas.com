@@ -6,9 +6,10 @@ import type { No2Station } from "./No2Station";
  * a reader sees before choosing. Kind and area are the network's words.
  */
 export const no2Stations: readonly Omit<No2Station, "years">[] = [
+  { code: "08019004", name: "Barcelona (Poblenou)", kind: "background", area: "urban" },
   { code: "08019043", name: "Barcelona (Eixample)", kind: "traffic", area: "urban" },
   { code: "08019044", name: "Barcelona (Gràcia - Sant Gervasi)", kind: "traffic", area: "urban" },
-  { code: "08019004", name: "Barcelona (Poblenou)", kind: "background", area: "urban" },
+  { code: "08019057", name: "Barcelona (Palau Reial)", kind: "background", area: "urban" },
   { code: "08019058", name: "Barcelona (Observatori Fabra)", kind: "background", area: "suburban" },
   { code: "08015021", name: "Badalona", kind: "background", area: "urban" },
   { code: "08187012", name: "Sabadell", kind: "traffic", area: "urban" },
