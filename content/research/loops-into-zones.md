@@ -33,18 +33,46 @@ P[a,i] = exp(β · Q[a,i])
 ```
 
 where `C` says how compatible matching `a` with `i` is with matching `b` with
-`j`. Four nested loops over the vertices, `R⁴` products a round. As it
-stands, every thread wants all of `P` and all of `C`, and nothing fits in a
-block's memory.
+`j`. Written the way anyone would write it first, it is two loop nests:
+
+```
+for a in 1 .. R:
+  for i in 1 .. R:
+    Q[a,i] = 0
+    for b in 1 .. R:
+      for j in 1 .. R:
+        Q[a,i] += P[b,j] · C[a,i,b,j]
+
+for a in 1 .. R:
+  for i in 1 .. R:
+    P[a,i] = exp(β · Q[a,i])
+```
+
+Four loops deep over the vertices, `R⁴` products a round. It is correct, and
+it has no shape at all: every iteration may touch any part of `P` and of `C`,
+so on a card every thread wants both whole, and nothing fits in a block's
+memory. The two steps that follow are done to the short nest first, where
+they are easy to see, and then to the long one.
 
 ## Step one: tile the loops
 
 Replace each index by a tile and a position inside it: `a = c·B + d`,
-`i = k·B + l`. One loop over `a` becomes two, over `c` and `d`:
+`i = k·B + l`. The loop over `a` becomes two, one over the tiles `c` and one
+over the positions `d`, and the loop over `i` likewise:
 
 ```
-for c in 0 .. R/B:            ← which tile
-  for d in 1 .. B:            ← where in it
+for a in 1 .. R:          before
+
+for c in 0 .. R/B:        after: which tile,
+  for d in 1 .. B:        and where in it
+    a = c·B + d
+```
+
+Done to both loops of the short nest:
+
+```
+for c in 0 .. R/B:
+  for d in 1 .. B:
     for k in 0 .. R/B:
       for l in 1 .. B:
         a = c·B + d
@@ -69,11 +97,27 @@ for c in 0 .. R/B:            ← blocks
         P[a,i] = exp(β · Q[a,i])
 ```
 
-The sum inside `Q` gets the same two steps, with `b = e·B + f` and
-`j = u·B + v`: tiles `e`, `u` outside, positions `f`, `v` inside. And `C` is
-replaced by what it is made of — the adjacency of each graph and the
-compatibility of their attributes — because four small factors can each be
-fetched a sub-matrix at a time, and one four-dimensional `C` cannot.
+The long nest gets the same two steps. Its inner indices are tiled too,
+`b = e·B + f` and `j = u·B + v`, and the tile loops `e`, `u` go outside the
+position loops `f`, `v`:
+
+```
+for c, k in tiles:                      ← blocks
+  for d, l in positions:                ← threads
+    Q[a,i] = 0
+    for e, u in tiles:                  ← one sub-matrix of P at a time
+      for f, v in positions:
+        b = e·B + f
+        j = u·B + v
+        Q[a,i] += P[b,j] · C[a,i,b,j]
+```
+
+Now the innermost two loops walk one `B × B` sub-matrix of `P` from corner to
+corner before moving to the next, which is exactly what a block's small
+memory can hold. One thing is still in the way: `C` has four dimensions and
+no sub-matrix of it is small. So `C` is replaced by what it is made of — the
+adjacency of each graph and the compatibility of their attributes — four
+small factors that can each be fetched a sub-matrix at a time.
 
 Reordering is where a programmer knows what a compiler does not: that these
 iterations do not depend on each other. Compilers tile and reorder loops by
