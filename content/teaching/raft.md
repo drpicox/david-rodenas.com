@@ -17,7 +17,8 @@ assignment is somewhere else. A server is doing four things at once —
 timing out, asking for votes, answering other servers' requests, replicating
 its log — every one of them reads and writes the same few fields, and between
 any two lines the network may hand it a message that makes it a different
-kind of server. Most of the students had never written a concurrent program.
+kind of server. That is a lot to ask of someone writing their first
+concurrent program.
 
 ## The recipe
 

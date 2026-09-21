@@ -32,6 +32,29 @@ OpenMP without shared memory :: The same annotated programs running on a cluster
 A simulator of a heterogeneous chip :: CellSim, a modular simulator of the Cell processor. It is team work and I am its third author. What is mine is the base and its modularity, and above all the protocol by which modules talk to each other purely as memory accesses, so that any of them can be connected to any other. My thesis calls that protocol its best contribution.
 A compiler for streams :: In the European project ACOTES, with NXP, IBM Haifa, INRIA and STMicroelectronics: annotations that turn a serial C program into a pipeline of tasks passing data along. Two clauses, `input` and `output`, are enough. I wrote the ACOTES phase of the BSC's Mercurium compiler — the compiler itself is not mine — with its runtime library and a tracing library. [SAMOS 2007](https://doi.org/10.1007/978-3-540-73625-7_13), and the consortium's paper in the [International Journal of Parallel Programming](https://doi.org/10.1007/s10766-010-0132-7).
 
+## In between: a database engine, 2008–2009
+
+Between the two halves of the thesis I spent a year at DAMA-UPC, the group
+behind the graph database DEX, later sold as Sparksee. The engine is theirs.
+My work was to make its core concurrent, which until then ran under one
+global lock.
+
+Three things from that year have stayed with me. Measure the locks
+themselves — I put counters inside them, and they said the contention was
+nearly all in one place, the buffer pool, which is where the effort then
+went. Write the protocol down before the code: the pool's pin and unpin
+became lock-free, a counter and three flags packed into one word changed by
+compare-and-swap, and I verified it by hand, step by step, with invariants
+and pre- and postconditions, because no test finds the interleaving that
+happens once a week. And give the people using the engine tasks instead of
+threads: a small framework for its Java interface, with serial, parallel and
+for-each tasks, cancellation, and exceptions that arrive where they should.
+
+In the same group I built a tool that loads the diagnostic dumps of a hung
+IBM DB2 into a graph and looks there for what is waiting on what, in
+collaboration with IBM. That work is under its own terms, and a description
+is all there is of it here.
+
 ## The application: Universitat Rovira i Virgili, 2009–2011
 
 Computer vision likes to describe things as graphs: a house is a roof, a
