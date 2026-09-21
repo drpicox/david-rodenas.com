@@ -1,7 +1,7 @@
 ---
 title: Graph matching on a desktop
 summary: Universitat Rovira i Virgili, 2009–2011. Two computer-vision algorithms rewritten for CUDA and OpenMP on an eighteen-watt desktop: an hour and a quarter became under two minutes, without changing the result by a bit.
-order: 2
+order: 3
 ---
 
 # Graph matching on a desktop

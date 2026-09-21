@@ -1,7 +1,7 @@
 ---
 title: Loops into zones
 summary: The method of the thesis, step by step. Two loop transformations and two annotations turn a serial algorithm into one shaped like a graphics card, without changing what it computes.
-order: 3
+order: 4
 ---
 
 # Loops into zones

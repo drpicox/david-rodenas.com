@@ -1,7 +1,7 @@
 ---
 title: One lock at a time
 summary: Making a database engine's core concurrent, one technique at a time, each with its number — including the right change that made everything twice as slow.
-order: 4
+order: 5
 ---
 
 # One lock at a time
