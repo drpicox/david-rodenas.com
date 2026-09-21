@@ -14,7 +14,9 @@ Looked at a day at a time it is noise. Averaged by **hour of the day** and
 ::no2
 
 Each cell is the mean, in µg/m³, of every measurement taken at that hour in
-that month over the years selected. Press a bar to see one year alone.
+that month over the years selected. The colour says whether it is good or bad
+before the number is read: green is clean, red is the European annual limit of
+40, and purple going to black is beyond it. Press a bar to see one year alone.
 
 ## What is in it
 
@@ -33,10 +35,22 @@ At Barcelona's Eixample, over its whole record:
   the lockdowns was the first under the European limit of 40; 2022 went back
   over it, and 2025 closed at 29.1.
 
-The same shape, lower, is at every urban station here. At La Castanya, in the
-Montseny, the yearly mean has stayed under 4 µg/m³ since 2013: that is what air
-with no road under it measures. It is also the only station of these nine
-that ended 2025 under the 10 µg/m³ the WHO has recommended since 2021.
+The same shape, lower, is at every urban station here.
+
+## Height
+
+Choose the **Observatori Fabra**. It is in Barcelona, 415 m up the hill the
+city climbs, and its table is green: 7.4 µg/m³ in 2025, when the Eixample
+below it closed at 29.1 and Poblenou at 22.0. It has no rush hours either. Its
+highest cells are late morning in summer and late afternoon in winter, and
+none of them reaches 20; its lowest are the early morning, just when the
+streets below are filling. Same city, same traffic: little of it is measured
+up there.
+
+The other green table is La Castanya, in the Montseny, where the yearly mean
+has stayed under 4 µg/m³ since 2013: that is what air with no road under it
+measures. Those two are the only stations of these ten that ended 2025 under
+the 10 µg/m³ the WHO has recommended since 2021.
 
 ## What it is not
 

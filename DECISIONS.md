@@ -195,13 +195,28 @@ filled into the finished document, not inside the markdown renderer, because
 that renderer also runs in the browser, where the program is about to draw
 and the data is not at hand.
 
-### One hue, two steps, a fixed scale
-The NO2 table the original used ran green–yellow–red–purple. Here a heat map
-is one hue from the paper through `--heat` to `--heat-top` — further from the
-surface is more, in either theme — and the scale is fixed (0 to 80 µg/m³), so
-the same colour is the same air at any station in any year. Heat gets a warm
-hue; everything else the site's blue. The two reference lines on the NO2
-years are the EU's annual limit (40) and the WHO's 2021 guideline (10).
+### NO2 is coloured good to bad; everything else is one hue
+The first version of the NO2 page drew its table in one hue, light to dark, on
+the reasoning that a magnitude is a sequential scale. David's original ran
+green–yellow–red–purple and he asked for it back, and he was right: the
+question a reader brings to that table is not *how much* but *is this bad*,
+and the one-hue ramp could not answer it. The Observatori Fabra, green above a
+purple city, is the whole argument in two tables. So `no2Colour` is his scale,
+hung on the European annual limit — green at nothing, yellow at 20, red at 40,
+purple at 60, nearly black from 80 — fixed, so the same colour is the same air
+at any station in any year, and the same in either theme, which is why the
+colours are written into the cells and the numbers on them are black or white
+rather than the page's ink. The yearly bars wear the same colours. The two
+ruled lines are the EU's annual limit (40) and the WHO's 2021 guideline (10).
+
+The weather calendar keeps the other scheme: one hue from the paper through
+`--heat` to `--heat-top`, further from the surface is more in either theme,
+mixed by the stylesheet from one custom property a cell; warm for heat, the
+site's blue for the rest. A count of days has no limit to be good or bad against.
+
+**Adding a station** to a source does not fetch its past, because every year
+is already held: ask again for the years it has, `npm run data -- --only no2
+--year 2018 --year 2019 …`. The other stations' files come back byte for byte.
 
 ### Code is coloured at build time, by a tokeniser written here
 

@@ -14,10 +14,9 @@ describe("the picture, as a table anyone can read", () => {
     expect(html.match(/>47<\/td>/g)).toHaveLength(24 * 12);
   });
 
-  it("colours on one fixed scale, so the same colour is the same air at any station in any year", () => {
-    expect(renderNo2Heatmap(gridOf(40))).toContain("--v:0.5");
-    expect(renderNo2Heatmap(gridOf(20))).toContain("--v:0.25");
-    expect(renderNo2Heatmap(gridOf(200))).toContain("--v:1");
+  it("colours by good or bad on one fixed scale, the same at any station in any year: red is the European limit", () => {
+    expect(renderNo2Heatmap(gridOf(40))).toContain("background:rgb(255,0,0)");
+    expect(renderNo2Heatmap(gridOf(0))).toContain("background:rgb(0,255,0)");
   });
 
   it("turns the number light where the cell has gone dark", () => {

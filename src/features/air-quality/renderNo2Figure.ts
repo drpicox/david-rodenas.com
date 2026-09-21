@@ -1,5 +1,6 @@
 import { no2AnnualMeans } from "./no2AnnualMeans";
 import { no2Grid } from "./no2Grid";
+import { no2Colour } from "./no2Colour";
 import { NO2_SCALE_TOP } from "./no2ScaleTop";
 import type { No2Selection } from "./No2Selection";
 import type { No2Station } from "./No2Station";
@@ -8,9 +9,11 @@ import { renderNo2Years } from "./renderNo2Years";
 
 const DAYS = { all: "every day of the week", workdays: "Monday to Friday", weekends: "Saturdays and Sundays" };
 
+/** The scale, drawn from the same function the cells are coloured by, with what the two ruled figures are. */
 function key(): string {
+  const steps = Array.from({ length: NO2_SCALE_TOP / 5 + 1 }, (_, index) => no2Colour(index * 5).background);
   const ticks = [0, 20, 40, 60, NO2_SCALE_TOP].map((tick) => `<span>${tick === NO2_SCALE_TOP ? `${tick}+` : tick}</span>`).join("");
-  return `<div class="scale" aria-hidden="true"><div class="ramp"></div><div class="ticks">${ticks}</div></div>`;
+  return `<div class="scale" aria-hidden="true"><div class="ramp" style="background:linear-gradient(to right,${steps.join(",")})"></div><div class="ticks">${ticks}</div><div class="ticks words"><span>clean</span><span>EU limit</span><span>twice it</span></div></div>`;
 }
 
 /**

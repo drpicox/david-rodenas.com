@@ -9,6 +9,7 @@ export const no2Stations: readonly Omit<No2Station, "years">[] = [
   { code: "08019043", name: "Barcelona (Eixample)", kind: "traffic", area: "urban" },
   { code: "08019044", name: "Barcelona (Gràcia - Sant Gervasi)", kind: "traffic", area: "urban" },
   { code: "08019004", name: "Barcelona (Poblenou)", kind: "background", area: "urban" },
+  { code: "08019058", name: "Barcelona (Observatori Fabra)", kind: "background", area: "suburban" },
   { code: "08015021", name: "Badalona", kind: "background", area: "urban" },
   { code: "08187012", name: "Sabadell", kind: "traffic", area: "urban" },
   { code: "17079003", name: "Girona (Escola de Música)", kind: "traffic", area: "urban" },

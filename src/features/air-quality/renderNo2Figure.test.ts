@@ -22,7 +22,7 @@ describe("the whole figure", () => {
 
   it("holds the table, the key to its colours, and the years", () => {
     const html = renderNo2Figure(station, { from: 2019, to: 2020, days: "all" });
-    expect(html).toContain('<table class="heat">');
+    expect(html).toContain('<table class="heat graded">');
     expect(html).toContain('class="scale"');
     expect(html).toContain('<svg class="years"');
   });

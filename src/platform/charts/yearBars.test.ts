@@ -45,3 +45,10 @@ describe("a bar for each year", () => {
     expect(svg.match(/<line class="span"/g)).toHaveLength(1);
   });
 });
+
+describe("a bar with a colour of its own", () => {
+  it("hands the colour to the stylesheet, which decides whether it fills the bar or outlines it", () => {
+    const svg = yearBars([{ year: 2000, value: 20, title: "", colour: "rgb(255,0,0)" }], { label: "" });
+    expect(svg).toContain('style="--bar:rgb(255,0,0)"');
+  });
+});

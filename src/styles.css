@@ -1779,3 +1779,46 @@ main,
     font-size: 17px;
   }
 }
+
+/*
+ * The NO2 table is graded good to bad in colours that mean the same in either
+ * theme, so what is written on them is black or white and not the page's ink.
+ */
+.app table.heat.graded td {
+  color: #10131a;
+}
+
+.app table.heat.graded td.deep {
+  color: #ffffff;
+}
+
+.app table.heat.graded td.none {
+  background: var(--sunken);
+}
+
+.app .scale .ticks.words {
+  justify-content: space-between;
+}
+
+.app figure.no2 svg.years .bar {
+  fill: var(--bar, var(--accent-soft));
+  opacity: 0.35;
+}
+
+.app figure.no2 svg.years .bar.chosen {
+  opacity: 1;
+}
+
+.app figure.no2 svg.years .bar.partial {
+  fill: none;
+  stroke: var(--bar, var(--accent));
+  stroke-width: 1.5;
+}
+
+.app figure.no2 svg.years line.reference {
+  stroke: var(--ink);
+}
+
+.app figure.no2 svg.years text.reference {
+  fill: var(--ink);
+}

@@ -1,5 +1,6 @@
 import { yearBars } from "../../platform/charts/yearBars";
 import type { No2AnnualMean } from "./no2AnnualMeans";
+import { no2Colour } from "./no2Colour";
 import { NO2_SCALE_TOP } from "./no2ScaleTop";
 
 /** Below this share of the year's hours, the mean is drawn as an outline: it is a mean of something less than a year. */
@@ -19,7 +20,7 @@ export function renderNo2Years(years: readonly No2AnnualMean[], chosen: { readon
   const bars = years.map(({ year, mean, measured }) => {
     const partial = measured < ENOUGH;
     const why = partial ? `, from only ${Math.round(measured * 100)}% of the year's hours` : "";
-    return { year, value: mean, partial, chosen: year >= chosen.from && year <= chosen.to, title: `${year}: ${mean.toFixed(1)} µg/m³${why}` };
+    return { year, value: mean, partial, colour: no2Colour(mean).background, chosen: year >= chosen.from && year <= chosen.to, title: `${year}: ${mean.toFixed(1)} µg/m³${why}` };
   });
   return yearBars(bars, { label: "Mean NO2 of each year, µg/m³", top: NO2_SCALE_TOP, references: REFERENCES });
 }
