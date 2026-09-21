@@ -5,7 +5,9 @@ import { defineConfig, type Plugin } from "vite";
 import { allFeatures } from "./src/features/allFeatures";
 import { Site } from "./src/platform/content/Site";
 import { fillStills } from "./src/platform/page/fillStills";
+import { formerAddresses } from "./src/platform/page/formerAddresses";
 import { renderDocument } from "./src/platform/page/renderDocument";
+import { renderRedirect } from "./src/platform/page/renderRedirect";
 
 const CONTENT = "content";
 const ORIGIN = "https://david-rodenas.com";
@@ -73,6 +75,12 @@ function site(): Plugin {
         const route = (request.url ?? "/").split("?")[0] ?? "/";
         const withSlash = route.endsWith("/") ? route : `${route}/`;
         const page = readSite().at(withSlash);
+        const moved = formerAddresses(readSite()).find(({ from }) => from === withSlash);
+        if (!page && moved) {
+          response.statusCode = 302;
+          response.setHeader("Location", moved.to);
+          return response.end();
+        }
         if (!page) return next();
 
         const html = render(readSite(), page, {
@@ -104,6 +112,11 @@ function site(): Plugin {
           fileName: `${page.route.slice(1)}index.html`,
           source: render(built, page, assets),
         });
+      }
+
+      // A page that moved leaves its new address behind at the old one.
+      for (const { from, to } of formerAddresses(built)) {
+        this.emitFile({ type: "asset", fileName: `${from.slice(1)}index.html`, source: renderRedirect(to, ORIGIN) });
       }
 
       // GitHub Pages serves this for anything it cannot find.

@@ -47,7 +47,7 @@ Two performance changes in the AngularJS compiler are mine. They shipped in
 component. So are two benchmark suites I wrote when maintainers asked for
 numbers they could check -- one of which measured the `ngClass` rewrite built
 on my work at more than a hundred times faster on the case that mattered. None
-of it is documentation. [The whole account.](/code/)
+of it is documentation. [The whole account.](/open-source/angularjs/)
 
 ## The world at the top
 

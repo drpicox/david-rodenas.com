@@ -1,7 +1,8 @@
 ---
 title: What strangers install
 summary: Thirty-four npm packages, most written for one project. A few kept being downloaded for years, by people nobody told about them.
-order: 3
+order: 2
+was: /projects/packages/
 ---
 
 # What strangers install

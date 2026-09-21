@@ -22,6 +22,11 @@ them. It is the one I built the most for.
 
 The games are the students'. What is mine is what they stood on.
 
+Also in here, from another university and another year: [Raft, and a recipe
+for concurrency](/teaching/raft/) -- a consensus algorithm as a laboratory
+assignment, and three steps that let someone writing their first concurrent
+program get it right.
+
 ## A post is a test
 
 Before writing code, a student writes a post: a markdown file with a title, a

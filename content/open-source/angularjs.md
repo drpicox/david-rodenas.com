@@ -1,7 +1,8 @@
 ---
 title: Two public APIs of AngularJS are mine
 summary: Core work in AngularJS, none of it documentation — the compiler, ngClass, the testing module, two benchmark suites and a directive — and what is still in the final release.
-order: 3
+order: 1
+was: /code/
 ---
 
 # Two public APIs  

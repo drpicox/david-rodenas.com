@@ -234,6 +234,21 @@ the idea and its sums, tested — the rocket against the Usenet Physics FAQ's
 table — with the first moment in the HTML. Each page links the original, which
 does more. The same as was done with the worlds, for the same reason.
 
+### A page that moves says where it was
+`code/` became `open-source/` once there was an `open-data/` beside it, and
+the AngularJS account moved a level down to make room for the npm packages.
+Links from outside cannot be edited, so a page carries its old addresses in
+its front matter — `was: /code/` — and the build leaves a page at each that
+sends the reader on and tells a search engine which address to keep. A static
+host cannot answer "moved"; it can only serve a file that says so. A living
+page always wins over a former address.
+
+### A section opens with what is in it
+A directory's page used to end with its `ls`, which a reader met after two
+thousand words or not at all. Sections that hold several things now say so
+first, a line for each, the way `simulators/` always did; and `research/`,
+which was one long page, is an opening and two parts.
+
 ### Code is coloured at build time, by a tokeniser written here
 
 The pages with code on them — the AngularJS one, the teaching one — read

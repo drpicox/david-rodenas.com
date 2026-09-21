@@ -25,56 +25,13 @@ Universitat Rovira i Virgili, defended in Tarragona on 8 July 2011, cum laude,
 directed by Francesc Serratosa. Eight years, two universities, and an unusual
 spread for one thesis: a runtime, a simulator, a compiler, and an algorithm.
 
-## The tools: UPC and the Barcelona Supercomputing Center, 2003–2008
+## What is in it
 
-OpenMP on many cores :: IBM's Cyclops put 32 cores and 128 hardware threads on one chip, with small caches. A first port of OpenMP to it had scaled poorly. I found why: the threads' stacks were fighting over the same cache lines. I fixed it twice, once in the runtime and once as a change proposed to the hardware, and showed scalability 40% to 100% better than the earlier port, and speed-ups above 80 on the multi-zone benchmarks. Written with IBM T.J. Watson Research; I am first author. [IPDPS 2005](https://doi.org/10.1109/IPDPS.2005.317).
-OpenMP without shared memory :: The same annotated programs running on a cluster, over software distributed shared memory instead of MPI. It works, and it works best on programs with two levels of parallelism, coarse outside and fine inside. That observation came back six years later.
-A simulator of a heterogeneous chip :: CellSim, a modular simulator of the Cell processor. It is team work and I am its third author. What is mine is the base and its modularity, and above all the protocol by which modules talk to each other purely as memory accesses, so that any of them can be connected to any other. My thesis calls that protocol its best contribution.
-A compiler for streams :: In the European project ACOTES, with NXP, IBM Haifa, INRIA and STMicroelectronics: annotations that turn a serial C program into a pipeline of tasks passing data along. Two clauses, `input` and `output`, are enough. I wrote the ACOTES phase of the BSC's Mercurium compiler — the compiler itself is not mine — with its runtime library and a tracing library. [SAMOS 2007](https://doi.org/10.1007/978-3-540-73625-7_13), and the consortium's paper in the [International Journal of Parallel Programming](https://doi.org/10.1007/s10766-010-0132-7).
+- [Tools for parallel machines](/research/parallel-tools/) -- UPC and the Barcelona Supercomputing Center, 2003–2008. OpenMP on a chip with 128 hardware threads, written with IBM Research; OpenMP on a cluster with no shared memory; a simulator of a heterogeneous processor; and a compiler that turns annotated serial C into streams, in a European project.
+- [Graph matching on a desktop](/research/graph-matching/) -- Universitat Rovira i Virgili, 2009–2011. Two computer-vision algorithms rewritten for a multi-core processor beside a graphics card: up to thirty-five times faster, without changing the result by a bit.
 
-## In between: a database engine, 2008–2009
-
-Between the two halves of the thesis I spent a year at DAMA-UPC, the group
-behind the graph database DEX, later sold as Sparksee. The engine is theirs.
-My work was to make its core concurrent, which until then ran under one
-global lock.
-
-Three things from that year have stayed with me. Measure the locks
-themselves — I put counters inside them, and they said the contention was
-nearly all in one place, the buffer pool, which is where the effort then
-went. Write the protocol down before the code: the pool's pin and unpin
-became lock-free, a counter and three flags packed into one word changed by
-compare-and-swap, and I verified it by hand, step by step, with invariants
-and pre- and postconditions, because no test finds the interleaving that
-happens once a week. And give the people using the engine tasks instead of
-threads: a small framework for its Java interface, with serial, parallel and
-for-each tasks, cancellation, and exceptions that arrive where they should.
-
-In the same group I built a tool that loads the diagnostic dumps of a hung
-IBM DB2 into a graph and looks there for what is waiting on what, in
-collaboration with IBM. That work is under its own terms, and a description
-is all there is of it here.
-
-## The application: Universitat Rovira i Virgili, 2009–2011
-
-Computer vision likes to describe things as graphs: a house is a roof, a
-door, two windows, and how they touch. Comparing two graphs exactly is
-exponential in their size, and even the good approximations were too slow to
-use outside a laboratory.
-
-I took two of those algorithms, graduated assignment for a pair of graphs and
-for the common labelling of many, and rewrote them for what a desktop had
-become: a multi-core processor beside a graphics card. The method is what the
-first half had taught. Transform the equations, not the code — splitting,
-tiling and reordering loops in a notation close to the mathematics — so that
-the program falls into the same two levels of parallelism, and the result
-does not change by a single bit. Up to about thirty-five times faster than
-the serial version, on hardware chosen for its low power consumption: close
-to real time, which is what a robot or a fingerprint reader needs.
-
-Both are first-author papers in Springer's Lecture Notes in Computer Science:
-[IbPRIA 2011](https://doi.org/10.1007/978-3-642-21257-4_63) and
-[GbR 2011](https://doi.org/10.1007/978-3-642-20844-7_14).
+In between the two I spent a year making the core of a database engine
+concurrent.
 
 ## What it left
 
@@ -93,3 +50,5 @@ wrote a consensus algorithm by, so that students could.
 The thesis lists sixteen publications. The record:
 [the thesis, at Dialnet](https://dialnet.unirioja.es/servlet/tesis?codigo=99231),
 and [what DBLP indexes](https://dblp.org/pid/36/5675).
+
+Use `ls` to see the parts, or `cat parallel-tools` to read one here.
