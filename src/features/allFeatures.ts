@@ -2,6 +2,7 @@ import type { Feature } from "../platform/plugin/Feature";
 import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
 import { headlineFeature } from "./headline/headlineFeature";
+import { nextWordFeature } from "./next-word/nextWordFeature";
 import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
@@ -23,4 +24,5 @@ export const allFeatures: readonly Feature[] = [
   headlineFeature,
   airQualityFeature,
   weatherFeature,
+  nextWordFeature,
 ];

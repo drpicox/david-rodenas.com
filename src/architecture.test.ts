@@ -98,6 +98,14 @@ describe("the shape of the source", () => {
     expect(seen.size).toBeGreaterThan(5);
   });
 
+  // The build loads the features for their stills, and a tool loads them for their sources.
+  it("keeps every feature loadable in node: the browser's copy of the site is handed to a program, never imported", () => {
+    const reaching = sources
+      .filter((file) => file.startsWith(join(SRC, "features")))
+      .filter((file) => importsOf(file).some((target) => target.endsWith("platform/browser/siteInBrowser.ts")));
+    expect(reaching.map(here)).toEqual([]);
+  });
+
   it("installs every feature there is a folder for", () => {
     const folders = readdirSync(join(SRC, "features"), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())

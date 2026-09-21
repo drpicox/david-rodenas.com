@@ -1822,3 +1822,177 @@ main,
 .app figure.no2 svg.years text.reference {
   fill: var(--ink);
 }
+
+/* ---- the next word: the text being written, what may follow, and the table it reads from ---- */
+
+.app textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.8em;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.4em 0.6em;
+  border: 1px solid var(--rule);
+  border-radius: 0.2em;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app .dials input[type="text"] {
+  display: block;
+  width: 100%;
+  margin-top: 0.2em;
+}
+
+.app .next-word .written {
+  min-height: 4.5em;
+  padding: 0.8em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.app .next-word .written mark {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+  color: inherit;
+  border-radius: 0.15em;
+  padding: 0 0.15em;
+}
+
+.app .next-word .caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 0.2em;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+.app .next-word h4 {
+  margin: 1.2em 0 0.4em;
+  font-size: 0.85rem;
+  color: var(--dim);
+  text-align: left;
+}
+
+.app .next-word ol.offered {
+  list-style: none;
+  margin: 0 0 1.6em;
+  padding: 0;
+  display: grid;
+  gap: 0.25em;
+}
+
+.app .next-word ol.offered button {
+  display: grid;
+  grid-template-columns: 9em 1fr 3.2em;
+  align-items: center;
+  gap: 0.6em;
+  width: 100%;
+  padding: 0.2em 0.5em;
+  border: 1px solid transparent;
+  text-align: left;
+  font-family: var(--mono);
+  color: var(--ink);
+}
+
+.app .next-word ol.offered button:hover {
+  background: var(--sunken);
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.app .next-word .word {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app .next-word .chance {
+  height: 0.7em;
+  border-radius: 0 2px 2px 0;
+  width: calc(var(--p) * 100%);
+  min-width: 1px;
+  background: var(--accent);
+}
+
+.app .next-word .figure {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+
+.app table.learnt {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.learnt caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: 0.4em;
+  font-family: var(--text);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--dim);
+}
+
+.app table.learnt th,
+.app table.learnt td {
+  padding: 0.15em 0.6em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app table.learnt th {
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app table.learnt td:nth-child(n + 3),
+.app table.learnt th:nth-child(n + 3) {
+  text-align: right;
+}
+
+.app table.learnt tr.now td {
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+}
+
+.app textarea[hidden] {
+  display: none;
+}
+
+/* Wide enough, the writing and the table it is read from stand side by side: the eye goes from one to the other. */
+@media (min-width: 56rem) {
+  .app .next-word {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto 1fr;
+    column-gap: 2em;
+  }
+
+  .app .next-word > * {
+    grid-column: 1;
+  }
+
+  .app .next-word > table.learnt {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: start;
+  }
+
+  .app .next-word > .written {
+    margin-top: 0;
+  }
+}
+
+.app .next-word ol.offered {
+  align-self: start;
+  align-content: start;
+}

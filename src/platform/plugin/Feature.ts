@@ -1,9 +1,20 @@
 import type { Page } from "../content/Page";
+import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
 import type { Command } from "../shell/Command";
 
-/** A program a page makes room for: `::name` in the markdown becomes its host. Returns how to stop it. */
-export type App = (host: HTMLElement) => (() => void) | void;
+/** What a program is handed besides its place: the site it stands in, for the few that read it. */
+export interface Surroundings {
+  readonly site: Site;
+}
+
+/**
+ * A program a page makes room for: `::name` in the markdown becomes its host.
+ * Returns how to stop it. The site is handed over rather than imported,
+ * because a feature is also loaded in node — for its stills and its sources —
+ * where the browser's copy of the site does not exist.
+ */
+export type App = (host: HTMLElement, surroundings: Surroundings) => (() => void) | void;
 
 /**
  * What a program's place holds before any script runs, written into the HTML

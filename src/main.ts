@@ -21,11 +21,11 @@ function mount(): void {
   const page = siteInBrowser.at(route);
 
   // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
-  let stopApps = mountApps(apps);
+  let stopApps = mountApps(apps, { site: siteInBrowser });
   let terminal: Terminal | null = null;
   const goTo = mountNavigation(siteInBrowser, (arrived, kept) => {
     stopApps();
-    stopApps = mountApps(apps);
+    stopApps = mountApps(apps, { site: siteInBrowser });
     for (const feature of allFeatures) feature.arrive?.(arrived);
     // A move the shell made itself is not news to the shell; a link's is.
     if (!kept) terminal?.moveTo(arrived.route);
