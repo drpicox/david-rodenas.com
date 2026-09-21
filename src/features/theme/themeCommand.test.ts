@@ -32,42 +32,43 @@ function run(theme: Theme, cwd: string, args: readonly string[]) {
 describe("theme", () => {
   it("asks for a toggle when it is given nothing, and says what it became", () => {
     const theme = fakeTheme();
-    expect(run(theme, "/", []).text).toContain("theme: dark");
+    expect(run(theme, "/", []).text).toContain("[☾︎ dark]");
     expect(theme.asked).toEqual(["toggle"]);
   });
 
   it("passes a named choice straight through", () => {
     const theme = fakeTheme();
     theme.settled = "light";
-    expect(run(theme, "/", ["light"]).text).toContain("theme: light");
+    expect(run(theme, "/", ["light"]).text).toContain("[☀︎ light]");
     expect(theme.asked).toEqual(["light"]);
   });
 
   it("takes auto to mean the system's choice", () => {
     const theme = fakeTheme();
     theme.settled = "system";
-    expect(run(theme, "/", ["auto"]).text).toContain("theme: system");
+    expect(run(theme, "/", ["auto"]).text).toContain("[◐︎ system]");
     expect(theme.asked).toEqual(["system"]);
   });
 
   // Whoever can click should not have to know that `theme system` is a thing to type.
-  it("offers the choices it did not take, as things to click", () => {
+  it("shows all three, each with its sign, marks the one it landed on, and makes the others things to click", () => {
     const theme = fakeTheme();
     theme.settled = "dark";
     const outcome = run(theme, "/", ["dark"]);
-    expect(outcome.text).toBe("theme: dark\n  theme light   theme system");
+    expect(outcome.text).toBe("theme   ☀︎ light   [☾︎ dark]   ◐︎ system");
+    expect(outcome.html).toContain('<strong aria-current="true">☾︎ dark</strong>');
     expect(outcome.html).toContain('data-run="theme light"');
-    // What is offered is the command itself, so that reading it teaches what typing it would do.
-    expect(outcome.html).toContain(">theme light</a>");
+    // What is shown is the choice; the command it runs is in its title, and in the echo once pressed.
+    expect(outcome.html).toContain(">☀︎ light</a>");
     expect(outcome.html).toContain('data-run="theme system"');
     // Not the one it is already on: clicking it would do nothing and say so.
     expect(outcome.html).not.toContain('data-run="theme dark"');
   });
 
-  it("offers the other two when the system is deciding", () => {
+  it("marks the system when the system is deciding", () => {
     const theme = fakeTheme();
     theme.settled = "system";
-    expect(run(theme, "/", ["system"]).text).toBe("theme: system\n  theme light   theme dark");
+    expect(run(theme, "/", ["system"]).text).toBe("theme   ☀︎ light   ☾︎ dark   [◐︎ system]");
   });
 
   it("offers nothing to click when it refused", () => {

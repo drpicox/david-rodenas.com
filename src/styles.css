@@ -725,9 +725,14 @@ dl dd {
   opacity: 1;
 }
 
-/* A page that insists on its own theme has no use for the button. */
-:root[data-page-theme] .theme-toggle {
-  display: none;
+/*
+ * A page that insists on its own theme has no use for the button, but the
+ * button keeps its place: taking it out let the navigation beside it reflow,
+ * and the header of one page stopped lining up with the header of the last.
+ * Dimmed, it still answers — the shell says why it will not switch here.
+ */
+:root[data-page-theme] .theme-toggle.ready {
+  opacity: 0.35;
 }
 
 .theme-toggle:hover {
@@ -2199,4 +2204,18 @@ main,
 
 .app figure.runs figcaption {
   margin-top: 0.8em;
+}
+
+/* The theme's three choices: the one in force stands out, the others are there to press. */
+pre.choices strong {
+  color: var(--accent);
+}
+
+pre.choices a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+pre.choices a:hover {
+  color: var(--ink);
 }

@@ -1,4 +1,3 @@
-import { escapeHtml } from "../../platform/markdown/escapeHtml";
 import type { Command } from "../../platform/shell/Command";
 import type { Outcome } from "../../platform/shell/Outcome";
 import type { Theme } from "./Theme";
@@ -10,31 +9,32 @@ function isChoice(value: string): value is ThemeChoice {
   return (CHOICES as readonly string[]).includes(value);
 }
 
+/** A sign for each, as text and never as an emoji: the variation selector after it says so to the fonts that would choose otherwise. */
+const SIGNS: Readonly<Record<(typeof CHOICES)[number], string>> = { light: "\u2600\uFE0E", dark: "\u263E\uFE0E", system: "\u25D0\uFE0E" };
+
 /**
- * What it became, and the two it did not.
+ * All three, always, with the one it landed on marked.
  *
- * A toggle is the right default — one word, one keystroke, and most of the time
- * it is what you meant — but it hides that there are three. So the answer says
- * where it landed and then offers the other two, in both forms, the way `ls`
- * does: plain for whoever is reading text, and a thing to click for whoever
- * can. Clicking one runs the very command it names.
- *
- * What is offered is the whole command and not the bare word. `light  system`
- * under a line reading `theme: dark` is three words with no grammar between
- * them, and it is not clear whether they are what the theme is or what it
- * could be. `theme light` is a thing you could have typed, so the same line
- * answers both "what else is there" and "how would I ask for it" — and for
- * whoever clicks instead, the echo above the next answer is the command they
- * would have typed anyway.
+ * A toggle is the right default — one word, one keystroke, and most of the
+ * time it is what you meant — but it hides that there are three. An earlier
+ * answer named where it had landed and offered the other two as commands to
+ * type; it was accurate and read like a log. This one is the row of choices a
+ * reader expects, each with its sign — sun, moon, and the half of each that
+ * the button in the header wears — so that where you are is seen before it is
+ * read. The plain text marks the current one with brackets; the markup makes
+ * it strong and makes the others things to click, and clicking one runs the
+ * very command its title names, so the echo above the next answer is what
+ * would have been typed anyway.
  */
 function settled(became: "light" | "dark" | "system"): Outcome {
-  const others = CHOICES.filter((choice) => choice !== became);
-  const offer = (choice: string) => `theme ${choice}`;
+  const label = (choice: (typeof CHOICES)[number]) => `${SIGNS[choice]} ${choice}`;
   return {
-    text: `theme: ${became}\n  ${others.map(offer).join("   ")}`,
-    html: `<pre>theme: ${became}\n  ${others
-      .map((choice) => `<a href="#" data-run="${escapeHtml(offer(choice))}">${escapeHtml(offer(choice))}</a>`)
-      .join("   ")}</pre>`,
+    text: `theme   ${CHOICES.map((choice) => (choice === became ? `[${label(choice)}]` : label(choice))).join("   ")}`,
+    html: `<pre class="choices">theme   ${CHOICES.map((choice) =>
+      choice === became
+        ? `<strong aria-current="true">${label(choice)}</strong>`
+        : `<a href="#" data-run="theme ${choice}" title="theme ${choice}">${label(choice)}</a>`,
+    ).join("   ")}</pre>`,
   };
 }
 
