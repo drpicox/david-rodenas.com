@@ -53,7 +53,8 @@ The top level says what this is: a frame, and the features standing in it.
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
-  `developer-meetings/`, `headline/`, `air-quality/`, `weather/`. A feature owns everything about itself: its rules,
+  `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,
+  `rocket/`, `packages/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.
@@ -76,6 +77,9 @@ talk to each other.
   one requirement that outranks the folder layout.
 - `src/platform` must never import from `src/features`. The dependency only
   points one way.
+- **A feature must load in node.** The build loads every feature for its
+  stills and a tool loads them for their sources, so a feature never imports
+  the browser's copy of the site: a program is handed it (`Surroundings`).
 - A test asserts a claim about the world, not the shape of the code. When a
   test fails, first ask whether the claim was wrong — twice tonight it was.
 - **No dependency that is not a requirement.** `eclipsi26` and `heatwave` ship

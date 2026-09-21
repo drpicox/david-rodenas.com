@@ -218,6 +218,22 @@ site's blue for the rest. A count of days has no limit to be good or bad against
 is already held: ask again for the years it has, `npm run data -- --only no2
 --year 2018 --year 2019 …`. The other stations' files come back byte for byte.
 
+### A program is handed the site; it does not go and get it
+The next-word model can read this website, and the first version imported the
+browser's copy of the site to do it. That import reaches `virtual:site`, which
+exists only inside the bundler, so the build — which loads every feature for
+its stills — stopped loading at all, and so did the tests. A feature is loaded
+in three places (the browser, the build, the refresh tool) and may assume only
+what all three have. So `App` takes a second argument, `Surroundings`, and
+`main.ts` hands the site over. `architecture.test.ts` keeps it that way.
+
+### Rewritten here, with the original a link away
+The next-word model and the rocket exist as separate apps with their own
+dependencies (React, Three.js). Here they are written again on nothing, smaller:
+the idea and its sums, tested — the rocket against the Usenet Physics FAQ's
+table — with the first moment in the HTML. Each page links the original, which
+does more. The same as was done with the worlds, for the same reason.
+
 ### Code is coloured at build time, by a tokeniser written here
 
 The pages with code on them — the AngularJS one, the teaching one — read

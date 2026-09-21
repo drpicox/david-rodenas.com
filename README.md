@@ -40,6 +40,9 @@ and `src/architecture.test.ts` keeps it that way.
 | `features/technical-debt`, `features/developer-meetings` | the two simulators |
 | `features/air-quality` | NO2 by hour of the day and month of the year, and the yearly source it keeps |
 | `features/weather` | days over a threshold, year by year, at nine Meteocat stations, and the yearly source it keeps |
+| `features/next-word` | a language model reduced to counting which word follows which, and dice |
+| `features/rocket` | the relativistic rocket: a trip on board, at home, and its fuel |
+| `features/packages` | what npm counted for the packages, a finished year at a time |
 | `platform/data` | open data kept a finished year at a time: which years are missing, how to ask, how to fail without losing anything |
 | `platform/charts` | charts of years as plain SVG strings, so the build and the browser draw the same thing |
 | `features/headline` | the home headline, typed over with what else the page says |
@@ -102,7 +105,6 @@ fetched year back to `main`.
 ### Not done
 
 - `work/` — the five platforms, one page each, as they are written
-- the bigram demo
 - a photograph, if one appears
 
 ### Where the content comes from
