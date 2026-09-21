@@ -6,10 +6,14 @@ order: 4
 
 # One lock at a time
 
-For a year I worked inside a database engine. It was not mine — its trees,
-its bitmaps, its buffer pool were there when I arrived — and I worked all
-over it. This page is about one part of that year: making its core
-concurrent. It ran under one global lock, and that is worse than it sounds.
+For a year I worked inside a database engine. It was not mine — everything
+that makes it a database was there when I arrived — and I worked all over it.
+This page is about one part of that year: making its core concurrent. It ran
+under one global lock, and that is worse than it sounds.
+
+What follows is about the techniques, which are anybody's, and about what
+each one bought, which I measured. How the engine is made inside is its
+owners' business, and is not here.
 
 ## Where it started
 
@@ -36,10 +40,9 @@ A profiler says where the time goes. It does not say who was waiting for
 whom. So I put counters inside the locks themselves: how many times each was
 taken, and how many of those found it already held.
 
-The answer was not spread out. One lock, the buffer pool's, was taken 93
-million times in a run, and 6.6% of those collided; every other lock sat near
-zero. That redirected the whole effort. A query makes about seven trips to
-the buffer pool for every operation, nearly all of them to read.
+The answer was not spread out. One lock was taken 93 million times in a run,
+and 6.6% of those collided; every other lock sat near zero. That redirected
+the whole effort.
 
 ## The steps, and what each one bought
 
@@ -47,43 +50,54 @@ Every step lived on a branch of its own and was run through the same
 benchmark, so each has a number. Speed-up with eight threads:
 
 ```bars
-speed-up with eight threads, as each step went in
+speed-up with eight threads, as each technique went in
 = 1 :: the original with one thread
-where it started, one global lock :: 0.77
-each thread its own temporaries :: 0.75
-a shared/exclusive lock on the graph :: 0.36 !
-the registry's counters made atomic :: 2.41
-pin and unpin without locks :: 2.82
-a lock for each line of the buffer pool :: 3.34
+where it started: one global lock :: 0.77
+scratch space of each thread's own :: 0.75
+readers share, writers exclude :: 0.36 !
+a lock replaced by atomic counters :: 2.41
+the hottest path made lock-free :: 2.82
+one lock split into many :: 3.34
 the same, tuned :: 4.39
 ```
 
-The marked bar is the one worth the page. Letting readers into the graph
-together was the right change, and it made everything twice as slow.
+Six techniques, and none of them is exotic.
+
+Thread-local scratch space :: What every operation scribbles on while it works stops being shared. On its own it bought nothing, because nothing could run side by side yet to fight over it; it had to be there before anything else could work.
+A shared/exclusive lock :: Queries read and rarely write, so the one lock becomes shared for readers and exclusive for writers, swapped in a critical section at a time.
+Atomic counters :: Where a lock only protected a count going up and down, the count becomes atomic and the lock goes.
+A lock-free hot path :: The operation every query performs thousands of times is rewritten around compare-and-swap: read the state, compute the new one, swap only if nobody moved it, and undo if a second thing it depends on changed meanwhile.
+Finer granularity :: What is left of that lock is split: one lock for each part of the structure instead of one for all of it, so that two threads collide only when they want the same part.
+Positional I/O, and ordered locking :: Files read and written by position, so that a file needs no lock just to keep its cursor still; and whenever several locks must be held at once, they are taken in order of memory address, which is the whole of deadlock avoidance when you can do it.
+
+## The bar that went the wrong way
+
+The marked bar is the one worth the page. Letting readers in together was
+the right change, and it made everything twice as slow.
 
 Why would letting readers in be slower than making them queue? Because of
 what is underneath. With one exclusive lock at the door, a thread waits once,
-and then finds every lock inside free: the registry's, the bitmaps', the
-buffer pool's are all taken and released with nobody else asking, which costs
-almost nothing. Open the door and the readers meet at every one of those
-inner locks instead — about seven times an operation at the buffer pool
-alone — and a thread that finds a lock taken gives up the processor and has
-to be woken again. My notes of the time say it in a line: *each conflict
-means losing the CPU*. One long queue had been traded for thousands of short
-ones, each with a sleep in it.
+and then finds every lock inside free: they are all taken and released with
+nobody else asking, which costs almost nothing. Open the door and the readers
+meet at every one of those inner locks instead, many times an operation, and
+a thread that finds a lock taken gives up the processor and has to be woken
+again. My notes of the time say it in a line: *each conflict means losing the
+CPU*. One long queue had been traded for thousands of short ones, each with a
+sleep in it.
 
-The next bar says which lock it was. Every operation signs in and out of a
-registry, and the registry had a lock of its own; making its counters atomic,
-and nothing else, took the same benchmark from 0.36 to 2.41. Nearly every
-query had slowed down by the same factor under the shared lock, and nearly
-every one came back with that single change.
+The next bar says which lock it was. Replacing one inner lock by atomic
+counters, and nothing else, took the same benchmark from 0.36 to 2.41. Nearly
+every query had slowed down by the same factor under the shared lock, and
+nearly every one came back with that single change.
 
 A concurrent program is only as wide as its narrowest lock, and widening any
-other makes the queue at that one longer. The three steps after it take the
-inner locks away one at a time, and only then is what the first step earned
-collected.
+other makes the queue at that one longer. Coarse to fine is the right
+direction, and the first step along it can cost you, until the last of the
+narrow places is gone.
 
-Which lock, too, mattered more than I expected. I timed some twenty
+## Which lock
+
+Which primitive, too, mattered more than I expected. I timed some twenty
 combinations of mutex and lock — POSIX's, spins, futexes, condition
 variables, with priority for readers or without — and on the same query with
 eight threads the slowest took eight times as long as the fastest.
@@ -107,42 +121,13 @@ exclusive -->|someone asks| awaited[Exclusive, awaited]
 awaited -->|the writer leaves, and wakes them| idle
 ```
 
-Operations that hold several bitmaps take their locks in
-order of memory address, which is the whole of deadlock avoidance when you can
-do it. And files are read and written by position, `pread` and `pwrite`, so
-that a file needs no lock just to keep its cursor still.
+## Write it down first
 
-The lock-free pin is the delicate one. The pin counter and the flags —
-present, dirty, recent — are packed into one word and changed by
-compare-and-swap: copy it, change the copy, swap only if nobody moved it. But
-a pin touches two things, the line's state and which page owns the line, and
-nobody promises the line is still yours between the two. So: pin, check the
-owner, and undo the pin if it changed.
-
-Drawn as states, one line of the pool. Only the two moves marked *lock* take
-the pool's lock — bringing a page in, and putting one out — and they are the
-rare ones. Every other move is one compare-and-swap, with no lock anywhere.
-
-```flow
-empty[Free\nno page in the line] -->|read in · lock| pinned[Pinned\npins > 0 · recent]
-pinned -->|unpin| recent[Recent\npins = 0 · recent]
-recent -->|pin| pinned
-recent -->|the clock passes| unrecent[Unrecent\npins = 0 · not recent]
-unrecent -->|pin| pinned
-unrecent -->|evict · lock| empty
-```
-
-A page that has been written to has the same three states again, marked
-dirty, and is flushed before its line is freed. A line with a pin on it is
-never flushed and never evicted, and that is the invariant everything else
-leans on.
-
-Before writing the lock-free pin I wrote it down: every atomic step numbered,
-each with its precondition and postcondition, under the invariants of the
-whole — *a pinned line is not recent; a line that is not present has no pins;
-present may be set only under the lock, but cleared by anyone, atomically.* A
-first attempt, without that, had been thrown away for its bugs. No test finds
-the interleaving that happens once a week; an invariant does.
+Before writing the lock-free path I wrote it down: every atomic step
+numbered, each with its precondition and postcondition, under the invariants
+of the whole, and drew its states. A first attempt, without that, had been
+thrown away for its bugs. No test finds the interleaving that happens once a
+week; an invariant does.
 
 ## Where it ended
 
@@ -170,11 +155,11 @@ left: the most advanced version still had bugs open.
 
 ## The other half: tasks
 
-Making the engine safe for threads is no use to someone who cannot write
-threads. So the engine's Java interface got a small framework of tasks:
-serial, parallel and for-each, with cancellation, and exceptions that arrive
-where the task was started. The benchmark's queries were rewritten on it to
-see whether it held.
+Making an engine safe for threads is no use to someone who cannot write
+threads. So its programming interface got a small framework of tasks: serial,
+parallel and for-each, with cancellation, and exceptions that arrive where
+the task was started. The benchmark's queries were rewritten on it to see
+whether it held.
 
 It is the same idea as [my thesis](/research/), which it sat in the middle of, and as
 [the recipe I used for Raft](/teaching/raft/) four years later: the machine
