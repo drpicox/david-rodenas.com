@@ -51,7 +51,14 @@ blog post the team wanted to write anyway, in their own words rather than in
 Gherkin's, and compiled into the tests rather than interpreted at run time.
 
 One rule, enforced in code: *the writer of a post cannot be the coder who
-implements it.* And the compiler read the steps and refused the vague ones.
+implements it.* Within a team, one student wrote the post and another built
+it, so sooner or later the two had to sit down over a sentence that one of
+them had thought was clear. That was the lesson, and no lecture gives it: what
+you wrote is what the other person understood, and the only way to find out
+the difference is to watch someone build from it. Then you learn to write the
+next one better.
+
+The compiler did its part: it read the steps and refused the vague ones.
 Every post had to have at least one step with *should* in it, and to end on
 one. A step could not say *given* and *should* at once. A step with *there is*,
 *has* or *needs* in it had to say which it was, setup or assertion, or it was
