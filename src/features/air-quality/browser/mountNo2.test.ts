@@ -49,6 +49,34 @@ describe("the NO2 figure, once the script is there", () => {
     expect(host.querySelector("figcaption")?.textContent).toContain("2019–2020");
   });
 
+  it("keeps the years being looked at when the station changes, as far as the new station has them", async () => {
+    const other = { ...station, code: "11111111", years: { "2020": station.years["2020"], "2021": station.years["2020"] } };
+    vi.stubGlobal("fetch", async (url: string) => ({ json: async () => (url.endsWith("index.json") ? index : url.includes("08019043") ? other : station) }));
+    const host = document.createElement("div");
+    mountNo2(host);
+    await settled();
+    host.querySelector('.hit[data-year="2020"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    const stations = host.querySelector("select") as HTMLSelectElement;
+    stations.value = "08019043";
+    stations.dispatchEvent(new Event("change"));
+    await settled();
+    expect(host.querySelector("figcaption")?.textContent).toContain(", 2020");
+  });
+
+  it("goes back to the whole record when the new station has none of those years, or when no years had been chosen", async () => {
+    const other = { ...station, code: "11111111", years: { "2021": station.years["2020"], "2022": station.years["2020"] } };
+    vi.stubGlobal("fetch", async (url: string) => ({ json: async () => (url.endsWith("index.json") ? index : url.includes("08019043") ? other : station) }));
+    const host = document.createElement("div");
+    mountNo2(host);
+    await settled();
+    host.querySelector('.hit[data-year="2019"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    const stations = host.querySelector("select") as HTMLSelectElement;
+    stations.value = "08019043";
+    stations.dispatchEvent(new Event("change"));
+    await settled();
+    expect(host.querySelector("figcaption")?.textContent).toContain("2021–2022");
+  });
+
   it("averages only the days asked for", async () => {
     served();
     const host = document.createElement("div");

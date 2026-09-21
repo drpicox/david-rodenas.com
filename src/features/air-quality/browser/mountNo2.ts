@@ -53,9 +53,15 @@ export function mountNo2(host: HTMLElement): () => void {
     try {
       const arrived = await asked;
       if (stopped || stationSelect.value !== code) return;
+      // Years the reader chose are kept across stations, to compare the same years in two places; a
+      // station that has none of them, or a reader who had chosen none, gets the whole record.
+      const whole = wholeRecord(arrived);
+      const chosen = station !== null && (selection.from !== wholeRecord(station).from || selection.to !== wholeRecord(station).to);
+      // Snapped to years this station has: a record can have a hole in it, and the lists only offer what is held.
+      const within = Object.keys(arrived.years).map(Number).filter((year) => year >= selection.from && year <= selection.to);
+      const kept = chosen && within.length > 0 ? { from: Math.min(...within), to: Math.max(...within) } : whole;
       station = arrived;
-      // A new station starts on its whole record, but keeps the days being compared.
-      selection = { ...wholeRecord(arrived), days: selection.days };
+      selection = { ...kept, days: selection.days };
       const years = Object.keys(arrived.years);
       fromSelect.replaceChildren(...years.map((year) => option(year)));
       toSelect.replaceChildren(...years.map((year) => option(year)));

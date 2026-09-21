@@ -18,7 +18,7 @@ use outside a laboratory.
 I took two of those algorithms, graduated assignment for a pair of graphs and
 for the common labelling of many, and rewrote them for what a desktop had
 become: a multi-core processor beside a graphics card. The method is what the
-first half had taught. Transform the equations, not the code — splitting,
+first half had taught, and [it has a page of its own](/research/loops-into-zones/). Transform the equations, not the code — splitting,
 tiling and reordering loops in a notation close to the mathematics — so that
 the program falls into the same two levels of parallelism, and the result
 does not change by a single bit.
