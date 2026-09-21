@@ -77,7 +77,33 @@ describe("layoutFlow", () => {
     expect(lay("A -->|why| B").edges[0]!.label).toBe("why");
   });
 
-  it("refuses a cycle, because a flow has a direction", () => {
-    expect(() => lay("A --> B\nB --> A")).toThrow(/cycle/i);
+  // A state machine goes round; the pages began to draw them, and refusing a cycle stopped being right.
+  it("draws a cycle: the arrow that closes it points back up, to the box it was aimed at", () => {
+    const layout = lay("A --> B\nB --> C\nC -->|again| A");
+    const back = layout.edges.find((edge) => edge.from === "C" && edge.to === "A");
+    const first = back?.points[0];
+    const last = back?.points[back.points.length - 1];
+    expect(back?.label).toBe("again");
+    expect(last?.[1]).toBeLessThan(first?.[1] ?? 0);
+    const a = layout.nodes.find((node) => node.id === "A");
+    expect(last?.[1]).toBeCloseTo((a?.y ?? 0) + (a?.height ?? 0));
+  });
+
+  it("keeps the two arrows of a there-and-back apart, so both can be read", () => {
+    const layout = lay("A -->|go| B\nB -->|return| A");
+    const [go, back] = layout.edges;
+    expect(go?.points[0]?.[0]).not.toBeCloseTo(back?.points[0]?.[0] ?? 0);
+  });
+});
+
+describe("an arrow that carries words past a box", () => {
+  it("is given the room for them, so they are not drawn behind the box", () => {
+    const layout = layoutFlow(parseFlow("A --> B\nB --> C\nA -->|a long way round| C"));
+    const b = layout.nodes.find((node) => node.id === "B");
+    const long = layout.edges.find((edge) => edge.label === "a long way round");
+    const passing = long?.points[1];
+    const clearOfB = (passing?.[0] ?? 0) - ((b?.x ?? 0) + (b?.width ?? 0));
+    const orBefore = (b?.x ?? 0) - (passing?.[0] ?? 0);
+    expect(Math.max(clearOfB, orBefore)).toBeGreaterThan(60);
   });
 });

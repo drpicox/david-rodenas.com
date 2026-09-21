@@ -72,6 +72,12 @@ to be woken again. My notes of the time say it in a line: *each conflict
 means losing the CPU*. One long queue had been traded for thousands of short
 ones, each with a sleep in it.
 
+The next bar says which lock it was. Every operation signs in and out of a
+registry, and the registry had a lock of its own; making its counters atomic,
+and nothing else, took the same benchmark from 0.36 to 2.41. Nearly every
+query had slowed down by the same factor under the shared lock, and nearly
+every one came back with that single change.
+
 A concurrent program is only as wide as its narrowest lock, and widening any
 other makes the queue at that one longer. The three steps after it take the
 inner locks away one at a time, and only then is what the first step earned
@@ -80,7 +86,28 @@ collected.
 Which lock, too, mattered more than I expected. I timed some twenty
 combinations of mutex and lock — POSIX's, spins, futexes, condition
 variables, with priority for readers or without — and on the same query with
-eight threads the slowest took eight times as long as the fastest. Operations that hold several bitmaps take their locks in
+eight threads the slowest took eight times as long as the fastest.
+
+The lock I ended with has five states. Readers see three of them, and the
+one called *closing* is where its fairness is: once a writer has asked, no
+new reader gets in, so a stream of readers cannot starve it.
+
+```flow
+free[Free] -->|a reader enters| shared[Shared\nreaders counted in and out]
+shared -->|a writer asks| closing[Shared, closing\nno new readers]
+closing -->|the last reader leaves| free
+```
+
+Writers see the other two, and the same idea the other way round: whoever
+asks while a writer is inside is remembered, and woken when it leaves.
+
+```flow
+idle[Free] -->|a writer enters| exclusive[Exclusive]
+exclusive -->|someone asks| awaited[Exclusive, awaited]
+awaited -->|the writer leaves, and wakes them| idle
+```
+
+Operations that hold several bitmaps take their locks in
 order of memory address, which is the whole of deadlock avoidance when you can
 do it. And files are read and written by position, `pread` and `pwrite`, so
 that a file needs no lock just to keep its cursor still.
@@ -91,6 +118,24 @@ compare-and-swap: copy it, change the copy, swap only if nobody moved it. But
 a pin touches two things, the line's state and which page owns the line, and
 nobody promises the line is still yours between the two. So: pin, check the
 owner, and undo the pin if it changed.
+
+Drawn as states, one line of the pool. Only the two moves marked *lock* take
+the pool's lock — bringing a page in, and putting one out — and they are the
+rare ones. Every other move is one compare-and-swap, with no lock anywhere.
+
+```flow
+empty[Free\nno page in the line] -->|read in · lock| pinned[Pinned\npins > 0 · recent]
+pinned -->|unpin| recent[Recent\npins = 0 · recent]
+recent -->|pin| pinned
+recent -->|the clock passes| unrecent[Unrecent\npins = 0 · not recent]
+unrecent -->|pin| pinned
+unrecent -->|evict · lock| empty
+```
+
+A page that has been written to has the same three states again, marked
+dirty, and is flushed before its line is freed. A line with a pin on it is
+never flushed and never evicted, and that is the invariant everything else
+leans on.
 
 Before writing the lock-free pin I wrote it down: every atomic step numbered,
 each with its precondition and postcondition, under the invariants of the

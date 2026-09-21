@@ -2329,3 +2329,11 @@ figure.bars figcaption {
     background-position-x: calc(var(--rule) * (100% - 6em));
   }
 }
+
+/* An arrow's words keep a little paper round them, so the arrow they name does not run through them. */
+.edge-label {
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
