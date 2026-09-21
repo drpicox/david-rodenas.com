@@ -27,7 +27,7 @@ spread for one thesis: a runtime, a simulator, a compiler, and an algorithm.
 
 ## The tools: UPC and the Barcelona Supercomputing Center, 2003–2008
 
-OpenMP on many cores :: IBM's Cyclops put 32 cores and 128 hardware threads on one chip, with small caches. A first port of OpenMP to it had scaled poorly. I found why: the threads' stacks were fighting over the same cache lines. I fixed it twice, once in the runtime and once as a change proposed to the hardware, and showed speed-ups above 80 on the multi-zone benchmarks, where the port before it had reached 15. Written with IBM T.J. Watson Research; I am first author. [IPDPS 2005](https://doi.org/10.1109/IPDPS.2005.317).
+OpenMP on many cores :: IBM's Cyclops put 32 cores and 128 hardware threads on one chip, with small caches. A first port of OpenMP to it had scaled poorly. I found why: the threads' stacks were fighting over the same cache lines. I fixed it twice, once in the runtime and once as a change proposed to the hardware, and showed scalability 40% to 100% better than the earlier port, and speed-ups above 80 on the multi-zone benchmarks. Written with IBM T.J. Watson Research; I am first author. [IPDPS 2005](https://doi.org/10.1109/IPDPS.2005.317).
 OpenMP without shared memory :: The same annotated programs running on a cluster, over software distributed shared memory instead of MPI. It works, and it works best on programs with two levels of parallelism, coarse outside and fine inside. That observation came back six years later.
 A simulator of a heterogeneous chip :: CellSim, a modular simulator of the Cell processor. It is team work and I am its third author. What is mine is the base and its modularity, and above all the protocol by which modules talk to each other purely as memory accesses, so that any of them can be connected to any other. My thesis calls that protocol its best contribution.
 A compiler for streams :: In the European project ACOTES, with NXP, IBM Haifa, INRIA and STMicroelectronics: annotations that turn a serial C program into a pipeline of tasks passing data along. Two clauses, `input` and `output`, are enough. I wrote the ACOTES phase of the BSC's Mercurium compiler — the compiler itself is not mine — with its runtime library and a tracing library. [SAMOS 2007](https://doi.org/10.1007/978-3-540-73625-7_13), and the consortium's paper in the [International Journal of Parallel Programming](https://doi.org/10.1007/s10766-010-0132-7).
@@ -64,7 +64,8 @@ is published with its proofs.
 And it left a habit. Everything I have built since for other engineers — a
 platform, a test harness, a course — starts from the question this started
 from: not what the machine can do, but what the person in front of it can be
-expected to get right.
+expected to get right. A small case of it: [the recipe for concurrency](/teaching/raft/) I
+wrote a consensus algorithm by, so that students could.
 
 The thesis lists sixteen publications. The record:
 [the thesis, at Dialnet](https://dialnet.unirioja.es/servlet/tesis?codigo=99231),
