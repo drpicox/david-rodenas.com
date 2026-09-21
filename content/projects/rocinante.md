@@ -13,8 +13,14 @@ Here they are side by side, for one ship, to ten places:
 
 ::rocket
 
-Press a row to draw that trip. The ship it opens with is a fusion torch:
-thirty thousand tonnes, a sixth of it fuel, a third of a g.
+The map is the neighbourhood: every star within twelve light-years of the
+Sun, each on a stem down to the plane of the celestial equator, so that the
+eye can tell above from below. Drag it to turn it. The ship flies the chosen
+trip over and over with its two clocks beside it — watch them part when the
+ship is fast. Press a row of the table, or a ringed star, to fly there.
+
+The ship it opens with is a fusion torch: thirty thousand tonnes, a sixth of
+it fuel, a third of a g.
 
 ## Things to try
 
@@ -36,7 +42,7 @@ thirty thousand tonnes, a sixth of it fuel, a third of a g.
 
 ## What it is not
 
-Straight lines from a standing start: no orbits, no launch windows, no gravity
+Straight lines from a standing start, and star positions good to a picture, not to a navigator: no orbits, no launch windows, no gravity
 wells, and the planets are taken at the gap between their orbit and ours. No
 shielding either, and at these speeds the thin gas between the stars arrives
 as hard radiation. The arithmetic is the [relativistic rocket of the Usenet

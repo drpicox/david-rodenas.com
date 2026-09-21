@@ -2,6 +2,7 @@ import { el } from "../../../platform/browser/el";
 import { firstShip } from "../firstShip";
 import { renderVoyages } from "../renderVoyages";
 import type { Ship } from "../Ship";
+import { mountStarMap } from "./mountStarMap";
 
 interface Dial {
   readonly key: "acceleration" | "fuel" | "exhaust";
@@ -24,8 +25,8 @@ const DIALS: readonly Dial[] = [
   { key: "exhaust", label: "Exhaust speed", min: 0.01, max: 1, step: 0.01, toSlider: same, fromSlider: same, show: (v) => `${Math.round(v * 100)}% of c` },
 ];
 
-/** The table the build already wrote, with the ship's dials above it; a row is pressed to draw that trip. */
-export function mountRocket(host: HTMLElement): void {
+/** The table the build already wrote, with the map of the near stars and the ship's dials above it; a row, or a star, is pressed to fly that trip. */
+export function mountRocket(host: HTMLElement): () => void {
   let ship: Ship = firstShip;
   let chosen = "Proxima Centauri";
   const figure = el("div");
@@ -62,6 +63,11 @@ export function mountRocket(host: HTMLElement): void {
     draw();
   });
 
-  host.replaceChildren(dials, figure);
+  const canvas = el("canvas", { class: "starmap", "aria-label": "The stars within twelve light-years of the Sun, turning, with the ship flying the chosen trip" });
+  host.replaceChildren(canvas, dials, figure);
   draw();
+  return mountStarMap(canvas, () => ({ ship, chosen }), (name) => {
+    chosen = name;
+    draw();
+  });
 }

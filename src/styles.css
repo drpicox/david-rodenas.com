@@ -2219,3 +2219,19 @@ pre.choices a {
 pre.choices a:hover {
   color: var(--ink);
 }
+
+/* The map of the near stars keeps the night whatever the page's theme: it is a window, not a panel. */
+.app canvas.starmap {
+  display: block;
+  width: 100%;
+  height: min(34rem, 90vw);
+  margin-bottom: 1.2em;
+  border-radius: 0.3em;
+  background: #06080f;
+  cursor: grab;
+  touch-action: none;
+}
+
+.app canvas.starmap:active {
+  cursor: grabbing;
+}
