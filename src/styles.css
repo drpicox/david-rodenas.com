@@ -2124,3 +2124,79 @@ main,
 .app svg.spark rect {
   fill: var(--accent);
 }
+
+/* ---- the thesis's measurements: times as a person says them, and how many times faster as a bar ---- */
+
+.app figure.runs {
+  margin: 0;
+}
+
+.app table.runs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.runs th,
+.app table.runs td {
+  padding: 0.45em 0.6em;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app table.runs thead th {
+  font-weight: normal;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app table.runs tbody th {
+  font-weight: normal;
+}
+
+.app table.runs tr.group th {
+  padding-top: 1.4em;
+  font-weight: bold;
+  color: var(--ink);
+}
+
+.app table.runs td:nth-child(3) {
+  width: 24%;
+}
+
+.app table.runs td:nth-child(4) {
+  width: 42%;
+}
+
+.app table.runs .speedup {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.25em;
+}
+
+.app table.runs .bar {
+  height: 0.7em;
+  /* One length for every bar on the page, whichever column it stands in: the scale is shared. */
+  width: calc(var(--p) * min(20rem, 34vw));
+  min-width: 2px;
+  flex: none;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent-soft);
+}
+
+.app table.runs .bar.cuda {
+  background: var(--accent);
+}
+
+.app table.runs .factor {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app figure.runs figcaption {
+  margin-top: 0.8em;
+}

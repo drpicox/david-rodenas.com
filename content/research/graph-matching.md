@@ -1,6 +1,6 @@
 ---
 title: Graph matching on a desktop
-summary: Universitat Rovira i Virgili, 2009–2011. Two computer-vision algorithms rewritten for a multi-core processor and a graphics card, up to thirty-five times faster without changing the result by a bit.
+summary: Universitat Rovira i Virgili, 2009–2011. Two computer-vision algorithms rewritten for CUDA and OpenMP on an eighteen-watt desktop: an hour and a quarter became under two minutes, without changing the result by a bit.
 order: 2
 ---
 
@@ -21,9 +21,23 @@ become: a multi-core processor beside a graphics card. The method is what the
 first half had taught. Transform the equations, not the code — splitting,
 tiling and reordering loops in a notation close to the mathematics — so that
 the program falls into the same two levels of parallelism, and the result
-does not change by a single bit. Up to about thirty-five times faster than
-the serial version, on hardware chosen for its low power consumption: close
-to real time, which is what a robot or a fingerprint reader needs.
+does not change by a single bit.
+
+The machine was chosen for what it did not have: an Intel Atom with two
+cores, the kind put in netbooks, and the small graphics chip sold beside it.
+Eighteen watts between them.
+
+::graph-matching-runs
+
+Matching every pair of 150 graphs of 24 vertices took one thread an hour and
+a quarter. OpenMP on the same two cores brought it to twenty minutes; the
+graphics chip, to under two. The common labelling of fifty such graphs went
+from twenty hours to thirty-nine minutes. And the larger the graphs, the
+larger the gain — sixteen, twenty-two, forty times — which is the right way
+round: it is the large ones that were out of reach.
+
+That is close to real time, on hardware a robot or a fingerprint reader could
+carry, which is what the algorithms had been waiting for.
 
 Both are first-author papers in Springer's Lecture Notes in Computer Science:
 [IbPRIA 2011](https://doi.org/10.1007/978-3-642-21257-4_63) and
