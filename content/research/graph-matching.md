@@ -36,6 +36,10 @@ from twenty hours to thirty-nine minutes. And the larger the graphs, the
 larger the gain — sixteen, twenty-two, forty times — which is the right way
 round: it is the large ones that were out of reach.
 
+On the largest graphs tried, 512 vertices, the thesis reports the parallel
+version 366 times faster than the serial one, whose run at 1,024 vertices was
+not attempted: it was estimated at forty-two days.
+
 That is close to real time, on hardware a robot or a fingerprint reader could
 carry, which is what the algorithms had been waiting for.
 

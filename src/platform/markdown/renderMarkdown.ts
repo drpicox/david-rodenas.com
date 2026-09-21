@@ -1,5 +1,6 @@
 import { renderFlow } from "./flow/renderFlow";
 import { highlight } from "./highlight";
+import { renderBars } from "./renderBars";
 import { renderInline } from "./renderInline";
 
 /**
@@ -66,14 +67,15 @@ function heading(lines: string[]): string | null {
 
 /**
  * A fence may name its language — ```js, ```html — and the block is coloured
- * by it, at build time. One language is not code at all: ```flow is a
- * flowchart, and comes out as a drawing.
+ * by it, at build time. Two languages are not code at all: ```flow is a
+ * flowchart and ```bars a few numbers, and both come out as drawings.
  */
 function code(lines: string[]): string | null {
   if (!lines[0]?.startsWith("```")) return null;
   const language = lines[0].slice(3).trim();
   const body = lines.slice(1, -1).join("\n");
   if (language === "flow") return renderFlow(body);
+  if (language === "bars") return renderBars(body);
   return `<pre><code>${highlight(body, language)}</code></pre>`;
 }
 

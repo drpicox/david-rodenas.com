@@ -53,27 +53,27 @@ function structure(text: string): string {
  * the em dash, and where a line breaks.
  *
  * It runs over the whole of the first pass's output rather than piece by
- * piece, so emphasis may hold a link inside it. Only a code span is skipped,
- * and it can be found by its tag because this is the code that wrote it and
+ * piece, so emphasis may hold a link inside it, or a code span. A code span
+ * can be found by its tag because this is the code that wrote it and
  * everything inside one has already been escaped.
  */
 function emphasise(html: string): string {
-  return html
-    .split(/(<code>[\s\S]*?<\/code>)/g)
-    .map((piece) =>
-      piece.startsWith("<code>")
-        ? piece
-        : piece
-            .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-            .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
-            // The lines are joined before the dash is read, because a paragraph is
-            // wrapped in the source and about half of the dashes land at the end of
-            // a line, where the space that ought to follow is a newline instead.
-            .replace(/ {2,}\n/g, "<br>")
-            .replace(/\n/g, " ")
-            .replace(/ -- /g, " — "),
-    )
-    .join("");
+  // A code span is lifted out whole and put back afterwards, so that emphasis
+  // may run across one — `**`name` did this**` — and never into one.
+  const spans: string[] = [];
+  const lifted = html.replace(/<code>[\s\S]*?<\/code>/g, (span) => `\u0000${spans.push(span) - 1}\u0000`);
+  return (
+    lifted
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
+      // The lines are joined before the dash is read, because a paragraph is
+      // wrapped in the source and about half of the dashes land at the end of
+      // a line, where the space that ought to follow is a newline instead.
+      .replace(/ {2,}\n/g, "<br>")
+      .replace(/\n/g, " ")
+      .replace(/ -- /g, " — ")
+      .replace(/\u0000(\d+)\u0000/g, (_, index: string) => spans[Number(index)] ?? "")
+  );
 }
 
 /**

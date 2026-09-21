@@ -97,4 +97,11 @@ describe("image sizes", () => {
   it("ignores a title that is not a size", () => {
     expect(renderInline('![c](/c.jpeg "the cover")')).toBe('<img src="/c.jpeg" alt="c">');
   });
+
+  // The packages page opened a bold sentence with a package's name, and showed its asterisks.
+  it("lets emphasis hold a code span, without reading the marks inside the code", () => {
+    expect(renderInline("**`string-cache-map` had its best year.** Then")).toBe("<strong><code>string-cache-map</code> had its best year.</strong> Then");
+    expect(renderInline("*the `ngRef` one*")).toBe("<em>the <code>ngRef</code> one</em>");
+    expect(renderInline("**bold `a ** b` still**")).toBe("<strong>bold <code>a ** b</code> still</strong>");
+  });
 });
