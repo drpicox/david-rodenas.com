@@ -3,6 +3,7 @@ import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
 import { headlineFeature } from "./headline/headlineFeature";
 import { nextWordFeature } from "./next-word/nextWordFeature";
+import { rocketFeature } from "./rocket/rocketFeature";
 import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
@@ -25,4 +26,5 @@ export const allFeatures: readonly Feature[] = [
   airQualityFeature,
   weatherFeature,
   nextWordFeature,
+  rocketFeature,
 ];

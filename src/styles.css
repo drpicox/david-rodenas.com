@@ -1996,3 +1996,73 @@ main,
   align-self: start;
   align-content: start;
 }
+
+/* ---- the rocket: a table of trips, and the chosen one drawn ---- */
+
+.app figure.rocket {
+  margin: 0;
+}
+
+.app table.voyages {
+  width: 100%;
+  margin-bottom: 1.6em;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.voyages th,
+.app table.voyages td {
+  padding: 0.3em 0.6em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app table.voyages thead th {
+  font-weight: normal;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app table.voyages tbody th {
+  font-weight: normal;
+  color: var(--ink);
+}
+
+.app table.voyages tbody tr {
+  cursor: pointer;
+}
+
+.app table.voyages tbody tr:hover td,
+.app table.voyages tbody tr:hover th {
+  background: var(--sunken);
+}
+
+.app table.voyages tr.chosen td,
+.app table.voyages tr.chosen th {
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+}
+
+.app table.voyages tr.coasts td:last-child {
+  color: var(--warn);
+}
+
+.app svg.trip .line {
+  stroke: var(--accent);
+}
+
+/* Six columns do not fit a phone: the distance goes, because the name already says it. */
+@media (max-width: 40rem) {
+  .app table.voyages th:nth-child(2),
+  .app table.voyages td:nth-child(2) {
+    display: none;
+  }
+
+  .app table.voyages {
+    font-size: 0.75rem;
+  }
+
+  .app svg.trip text {
+    font-size: 17px;
+  }
+}
