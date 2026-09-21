@@ -43,7 +43,44 @@ lock2 -->|something changed| drop[give up quietly\nthe next timeout\nwill try ag
    follower's index still where I left it? If any answer is no, drop the
    result and return. There is nothing to undo, because nothing was written.
 
-That is the whole of it, and the code says so in its own comments: *gather
+Here it is in the leader's heartbeat, shortened but in the code's own words
+and with its own comments:
+
+```java
+synchronized (GUARD) {
+    // only leaders perform heartbeats
+    if (state != RaftState.LEADER) return;
+
+    // gather common info (from iteration to iteration may become rotten)
+    term = persistentState.getCurrentTerm();
+    prevLogIndex = nextIndexes.get(otherServer) - 1;
+    prevLogTerm = persistentState.getTerm(prevLogIndex);
+    entries = prevLogIndex > -1 ? persistentState.getLogEntries(prevLogIndex+1) : new ArrayList<LogEntry>();
+    commitIndex = this.commitIndex;
+}
+
+// send the message (and listen the answer) in concurrent
+executorQueue.execute(new Runnable() {
+    public void run() {
+        AppendEntriesResponse response = RMIsd.getInstance()
+            .appendEntries(otherServer, term, leaderId, prevLogIndex, prevLogTerm, entries, commitIndex);
+
+        // execute inside the guard, any sent data could be changed and must be reevaluated
+        synchronized (GUARD) {
+            // still leader?
+            if (state != RaftState.LEADER) return;
+            // term changed?
+            if (term != persistentState.getCurrentTerm()) return;
+            // prevLogIndex changed?
+            if (nextIndexes.get(otherServer) - 1 != prevLogIndex) return;
+
+            // … only now is anything written
+        }
+    }
+});
+```
+
+That is the whole of it. The two comments that matter are the code's own: *gather
 common info (from iteration to iteration may become rotten)* going in, and
 *execute inside the guard, any sent data could be changed and must be
 reevaluated* coming back.
