@@ -2066,3 +2066,61 @@ main,
     font-size: 17px;
   }
 }
+
+/* ---- packages: a line each, the shape of their years, and the sum ---- */
+
+.app figure.packages {
+  margin: 0;
+}
+
+.app table.packages {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.app table.packages th,
+.app table.packages td {
+  padding: 0.5em 0.6em;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app table.packages thead th {
+  font-weight: normal;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app table.packages tbody th,
+.app table.packages tfoot th {
+  font-weight: normal;
+}
+
+.app table.packages th span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app table.packages td:last-child,
+.app table.packages th:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.packages tfoot td,
+.app table.packages tfoot th {
+  border-bottom: 0;
+  font-weight: bold;
+}
+
+.app svg.spark {
+  width: 10rem;
+  max-width: 30vw;
+}
+
+.app svg.spark rect {
+  fill: var(--accent);
+}

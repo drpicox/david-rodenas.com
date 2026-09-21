@@ -1,0 +1,8 @@
+{
+"measures":"downloads a year of the npm packages published as drpicox",
+"attribution":"npm, Inc. Download counts of the public registry.",
+"dataset":"https://github.com/npm/registry/blob/main/docs/download-counts.md",
+"packages":["string-cache-map","async-barrier","spy-middleware","grunt-frontmatter","object-canonical-keys","gherkin-genie","async-deferrer","egg-hatchery","angular-tags","class-strict","micro-egg-hatchery","node-dio","ducks-middleware","drpx-updateable","generator-drpx","grunt-ngtags","teal-redux-egg","ducks-reducer","drpx-storage-mocks","strict-classes","ngtags","redux-egg","esmoquin","drpx-storage","dio-provider","drpx-components","grunt-angular-tags","drpx-bind-angular","drpx-toggle","drpx-id","drpx-seo","drpx-otherwisehome","drpx-class-route","drpx-transcludeto"],
+"years":[2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
+"refreshed":"2026-09-21"
+}
