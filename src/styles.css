@@ -2167,6 +2167,13 @@ main,
   color: var(--ink);
 }
 
+.app table.runs tr.group th span {
+  display: block;
+  font-weight: normal;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
 .app table.runs td:nth-child(3) {
   width: 24%;
 }

@@ -36,6 +36,11 @@ from twenty hours to thirty-nine minutes. And the larger the graphs, the
 larger the gain — sixteen, twenty-two, forty times — which is the right way
 round: it is the large ones that were out of reach.
 
+The same programs on a fast desktop of the day, a four-core i7 with a
+ninety-six-core card, did that hour and a quarter in nineteen seconds: two
+hundred and thirty times faster than where it started, one thread of the
+Atom. The thesis rounds it to 250.
+
 On the largest graphs tried, 512 vertices, the thesis reports the parallel
 version 366 times faster than the serial one, whose run at 1,024 vertices was
 not attempted: it was estimated at forty-two days.
