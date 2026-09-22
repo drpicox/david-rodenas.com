@@ -49,6 +49,7 @@ graph LR
     debt["<b>technical-debt</b><br/>what shortcuts cost,<br/>compounded"]
     meetings["<b>developer-meetings</b><br/>what a week of meetings<br/>costs a week of work"]
     headline["<b>headline</b><br/>the home headline, typed over<br/>with what else the page says"]
+    adventure["<b>adventure</b><br/>the text adventure of a first-year lab,<br/>sixty-four rooms, playable"]
     thesis["<b>thesis-results</b><br/>the measurements of the thesis,<br/>as a table with its bars"]
     packages["<b>packages</b><br/>what npm counted, year by year,<br/>for the packages strangers install"]
     rocket["<b>rocket</b><br/>a relativistic rocket: the trip<br/>on board, at home, and its fuel"]

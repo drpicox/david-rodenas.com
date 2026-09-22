@@ -2396,3 +2396,112 @@ figure.bars figcaption {
     margin: 0 0 0.5em 1.5em;
   }
 }
+
+/* ---- the adventure: the map beside what the player sees, and a prompt of its own ---- */
+
+.app .adventure {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5em;
+  align-items: start;
+  margin-bottom: 0.8em;
+}
+
+.app .adventure .map {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 2px;
+  aspect-ratio: 1;
+}
+
+.app .adventure .cell {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--sunken);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--dim);
+  word-break: break-word;
+}
+
+.app .adventure .cell.seen {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app .adventure .cell.here {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  color: var(--accent);
+}
+
+.app .adventure .seen {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+.app .adventure .seen h4 {
+  margin: 0 0 0.6em;
+  font-size: 0.85rem;
+  color: var(--accent);
+  text-align: left;
+}
+
+.app .adventure .seen p {
+  margin: 0 0 0.6em;
+}
+
+.app .adventure .monster {
+  color: var(--warn);
+}
+
+.app .adventure .status {
+  color: var(--dim);
+}
+
+.app .said {
+  min-height: 1.4em;
+  margin: 0 0 0.4em;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+
+.app form {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  margin-bottom: 0.6em;
+  font-family: var(--mono);
+}
+
+.app form input[type="text"] {
+  flex: 1;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.2em 0.4em;
+  border: 1px solid var(--rule);
+  border-radius: 0.2em;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app button.quiet {
+  margin-left: auto;
+  border-color: var(--rule);
+  color: var(--dim);
+}
+
+@media (max-width: 40rem) {
+  .app .adventure {
+    grid-template-columns: 1fr;
+  }
+}

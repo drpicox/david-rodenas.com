@@ -7,14 +7,16 @@ order: 5
 # Teaching
 
 I have taught at three universities. The first time was in 2002, through the
-UPC's foundation: computing for people between 65 and 97 years old. The other
-two are here. In both the subject was the part of software
+UPC's foundation: computing for people between 65 and 97 years old; five years
+later, at the UPC itself, the first programs of the first year. The courses
+here are those and two more. In all of them the subject was the part of software
 that a lecture cannot give — what happens when several people, or several
 threads, touch the same thing at once — and both times I ended up building
 what the students stood on, so that the difficulty they met was the one the
 course was about and not three others.
 
 - [The post comes first](/teaching/software-lab/) -- Tecnocampus, six autumns, 2017 to 2022. *Laboratori de Software 2*: teams building a game the way software is built, where a feature starts as a blog post in markdown that compiles into a test for the server and a test for the client, the writer of a post is never its coder, and the grades are read from the repository's history.
+- [Sixty-four rooms](/teaching/adventure/) -- UPC, 2007, *Introducció als Ordinadors*. A text adventure as the lab of a first-year course, built so that four traversal-and-search schemas were all a student needed, on a map drawn on squared paper first. Playable.
 - [Raft, and a recipe for concurrency](/teaching/raft/) -- UOC, the distributed systems laboratory, 2013. A consensus algorithm as the assignment, the year before its paper was presented, and the three steps -- copy inside the guard, work outside it, check before writing -- that let someone writing their first concurrent program get it right.
 
 At the Tecnocampus, between 2017 and 2023, I designed three subjects from
