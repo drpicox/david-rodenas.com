@@ -34,7 +34,7 @@ describe("Shell", () => {
   });
 
   it("lists somewhere else, and complains about nowhere", () => {
-    expect((new Shell(site, "/").run("ls simulators")[0]?.text ?? "").split("\n").map((line) => line.split(/\s+/)[0])).toEqual(["README.md", "technical-debt/"]);
+    expect((new Shell(site, "/").run("ls simulators")[0]?.text ?? "").split("\n").map((line) => line.split(/\s+/)[0])).toEqual(["..", "README.md", "technical-debt/"]);
     expect(new Shell(site, "/").run("ls nowhere")[0]?.text).toBe("ls: nowhere: no such directory");
   });
 
@@ -45,11 +45,16 @@ describe("Shell", () => {
     const inside = new Shell(site, "/").run("ls simulators")[0]?.html ?? "";
     expect(inside).toContain('<a href="/simulators/" data-run="cat simulators/README.md">README.md</a>');
     expect(inside).toContain('<a href="/simulators/technical-debt/">technical-debt/</a>');
+    // .. goes back up by running cd, so the paper is kept; the root has no .. to offer.
+    expect(inside).toContain('<a href="/" data-run="cd simulators/..">..</a>');
+    expect(new Shell(site, "/simulators/").run("ls")[0]?.html).toContain('<a href="/" data-run="cd ..">..</a>');
+    expect(new Shell(site, "/").run("ls")[0]?.text).not.toContain("..");
   });
 
   it("lists long with -l: a mode, the name, and the title, wherever the flag sits", () => {
     const long = new Shell(site, "/").run("ls -l")[0]?.text ?? "";
     expect(long.split("\n")[0]).toBe("total 5");
+    expect((new Shell(site, "/simulators/").run("ls -l")[0]?.text ?? "").split("\n")[0]).toBe("total 3");
     expect(long).toContain("--r-  README.md");
     expect(long).toContain("dr-x  book/");
     expect(long).toContain("The Book");

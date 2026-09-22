@@ -21,9 +21,11 @@ interface Entry {
   readonly run?: string;
 }
 
-function entriesOf(page: Page, children: readonly Page[], path: string): Entry[] {
+/** `..` is the way back up, and it runs `cd` rather than linking: the paper stays, the way it does for every move the shell makes. Not at the root, which has no up. */
+function entriesOf(page: Page, parent: Page | undefined, children: readonly Page[], path: string): Entry[] {
   const here = path === "." ? "" : `${path.replace(/\/$/, "")}/`;
   return [
+    ...(parent ? [{ mode: "dr-x", name: "..", title: parent.title, summary: parent.summary, href: parent.route, run: `cd ${here}..` }] : []),
     { mode: "--r-", name: "README.md", title: page.title, summary: page.summary, href: page.route, run: `cat ${here}README.md` },
     ...children.map((child) => ({ mode: "dr-x", name: `${child.name}/`, title: child.title, summary: child.summary, href: child.route })),
   ];
@@ -69,6 +71,7 @@ export const ls: Command = {
     const page = site.at(route);
     if (!page) return { text: `ls: ${path}: no such directory`, error: true };
 
-    return listing(entriesOf(page, site.childrenOf(route), path), flags.includes("l"));
+    const parent = page.parent === null ? undefined : site.at(page.parent);
+    return listing(entriesOf(page, parent, site.childrenOf(route), path), flags.includes("l"));
   },
 };
