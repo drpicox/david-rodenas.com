@@ -61,6 +61,11 @@ describe("Shell", () => {
     expect(new Shell(site, "/").run("ls -l")[0]?.html).toContain('<a href="/book/">book/</a>');
     expect(new Shell(site, "/").run("ls simulators -l")[0]?.text).toContain("dr-x  technical-debt/");
     expect(new Shell(site, "/").run("ls -x")[0]?.error).toBe(true);
+    // The author's order is the default; -n is the alphabet, -r turns it round.
+    const names = (line: string) => (new Shell(site, "/").run(line)[0]?.text ?? "").split("\n").slice(1).map((entry) => entry.split(/\s+/)[0]);
+    expect(names("ls -n")).toEqual(["book/", "essays/", "night/", "simulators/"]);
+    expect(names("ls -r")).toEqual(["night/", "simulators/", "essays/", "book/"]);
+    expect(names("ls -nr")).toEqual(["simulators/", "night/", "essays/", "book/"]);
   });
 
   it("changes directory, and says where the session now is so the address can follow without the paper changing", () => {
@@ -85,6 +90,9 @@ describe("Shell", () => {
   it("finds every page under a directory, or only those with a word in the name or title", () => {
     const all = new Shell(site, "/").run("find")[0]?.text ?? "";
     expect(all.split("\n")).toHaveLength(6);
+    // A walk of the tree: a directory, then what it holds; and the titles in one column.
+    expect(all.split("\n").map((line) => line.split(/\s+/)[0])).toEqual(["/", "/book/", "/essays/", "/simulators/", "/simulators/technical-debt/", "/night/"]);
+    expect(new Set(all.split("\n").map((line) => line.indexOf("#"))).size).toBe(1);
     expect(all).toContain("/simulators/technical-debt/  # Debt");
     expect((new Shell(site, "/").run("find simulators")[0]?.text ?? "").split("\n")).toHaveLength(2);
     expect(new Shell(site, "/").run("find debt")[0]?.text).toBe("/simulators/technical-debt/  # Debt");
@@ -112,7 +120,7 @@ describe("Shell", () => {
     for (const name of ["ls", "cd", "cat", "find", "grep", "pwd", "help", "clear"]) expect(help).toContain(name);
     expect(new Shell(site, "/").run("help cd")[0]?.text).toContain("cd [dir]");
     // As markup it is a list of terms, which folds on a narrow screen instead of wrapping mid-column.
-    expect(new Shell(site, "/").run("help")[0]?.html).toContain('<dt><a href="#" data-run="help ls">ls [-l] [path]</a></dt>');
+    expect(new Shell(site, "/").run("help")[0]?.html).toContain('<dt><a href="#" data-run="help ls">ls [-lnr] [path]</a></dt>');
     expect(new Shell(site, "/").run("help nope")[0]?.error).toBe(true);
   });
 

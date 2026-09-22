@@ -44,7 +44,8 @@ function link(entry: Entry): string {
  * ever wraps. Long adds the mode and the summary.
  */
 function listing(entries: readonly Entry[], long: boolean): Outcome {
-  const pad = (name: string) => " ".repeat(Math.max(0, 20 - name.length));
+  const width = Math.max(...entries.map((entry) => entry.name.length));
+  const pad = (name: string) => " ".repeat(width - name.length);
   const line = (entry: Entry) =>
     long ? `${entry.mode}  ${entry.name}${pad(entry.name)}  ${entry.title}${entry.summary ? ` — ${entry.summary}` : ""}` : `${entry.name}${pad(entry.name)}  # ${entry.title}`;
   const linked = (entry: Entry) =>
@@ -60,18 +61,22 @@ function listing(entries: readonly Entry[], long: boolean): Outcome {
 
 export const ls: Command = {
   name: "ls",
-  usage: "ls [-l] [path]",
-  description: "list what a directory holds, each with its title; -l adds a line on each",
+  usage: "ls [-lnr] [path]",
+  description: "what a directory holds, in the site's own order; -l says more, -n sorts by name, -r reverses",
   run({ site, cwd }, args) {
     const { flags, path } = split(args);
-    const unknown = flags.find((flag) => flag !== "l");
-    if (unknown) return { text: `ls: -${unknown}: no such option. Try ls -l`, error: true };
+    const unknown = flags.find((flag) => !["l", "n", "r"].includes(flag));
+    if (unknown) return { text: `ls: -${unknown}: no such option. Try ls -l, -n by name, -r reversed`, error: true };
 
     const route = resolvePath(cwd, path);
     const page = site.at(route);
     if (!page) return { text: `ls: ${path}: no such directory`, error: true };
 
     const parent = page.parent === null ? undefined : site.at(page.parent);
-    return listing(entriesOf(page, parent, site.childrenOf(route), path), flags.includes("l"));
+    // The author's order is the default, as in the navigation: it says what comes first. -n is the alphabet, -r turns either round.
+    const children = [...site.childrenOf(route)];
+    if (flags.includes("n")) children.sort((a, b) => a.name.localeCompare(b.name));
+    if (flags.includes("r")) children.reverse();
+    return listing(entriesOf(page, parent, children, path), flags.includes("l"));
   },
 };
