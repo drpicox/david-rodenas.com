@@ -81,6 +81,48 @@ function cLike(code: string, keywords: Set<string>, preprocessor: boolean): stri
 }
 
 /**
+ * Prolog, as far as one page needs it: comments, quoted atoms, variables,
+ * and the two arrows a rule is written with.
+ */
+function prolog(code: string): string {
+  let out = "";
+  let at = 0;
+  while (at < code.length) {
+    const rest = code.slice(at);
+    let match: RegExpExecArray | null;
+    if (rest.startsWith("%")) {
+      const end = code.indexOf("\n", at);
+      const stop = end < 0 ? code.length : end;
+      out += span("c", code.slice(at, stop));
+      at = stop;
+    } else if (rest.startsWith("/*")) {
+      const end = code.indexOf("*/", at + 2);
+      const stop = end < 0 ? code.length : end + 2;
+      out += span("c", code.slice(at, stop));
+      at = stop;
+    } else if (rest[0] === "'") {
+      const stop = stringEnd(code, at, "'");
+      out += span("s", code.slice(at, stop));
+      at = stop;
+    } else if (rest.startsWith("-->") || rest.startsWith(":-")) {
+      const arrow = rest.startsWith("-->") ? "-->" : ":-";
+      out += span("k", arrow);
+      at += arrow.length;
+    } else if ((match = /^[A-Z_][\w]*/.exec(rest))) {
+      out += span("a", match[0]);
+      at += match[0].length;
+    } else if ((match = /^[a-z][\w]*/.exec(rest))) {
+      out += escapeHtml(match[0]);
+      at += match[0].length;
+    } else {
+      out += escapeHtml(rest[0] ?? "");
+      at += 1;
+    }
+  }
+  return out;
+}
+
+/**
  * HTML, as far as the pages need it: comments, tags, attributes and their
  * values. The words between tags are left as they are, braces and all, because
  * on this site they are usually a template expression and colouring it would
@@ -138,7 +180,7 @@ function html(code: string): string {
 /**
  * Colours a block of code by wrapping its tokens in spans, at build time.
  *
- * It knows the four languages the content is written in and nothing else: a
+ * It knows the five languages the content is written in and nothing else: a
  * language it has not heard of comes back as plain escaped text, which is what
  * a diagram drawn in box characters wants. It is here, rather than a library
  * in the browser, because the page is meant to be finished before any script
@@ -149,6 +191,7 @@ export function highlight(code: string, language: string): string {
   if (language === "js" || language === "javascript") return cLike(code, JAVASCRIPT, false);
   if (language === "c") return cLike(code, C, true);
   if (language === "java") return cLike(code, JAVA, false);
+  if (language === "prolog") return prolog(code);
   if (language === "html") return html(code);
   return escapeHtml(code);
 }

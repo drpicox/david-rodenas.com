@@ -93,3 +93,14 @@ describe("C and Java, which the research and teaching pages are written in", () 
     expect(highlight("let x = sizeof", "c")).not.toContain('<span class="hl-k">let</span>');
   });
 });
+
+describe("Prolog, which one page is written in", () => {
+  it("colours the arrows, the variables and a comment, and leaves the atoms alone", () => {
+    const out = highlight("s_Nombre(F) --> t_Nombre, s_NomPalabras(Lv). % one\nanalisis(F,X,Y) :- asercion(F,X,Y),!.", "prolog");
+    expect(out).toContain('<span class="hl-k">--&gt;</span>');
+    expect(out).toContain('<span class="hl-k">:-</span>');
+    expect(out).toContain('<span class="hl-a">Lv</span>');
+    expect(out).toContain('<span class="hl-c">% one</span>');
+    expect(out).toContain("s_Nombre(");
+  });
+});
