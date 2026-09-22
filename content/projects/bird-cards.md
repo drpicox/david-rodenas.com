@@ -34,8 +34,8 @@ had reached the door. It was done.
 
 ## What the code says happened
 
-I remembered the reason as *a different kind of grammar*. Twenty-seven years
-later the ten versions are still on a floppy — `T1.PL` to `TF.PL`, the eighth
+I remembered the reason as *an LL grammar*, and after twenty-seven years I
+was not sure the memory was right. The ten versions are still on a floppy — `T1.PL` to `TF.PL`, the eighth
 to the fourteenth of June — and a classmate's beside them, so it can be
 checked. Both are the same size and both are DCGs, Prolog's grammar rules.
 The difference is the shape of the rules.
@@ -71,10 +71,11 @@ Every alternative of `s_UnaFicha` begins with a terminal that no other
 begins with — `Nombre`, `Identificación`, `Alimentación` — so the first
 token picks the rule and nothing is ever tried twice. Inside each rule the
 same holds: lists are read by "one more, or none" pairs that never need to
-look back, and `analisis` cuts, with `!`, at the first parse. A compiler
-person would say the grammar is LL(1) by construction. I did not know the
-name; I had rewritten the facts the cards had to become until a grammar that
-never backtracked could produce them, which is the other half of the trick.
+look back, and `analisis` cuts, with `!`, at the first parse. The grammar is
+LL(1) by construction — which is what I had set out to write, having just
+learnt in the compilers course what it bought — and the facts the cards had
+to become were rewritten until a grammar of that kind could produce them,
+which is the other half of the trick.
 
 It is the same lesson as the one the thesis taught later about
 [loops](/research/loops-into-zones/): the algorithm was not made faster. It
