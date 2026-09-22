@@ -15,7 +15,8 @@ describe("the post compiler, once the script is there", () => {
     const host = document.createElement("div");
     mountPostTests(host);
     const post = host.querySelector("textarea") as HTMLTextAreaElement;
-    post.value = "# T\n\n * Go north.\n * There are 3 cards.\n";
+    // The compiler checks in the template's order: a "should" somewhere first, then the companion words.
+    post.value = "# T\n\n * There are 3 cards.\n * It should be fine.\n";
     post.dispatchEvent(new Event("input"));
     expect(host.querySelector(".refused")?.textContent).toContain('"there" but no "should" or "given"');
     post.value = "# T\n\n * Go north.\n * There should be 3 cards.\n";
