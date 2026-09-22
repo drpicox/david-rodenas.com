@@ -80,9 +80,23 @@ the test follows; break a rule and it says what it said to the students:
 
 ::post-tests
 
-If that sounds like BDD, it is -- reinvented so that the specification is a
-blog post the team wanted to write anyway, in their own words rather than in
-Gherkin's, and compiled into the tests rather than interpreted at run time.
+If that sounds like BDD, it is. It is not Cucumber, and not because of any
+objection to Cucumber. In the first editions the students had to bind each
+step to its code with a regular expression, and they did not know regular
+expressions, and they said so. Worse, they could not see the link between the
+post and the code: the step was read at run time by something they had not
+written, and it was magic to them. Compiling the post into a test file they
+could open, with one method call per line and the line beside it as a
+comment, took the magic out. The post had a body. So the change was not
+away from BDD; it was towards being able to see it.
+
+The post itself was doing a second job. To write one, a student has to explain
+the feature to the player -- what they will see, what they should do, what
+should happen -- and that puts them in the player's head. Written from there,
+the post says nothing about functions, identifiers, tables or databases,
+because the player has none of those; it says what the game does. The
+implementation followed the post, not the other way round, and the low-level
+reflex that first-year programmers arrive with had nowhere to go.
 
 One rule, enforced in code: *the writer of a post cannot be the coder who
 implements it.* Within a team, one student wrote the post and another built
