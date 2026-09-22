@@ -3,7 +3,7 @@ export interface Mesh {
   readonly directions: Float32Array;
   /** Distance from the centre of each vertex. Relief lives here. */
   readonly radii: Float32Array;
-  /** The 1999 "tipus de superfície": a number in 0..1 per vertex that chooses and tints the colour. */
+  /** The original "tipus de superfície": a number in 0..1 per vertex that chooses and tints the colour. */
   readonly surface: Float32Array;
   /** Three vertex indices per face. */
   readonly faces: Uint32Array;
@@ -57,7 +57,7 @@ const AVERAGE: Blend = (a, b) => (a + b) / 2;
 /**
  * Subdivide, displacing each new midpoint along its own radius.
  *
- * This is the 1999 algorithm and not the usual one: the corners that already
+ * This is the original algorithm and not the usual one: the corners that already
  * existed keep the height they had, and only the new points move. Smoothing
  * the old ones as well would average the mountains away, which is exactly what
  * a fractal landscape must not do.
@@ -94,7 +94,7 @@ export function subdivide(mesh: Mesh, displace: Displace, blend: Blend = AVERAGE
     const [mx, my, mz] = [(ax + bx) / 2, (ay + by) / 2, (az + bz) / 2];
     const scale = Math.hypot(mx, my, mz) || 1;
 
-    // The texture is drawn before the height, as the 1999 code drew them.
+    // The texture is drawn before the height, as the original code drew them.
     const surface = blend(first.surface, second.surface);
     vertices.push({
       direction: [mx / scale, my / scale, mz / scale],

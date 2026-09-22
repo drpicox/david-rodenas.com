@@ -102,7 +102,7 @@ describe("the climate", () => {
   const radii = [...world.mesh.radii];
   const highest = radii.indexOf(Math.max(...radii));
 
-  it("freezes the summit wherever it stands, as height alone did in 1999", () => {
+  it("freezes the summit wherever it stands, as height alone did in the original", () => {
     expect(world.temperature[highest]).toBeLessThan(0.26);
     expect(latitudeOfVertex(world, highest)).toBeLessThan(0.9);
   });

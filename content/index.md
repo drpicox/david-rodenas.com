@@ -52,7 +52,7 @@ of it is documentation. [The whole account.](/open-source/angularjs/)
 ## The world at the top
 
 The mark in the header is not a picture. It is a planet, grown the moment this
-page opened, by the pipeline of a program I wrote before the year 2000 for a
+page opened, by the pipeline of a program I wrote around 2000 for a
 university graphics course: [Mons fractals](https://david-rodenas.com/mons-fractals/),
 Java 1.1.8 on MS-DOS, writing worlds out as VRML.
 

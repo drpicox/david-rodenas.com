@@ -8,7 +8,7 @@ import { acrossFace, latitudeOfVertex, radiusOfFace, withMesh, type Filter } fro
  *
  * Tying the displacement to the edge length is the whole trick: edges halve at
  * every level, so the first rounds carve continents and the last ones only
- * roughen a slope. `roughness` is the one dial — 0.1 was the default in 1999.
+ * roughen a slope. `roughness` is the one dial — 0.1 was the original default.
  *
  * The surface type rides along, as in `FractalRadialTexturat`: the corners of
  * the icosahedron get a random one, and each midpoint takes a blend of its
@@ -45,7 +45,7 @@ export interface Climate {
 
 /**
  * Warmth from latitude and from height above the sea, between three fixed
- * points — the equator, the pole and the summit — which is how the 1999
+ * points — the equator, the pole and the summit — which is how the original
  * `PosarTemperatura` asked for it. Height is a straight line to the summit's
  * number, and the summit's number is below freezing: that is what puts snow
  * on the Himalaya and on the Teide, neither of them anywhere near a pole.

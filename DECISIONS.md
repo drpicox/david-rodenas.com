@@ -30,7 +30,7 @@ fix.
 real asset: nothing superfluous fits in it, so the minimalism maintains itself.
 
 ### The planet is generated, not photographed
-The avatar was an old photo. It is now the MGC filter pipeline of 1999 — raise
+The avatar was an old photo. It is now the MGC filter pipeline of around 2000 — raise
 the land, work out the climate, choose the sea, paint it — run live, so the
 mark on the page is a different world every visit and is itself the evidence
 for the first entry in the work list.
@@ -38,12 +38,12 @@ for the first entry in the work list.
 The pipeline's order is asserted by a test: painting before the land exists
 leaves one flat colour. Order is meaning, not style.
 
-The climate has the shape of the 1999 `PosarTemperatura`, read from the
+The climate has the shape of the original `PosarTemperatura`, read from the
 source on 7 September 2026 after the author noticed the summits away from the
 poles were not white: warmth falls in a straight line with height above the
 sea, to a summit number below freezing, plus a latitude term. Height alone
 makes a summit white, which is what the Himalaya and the Teide do. The paint
-stayed this site's own: the 1999 table by temperature band and surface type
+stayed this site's own: the original table by temperature band and surface type
 was ported, looked at, and put back — the author preferred these colours. The
 surface type of `FractalRadialTexturat` still rides through the subdivision,
 unused, for whoever wants to mottle the ground with it. The sea runs before
@@ -458,3 +458,10 @@ rather than either shouting (`#88f`) or disappearing into the body text.
 The generated planet is a better mark than an out-of-date photo, but for a
 person reading a candidacy a recent face still helps. If one appears, it goes
 in and the planet moves somewhere else on the page.
+
+### The worlds are from "around 2000", not 1999
+The oldest copy of Mons fractals that survives is `MGC.jar` on a floppy of
+18 January 2001, with eight filters and no sea yet; David does not think it
+was as late as 2001 but cannot place it, and the site said 1999 on his say-so
+alone. So the pages say *around 2000*, and the code's comments say *the
+original*. If the matriculation record ever turns up, the year can be exact.
