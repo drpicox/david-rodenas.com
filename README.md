@@ -30,7 +30,7 @@ and `src/architecture.test.ts` keeps it that way.
 |---|---|
 | `platform/content` | front matter, routes, `Site` — what is at an address and what a directory holds |
 | `platform/markdown` | the subset of markdown the content uses, with images, `Term :: definition` and `::app` blocks |
-| `platform/shell` | `ls`, `cd`, `cat`, `pwd`, `help`, `clear` over `Site`, plus history, completion and the `^K`/`^U`/`^Y` line editing |
+| `platform/shell` | `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear` over `Site`, plus history, completion and the `^K`/`^U`/`^Y` line editing |
 | `platform/page` | one HTML document per page, `renderMain` shared with the browser, `schema.org/Book` for the book |
 | `platform/plugin` | what a `Feature` is, and the `Signal` one uses to tell another something |
 | `platform/browser` | the terminal, the navigation between pages, `el`, the charts |

@@ -2,6 +2,8 @@ import type { Command } from "../Command";
 import { cat } from "./cat";
 import { cd } from "./cd";
 import { clear } from "./clear";
+import { find } from "./find";
+import { grep } from "./grep";
 import { help } from "./help";
 import { ls } from "./ls";
 import { pwd } from "./pwd";
@@ -14,4 +16,4 @@ import { pwd } from "./pwd";
  * A feature that wants a command brings its own; the shell is handed the
  * whole list, and does not care which half of it came from where.
  */
-export const siteCommands: readonly Command[] = [ls, cd, cat, pwd, help, clear];
+export const siteCommands: readonly Command[] = [ls, cd, cat, find, grep, pwd, help, clear];

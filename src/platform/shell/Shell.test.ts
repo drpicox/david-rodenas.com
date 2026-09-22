@@ -20,13 +20,21 @@ describe("Shell", () => {
     expect(new Shell(site, "/simulators/technical-debt/").prompt).toBe("~/simulators/technical-debt $");
   });
 
-  it("lists what is here: the page as README.md, the directories with a slash", () => {
+  it("lists what is here: the page as README.md, the directories with a slash, and what each is after a #", () => {
     const [out] = new Shell(site, "/").run("ls");
-    expect(out?.text).toBe("README.md\nbook/\nessays/\nsimulators/\nnight/");
+    expect((out?.text ?? "").split("\n").map((line) => line.split(/\s+#\s+/))).toEqual([
+      ["README.md", "Home"],
+      ["book/", "The Book"],
+      ["essays/", "Essays"],
+      ["simulators/", "Simulators"],
+      ["night/", "Night"],
+    ]);
+    // The title is a span of its own, for the stylesheet to cut to what fits.
+    expect(out?.html).toContain('<span class="hint">  # The Book</span>');
   });
 
   it("lists somewhere else, and complains about nowhere", () => {
-    expect(new Shell(site, "/").run("ls simulators")[0]?.text).toBe("README.md\ntechnical-debt/");
+    expect((new Shell(site, "/").run("ls simulators")[0]?.text ?? "").split("\n").map((line) => line.split(/\s+/)[0])).toEqual(["README.md", "technical-debt/"]);
     expect(new Shell(site, "/").run("ls nowhere")[0]?.text).toBe("ls: nowhere: no such directory");
   });
 
@@ -69,14 +77,37 @@ describe("Shell", () => {
     expect(shell.run("cat nothing.md")).toEqual([{ text: "cat: nothing.md: no such file", error: true }]);
   });
 
+  it("finds every page under a directory, or only those with a word in the name or title", () => {
+    const all = new Shell(site, "/").run("find")[0]?.text ?? "";
+    expect(all.split("\n")).toHaveLength(6);
+    expect(all).toContain("/simulators/technical-debt/  # Debt");
+    expect((new Shell(site, "/").run("find simulators")[0]?.text ?? "").split("\n")).toHaveLength(2);
+    expect(new Shell(site, "/").run("find debt")[0]?.text).toBe("/simulators/technical-debt/  # Debt");
+    expect(new Shell(site, "/").run("find simulators DEBT")[0]?.text).toBe("/simulators/technical-debt/  # Debt");
+    expect(new Shell(site, "/").run("find nowhere/")[0]?.error).toBe(true);
+    expect(new Shell(site, "/").run("find")[0]?.html).toContain('<a href="/book/">/book/</a>');
+  });
+
+  it("greps the pages for a word, whatever its case, and says where each line is", () => {
+    const out = new Shell(site, "/").run("grep interest")[0];
+    expect(out?.text).toBe("/simulators/technical-debt/:1: Interest.");
+    expect(out?.html).toContain('<a href="/simulators/technical-debt/">/simulators/technical-debt/</a>:1:');
+    expect(out?.html).toContain("<mark>Interest</mark>");
+    expect(new Shell(site, "/").run("grep essays")[0]?.text).toContain("/essays/:1: Some essays.");
+    expect(new Shell(site, "/").run("grep essays book")[0]?.text).toContain("no page under book");
+    expect(new Shell(site, "/").run("grep")[0]?.error).toBe(true);
+  });
+
   it("knows where it is", () => {
     expect(new Shell(site, "/book/").run("pwd")).toEqual([{ text: "~/book" }]);
   });
 
   it("helps, in general and in particular", () => {
     const help = new Shell(site, "/").run("help")[0]?.text ?? "";
-    for (const name of ["ls", "cd", "cat", "pwd", "help", "clear"]) expect(help).toContain(name);
+    for (const name of ["ls", "cd", "cat", "find", "grep", "pwd", "help", "clear"]) expect(help).toContain(name);
     expect(new Shell(site, "/").run("help cd")[0]?.text).toContain("cd [dir]");
+    // As markup it is a list of terms, which folds on a narrow screen instead of wrapping mid-column.
+    expect(new Shell(site, "/").run("help")[0]?.html).toContain('<dt><a href="#" data-run="help ls">ls [-l] [path]</a></dt>');
     expect(new Shell(site, "/").run("help nope")[0]?.error).toBe(true);
   });
 

@@ -45,7 +45,7 @@ The top level says what this is: a frame, and the features standing in it.
     directory holds
   - `markdown/` — the small subset of markdown this site writes in
   - `shell/` — the shell over a `Site`, and the commands that are about the
-    site itself: `ls`, `cd`, `cat`, `pwd`, `help`, `clear`
+    site itself: `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear`
   - `page/` — the whole HTML document, and the `<main>` inside it
   - `browser/` — the terminal, the navigation between pages, and `el`
   - `data/` — open data kept a finished year at a time: `YearlySource`, and

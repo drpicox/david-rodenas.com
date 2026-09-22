@@ -2337,3 +2337,62 @@ figure.bars figcaption {
   stroke-width: 5px;
   stroke-linejoin: round;
 }
+
+/* ---- the shell's listings: a name, and what it is after a #, cut to what fits ---- */
+
+.screen pre.listing .line {
+  display: block;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* A grep hit is read for its words, so it may wrap; a listing is read for its names, so it may not. */
+.screen pre.listing.wrap .line {
+  white-space: pre-wrap;
+  padding-left: 1.5em;
+  text-indent: -1.5em;
+}
+
+.screen pre.listing .hint {
+  color: var(--dim);
+}
+
+.screen pre.listing mark {
+  background: none;
+  color: var(--ink);
+  font-weight: bold;
+}
+
+/* help: two columns where they fit, one where they do not, and no line ever wraps mid-word into the wrong column. */
+.screen dl.help {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.15em 1.5em;
+  margin: 0.3em 0 0.8em;
+}
+
+.screen dl.help dt,
+.screen dl.help dd {
+  margin: 0;
+}
+
+.screen dl.help dt a {
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.screen dl.help dd {
+  color: var(--dim);
+}
+
+@media (max-width: 40rem) {
+  .screen dl.help {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .screen dl.help dd {
+    margin: 0 0 0.5em 1.5em;
+  }
+}

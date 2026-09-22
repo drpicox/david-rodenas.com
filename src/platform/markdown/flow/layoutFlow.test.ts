@@ -107,3 +107,17 @@ describe("an arrow that carries words past a box", () => {
     expect(Math.max(clearOfB, orBefore)).toBeGreaterThan(60);
   });
 });
+
+describe("where a row sits", () => {
+  it("keeps a lone box under the middle of the boxes it comes from, even when they were pushed apart", () => {
+    const layout = layoutFlow(parseFlow("read --> deal\ndeal --> one\ndeal --> two\ndeal --> three\none --> merge\ntwo --> merge\nthree --> merge\nmerge --> write"));
+    const centre = (id: string) => {
+      const node = layout.nodes.find((n) => n.id === id);
+      return (node?.x ?? 0) + (node?.width ?? 0) / 2;
+    };
+    const fan = (centre("one") + centre("two") + centre("three")) / 3;
+    expect(centre("merge")).toBeCloseTo(fan, 0);
+    expect(centre("write")).toBeCloseTo(centre("merge"), 0);
+    expect(centre("deal")).toBeCloseTo(fan, 0);
+  });
+});

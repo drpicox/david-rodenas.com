@@ -6,13 +6,23 @@ import { escapeHtml } from "./escapeHtml";
  */
 type Kind = "k" | "s" | "c" | "n" | "t" | "a";
 
-const KEYWORDS = new Set(
-  (
-    "var let const function return if else for while do break continue new this " +
-    "true false null undefined class extends import export from default async await " +
-    "throw try catch finally typeof instanceof in of switch case delete void yield"
-  ).split(" "),
-);
+const words = (list: string) => new Set(list.split(/\s+/).filter(Boolean));
+
+const JAVASCRIPT = words(`
+  var let const function return if else for while do break continue new this
+  true false null undefined class extends import export from default async await
+  throw try catch finally typeof instanceof in of switch case delete void yield`);
+
+const C = words(`
+  auto break case char const continue default do double else enum extern float for goto if
+  inline int long register restrict return short signed sizeof static struct switch typedef
+  union unsigned void volatile while NULL true false`);
+
+const JAVA = words(`
+  abstract assert boolean break byte case catch char class const continue default do double
+  else enum extends final finally float for goto if implements import instanceof int interface
+  long native new package private protected public return short static strictfp super switch
+  synchronized this throw throws transient try var void volatile while true false null`);
 
 function span(kind: Kind, text: string): string {
   return `<span class="hl-${kind}">${escapeHtml(text)}</span>`;
@@ -28,19 +38,23 @@ function stringEnd(code: string, start: number, quote: string): number {
 }
 
 /**
- * JavaScript, as far as the pages need it: comments, strings, numbers,
- * keywords. Everything else — names, punctuation — passes through escaped.
+ * The C family, as far as the pages need it: comments, strings, numbers,
+ * keywords, and in C a preprocessor line. Everything else — names,
+ * punctuation — passes through escaped. One tokeniser serves the three
+ * languages, which differ here only in their words.
  */
-function javascript(code: string): string {
+function cLike(code: string, keywords: Set<string>, preprocessor: boolean): string {
   let out = "";
   let at = 0;
   while (at < code.length) {
     const rest = code.slice(at);
     let match: RegExpExecArray | null;
-    if (rest.startsWith("//")) {
+    const lineStart = code.lastIndexOf("\n", at - 1) + 1;
+    const opensLine = /^\s*$/.test(code.slice(lineStart, at));
+    if (rest.startsWith("//") || (preprocessor && rest[0] === "#" && opensLine)) {
       const end = code.indexOf("\n", at);
       const stop = end < 0 ? code.length : end;
-      out += span("c", code.slice(at, stop));
+      out += span(rest[0] === "#" ? "a" : "c", code.slice(at, stop));
       at = stop;
     } else if (rest.startsWith("/*")) {
       const end = code.indexOf("*/", at + 2);
@@ -53,7 +67,7 @@ function javascript(code: string): string {
       at = stop;
     } else if ((match = /^[A-Za-z_$][\w$]*/.exec(rest))) {
       const word = match[0];
-      out += KEYWORDS.has(word) ? span("k", word) : escapeHtml(word);
+      out += keywords.has(word) ? span("k", word) : escapeHtml(word);
       at += word.length;
     } else if ((match = /^\d+(?:\.\d+)?/.exec(rest))) {
       out += span("n", match[0]);
@@ -124,7 +138,7 @@ function html(code: string): string {
 /**
  * Colours a block of code by wrapping its tokens in spans, at build time.
  *
- * It knows the two languages the content is written in and nothing else: a
+ * It knows the four languages the content is written in and nothing else: a
  * language it has not heard of comes back as plain escaped text, which is what
  * a diagram drawn in box characters wants. It is here, rather than a library
  * in the browser, because the page is meant to be finished before any script
@@ -132,7 +146,9 @@ function html(code: string): string {
  * a few thousand without.
  */
 export function highlight(code: string, language: string): string {
-  if (language === "js" || language === "javascript") return javascript(code);
+  if (language === "js" || language === "javascript") return cLike(code, JAVASCRIPT, false);
+  if (language === "c") return cLike(code, C, true);
+  if (language === "java") return cLike(code, JAVA, false);
   if (language === "html") return html(code);
   return escapeHtml(code);
 }

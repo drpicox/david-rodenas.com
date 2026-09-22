@@ -249,7 +249,19 @@ thousand words or not at all. Sections that hold several things now say so
 first, a line for each, the way `simulators/` always did; and `research/`,
 which was one long page, is an opening and two parts.
 
+### The shell says what things are, and can look for them
+`ls` prints each name with its title after a `#`, the way a shell comment
+would; in the markup the title is a span the stylesheet cuts to whatever
+width is left, so a phone shows as much as fits and no line wraps. `help` is
+a list of terms that folds into one column when two do not fit. And two
+commands a reader of a site actually wants: `find [path] [word]`, every page
+under a directory or only those with a word in the name or title, and
+`grep <word> [path]`, the lines of every page that say a word, whatever its
+case, each hit a way to go there. Both read the same markdown the pages were
+made of, which is already in the browser.
+
 ### Code is coloured at build time, by a tokeniser written here
+(It now knows C and Java as well as JavaScript and HTML: one tokeniser for the C family, differing only in its words.)
 
 The pages with code on them — the AngularJS one, the teaching one — read
 better with the strings and keywords picked out, and David asked for it.

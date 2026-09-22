@@ -68,3 +68,28 @@ describe("highlight", () => {
     });
   });
 });
+
+describe("C and Java, which the research and teaching pages are written in", () => {
+  it("colours C: its keywords, a preprocessor line, a string, a comment", () => {
+    const out = highlight('#pragma acotes task input(c)\nwhile (fread(&c, sizeof(c), 1, stdin)) { return 0; } // done', "c");
+    expect(out).toContain('<span class="hl-a">#pragma acotes task input(c)</span>');
+    expect(out).toContain('<span class="hl-k">while</span>');
+    expect(out).toContain('<span class="hl-k">sizeof</span>');
+    expect(out).toContain('<span class="hl-k">return</span>');
+    expect(out).toContain('<span class="hl-c">// done</span>');
+    expect(out).toContain("fread(&amp;c");
+  });
+
+  it("colours Java: synchronized and the types, and leaves names alone", () => {
+    const out = highlight('synchronized (GUARD) { final long term; if (state != RaftState.LEADER) return; }', "java");
+    expect(out).toContain('<span class="hl-k">synchronized</span>');
+    expect(out).toContain('<span class="hl-k">final</span>');
+    expect(out).toContain('<span class="hl-k">long</span>');
+    expect(out).toContain("RaftState.LEADER");
+    expect(out).not.toContain('<span class="hl-k">GUARD</span>');
+  });
+
+  it("does not take a JavaScript word for a C one", () => {
+    expect(highlight("let x = sizeof", "c")).not.toContain('<span class="hl-k">let</span>');
+  });
+});

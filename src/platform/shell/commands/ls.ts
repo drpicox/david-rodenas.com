@@ -15,6 +15,7 @@ interface Entry {
   readonly mode: string;
   readonly name: string;
   readonly title: string;
+  readonly summary: string;
   /** The link: a directory is a place to go; README.md is a command to run here. */
   readonly href: string;
   readonly run?: string;
@@ -23,8 +24,8 @@ interface Entry {
 function entriesOf(page: Page, children: readonly Page[], path: string): Entry[] {
   const here = path === "." ? "" : `${path.replace(/\/$/, "")}/`;
   return [
-    { mode: "--r-", name: "README.md", title: page.title, href: page.route, run: `cat ${here}README.md` },
-    ...children.map((child) => ({ mode: "dr-x", name: `${child.name}/`, title: child.title, href: child.route })),
+    { mode: "--r-", name: "README.md", title: page.title, summary: page.summary, href: page.route, run: `cat ${here}README.md` },
+    ...children.map((child) => ({ mode: "dr-x", name: `${child.name}/`, title: child.title, summary: child.summary, href: child.route })),
   ];
 }
 
@@ -33,22 +34,32 @@ function link(entry: Entry): string {
   return `<a href="${escapeHtml(entry.href)}"${run}>${escapeHtml(entry.name)}</a>`;
 }
 
-/** Both forms of every line: plain for whoever reads text, linked for whoever can click. */
+/**
+ * Both forms of every line: plain for whoever reads text, linked for whoever
+ * can click. Each name carries its title after a `#`, the way a shell comment
+ * would: in the markup the title is a span the stylesheet cuts to whatever
+ * width is left, so a narrow screen shows as much of it as fits and no line
+ * ever wraps. Long adds the mode and the summary.
+ */
 function listing(entries: readonly Entry[], long: boolean): Outcome {
-  const line = (entry: Entry, name: string) => (long ? `${entry.mode}  ${name.padEnd(20)}  ${entry.title}` : name);
+  const pad = (name: string) => " ".repeat(Math.max(0, 20 - name.length));
+  const line = (entry: Entry) =>
+    long ? `${entry.mode}  ${entry.name}${pad(entry.name)}  ${entry.title}${entry.summary ? ` — ${entry.summary}` : ""}` : `${entry.name}${pad(entry.name)}  # ${entry.title}`;
   const linked = (entry: Entry) =>
-    long ? `${entry.mode}  ${link(entry)}${" ".repeat(Math.max(0, 20 - entry.name.length))}  ${escapeHtml(entry.title)}` : link(entry);
+    long
+      ? `<span class="line">${entry.mode}  ${link(entry)}${pad(entry.name)}  ${escapeHtml(entry.title)}${entry.summary ? `<span class="hint"> — ${escapeHtml(entry.summary)}</span>` : ""}</span>`
+      : `<span class="line">${link(entry)}${pad(entry.name)}<span class="hint">  # ${escapeHtml(entry.title)}</span></span>`;
   const head = long ? [`total ${entries.length}`] : [];
   return {
-    text: [...head, ...entries.map((entry) => line(entry, entry.name))].join("\n"),
-    html: `<pre>${[...head, ...entries.map(linked)].join("\n")}</pre>`,
+    text: [...head, ...entries.map(line)].join("\n"),
+    html: `<pre class="listing">${[...head.map((line) => `<span class="line">${line}</span>`), ...entries.map(linked)].join("")}</pre>`,
   };
 }
 
 export const ls: Command = {
   name: "ls",
   usage: "ls [-l] [path]",
-  description: "list what a directory holds; -l says what each is",
+  description: "list what a directory holds, each with its title; -l adds a line on each",
   run({ site, cwd }, args) {
     const { flags, path } = split(args);
     const unknown = flags.find((flag) => flag !== "l");
