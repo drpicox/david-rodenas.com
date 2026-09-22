@@ -75,6 +75,11 @@ test("2022-07-15_hello_blog.md", async () => {
 A quoted word in a step becomes an argument, and the long number is the
 post's checksum. The Java test for the server is the same list of calls.
 
+Here is the compiler itself, with the two files it writes. Edit the post and
+the test follows; break a rule and it says what it said to the students:
+
+::post-tests
+
 If that sounds like BDD, it is -- reinvented so that the specification is a
 blog post the team wanted to write anyway, in their own words rather than in
 Gherkin's, and compiled into the tests rather than interpreted at run time.

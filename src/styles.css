@@ -2505,3 +2505,50 @@ figure.bars figcaption {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- a post and the test it compiles into, side by side ---- */
+
+.app .post-tests {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5em;
+  align-items: start;
+}
+
+.app .post-tests pre.post,
+.app .post-tests textarea.post {
+  margin: 0;
+  width: 100%;
+  min-height: 24em;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  resize: vertical;
+}
+
+.app .post-tests .compiled h4 {
+  margin: 0 0 0.4em;
+  font-size: 0.8rem;
+  color: var(--dim);
+  text-align: left;
+}
+
+.app .post-tests .compiled pre {
+  margin: 0 0 1em;
+  font-size: 0.72rem;
+  overflow-x: auto;
+}
+
+.app .post-tests .refused {
+  margin-bottom: 1em;
+  padding: 0.6em 0.8em;
+  border-left: 3px solid var(--warn);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 50rem) {
+  .app .post-tests {
+    grid-template-columns: 1fr;
+  }
+}
