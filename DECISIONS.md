@@ -30,7 +30,7 @@ fix.
 real asset: nothing superfluous fits in it, so the minimalism maintains itself.
 
 ### The planet is generated, not photographed
-The avatar was an old photo. It is now the MGC filter pipeline of around 2000 — raise
+The avatar was an old photo. It is now the MGC filter pipeline of 2000 — raise
 the land, work out the climate, choose the sea, paint it — run live, so the
 mark on the page is a different world every visit and is itself the evidence
 for the first entry in the work list.
@@ -459,9 +459,10 @@ The generated planet is a better mark than an out-of-date photo, but for a
 person reading a candidacy a recent face still helps. If one appears, it goes
 in and the planet moves somewhere else on the page.
 
-### The worlds are from "around 2000", not 1999
+### The worlds are from 2000, not 1999
 The oldest copy of Mons fractals that survives is `MGC.jar` on a floppy of
 18 January 2001, with eight filters and no sea yet; David does not think it
 was as late as 2001 but cannot place it, and the site said 1999 on his say-so
-alone. So the pages say *around 2000*, and the code's comments say *the
-original*. If the matriculation record ever turns up, the year can be exact.
+alone. The pages said *around 2000* for a day; then the record turned up: the
+course was taken in the autumn term of 2000, which the January 2001 jar fits,
+so the pages say *2000*, and the code's comments say *the original*.

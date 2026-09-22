@@ -3,7 +3,7 @@ import { mountHeaderWorld } from "./browser/mountHeaderWorld";
 import { mountWorlds } from "./browser/mountWorlds";
 
 /**
- * The planet: the filter pipeline of around 2000, the rasteriser, the mark in the header,
+ * The planet: the filter pipeline of 2000, the rasteriser, the mark in the header,
  * the icon in the tab, and the page where the dials are on the outside. It used
  * to be in six places; it is in this folder.
  */

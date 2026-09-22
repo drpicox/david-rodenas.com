@@ -1,6 +1,6 @@
 ---
 title: Worlds
-summary: The fractal planet generator from around 2000, in the browser, with the dials exposed.
+summary: The fractal planet generator of 2000, in the browser, with the dials exposed.
 order: 8
 theme: dark
 sky: stars
@@ -9,7 +9,7 @@ sky: stars
 # Worlds
 
 [Mons fractals](https://david-rodenas.com/mons-fractals/) was a university
-graphics assignment from around 2000: Java 1.1.8 on MS-DOS, a pipeline
+graphics assignment of the autumn of 2000: Java 1.1.8 on MS-DOS, a pipeline
 of filters that grew a planet and wrote it out as VRML for a browser plugin to
 fly around. This is the same pipeline, in TypeScript, with nothing underneath
 it, and the dials on the outside so you can play.

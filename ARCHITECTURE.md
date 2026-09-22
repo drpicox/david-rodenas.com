@@ -43,7 +43,7 @@ was, which is exactly the state this replaced.
 ```mermaid
 graph LR
   subgraph fs["src/features/"]
-    world["<b>world</b><br/>the pipeline of around 2000, the rasteriser,<br/>the mark in the header, the tab icon,<br/>the page with the dials"]
+    world["<b>world</b><br/>the pipeline of 2000, the rasteriser,<br/>the mark in the header, the tab icon,<br/>the page with the dials"]
     theme["<b>theme</b><br/>light, dark, system;<br/>the command and the half-moon"]
     sky["<b>sky</b><br/>two layers of stars,<br/>drifting or driven"]
     debt["<b>technical-debt</b><br/>what shortcuts cost,<br/>compounded"]
