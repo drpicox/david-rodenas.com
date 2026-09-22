@@ -3,7 +3,7 @@ import { Adventure } from "../Adventure";
 import { renderAdventure } from "../renderAdventure";
 
 const KEY = "adventure";
-const COMMANDS = ["norte", "sur", "este", "oeste", "coger", "atacar"] as const;
+const COMMANDS = ["north", "south", "east", "west", "take", "attack"] as const;
 
 /**
  * The game at a prompt of its own, with the six words as buttons for whoever
@@ -14,12 +14,12 @@ export function mountAdventure(host: HTMLElement): () => void {
   let game = restore() ?? new Adventure();
   const screen = el("div");
   const log = el("p", { class: "said" });
-  const input = el("input", { type: "text", autocomplete: "off", spellcheck: false, placeholder: "norte, sur, este, oeste, coger, atacar" });
+  const input = el("input", { type: "text", autocomplete: "off", spellcheck: false, placeholder: "north, south, east, west, take, attack" });
 
   function draw(said = ""): void {
     screen.innerHTML = renderAdventure(game);
-    log.textContent = game.spent && !said ? "Fin de partida, más suerte la próxima vez." : said;
-    if (game.won) log.textContent = "FELICIDADES! Has llegado a la despensa.";
+    log.textContent = game.spent && !said ? "Game over; better luck next time." : said;
+    if (game.won) log.textContent = "CONGRATULATIONS! You have reached the pantry.";
     keep();
   }
 
@@ -46,7 +46,7 @@ export function mountAdventure(host: HTMLElement): () => void {
     el(
       "button",
       { type: "button", class: "quiet", onclick: () => ((game = new Adventure()), draw("")) },
-      "empezar de nuevo",
+      "start again",
     ),
   );
 

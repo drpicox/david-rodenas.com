@@ -11,9 +11,9 @@ describe("the adventure, once the script is there", () => {
   it("moves when a word is pressed, and lights the map as it goes", () => {
     const host = document.createElement("div");
     mountAdventure(host);
-    expect(room(host)).toContain("Bienvenida");
-    press(host, "este");
-    expect(room(host)).toContain("Usa las llaves");
+    expect(room(host)).toContain("Welcome");
+    press(host, "east");
+    expect(room(host)).toContain("Use the keys");
     expect(host.querySelectorAll(".cell.seen")).toHaveLength(2);
   });
 
@@ -21,19 +21,19 @@ describe("the adventure, once the script is there", () => {
     const host = document.createElement("div");
     mountAdventure(host);
     const input = host.querySelector("input") as HTMLInputElement;
-    input.value = "norte";
+    input.value = "north";
     host.querySelector("form")?.dispatchEvent(new Event("submit", { cancelable: true }));
-    expect(host.querySelector(".said")?.textContent).toBe("La salida no existe.");
+    expect(host.querySelector(".said")?.textContent).toBe("There is no way out that way.");
   });
 
   it("keeps the game between visits, and starts over when asked", () => {
     const host = document.createElement("div");
     mountAdventure(host);
-    press(host, "coger");
+    press(host, "take");
     const again = document.createElement("div");
     mountAdventure(again);
-    expect(again.querySelector(".status")?.textContent).toContain("arma:diario");
-    press(again, "empezar de nuevo");
-    expect(again.querySelector(".status")?.textContent).not.toContain("arma");
+    expect(again.querySelector(".status")?.textContent).toContain("weapon:newspaper");
+    press(again, "start again");
+    expect(again.querySelector(".status")?.textContent).not.toContain("weapon");
   });
 });

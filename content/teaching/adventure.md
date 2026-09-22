@@ -13,9 +13,9 @@ files it reads at the start — and it is playable, here, exactly as it was:
 
 ::adventure
 
-The words are the game's, in Spanish, as they were written for the class:
-`norte`, `sur`, `este`, `oeste`, `coger`, `atacar`. The English ones work
-too. You start in the south-west corner with sixteen points of life and
+The game was written in Spanish for the class and is translated here, word
+for word; its own words still work at the prompt — `norte`, `sur`, `este`,
+`oeste`, `coger`, `atacar` — beside the English ones. You start in the south-west corner with sixteen points of life and
 nothing in your hands, and the pantry is one room away through a door you
 have no key for. The map fills in as you go.
 

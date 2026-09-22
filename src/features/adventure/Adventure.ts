@@ -1,8 +1,10 @@
-import { items, monsters, rooms } from "./originalWorld";
+import { items, monsters, rooms } from "./englishWorld";
 import type { Item, Monster, Room } from "./World";
 
 export type Direction = "norte" | "sur" | "este" | "oeste";
 const DIRECTIONS: readonly Direction[] = ["norte", "sur", "este", "oeste"];
+/** The directions as they are said to the player. */
+export const DIRECTION_NAMES: Readonly<Record<Direction, string>> = { norte: "north", sur: "south", este: "east", oeste: "west" };
 const STEP: Readonly<Record<Direction, readonly [number, number]>> = { norte: [1, 0], sur: [-1, 0], este: [0, 1], oeste: [0, -1] };
 
 /** What the room holds now: an item, a monster, or nothing. */
@@ -133,9 +135,9 @@ export class Adventure {
     const place = this.place();
     const index = DIRECTIONS.indexOf(direction);
     const door = place.exits[index] ?? -1;
-    if (door < 0) return "La salida no existe.";
+    if (door < 0) return "There is no way out that way.";
     if (door > 0) {
-      if (!this.key || this.key.value !== door) return "La salida esta cerrada y no llevas la llave.";
+      if (!this.key || this.key.value !== door) return "The way is locked and you are not carrying the key.";
       place.exits[index] = 0;
       this.key = null;
     }
@@ -147,40 +149,40 @@ export class Adventure {
 
   take(): string {
     const place = this.place();
-    if (!place.holds || !("item" in place.holds)) return "No hay ningun objeto para coger!";
+    if (!place.holds || !("item" in place.holds)) return "There is nothing here to take!";
     const { item } = place.holds;
     if (item.kind === "food") {
       this.life = Math.min(LIFE, this.life + item.value);
       place.holds = null;
-      return "Ñam Ñam!";
+      return "Yum yum!";
     }
     const slot = item.kind;
     const held = this[slot];
     this[slot] = item;
     place.holds = held ? { item: held } : null;
-    return { weapon: "Has cogido una arma.", shield: "Has cogido un escudo.", key: "Has cogido una llave." }[slot];
+    return { weapon: "You have taken a weapon.", shield: "You have taken a shield.", key: "You have taken a key." }[slot];
   }
 
   attack(): string {
     const place = this.place();
-    if (!place.holds || !("monster" in place.holds)) return "No hay monstruo para atacar!";
-    if (!this.weapon) return "No tienes ningua arma para atacar!";
+    if (!place.holds || !("monster" in place.holds)) return "There is no monster to attack!";
+    if (!this.weapon) return "You have no weapon to attack with!";
     const { monster } = place.holds;
     const said: string[] = [];
     if (this.weapon.value - monster.defence > 0) {
       const drop = byName(items, monster.drops);
       place.holds = drop ? { item: drop } : null;
-      said.push("El monstruo ha sido derrotado!");
+      said.push("The monster has been defeated!");
     }
     const hurt = monster.attack - (this.shield?.value ?? 0);
     if (hurt > 0) {
       this.life -= hurt;
       said.push("OUCH!");
     }
-    return said.join(" ") || "Ninguno de los dos consigue nada.";
+    return said.join(" ") || "Neither of you gets anywhere.";
   }
 
-  /** A line as the player types it, in the game's own words or in English. */
+  /** A line as the player types it, in English or in the game's original Spanish. */
   run(line: string): string {
     const word = line.trim().toLowerCase();
     const direction = ({ norte: "norte", north: "norte", n: "norte", sur: "sur", south: "sur", s: "sur", este: "este", east: "este", e: "este", oeste: "oeste", west: "oeste", w: "oeste" } as Record<string, Direction>)[word];
@@ -188,6 +190,6 @@ export class Adventure {
     if (word === "coger" || word === "take" || word === "get") return this.take();
     if (word === "atacar" || word === "attack" || word === "hit") return this.attack();
     if (word === "mirar" || word === "look" || word === "l" || word === "") return "";
-    return "No te entiendo.";
+    return "I do not understand you.";
   }
 }

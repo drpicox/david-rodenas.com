@@ -19,7 +19,7 @@ describe("the whole game", () => {
     const game = new Adventure();
     for (const word of walkthrough.split(/\s+/).filter(Boolean)) game.run(word);
     expect(game.won).toBe(true);
-    expect(game.look().name).toBe("Despensa");
+    expect(game.look().name).toBe("Pantry");
     expect(game.look().life).toBe(0);
     expect(game.look()).toMatchObject({ weapon: "Thurmei", shield: "Rharmei" });
   });
