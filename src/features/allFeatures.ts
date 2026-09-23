@@ -5,6 +5,7 @@ import { developerMeetingsFeature } from "./developer-meetings/developerMeetings
 import { fishMarketFeature } from "./fish-market/fishMarketFeature";
 import { headlineFeature } from "./headline/headlineFeature";
 import { lagoonFeature } from "./lagoon/lagoonFeature";
+import { mazeFeature } from "./maze/mazeFeature";
 import { nextWordFeature } from "./next-word/nextWordFeature";
 import { packagesFeature } from "./packages/packagesFeature";
 import { postTestsFeature } from "./post-tests/postTestsFeature";
@@ -39,4 +40,5 @@ export const allFeatures: readonly Feature[] = [
   postTestsFeature,
   fishMarketFeature,
   lagoonFeature,
+  mazeFeature,
 ];

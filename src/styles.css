@@ -2744,3 +2744,68 @@ main math[display="block"] {
   margin: 1em 0 1.2em;
   font-size: 1.15em;
 }
+
+/* The maze from above: walls in ink, the spheres in the green the VRML gave them, the camera's route and the way out underneath. */
+.app .maze-app .figure svg.maze {
+  display: block;
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.app svg.maze .walls {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-linecap: square;
+}
+
+.app svg.maze .sphere {
+  fill: color-mix(in oklab, var(--hl-string) 30%, var(--paper));
+  stroke: var(--hl-string);
+  stroke-width: 0.6;
+}
+
+.app svg.maze .sphere.dead {
+  fill: none;
+  stroke: var(--dim);
+  stroke-dasharray: 1 1;
+}
+
+.app svg.maze .letter {
+  font-family: var(--mono);
+  font-size: 4px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: var(--ink);
+}
+
+.app svg.maze .trail {
+  fill: none;
+  stroke: var(--accent-soft);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+.app svg.maze .walker {
+  fill: var(--accent);
+}
+
+.app svg.maze .way {
+  fill: none;
+  stroke: color-mix(in oklab, var(--warn) 55%, transparent);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.app .maze-app .status {
+  text-align: center;
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+
+.app .maze-app .dials input[type="number"] {
+  width: 7em;
+  margin: 0 0.5em;
+}
