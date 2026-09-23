@@ -104,3 +104,18 @@ describe("Prolog, which one page is written in", () => {
     expect(out).toContain("s_Nombre(");
   });
 });
+
+describe("highlight, QBasic", () => {
+  it("marks its keywords whatever their case, and not a name that starts with one", () => {
+    expect(highlight("FOR i = 1 TO N: next i", "basic")).toBe('<span class="hl-k">FOR</span> i = <span class="hl-n">1</span> <span class="hl-k">TO</span> N: <span class="hl-k">next</span> i');
+    expect(highlight("Format = Toda", "basic")).toBe("Format = Toda");
+  });
+
+  it("marks a comment from the apostrophe to the end of the line, and a REM line", () => {
+    expect(highlight("t = 0 ' IF t\nREM IF x", "basic")).toBe('t = <span class="hl-n">0</span> <span class="hl-c">\' IF t</span>\n<span class="hl-c">REM IF x</span>');
+  });
+
+  it("marks a string, with no comment inside it", () => {
+    expect(highlight('PRINT "it\'s R";', "basic")).toBe('<span class="hl-k">PRINT</span> <span class="hl-s">&quot;it\'s R&quot;</span>;');
+  });
+});

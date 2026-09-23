@@ -24,6 +24,12 @@ const JAVA = words(`
   long native new package private protected public return short static strictfp super switch
   synchronized this throw throws transient try var void volatile while true false null`);
 
+/** Kept in capitals, as QBasic wrote them back whatever was typed; matched in any case. */
+const BASIC = words(`
+  AND AS CASE CLS CONST DECLARE DEFDBL DIM DO DOUBLE ELSE END EXIT FOR FUNCTION IF IS
+  LOCATE LOOP NEXT NOT OR PRINT RANDOMIZE SCREEN SELECT SHARED STATIC STEP SUB THEN TO
+  UNTIL WHILE OPTION BASE`);
+
 function span(kind: Kind, text: string): string {
   return `<span class="hl-${kind}">${escapeHtml(text)}</span>`;
 }
@@ -123,6 +129,41 @@ function prolog(code: string): string {
 }
 
 /**
+ * QBasic, as far as one page needs it: a comment is an apostrophe or a REM
+ * to the end of the line, a string has double quotes and no escapes, and a
+ * keyword is a keyword in any case.
+ */
+function basic(code: string): string {
+  let out = "";
+  let at = 0;
+  while (at < code.length) {
+    const rest = code.slice(at);
+    let match: RegExpExecArray | null;
+    if (rest[0] === "'" || /^REM\b/i.test(rest)) {
+      const end = code.indexOf("\n", at);
+      const stop = end < 0 ? code.length : end;
+      out += span("c", code.slice(at, stop));
+      at = stop;
+    } else if (rest[0] === '"') {
+      const end = code.indexOf('"', at + 1);
+      const stop = end < 0 ? code.length : end + 1;
+      out += span("s", code.slice(at, stop));
+      at = stop;
+    } else if ((match = /^[A-Za-z_][\w]*[$!#%&]?/.exec(rest))) {
+      out += BASIC.has(match[0].toUpperCase()) ? span("k", match[0]) : escapeHtml(match[0]);
+      at += match[0].length;
+    } else if ((match = /^\d+(?:\.\d+)?/.exec(rest))) {
+      out += span("n", match[0]);
+      at += match[0].length;
+    } else {
+      out += escapeHtml(rest[0] ?? "");
+      at += 1;
+    }
+  }
+  return out;
+}
+
+/**
  * HTML, as far as the pages need it: comments, tags, attributes and their
  * values. The words between tags are left as they are, braces and all, because
  * on this site they are usually a template expression and colouring it would
@@ -180,7 +221,7 @@ function html(code: string): string {
 /**
  * Colours a block of code by wrapping its tokens in spans, at build time.
  *
- * It knows the five languages the content is written in and nothing else: a
+ * It knows the six languages the content is written in and nothing else: a
  * language it has not heard of comes back as plain escaped text, which is what
  * a diagram drawn in box characters wants. It is here, rather than a library
  * in the browser, because the page is meant to be finished before any script
@@ -193,5 +234,6 @@ export function highlight(code: string, language: string): string {
   if (language === "java") return cLike(code, JAVA, false);
   if (language === "prolog") return prolog(code);
   if (language === "html") return html(code);
+  if (language === "basic") return basic(code);
   return escapeHtml(code);
 }

@@ -53,6 +53,7 @@ graph LR
     fishmarket["<b>fish-market</b><br/>the Dutch auction of 2000 and the<br/>agents that won it, with a seat for yours"]
     lagoon["<b>lagoon</b><br/>a commons that breeds, the bots<br/>that share it, and a seat for yours"]
     maze["<b>maze</b><br/>the VRML maze generator of 2001,<br/>its dig and its spheres, Java's random"]
+    firstnetwork["<b>first-network</b><br/>letters told apart by backpropagation,<br/>and the robot of 1995 that looks for the light"]
     adventure["<b>adventure</b><br/>the text adventure of a first-year lab,<br/>sixty-four rooms, playable"]
     thesis["<b>thesis-results</b><br/>the measurements of the thesis,<br/>as a table with its bars"]
     packages["<b>packages</b><br/>what npm counted, year by year,<br/>for the packages strangers install"]
