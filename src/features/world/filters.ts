@@ -1,5 +1,5 @@
 import { subdivide } from "./icosphere";
-import { randomOf } from "./randomOf";
+import { randomOf } from "../../platform/random/randomOf";
 import { acrossFace, latitudeOfVertex, radiusOfFace, withMesh, type Filter } from "./World";
 
 /**

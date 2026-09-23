@@ -5,7 +5,7 @@ dependencies.
 
 ```sh
 npm install
-npm test                          # 174 tests, all in plain node
+npm test                          # 496 tests, all in plain node
 npm run dev
 npm run build                     # dist/ is the whole site
 node tools/preview-planets.mjs    # grow six worlds, look at them
@@ -43,6 +43,7 @@ and `src/architecture.test.ts` keeps it that way.
 | `features/next-word` | a language model reduced to counting which word follows which, and dice |
 | `features/rocket` | the relativistic rocket: a trip on board, at home, and its fuel |
 | `features/packages` | what npm counted for the packages, a finished year at a time |
+| `features/fish-market` | the Dutch auction of December 2000, the agents that won it, and a seat for the visitor's own |
 | `platform/data` | open data kept a finished year at a time: which years are missing, how to ask, how to fail without losing anything |
 | `platform/charts` | charts of years as plain SVG strings, so the build and the browser draw the same thing |
 | `features/headline` | the home headline, typed over with what else the page says |

@@ -2552,3 +2552,110 @@ figure.bars figcaption {
     grid-template-columns: 1fr;
   }
 }
+
+/* The fish market: the board at the back of the room, and a seat for the visitor's agent. */
+.app .fish-market .lot {
+  margin: 0 0 0.6em;
+  font-size: 0.9rem;
+}
+
+.app table.board {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.board th,
+.app table.board td {
+  padding: 0.2em 0.5em;
+  text-align: right;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.app table.board thead th {
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app table.board tbody th {
+  text-align: left;
+  font-weight: bold;
+}
+
+.app table.board td.asks {
+  color: var(--accent);
+}
+
+.app table.board td.error {
+  text-align: left;
+  white-space: normal;
+  color: var(--warn);
+  font-size: 0.72rem;
+}
+
+.app table.board td.profit {
+  position: relative;
+  min-width: 7em;
+}
+
+.app table.board td.profit .bar {
+  position: absolute;
+  inset: 15% auto 15% 0;
+  width: calc(var(--p) * 100%);
+  background: color-mix(in oklab, var(--accent) 28%, transparent);
+  border-radius: 0 2px 2px 0;
+}
+
+.app table.board tr.loss td.profit .bar {
+  background: color-mix(in oklab, var(--warn) 32%, transparent);
+}
+
+.app .fish-market ol.sales {
+  margin: 0.8em 0 0;
+  padding-left: 2.4em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .fish-market ol.sales b {
+  color: var(--ink);
+}
+
+.app details.own {
+  margin-top: 1.2em;
+}
+
+.app details.own summary {
+  cursor: pointer;
+  color: var(--dim);
+  font-size: 0.9rem;
+}
+
+.app details.own textarea.agent {
+  width: 100%;
+  margin: 0.6em 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.app details.own .error {
+  margin: 0;
+  padding: 0.6em 0.8em;
+  border-left: 3px solid var(--warn);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 40rem) {
+  .app table.board td:nth-child(4),
+  .app table.board th:nth-child(4),
+  .app table.board td:nth-child(6),
+  .app table.board th:nth-child(6) {
+    display: none;
+  }
+}
