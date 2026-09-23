@@ -135,14 +135,21 @@ The files kept their dates, and there was not one agent but four.
   She also carried a margin learnt per kind of fish, meant to cap the
   market's; the one line that chose between the two returned the market's on
   both branches, so the kinds never spoke. She is seated above as she ran.
-- **15 December — the one we handed in.** Only the compiled classes survive,
-  so this one is read back from bytecode. Where Wanda corrected her margin
-  after the fact, it *plans* it: it keeps a histogram of the value sold so
-  far by the margin it went at, assumes the fish still on the floor will go
-  the same way, and walks the bins from the best margin down, adding up what
-  the fish expected in each would cost, until that reaches the credit it has
-  left. That bin's margin is the most it can demand and still spend all its
-  money. Until anything has sold, it is Vicente.
+- **15 December — the one we handed in.** Where Wanda corrected her margin
+  after the fact, this one *plans* it. It keeps a histogram of the value
+  sold so far by the margin it went at — `p(m)`, the share of everything
+  sold that went at margin `m` — and assumes the fish still on the floor
+  will go the same way. Then it sums over every margin it could demand,
+  from the highest down, what the fish it expects to find there would cost,
+  and stops where that sum reaches the credit it has left.
+
+```
+demand the largest m such that   Σ  p(m′) · fish / (1 + m′)  ≥  credit
+                                m′ ≥ m
+```
+
+That margin is the most it can ask and still spend all its money. Until
+anything has sold, it is Vicente.
 
 The thread is clean: one global number, then measure, then a number that
 corrects itself, then a number computed from what was measured and what is
@@ -166,8 +173,7 @@ The auction here is a reconstruction, not the original market: the price
 falls in steps of 2% of the resale value from 150% of it, a box is withdrawn
 at 25%, and when two buyers shout at once a coin decides where the original
 restarted the round higher. The agents are the ones in the files, rule for
-rule where the source survived, and read back from the compiled classes
-where it did not. The two naive buyers are not from the class; they are
+rule. The two naive buyers are not from the class; they are
 there to show what the number is for.
 
 Eighteen years later I set a class the same problem turned inside out:
