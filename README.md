@@ -5,7 +5,7 @@ dependencies.
 
 ```sh
 npm install
-npm test                          # 522 tests, all in plain node
+npm test                          # 523 tests, all in plain node
 npm run dev
 npm run build                     # dist/ is the whole site
 node tools/preview-planets.mjs    # grow six worlds, look at them
