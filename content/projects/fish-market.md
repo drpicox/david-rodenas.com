@@ -66,7 +66,32 @@ public void evOffer(Good g, double precio)
 }
 ```
 
-That is `Vicente.java`, less a line that printed. The one dial is `eficacia`, 0.9: the credit of the others is counted at 90%,
+That is `Vicente.java`, less a line that printed. In English, name for
+name:
+
+```java
+private void recomputeMargin()
+{
+    margin = fishLeft - moneyLeft;
+    margin /= moneyLeft;
+}
+
+public void onOffer(Good g, double price)
+{
+    double value;
+    double marginNow;
+    value = g.getResalePrice();
+    marginNow = value - price;
+    marginNow /= price;
+    if (marginNow <= 0)
+        return;
+    if (marginNow >= margin && canIBid)
+        bid(price);
+}
+```
+
+`fishLeft` is `sumValor`, the resale value of what is still on the floor;
+`moneyLeft` is `sumCredito`, the credit in the room counted at 90%. The one dial is `eficacia`, 0.9: the credit of the others is counted at 90%,
 on the assumption that they will not manage to spend it all. Less money
 chasing the same fish means a higher clearing margin, so 0.9 is a measure of
 greed. The dial above the board is that number. Turn it down and Vicente
