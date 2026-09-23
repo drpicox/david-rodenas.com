@@ -5,7 +5,7 @@ dependencies.
 
 ```sh
 npm install
-npm test                          # 513 tests, all in plain node
+npm test                          # 522 tests, all in plain node
 npm run dev
 npm run build                     # dist/ is the whole site
 node tools/preview-planets.mjs    # grow six worlds, look at them
@@ -29,7 +29,7 @@ and `src/architecture.test.ts` keeps it that way.
 | | |
 |---|---|
 | `platform/content` | front matter, routes, `Site` — what is at an address and what a directory holds |
-| `platform/markdown` | the subset of markdown the content uses, with images, `Term :: definition` and `::app` blocks |
+| `platform/markdown` | the subset of markdown the content uses, with images, `Term :: definition`, `::app` blocks, and ```math for a formula as MathML |
 | `platform/shell` | `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear` over `Site`, plus history, completion and the `^K`/`^U`/`^Y` line editing |
 | `platform/page` | one HTML document per page, `renderMain` shared with the browser, `schema.org/Book` for the book |
 | `platform/plugin` | what a `Feature` is, and the `Signal` one uses to tell another something |

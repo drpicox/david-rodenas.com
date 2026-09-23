@@ -39,16 +39,22 @@ export function renderFishMarket(auction: DutchAuction): string {
     `<table class="board"><thead><tr><th>buyer</th><th>asks</th><th>holds</th><th>spent</th><th>worth</th><th>credit</th><th>profit</th></tr></thead>` +
     `<tbody>${rows}</tbody></table>`;
 
-  const sales = auction.market.sales;
-  const log = sales.length
-    ? `<ol class="sales" reversed start="${sales.length}">${[...sales]
+  const turns = auction.turns;
+  const log = turns.length
+    ? `<ol class="sales" reversed start="${turns.length}">${[...turns]
         .reverse()
         .slice(0, SALES_SHOWN)
-        .map(({ lot: sold, buyer, price }) =>
-          price === null || buyer === null
-            ? `<li>${escapeHtml(sold.kind)}, ${credits(sold.value)}: <i>withdrawn</i></li>`
-            : `<li>${escapeHtml(sold.kind)}, ${credits(sold.value)}: <b>${escapeHtml(buyer)}</b> at ${credits(price)}, a margin of ${percent((sold.value - price) / price)}</li>`,
-        )
+        .map(({ sale: { lot: sold, buyer, price }, bids, short }) => {
+          const went = price === null || buyer === null ? `<i>withdrawn</i>` : `sold at <b>${credits(price)}</b>, a margin of ${percent((sold.value - price) / price)}`;
+          const ready = Object.entries(bids)
+            .map(([name, bid]) => {
+              if (bid === null) return `${escapeHtml(name)} —`;
+              const who = name === buyer ? `<b>${escapeHtml(name)}</b>` : escapeHtml(name);
+              return short.includes(name) ? `<s title="more than it had">${who} at ${credits(bid)}</s>` : `${who} at ${credits(bid)}`;
+            })
+            .join(", ");
+          return `<li><span class="went">${escapeHtml(sold.kind)}, ${credits(sold.value)}: ${went}.</span> <span class="ready">Ready to shout: ${ready}.</span></li>`;
+        })
         .join("")}</ol>`
     : "";
 

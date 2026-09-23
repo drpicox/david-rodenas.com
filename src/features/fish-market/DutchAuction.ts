@@ -3,6 +3,7 @@ import type { Lot } from "./Lot";
 import type { Market } from "./Market";
 import type { Sale } from "./Sale";
 import type { Standing } from "./Standing";
+import type { Turn } from "./Turn";
 
 /** Where the auctioneer starts, how fast he comes down, and where he gives up, all relative to the resale value. */
 const OPENING = 1.5;
@@ -28,6 +29,7 @@ export class DutchAuction {
   private readonly buyers: Buyer[];
   private readonly remaining: Lot[];
   private readonly sold: Sale[] = [];
+  readonly turns: Turn[] = [];
 
   constructor(
     lots: readonly Lot[],
@@ -65,6 +67,8 @@ export class DutchAuction {
     const lot = this.remaining.shift();
     if (!lot) throw new Error("the floor is empty");
     const demands = this.buyers.map((buyer) => this.demandOf(buyer, lot));
+    const bids = Object.fromEntries(this.buyers.map((buyer, index) => [buyer.bidder.name, demands[index] === null ? null : lot.value / (1 + demands[index]!)]));
+    const short = this.buyers.filter((buyer) => (bids[buyer.bidder.name] ?? 0) > buyer.credit).map((buyer) => buyer.bidder.name);
     for (let price = lot.value * OPENING; price >= lot.value * FLOOR; price -= lot.value * STEP) {
       const margin = (lot.value - price) / price;
       const shouting = this.buyers.filter((buyer, index) => buyer.credit >= price && margin >= (demands[index] ?? Infinity));
@@ -72,9 +76,9 @@ export class DutchAuction {
       const winner = shouting[Math.min(shouting.length - 1, Math.floor(this.random() * shouting.length))]!;
       winner.credit -= price;
       winner.won.push(lot);
-      return this.record({ lot, buyer: winner.bidder.name, price });
+      return this.record({ lot, buyer: winner.bidder.name, price }, bids, short);
     }
-    return this.record({ lot, buyer: null, price: null });
+    return this.record({ lot, buyer: null, price: null }, bids, short);
   }
 
   standings(): Standing[] {
@@ -85,8 +89,9 @@ export class DutchAuction {
     });
   }
 
-  private record(sale: Sale): Sale {
+  private record(sale: Sale, bids: Turn["bids"], short: readonly string[]): Sale {
     this.sold.push(sale);
+    this.turns.push({ sale, bids, short });
     return sale;
   }
 

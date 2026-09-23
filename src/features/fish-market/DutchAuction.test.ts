@@ -53,6 +53,21 @@ describe("a Dutch auction", () => {
     expect(hasty.profit).toBeCloseTo(500 - hasty.spent);
   });
 
+  it("remembers, for the board, the price each buyer was ready to shout at, sold or not", () => {
+    const auction = new DutchAuction(lots, [fixedMargin("Patient", 1), fixedMargin("Hasty", 0.25)], 1000, () => 0);
+    auction.sell();
+    const [turn] = auction.turns;
+    expect(turn!.sale.buyer).toBe("Hasty");
+    expect(turn!.bids).toEqual({ Patient: 50, Hasty: 80 });
+  });
+
+  it("notes who was ready to shout at a price it no longer had", () => {
+    const auction = new DutchAuction(lots, [fixedMargin("Broke", 0.25)], 60, () => 0);
+    auction.sell();
+    expect(auction.turns[0]!.short).toEqual(["Broke"]);
+    expect(auction.turns[0]!.sale.price).toBeLessThanOrEqual(60);
+  });
+
   it("asks a bidder that throws nothing more, and treats it as one that never bids", () => {
     const broken: Bidder = {
       name: "broken",

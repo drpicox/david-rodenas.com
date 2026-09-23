@@ -2620,8 +2620,16 @@ figure.bars figcaption {
   color: var(--dim);
 }
 
+.app .fish-market ol.sales .went {
+  color: var(--ink);
+}
+
 .app .fish-market ol.sales b {
   color: var(--ink);
+}
+
+.app .fish-market ol.sales li {
+  margin-bottom: 0.3em;
 }
 
 .app details.own {
@@ -2729,4 +2737,10 @@ figure.bars figcaption {
 
 .app .bench label {
   white-space: nowrap;
+}
+
+/* A formula: MathML the browser draws itself, a little larger than the prose and set off from it. */
+main math[display="block"] {
+  margin: 1em 0 1.2em;
+  font-size: 1.15em;
 }

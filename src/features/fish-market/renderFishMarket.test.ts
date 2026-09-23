@@ -38,6 +38,15 @@ describe("the board at the back of the room", () => {
     expect(html).toContain("withdrawn");
   });
 
+  it("shows, for each sale, the price every buyer was ready to shout at, with the one who did marked", () => {
+    const auction = new DutchAuction(lots, [fixedMargin("Patient", 1), fixedMargin("Hasty", 0.25)], 1000, () => 0);
+    auction.sell();
+    const html = renderFishMarket(auction);
+    const sale = html.slice(html.indexOf('class="sales"'));
+    expect(sale).toMatch(/<b>Hasty<\/b>.*at 80/s);
+    expect(sale).toMatch(/Patient.*at 50/s);
+  });
+
   it("says when a buyer broke, in its own words", () => {
     const broken = { name: "Broken", demands: () => JSON.parse("{") as number };
     const auction = new DutchAuction(lots, [broken], 1000, () => 0);

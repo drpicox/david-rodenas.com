@@ -43,7 +43,8 @@ The top level says what this is: a frame, and the features standing in it.
   every feature were deleted, and it never imports from `src/features/`.
   - `content/` — front matter, and `Site`: what is at an address, what a
     directory holds
-  - `markdown/` — the small subset of markdown this site writes in
+  - `markdown/` — the small subset of markdown this site writes in, with
+    ```flow, ```bars and ```math blocks drawn at build time
   - `shell/` — the shell over a `Site`, and the commands that are about the
     site itself: `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear`
   - `page/` — the whole HTML document, and the `<main>` inside it

@@ -26,7 +26,9 @@ what a buyer decides is the margin below which it will not shout.
 Press **next lot** and one box is sold, or withdrawn if nobody wanted it.
 **Run** sells them at reading pace, **whole morning** at once. The board
 shows what each buyer asks for the box on the floor, what it holds, and what
-it has made. **Seat your own agent** below the board and it plays too.
+it has made; under it, box by box, who took it at what price and the price
+every buyer was ready to shout at — which is the whole of each one's mind
+at that moment. **Seat your own agent** below the board and it plays too.
 
 ## The one number
 
@@ -35,8 +37,8 @@ still on the floor resells for, and how much credit the buyers have left
 between them. If that money bought all that fish, every unit spent would
 return
 
-```
-margin = (fish − money) / money
+```math
+margin = frac{fish - money}{money}
 ```
 
 That is the margin at which the market *clears*: the price level at which
@@ -141,11 +143,11 @@ The files kept their dates, and there was not one agent but four.
   sold that went at margin `m` — and assumes the fish still on the floor
   will go the same way. Then it sums over every margin it could demand,
   from the highest down, what the fish it expects to find there would cost,
-  and stops where that sum reaches the credit it has left.
+  and demands the largest `m` at which that sum still covers the credit it
+  has left:
 
-```
-demand the largest m such that   Σ  p(m′) · fish / (1 + m′)  ≥  credit
-                                m′ ≥ m
+```math
+sum_{m' >= m} p(m') · frac{fish}{1 + m'} >= credit
 ```
 
 That margin is the most it can ask and still spend all its money. Until
