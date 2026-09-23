@@ -144,3 +144,7 @@ restarted the round higher. The agents are the ones in the files, rule for
 rule where the source survived, and read back from the compiled classes
 where it did not. The two naive buyers are not from the class; they are
 there to show what the number is for.
+
+Eighteen years later I set a class the same problem turned inside out:
+[a lagoon whose fish breed if left alone](/teaching/fishing-lagoon/), and
+bots that have to decide how much to take from it.

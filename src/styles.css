@@ -2659,3 +2659,74 @@ figure.bars figcaption {
     display: none;
   }
 }
+
+/* The lagoon: the week-by-week table, with the water as a bar under each week's count. */
+.app .lagoon table.weeks {
+  width: 100%;
+  margin-bottom: 1.2em;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app .lagoon table.weeks caption,
+.app .lagoon table.board caption {
+  caption-side: top;
+  text-align: left;
+  margin-bottom: 0.4em;
+  font-family: var(--text);
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: var(--dim);
+}
+
+.app .lagoon table.weeks th,
+.app .lagoon table.weeks td {
+  padding: 0.2em 0.4em;
+  text-align: right;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app .lagoon table.weeks thead th {
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app .lagoon table.weeks tbody th {
+  text-align: left;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.app .lagoon table.weeks td.short {
+  color: var(--dim);
+}
+
+.app .lagoon table.weeks td.total {
+  font-weight: bold;
+}
+
+.app .lagoon table.weeks tr.water td {
+  position: relative;
+  isolation: isolate;
+  color: var(--accent);
+}
+
+.app .lagoon table.weeks tr.water .fish {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: calc(var(--p) * 100%);
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  z-index: -1;
+}
+
+.app .bench {
+  font-size: 0.85rem;
+  color: var(--dim);
+  align-items: center;
+}
+
+.app .bench label {
+  white-space: nowrap;
+}
