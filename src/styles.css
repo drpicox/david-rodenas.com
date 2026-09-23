@@ -2744,3 +2744,136 @@ main math[display="block"] {
   margin: 1em 0 1.2em;
   font-size: 1.15em;
 }
+
+/* The first network: a grid to draw on, and what the network makes of it. */
+.app .letters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em 2em;
+  align-items: flex-start;
+  margin-bottom: 0.8em;
+}
+
+.app .letters .grid {
+  display: grid;
+  grid-template-columns: repeat(5, 2.4rem);
+  grid-auto-rows: 2.4rem;
+  gap: 3px;
+}
+
+.app .letters button.cell {
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.app .letters button.cell[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+.app .letters button.cell:hover {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 35%, var(--paper));
+}
+
+.app .letters .reading {
+  flex: 1 1 14rem;
+}
+
+.app .letters .reading p {
+  margin: 0 0 0.6em;
+}
+
+.app .letters table.answers {
+  border-collapse: collapse;
+  font-family: var(--mono);
+}
+
+.app .letters table.answers th {
+  width: 1.6em;
+  text-align: left;
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app .letters table.answers tr.best th {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.app .letters table.answers td.sure {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app .letters table.answers .bar {
+  height: 0.7em;
+  /* Every bar on one scale: a sure answer is the whole width. */
+  width: calc(var(--p) * min(14rem, 40vw));
+  min-width: 2px;
+  background: var(--accent-soft);
+}
+
+.app .letters table.answers tr.best .bar {
+  background: var(--accent);
+}
+
+.app .taught label {
+  white-space: nowrap;
+}
+
+/* The robot of 1995 on its text screen, and the rules it has written. */
+.app .light-robot svg.screen {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* One text cell of the original screen: a character as tall as the cell, less its leading. */
+.app .light-robot svg.screen text {
+  font-family: var(--mono);
+  font-size: 1.6px;
+}
+
+.app .light-robot .glass {
+  fill: none;
+  stroke: var(--rule);
+  stroke-width: 0.15;
+}
+
+.app .light-robot .trail {
+  fill: none;
+  stroke: var(--accent-soft);
+  stroke-width: 0.25;
+  stroke-linejoin: round;
+  opacity: 0.6;
+}
+
+.app .light-robot .robot {
+  fill: var(--accent);
+  font-weight: bold;
+}
+
+.app .light-robot .light {
+  fill: var(--warn);
+  font-weight: bold;
+}
+
+.app .light-robot p.doing {
+  margin: 0.6em 0 0.3em;
+}
+
+.app .light-robot ol.rules {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 0.85rem;
+}
+
+.app .light-robot ol.rules li.unknown {
+  color: var(--dim);
+}

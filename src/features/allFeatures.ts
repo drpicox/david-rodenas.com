@@ -2,6 +2,7 @@ import type { Feature } from "../platform/plugin/Feature";
 import { adventureFeature } from "./adventure/adventureFeature";
 import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
+import { firstNetworkFeature } from "./first-network/firstNetworkFeature";
 import { fishMarketFeature } from "./fish-market/fishMarketFeature";
 import { headlineFeature } from "./headline/headlineFeature";
 import { lagoonFeature } from "./lagoon/lagoonFeature";
@@ -39,4 +40,5 @@ export const allFeatures: readonly Feature[] = [
   postTestsFeature,
   fishMarketFeature,
   lagoonFeature,
+  firstNetworkFeature,
 ];
