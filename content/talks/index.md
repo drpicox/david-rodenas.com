@@ -22,10 +22,11 @@ AngularJS, at the FIB, the computing faculty of the UPC in Barcelona. My deck
 for it is not slides. It is the list of questions: dependency injection, the
 hierarchical injector, why TypeScript, what the web looks like in five years.
 
-## Barcelona, 2013–2017
+## BarcelonaJS and the Barcelona meetups
 
-The years of the meetups. I spoke at BarcelonaJS and helped organise it, and
-co-organised the WeNode conference in 2014.
+2013 to 2017 were the years of the meetups. I spoke at BarcelonaJS and helped
+organise it, and co-organised the WeNode conference in 2014. In 2022 I went
+back to it.
 
 2013-05 :: **[GruntJS](https://github.com/drpicox/tutorial-gruntjs-v1)**, BarcelonaJS.
 2013-09 :: **[Promises](https://github.com/drpicox/tutorial-promises-v1)**, BarcelonaJS -- promises against callbacks, when that was the argument.
@@ -35,6 +36,7 @@ co-organised the WeNode conference in 2014.
 2016-06 :: **The Bowling Game Kata**, twice in a fortnight. It is [still here](/teaching/kata/).
 2016-11 → 2017-12 :: **Testing**, four times, and each time a different room: a workshop, then *from the company to the university and back*, then *company, university and professionalism*.
 2017-03-17 :: **Jornades de l'Institut Bernat el Ferrer**, Molins de Rei -- a secondary school. The history of software engineering from Dijkstra in 1968 to Agile in 2001, TDD with a calculator, and how to get into university.
+2022-10-25 :: **TDD is not a stupid idea, it's brilliant**, BarcelonaJS -- an open meetup, hosted in the Travelport office, with two of my former students in the audience.
 
 ## Before that, the conferences
 
@@ -48,8 +50,7 @@ co-organised the WeNode conference in 2014.
 
 Training weeks on JavaScript, React and Redux, run twice, in Barcelona and in
 Denver. Brown bags and TAST sessions. Sessions on TDD and BDD for teams in two
-countries, one of which someone recorded and passed around. And in October 2022,
-*TDD is not a stupid idea, it's brilliant* -- BarcelonaJS, in the office.
+countries, one of which someone recorded and passed around.
 
 ## Since 2022: algorithms, for people who do not write them
 
