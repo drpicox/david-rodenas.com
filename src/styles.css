@@ -2995,10 +2995,12 @@ main math[display="block"] {
   cursor: default;
 }
 
+/* The lamps go under the drawing, each with its name, so nobody has to find a tooltip to know what they mean. */
 .app .fibergochi .screen {
   display: flex;
+  flex-direction: column-reverse;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 /* The drawings are 50 by 40, shown four times as large, as the page of 1999 showed them: square pixels. */
@@ -3010,31 +3012,37 @@ main math[display="block"] {
   image-rendering: pixelated;
 }
 
-/* Three lamps of 10 by 9, black when off: red for an exam or a lab, cyan for a terminal held. What each is, is said on hover. */
+/* Three lamps of 10 by 9, black when off: red for an exam or a lab, cyan for a terminal held. */
 .app .fibergochi .lamps {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 0.9em;
   margin: 0;
   padding: 0;
   list-style: none;
+  font-family: var(--mono);
+  font-size: 0.68rem;
 }
 
 .app .fibergochi .lamps li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.app .fibergochi .lamps li::before {
+  content: "";
   width: 10px;
   height: 9px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-indent: 12px;
   background: #000000;
 }
 
-.app .fibergochi .lamps li.on {
+.app .fibergochi .lamps li.on::before {
   background: #ff0000;
 }
 
-.app .fibergochi .lamps li.on[data-lamp="terminal"] {
+.app .fibergochi .lamps li.on[data-lamp="terminal"]::before {
   background: #00ffff;
+  outline: 1px solid #000000;
 }
 
 .app .fibergochi .panel {
