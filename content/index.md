@@ -17,22 +17,28 @@ click one, or type at the prompt at the foot of the page -- `ls`,
 `cd projects`, `cat README.md` -- and it does the same. `help` says the rest.
 What each directory holds is listed at the bottom of this page.
 
-## Where to start
+## The book
 
 ![The cover of the book](/book/BookGuide.jpeg) *The Emotional and Technical
 Guide to Rescue Stalled Software* (2024) is about conquering technical debt
 without sacrificing your sanity or your shipping schedule. Its rule fits on one
 line: never rewrite, never stop delivery. [About the book.](/book/)
 
-**Essays.** More than 250 of them on [Medium](https://drpicox.medium.com), one
-every Saturday since 2022, read more than half a million times. The most read
-one, and the ones read longest, argue with the canon:
+## Essays
+
+> > More than half a million views.
+
+More than 250 of them on [Medium](https://drpicox.medium.com), one every
+Saturday since 2022. The most read one, and the ones read longest, argue with
+the canon:
 
 - [The JavaScript framework war is over](https://medium.com/p/bd110ddab732)
 - [Software Development Is A Beautiful Mess](https://drpicox.medium.com/software-development-is-a-beautiful-mess-45edab1fab73)
 - [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)
 
 [All of them, by subject, with a line on each.](/essays/)
+
+## Two more ways in
 
 **[The agent that won the fish auction.](/projects/fish-market/)** A class of
 competing buyers in December 2000, a Dutch auction, and the one number ours

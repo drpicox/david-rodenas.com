@@ -1,5 +1,5 @@
 ---
-title: Essays
+title: Essays with more than half a million views
 summary: More than 250 essays on Medium, one every Saturday since 2022, read more than half a million times.
 order: 20
 ---
