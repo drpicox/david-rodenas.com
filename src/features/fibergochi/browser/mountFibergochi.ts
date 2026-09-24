@@ -23,10 +23,11 @@ export function mountFibergochi(host: HTMLElement): () => void {
   let fibergochi = new Fibergochi(Math.random, load() ?? {});
   let running = true;
   let confirmingNew = false;
+  let picked: string | null = null;
   let steps = 0;
   const seen = watchOnScreen(host);
 
-  const render = () => renderFibergochi(fibergochi, { running, confirmingNew });
+  const render = () => renderFibergochi(fibergochi, { running, confirmingNew, picked });
 
   function draw(): void {
     const focused = document.activeElement instanceof HTMLElement && host.contains(document.activeElement) ? document.activeElement.dataset["do"] : undefined;
@@ -100,7 +101,10 @@ export function mountFibergochi(host: HTMLElement): () => void {
 
   function onClick(event: Event): void {
     const does = (event.target as HTMLElement).closest<HTMLElement>("button[data-do]")?.dataset["do"] ?? "";
-    if (keys[does]) {
+    if (does.startsWith("lamp-")) {
+      picked = does.slice("lamp-".length);
+      refresh();
+    } else if (keys[does]) {
       keys[does]();
       refresh();
     } else if (boxes[does]) {

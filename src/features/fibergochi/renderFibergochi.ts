@@ -31,37 +31,53 @@ const KEYS = [
   ],
 ] as const;
 
+/** How much work, in words and in the Fibergochi's own hours of three steps: a little is under one, a lot is five or more. */
+function amount(steps: number, [none, little, some, lot]: readonly string[]): string {
+  if (steps <= 0) return none!;
+  if (steps < 3) return `${little}, under an hour`;
+  const hours = Math.round(steps / 3);
+  return `${steps < 15 ? some : lot}, about ${hours} ${hours === 1 ? "hour" : "hours"}`;
+}
+
 const button = (does: string, label: string, { title = "", disabled = false } = {}) =>
   `<button type="button" data-do="${does}"${title ? ` title="${escapeHtml(title)}"` : ""}${disabled ? " disabled" : ""}>${label}</button>`;
 
 /**
  * The egg and everything around it, as one piece of HTML: the build writes it
  * before any script runs, and the browser writes it again when something more
- * than the picture, the lamps and the clock changes. Those three are marked
- * `data-show`, so a beat can copy just them across and leave the focus where
- * it was.
+ * than the picture, the lamps, the clock and what the lamps mean changes.
+ * Those are marked `data-show`, so a beat can copy just them across and leave
+ * the focus where it was.
  */
-export function renderFibergochi(fibergochi: Fibergochi, { running, confirmingNew }: { running: boolean; confirmingNew: boolean }): string {
+export function renderFibergochi(
+  fibergochi: Fibergochi,
+  { running, confirmingNew, picked = null }: { running: boolean; confirmingNew: boolean; picked?: string | null },
+): string {
   const { day, hour } = fibergochi.state;
   // The keys on the egg answer nobody while a box is open, as nothing did behind an alert, nor after the end.
   const disabled = !fibergochi.alive || fibergochi.waiting || confirmingNew;
   // After the last day of class a lamp blinks, an hour on and an hour off.
   const lit = (on: boolean) => (on && (day < 20 || hour % 2 === 1) ? "on" : "off");
   const lamps = [
-    ["exam", "Whether there is an exam.", lit(fibergochi.examsPending)],
-    ["lab", "Whether there is a lab.", lit(fibergochi.labsPending)],
-    ["terminal", "Whether it has a terminal.", fibergochi.hasTerminal ? "on" : "off"],
-  ]
-    .map(([name, title, on]) => `<li class="${on}" data-lamp="${name}" title="${title}">${name}</li>`)
+    ["exam", lit(fibergochi.examsPending), amount(fibergochi.studyLeft, ["nothing to study", "a little to study", "something to study", "a lot to study"])],
+    ["lab", lit(fibergochi.labsPending), amount(fibergochi.labLeft, ["no lab to do", "a little lab work", "some lab work", "a lot of lab work"])],
+    ["terminal", fibergochi.hasTerminal ? "on" : "off", fibergochi.hasTerminal ? "a terminal" : fibergochi.labsPending ? "no terminal, and labs need one" : "no terminal"],
+  ];
+  // On the egg, as in 1999, a lamp says what it is when the mouse is over it; pressed, it marks its line under the date.
+  const onEgg = lamps
+    .map(([lamp, on, said]) => `<li><button type="button" class="lamp ${on}" data-do="lamp-${lamp}" data-lamp="${lamp}" title="${lamp}: ${said}">${lamp}</button></li>`)
+    .join("");
+  const legend = lamps
+    .map(([lamp, on, said]) => `<li class="${on}${lamp === picked ? " picked" : ""}" data-lamp="${lamp}"><b>${lamp}</b> ${said}</li>`)
     .join("");
   const picture = fibergochi.picture;
   const seen = SEEN[picture.replace(/\d$/, "")] ?? "";
-  const screen = `<div class="screen"><ul class="lamps" data-show="lamps">${lamps}</ul><img data-show="picture" src="/fibergochi/${picture}.gif" alt="${seen}" width="200" height="160"></div>`;
+  const screen = `<div class="screen"><ul class="lamps" data-show="lamps">${onEgg}</ul><img data-show="picture" src="/fibergochi/${picture}.gif" alt="${seen}" width="200" height="160"></div>`;
   const egg = KEYS.map((row) =>
     row === "screen" ? screen : `<div class="keys">${row.map(([does, label, title]) => button(does, label, { title, disabled })).join("")}</div>`,
   ).join("");
 
-  return `<div class="fibergochi"><div class="egg"><p class="by"><span>by</span> Night</p>${egg}</div><div class="panel"><p class="time"><output data-show="clock">${fibergochi.clock}</output> ${button("pause", running ? "pause" : "go on")} ${button("new", "new")}</p>${dialog(fibergochi, confirmingNew)}</div></div>`;
+  return `<div class="fibergochi"><div class="egg"><p class="by"><span>by</span> Night</p>${egg}</div><div class="panel"><p class="time"><output data-show="clock">${fibergochi.clock}</output> ${button("pause", running ? "pause" : "go on")} ${button("new", "new")}</p><ul class="legend" data-show="legend">${legend}</ul>${dialog(fibergochi, confirmingNew)}</div></div>`;
 }
 
 /** Whatever an alert, a confirm or a prompt asked in 1999, in the order they came. */

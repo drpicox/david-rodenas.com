@@ -78,11 +78,21 @@ export class Fibergochi {
   }
 
   get examsPending(): boolean {
-    return this.taken(this.s.exams).some((work) => work > 0);
+    return this.studyLeft > 0;
   }
 
   get labsPending(): boolean {
-    return this.taken(this.s.labs).some((work) => work > 0);
+    return this.labLeft > 0;
+  }
+
+  /** Steps of study left, all its subjects together. */
+  get studyLeft(): number {
+    return this.taken(this.s.exams).reduce((sum, work) => sum + Math.max(work, 0), 0);
+  }
+
+  /** Steps of work at a terminal left, all its labs together. */
+  get labLeft(): number {
+    return this.taken(this.s.labs).reduce((sum, work) => sum + Math.max(work, 0), 0);
   }
 
   get hasTerminal(): boolean {

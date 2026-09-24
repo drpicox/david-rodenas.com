@@ -43,6 +43,13 @@ describe("the Fibergochi, once the script is there", () => {
     host.remove();
   });
 
+  it("marks what a lamp means when it is pressed", () => {
+    const host = document.createElement("div");
+    mountFibergochi(host);
+    host.querySelector<HTMLElement>('button.lamp[data-lamp="terminal"]')!.click();
+    expect(host.querySelector(".legend .picked")?.getAttribute("data-lamp")).toBe("terminal");
+  });
+
   it("is kept in the browser, and found again on the next visit", () => {
     const first = document.createElement("div");
     const stop = mountFibergochi(first);

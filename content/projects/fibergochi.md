@@ -25,8 +25,9 @@ browsing, if it holds a terminal. **Beg** is to beg for better marks, and
 the answer is always the same. **alfa**, **Bar** and **Friends** were never
 written. They did nothing in 1999, and they do nothing here.
 
-The three lamps under the drawing are an exam to study for, a lab to do,
+The three lamps beside the drawing are an exam to study for, a lab to do,
 and a terminal held. After the last day of class the first two blink.
+Under the date it says how much there is of each.
 
 A day has sixteen hours, and a term has twenty-five days, twenty of them
 with classes. The marks come out on the twenty-second day. A subject is
