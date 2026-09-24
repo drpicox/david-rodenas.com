@@ -2929,3 +2929,148 @@ main math[display="block"] {
 .app .taught button.forget:hover {
   color: var(--warn);
 }
+
+/* ---- the Fibergochi: the yellow egg of 1999, its keys, and the clock beside it ---- */
+.app .fibergochi {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5em 2.5em;
+}
+
+/*
+ * The egg was a GIF of 272 by 381, all of it yellow, and it stays yellow in
+ * the dark. It is a little wider here, and the keys sit off its narrow ends,
+ * so that the row under the screen fits inside it in any font.
+ */
+.app .fibergochi .egg {
+  box-sizing: border-box;
+  width: 300px;
+  min-height: 400px;
+  padding: 3.4em 1em 4.6em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45em;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: #ffff00;
+  color: #000000;
+}
+
+.app .fibergochi .by {
+  margin: 0;
+  font-family: var(--mono);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.app .fibergochi .by span {
+  display: block;
+  color: #ff0000;
+}
+
+.app .fibergochi .keys {
+  display: flex;
+  justify-content: center;
+  gap: 0.3em;
+}
+
+.app .fibergochi .egg button {
+  padding: 0.15em 0.45em;
+  font-size: 0.72rem;
+  border-color: #000000;
+  color: #000000;
+}
+
+.app .fibergochi .egg button:hover {
+  background: #000000;
+  color: #ffff00;
+}
+
+.app .fibergochi .egg button:disabled {
+  opacity: 0.45;
+  background: none;
+  color: #000000;
+  cursor: default;
+}
+
+.app .fibergochi .screen {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* The drawings are 50 by 40, shown four times as large, as the page of 1999 showed them: square pixels. */
+.app .fibergochi .screen img {
+  width: 200px;
+  height: 160px;
+  border: 1px solid #000000;
+  background: #ffffff;
+  image-rendering: pixelated;
+}
+
+/* Three lamps of 10 by 9, black when off: red for an exam or a lab, cyan for a terminal held. What each is, is said on hover. */
+.app .fibergochi .lamps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app .fibergochi .lamps li {
+  width: 10px;
+  height: 9px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-indent: 12px;
+  background: #000000;
+}
+
+.app .fibergochi .lamps li.on {
+  background: #ff0000;
+}
+
+.app .fibergochi .lamps li.on[data-lamp="terminal"] {
+  background: #00ffff;
+}
+
+.app .fibergochi .panel {
+  flex: 0 1 17rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+}
+
+.app .fibergochi .time {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0 0 1em;
+}
+
+.app .fibergochi .time output {
+  margin-right: auto;
+  font-size: 0.9rem;
+}
+
+/* An alert, a confirm or a prompt of 1999: the page waits for it. */
+.app .fibergochi .dialog {
+  margin: 0 0 1em;
+  padding: 0.6em 0.8em;
+  border: 1px solid var(--accent);
+  background: var(--sunken);
+}
+
+.app .fibergochi .dialog p {
+  margin: 0 0 0.6em;
+}
+
+.app .fibergochi .dialog p:last-child {
+  margin: 0;
+}
+
+.app .fibergochi .dialog input {
+  margin: 0.4em 0.4em 0 0;
+}

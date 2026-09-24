@@ -2,6 +2,7 @@ import type { Feature } from "../platform/plugin/Feature";
 import { adventureFeature } from "./adventure/adventureFeature";
 import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
+import { fibergochiFeature } from "./fibergochi/fibergochiFeature";
 import { firstNetworkFeature } from "./first-network/firstNetworkFeature";
 import { fishMarketFeature } from "./fish-market/fishMarketFeature";
 import { headlineFeature } from "./headline/headlineFeature";
@@ -43,4 +44,5 @@ export const allFeatures: readonly Feature[] = [
   lagoonFeature,
   mazeFeature,
   firstNetworkFeature,
+  fibergochiFeature,
 ];
