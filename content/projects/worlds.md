@@ -1,9 +1,10 @@
 ---
 title: Worlds
 summary: The fractal planet generator of 2000, in the browser, with the dials exposed.
-order: 8
+order: 44
 theme: dark
 sky: stars
+was: /worlds/
 ---
 
 # Worlds

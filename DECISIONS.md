@@ -84,6 +84,35 @@ The header prints the directories at the root, by name, in the author's
 order. Adding a section is adding a directory; there is no list of routes to
 keep in step.
 
+**Seven directories, in two bands, numbered in tens** (2026-09-24). Twelve
+had grown in the order they were made, one-page sections standing beside real
+ones and the things to play spread over five of them; the header read as
+chaos. Now: what you can use today — `book/` 10, `essays/` 20, `projects/`
+30 — then the record — `open-source/` 40, `research/` 50, `teaching/` 60,
+`talks/` 70. A new page goes into one of them; **a new top-level directory
+needs a reason written here**, as a dependency does. `kata/` went to
+`teaching/`; `simulators/`, `worlds/` and `open-data/` to `projects/`, each
+leaving its old address behind as a redirect (`was:`). `content.test.ts`
+refuses two pages in a directory with the same order, and a directory page
+that does not name every page it holds.
+
+**The home lists the root too.** It used to print nothing, since its
+directory was the navigation; but the navigation only has names, and a
+stranger needs what each one is before choosing. It is generated, so it
+cannot go stale when a section is added.
+
+### A link is a page standing in a second directory
+Some pages belong to two places: a lab I set is teaching and is also a thing
+to play. A file whose front matter is only `link: /teaching/adventure/` and
+an `order` stands the page in a second directory: listed there with the
+page's own title and summary, marked `name@` as `ls -F` marks a link, and
+leading straight to the page. `cd` and `cat` follow it. It is not a page:
+the sitemap, `grep` and `find` count the page once, where it lives, and the
+build leaves a redirect at the link's own address. Not a symlink on disk,
+because the build would read two pages with one text, which is the duplicate
+content this site exists to avoid. Few of them: only where a stranger
+browsing that directory would expect the page.
+
 ### The prompt is real, or it is not there
 The 2025 site pretended: a line that looked typed and nothing to type into.
 Now every page ends in a prompt wired to a shell in `core/shell` — `ls`, `cd`,

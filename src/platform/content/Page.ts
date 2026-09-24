@@ -20,4 +20,6 @@ export interface Page {
   readonly order: number;
   readonly body: string;
   readonly fields: Readonly<Record<string, string>>;
+  /** Set only on a listing's entry for a link: the address the link itself stands at, while `route` is the page it leads to. */
+  readonly link?: string;
 }

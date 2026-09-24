@@ -1,7 +1,8 @@
 ---
 title: Hot nights, counted
 summary: How many nights a year never cool below 20 °C, at nine weather stations, and whether the second half of each record differs from the first.
-order: 2
+order: 32
+was: /open-data/hot-nights/
 ---
 
 # Hot nights, counted

@@ -42,4 +42,22 @@ describe("renderMain", () => {
     expect(renderMain(site, site.at("/")!)).toContain("<h1");
     expect(renderMain(site, site.at("/")!)).not.toContain("<main>");
   });
+
+  it("lists a link under its own name, marked, and leads straight to the page it stands for", () => {
+    const linked = new Site([
+      { file: "index.md", markdown: "hi" },
+      { file: "teaching/lagoon.md", markdown: "---\ntitle: The lagoon\n---\nFish." },
+      { file: "projects/index.md", markdown: "---\ntitle: Projects\n---\n" },
+      { file: "projects/lagoon.md", markdown: "---\nlink: /teaching/lagoon/\n---\n" },
+    ]);
+    const html = renderMain(linked, linked.at("/projects/")!);
+    expect(html).toContain('<a class="entry" href="/teaching/lagoon/"><code>lagoon@</code>');
+    expect(html).toContain("The lagoon");
+  });
+
+  it("lists the root on the home page too, so a stranger sees every section and what each is before choosing", () => {
+    const html = renderMain(site, site.at("/")!);
+    expect(html).toContain('<span class="ps1">~ $</span> ls');
+    expect(html).toContain('<a class="entry" href="/work/">');
+  });
 });

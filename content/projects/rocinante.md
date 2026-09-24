@@ -1,7 +1,7 @@
 ---
 title: A relativistic rocket
 summary: How long a trip takes on board, how long for those left at home, and why a ship that crosses the solar system in days cannot reach a star in a lifetime.
-order: 2
+order: 12
 ---
 
 # A relativistic rocket

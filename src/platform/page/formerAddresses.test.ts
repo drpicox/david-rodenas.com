@@ -18,4 +18,9 @@ describe("the addresses a page used to have", () => {
     const site = new Site([page("code/index.md"), page("open-source/index.md", "/code/")]);
     expect(formerAddresses(site)).toEqual([]);
   });
+
+  it("include every link's own address, which leads to the page it stands for", () => {
+    const site = new Site([page("index.md"), page("teaching/lagoon.md"), { file: "projects/lagoon.md", markdown: "---\nlink: /teaching/lagoon/\n---\n" }]);
+    expect(formerAddresses(site)).toEqual([{ from: "/projects/lagoon/", to: "/teaching/lagoon/" }]);
+  });
 });

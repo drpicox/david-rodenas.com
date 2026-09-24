@@ -41,8 +41,8 @@ describe("renderDocument", () => {
     expect(render("/work/orion/")).not.toContain('class="listing"');
   });
 
-  it("does not list the root twice: its directory is the navigation", () => {
-    expect(render("/")).not.toContain('class="listing"');
+  it("lists the root once in <main>, with what each section is, besides the names in the navigation", () => {
+    expect(render("/").match(/<ul class="listing">/g)).toHaveLength(1);
   });
 
   it("leaves a disc of character cells for the world, so a reader without a script sees a shape and not a hole", () => {

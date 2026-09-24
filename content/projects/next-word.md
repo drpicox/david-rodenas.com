@@ -1,7 +1,7 @@
 ---
 title: The next word
 summary: A language model with everything taken away but the idea: count which word follows which, then throw the dice.
-order: 1
+order: 11
 ---
 
 # The next word

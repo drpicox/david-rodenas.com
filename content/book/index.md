@@ -1,7 +1,7 @@
 ---
 title: The Emotional and Technical Guide to Rescue Stalled Software
 summary: Never rewrite. Never stop delivery. A book about rescuing stalled software, 2024, 156 pages.
-order: 1
+order: 10
 isbn: 978-8409652532
 published: 2024-10-19
 pages: 156

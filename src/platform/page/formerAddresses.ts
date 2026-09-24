@@ -12,7 +12,7 @@ export interface FormerAddress {
  * reader who followed one.
  */
 export function formerAddresses(site: Site): FormerAddress[] {
-  return site.pages.flatMap((page) =>
+  const moved = site.pages.flatMap((page) =>
     (page.fields["was"] ?? "")
       .split(",")
       .map((address) => address.trim())
@@ -21,4 +21,6 @@ export function formerAddresses(site: Site): FormerAddress[] {
       .filter((from) => !site.at(from))
       .map((from) => ({ from, to: page.route })),
   );
+  // A link is served the same way: its own address leads to the page it stands for.
+  return [...moved, ...site.links];
 }

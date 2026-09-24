@@ -21,7 +21,8 @@ export const find: Command = {
     if (!site.at(route)) return { text: `find: ${path}: no such directory`, error: true };
 
     // The tree in the order a walk of it goes: a directory, then what it holds, in the author's order.
-    const walk = (from: string): Page[] => site.childrenOf(from).flatMap((child) => [child, ...walk(child.route)]);
+    // A link is not walked: the page it stands for is found where it is.
+    const walk = (from: string): Page[] => site.childrenOf(from).filter((child) => !child.link).flatMap((child) => [child, ...walk(child.route)]);
     const under = [site.at(route) as Page, ...walk(route)];
     const found = under.filter((page) => !word || page.route.toLowerCase().includes(word) || page.title.toLowerCase().includes(word));
     if (found.length === 0) return { text: `find: nothing under ${path}${word ? ` with "${word}" in it` : ""}` };

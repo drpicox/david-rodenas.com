@@ -1,7 +1,7 @@
 ---
 title: The fishing lagoon
 summary: A lab from 2018 where the assignment is a commons: a lagoon whose fish breed if left alone, bots that share it, and a tit-for-tat that only cooperates with those who do. Play it, and seat your own bot.
-order: 4
+order: 3
 ---
 
 # The fishing lagoon

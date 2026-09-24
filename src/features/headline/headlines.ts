@@ -16,5 +16,5 @@ export const HEADLINES: readonly Headline[] = [
   { text: "Two public APIs\nof AngularJS\nare mine.", href: "/open-source/angularjs/" },
   { text: "I wrote a book\non technical debt\nand its emotional cost.", href: "/book/" },
   { text: "Never rewrite,\nnever stop delivery:\nthe book's one rule.", href: "/book/" },
-  { text: "The world above\nwas grown\nas this page opened.", href: "/worlds/" },
+  { text: "The world above\nwas grown\nas this page opened.", href: "/projects/worlds/" },
 ];

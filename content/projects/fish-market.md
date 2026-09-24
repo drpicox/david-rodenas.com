@@ -1,7 +1,7 @@
 ---
 title: The agent that won the fish auction
 summary: A Dutch auction, a class of competing agents, December 2000, and the one number ours stood on — the margin at which the market clears. Run it again, and seat your own.
-order: 4
+order: 43
 ---
 
 # The agent that won the fish auction

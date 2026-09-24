@@ -1,7 +1,8 @@
 ---
 title: NO2 by the hour and the month
 summary: Thirty years of hourly NO2, averaged by hour of the day and month of the year. A city's working day turns out to have a shape.
-order: 1
+order: 31
+was: /open-data/no2/
 ---
 
 # NO2 by the hour and the month

@@ -1,10 +1,11 @@
 ---
-title: Technical Debt Simulator
+title: Technical debt
 summary: How shortcuts create compound productivity losses over time.
-order: 1
+order: 21
+was: /simulators/technical-debt/
 ---
 
-# Technical Debt Simulator
+# Technical debt
 
 The compound effect of technical debt on productivity. Taking shortcuts saves
 time at first, and creates interest that slows every feature after.

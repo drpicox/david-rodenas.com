@@ -1,7 +1,7 @@
 ---
 title: A maze you could not fly over
 summary: A VRML maze generator from May 2001, a depth-first dig with spheres that jump you across the walls, grown again here room for room from the same seeds, and what the spheres did that nobody noticed.
-order: 5
+order: 45
 ---
 # A maze you could not fly over
 

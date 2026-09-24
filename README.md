@@ -70,7 +70,7 @@ changed, and they are not worth the same:
 The sky is the one that mattered and the one without a number, because a frame
 rate cannot be measured from an automated tab: the tab is hidden while a script
 drives it, so `requestAnimationFrame` never fires. To measure it on your own
-machine, at your own zoom, open `/worlds/` and paste this, then drag the world:
+machine, at your own zoom, open `/projects/worlds/` and paste this, then drag the world:
 
 ```js
 let last = performance.now(), slow = 0, n = 0;

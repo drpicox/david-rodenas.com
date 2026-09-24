@@ -12,59 +12,42 @@ Computer enthusiast, doctor and engineer. Former vice-dean of COEINF, the
 professional college of computer engineers of Catalonia. I write every
 Saturday and I have not missed one since 2022.
 
-## The book
+This site is laid out like a disk. The names at the top are its directories;
+click one, or type at the prompt at the foot of the page -- `ls`,
+`cd projects`, `cat README.md` -- and it does the same. `help` says the rest.
+What each directory holds is listed at the bottom of this page.
+
+## Where to start
 
 ![The cover of the book](/book/BookGuide.jpeg) *The Emotional and Technical
 Guide to Rescue Stalled Software* (2024) is about conquering technical debt
 without sacrificing your sanity or your shipping schedule. Its rule fits on one
 line: never rewrite, never stop delivery. [About the book.](/book/)
 
-## Essays
-
-> > More than half a million views.
-
-More than 250 of them on [Medium](https://drpicox.medium.com), one every
-Saturday since 2022. The most read one, and the ones read longest, argue with
-the canon:
+**Essays.** More than 250 of them on [Medium](https://drpicox.medium.com), one
+every Saturday since 2022, read more than half a million times. The most read
+one, and the ones read longest, argue with the canon:
 
 - [The JavaScript framework war is over](https://medium.com/p/bd110ddab732)
 - [Software Development Is A Beautiful Mess](https://drpicox.medium.com/software-development-is-a-beautiful-mess-45edab1fab73)
 - [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)
-- [Confirmed: Code Coverage Is a Useless Management Metric](https://medium.com/better-programming/confirmed-code-coverage-is-a-useless-management-metric-35afa05e8549)
-- [The Craziest Piece of Software I've Ever Seen](https://drpicox.medium.com/the-craziest-piece-of-software-ive-ever-seen-4605085ceb5b)
-- [What Are Micro-Frontends Really For?](https://drpicox.medium.com/what-are-micro-frontends-for-aad66e9c2cf8)
 
-[Twenty of them, with a line on each.](/essays/)
+[All of them, by subject, with a line on each.](/essays/)
 
-## Two public APIs of AngularJS are mine
+**[The agent that won the fish auction.](/projects/fish-market/)** A class of
+competing buyers in December 2000, a Dutch auction, and the one number ours
+stood on: the margin at which the market clears. Run the morning again, and
+seat your own agent at the table.
 
-> I made its compiler faster.
-
-Two performance changes in the AngularJS compiler are mine. They shipped in
-2016 and were never taken out: six years of releases later they are still in
-1.8.3, the last one the framework had. So is my implementation of
-`$componentController`, the helper its testing module gives you to unit-test a
-component. So are two benchmark suites I wrote when maintainers asked for
-numbers they could check -- one of which measured the `ngClass` rewrite built
-on my work at more than a hundred times faster on the case that mattered. None
-of it is documentation. [The whole account.](/open-source/angularjs/)
+**[Two public APIs of AngularJS are mine.](/open-source/angularjs/)** I made
+its compiler faster. The two performance changes shipped in 2016 and were
+never taken out: they are still in 1.8.3, the last release the framework had,
+and so is `$componentController`, the helper its testing module gives you to
+unit-test a component.
 
 ## The world at the top
 
-The mark in the header is not a picture. It is a planet, grown the moment this
-page opened, by the pipeline of a program I wrote in 2000 for a
-university graphics course: [Mons fractals](https://david-rodenas.com/mons-fractals/),
-Java 1.1.8 on MS-DOS, writing worlds out as VRML.
-
-It is a pipeline of filters, and the order is part of the meaning. Start from
-an icosahedron. Split every edge and push each new midpoint out or in by a
-fraction of the edge it came from, so the first rounds carve continents and the
-last ones only roughen a slope. Put in the sea as a minimum radius:
-everything below it is raised up to it, which is why a coastline reads as a
-coastline and not as a change of colour. Work out the climate from height
-above the sea and from latitude, so that a summit is white wherever it stands,
-the way the Himalaya is. Only then paint it. Paint first and you get a ball of
-one colour.
-
-Reload, and it is a different world. The same pipeline runs here, rewritten in
-TypeScript with nothing underneath it, and you can [turn the dials yourself](/worlds/).
+The mark in the header is not a picture: it is a planet, grown the moment
+this page opened, by the pipeline of a program I wrote for a university
+graphics course in 2000. Reload, and it is a different world;
+[turn the dials yourself](/projects/worlds/).

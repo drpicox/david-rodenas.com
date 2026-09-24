@@ -1,7 +1,7 @@
 ---
 title: The program that finished before the professor left
 summary: A Prolog parser for a field guide to birds, 1999, and the one idea that made it instant where everyone else's took twenty minutes.
-order: 3
+order: 42
 ---
 
 # The program that finished before the professor left

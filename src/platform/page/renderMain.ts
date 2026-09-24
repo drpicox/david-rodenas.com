@@ -12,17 +12,16 @@ function ran(prompt: string, command: string): string {
 /**
  * A directory prints what it holds, as `ls` would at its own prompt: the
  * name first, in the type of the machine, and then what the name stands for.
- * A page prints nothing here. Nor does the root: its directory is the
- * navigation.
+ * A page prints nothing here. The root prints its own too: the navigation
+ * names the sections, and this says what each one is.
  */
 function listing(site: Site, page: Page): string {
-  if (page.parent === null) return "";
   const children = site.childrenOf(page.route);
   if (children.length === 0) return "";
   const items = children
     .map(
       (child) =>
-        `<li><a class="entry" href="${child.route}"><code>${escapeHtml(child.name)}/</code>` +
+        `<li><a class="entry" href="${child.route}"><code>${escapeHtml(child.name)}${child.link ? "@" : "/"}</code>` +
         `<span class="title">${escapeHtml(child.title)}</span>` +
         (child.summary ? `<span class="summary">${escapeHtml(child.summary)}</span>` : "") +
         `</a></li>`,

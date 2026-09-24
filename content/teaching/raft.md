@@ -1,7 +1,7 @@
 ---
 title: Raft, and a recipe for concurrency
 summary: A consensus algorithm as a laboratory assignment in 2013, and the three-step recipe that lets someone who has never written concurrent code get it right.
-order: 1
+order: 4
 ---
 
 # Raft, and a recipe for concurrency

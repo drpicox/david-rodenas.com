@@ -76,7 +76,8 @@ function site(): Plugin {
         const withSlash = route.endsWith("/") ? route : `${route}/`;
         const page = readSite().at(withSlash);
         const moved = formerAddresses(readSite()).find(({ from }) => from === withSlash);
-        if (!page && moved) {
+        // A link's address answers with its page; the dev server sends the reader there, as the built redirect will.
+        if (moved && page?.route !== withSlash) {
           response.statusCode = 302;
           response.setHeader("Location", moved.to);
           return response.end();

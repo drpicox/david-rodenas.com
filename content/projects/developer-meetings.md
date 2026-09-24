@@ -1,10 +1,11 @@
 ---
-title: Developer Meetings Simulator
+title: Developer meetings
 summary: How the kind and timing of meetings affect focus, fatigue and how many features a week finishes.
-order: 2
+order: 22
+was: /simulators/developer-meetings/
 ---
 
-# Developer Meetings Simulator
+# Developer meetings
 
 How different meeting types and schedules, through their effect on focus and
 fatigue, change what a developer delivers over several weeks.

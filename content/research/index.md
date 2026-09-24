@@ -1,7 +1,7 @@
 ---
 title: Research
 summary: A PhD on making parallel hardware usable by people who are not parallel programmers. Runtimes, a simulator, a compiler, and then graph matching on a GPU.
-order: 6
+order: 50
 ---
 
 # Research

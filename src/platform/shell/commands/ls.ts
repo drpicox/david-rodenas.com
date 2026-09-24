@@ -27,7 +27,12 @@ function entriesOf(page: Page, parent: Page | undefined, children: readonly Page
   return [
     ...(parent ? [{ mode: "dr-x", name: "..", title: parent.title, summary: parent.summary, href: parent.route, run: `cd ${here}..` }] : []),
     { mode: "--r-", name: "README.md", title: page.title, summary: page.summary, href: page.route, run: `cat ${here}README.md` },
-    ...children.map((child) => ({ mode: "dr-x", name: `${child.name}/`, title: child.title, summary: child.summary, href: child.route })),
+    // A link is marked the way ls -F marks one, and says where it leads; its entry goes straight there.
+    ...children.map((child) =>
+      child.link
+        ? { mode: "lr-x", name: `${child.name}@`, title: `-> ${child.route}  ${child.title}`, summary: child.summary, href: child.route }
+        : { mode: "dr-x", name: `${child.name}/`, title: child.title, summary: child.summary, href: child.route },
+    ),
   ];
 }
 

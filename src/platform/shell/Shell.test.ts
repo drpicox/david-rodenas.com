@@ -169,3 +169,33 @@ describe("Shell", () => {
     expect(shell.complete("cd zzz")).toEqual([]);
   });
 });
+
+describe("Shell, over a link", () => {
+  const linked = new Site([
+    { file: "index.md", markdown: "---\ntitle: Home\n---\nhi" },
+    { file: "teaching/index.md", markdown: "---\ntitle: Teaching\n---\n" },
+    { file: "teaching/lagoon.md", markdown: "---\ntitle: The lagoon\n---\nFish that breed." },
+    { file: "projects/index.md", markdown: "---\ntitle: Projects\n---\n" },
+    { file: "projects/lagoon.md", markdown: "---\nlink: /teaching/lagoon/\n---\n" },
+  ]);
+
+  it("lists it with an @, as ls -F marks a link, and says where it leads", () => {
+    const [out] = new Shell(linked, "/projects/").run("ls");
+    expect(out?.text).toContain("lagoon@");
+    expect(out?.text).toContain("-> /teaching/lagoon/");
+    expect(out?.html).toContain('href="/teaching/lagoon/"');
+  });
+
+  it("follows it on cd and cat, to where the page really is", () => {
+    const shell = new Shell(linked, "/projects/");
+    expect(shell.run("cd lagoon")[0]).toEqual({ at: "/teaching/lagoon/" });
+    expect(shell.prompt).toBe("~/teaching/lagoon $");
+    expect(new Shell(linked, "/projects/").run("cat lagoon/README.md")[0]?.html).toContain("Fish that breed.");
+  });
+
+  it("finds the page once, where it is", () => {
+    const text = new Shell(linked, "/").run("find lagoon")[0]?.text ?? "";
+    expect(text.split("\n")).toHaveLength(1);
+    expect(text).toContain("/teaching/lagoon/");
+  });
+});

@@ -1,7 +1,7 @@
 ---
 title: Sixty-four rooms
 summary: UPC, 2007. A text adventure as the lab of a first-year course, built so that four traversal-and-search schemas were all a student needed. Playable.
-order: 3
+order: 2
 ---
 
 # Sixty-four rooms

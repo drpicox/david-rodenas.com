@@ -19,6 +19,6 @@ export const cat: Command = {
       return { text: `cat: ${file}: no such file`, error: true };
     }
     // The page printed is the page the reader is now looking at, so the address follows it.
-    return { html: renderMarkdown(page.body), at: route };
+    return { html: renderMarkdown(page.body), at: page.route };
   },
 };
