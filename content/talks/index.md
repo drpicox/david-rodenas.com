@@ -25,8 +25,8 @@ hierarchical injector, why TypeScript, what the web looks like in five years.
 ## BarcelonaJS and the Barcelona meetups
 
 2013 to 2017 were the years of the meetups. I spoke at BarcelonaJS and helped
-organise it, and co-organised the WeNode conference in 2014. In 2022 I went
-back to it.
+organise it, and co-organised the WeNode conference in 2014. In 2022 and
+2023 I went back to it, twice.
 
 2013-05 :: **[GruntJS](https://github.com/drpicox/tutorial-gruntjs-v1)**, BarcelonaJS.
 2013-09 :: **[Promises](https://github.com/drpicox/tutorial-promises-v1)**, BarcelonaJS -- promises against callbacks, when that was the argument.
@@ -37,6 +37,7 @@ back to it.
 2016-11 → 2017-12 :: **Testing**, four times, and each time a different room: a workshop, then *from the company to the university and back*, then *company, university and professionalism*.
 2017-03-17 :: **Jornades de l'Institut Bernat el Ferrer**, Molins de Rei -- a secondary school. The history of software engineering from Dijkstra in 1968 to Agile in 2001, TDD with a calculator, and how to get into university.
 2022-10-25 :: **TDD is not a stupid idea, it's brilliant**, BarcelonaJS -- an open meetup, hosted in the Travelport office, with two of my former students in the audience.
+2023-04-25 :: **[Redux and Domain-Driven Design](https://www.meetup.com/barcelonajs/events/293039826/)**, BarcelonaJS, again in the Travelport office -- how much the two have in common, and what an implementation gains by taking the design principles they share from both.
 
 ## Before that, the conferences
 
