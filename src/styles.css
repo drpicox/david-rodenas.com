@@ -2892,53 +2892,33 @@ main math[display="block"] {
   white-space: nowrap;
 }
 
-/* The robot of 1995 on its text screen, and the rules it has written. */
-.app .light-robot svg.screen {
-  display: block;
-  width: 100%;
-  height: auto;
+/* The visitor's own letters: a name to give the drawing, and a quiet cross to forget one. */
+.app .row.own {
+  align-items: center;
 }
 
-/* One text cell of the original screen: a character as tall as the cell, less its leading. */
-.app .light-robot svg.screen text {
+.app .row.own input[type="text"] {
+  width: 4em;
+  margin: 0 0.5em;
   font-family: var(--mono);
-  font-size: 1.6px;
 }
 
-.app .light-robot .glass {
-  fill: none;
-  stroke: var(--rule);
-  stroke-width: 0.15;
-}
-
-.app .light-robot .trail {
-  fill: none;
-  stroke: var(--accent-soft);
-  stroke-width: 0.25;
-  stroke-linejoin: round;
-  opacity: 0.6;
-}
-
-.app .light-robot .robot {
-  fill: var(--accent);
-  font-weight: bold;
-}
-
-.app .light-robot .light {
-  fill: var(--warn);
-  font-weight: bold;
-}
-
-.app .light-robot p.doing {
-  margin: 0.6em 0 0.3em;
-}
-
-.app .light-robot ol.rules {
-  margin: 0;
-  padding-left: 1.4em;
+.app .row.own .error {
+  flex-basis: 100%;
+  margin: 0.3em 0 0;
+  color: var(--warn);
   font-size: 0.85rem;
 }
 
-.app .light-robot ol.rules li.unknown {
+.app .taught button.forget {
+  margin-left: 0.25em;
+  padding: 0 0.35em;
+  border: none;
+  background: none;
   color: var(--dim);
+  line-height: 1;
+}
+
+.app .taught button.forget:hover {
+  color: var(--warn);
 }
