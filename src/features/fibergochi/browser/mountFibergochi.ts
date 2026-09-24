@@ -6,12 +6,17 @@ import { readKept } from "../readKept";
 import { renderFibergochi } from "../renderFibergochi";
 import { Sprite } from "../Sprite";
 
-const KEY = "fibergochi";
+/** A new key for the version of March: a Fibergochi of February kept in a browser does not have its habits. */
+const KEY = "fibergochi:1999-03-02";
 /**
- * 1999 asked for a step every ten milliseconds, too fast to look after.
- * At half a second, a day lasts twenty-four seconds and a term ten minutes.
+ * The three speeds of March 1999, a step every so many milliseconds, and the
+ * order the speed key went round them in. It started slow: a day in
+ * forty-eight seconds, a term in twenty minutes.
  */
-const PACE = 500;
+const PACES = { slow: 1000, normal: 400, fast: 10 } as const;
+const NEXT_PACE = { slow: "normal", normal: "fast", fast: "slow" } as const;
+/** The picture had a clock of its own, whatever the speed of the days. */
+const BEAT = 100;
 /** Kept every ten steps of the clock, and whenever it is asked something. */
 const KEEP_EVERY = 10;
 
@@ -26,6 +31,7 @@ export function mountFibergochi(host: HTMLElement): () => void {
   let running = true;
   let confirmingNew = false;
   let picked: string | null = null;
+  let pace: keyof typeof PACES = "slow";
   let steps = 0;
   const seen = watchOnScreen(host);
   const view = document.createElement("div");
@@ -36,7 +42,7 @@ export function mountFibergochi(host: HTMLElement): () => void {
     ...Sprite.everyImage.map((image) => el("img", { src: `/fibergochi/${image}.gif`, alt: "", width: 50, height: 40 })),
   );
 
-  const render = () => renderFibergochi(fibergochi, { running, confirmingNew, picked });
+  const render = () => renderFibergochi(fibergochi, { running, confirmingNew, pace, picked });
 
   function draw(): void {
     const focused = document.activeElement instanceof HTMLElement && view.contains(document.activeElement) ? document.activeElement.dataset["do"] : undefined;
@@ -44,7 +50,7 @@ export function mountFibergochi(host: HTMLElement): () => void {
     if (focused) view.querySelector<HTMLElement>(`[data-do="${focused}"]`)?.focus();
   }
 
-  /** Only the picture, the lamps and the numbers, when no box has opened or closed. */
+  /** Only the picture, the lamps, the clock and what the lamps mean, when no box has opened or closed. */
   function refresh(): void {
     const fresh = document.createElement("div");
     fresh.innerHTML = render();
@@ -77,9 +83,14 @@ export function mountFibergochi(host: HTMLElement): () => void {
     }
   }
 
-  const clock = setInterval(() => {
-    if (!running || !seen.onScreen() || !fibergochi.alive || fibergochi.waiting) return;
-    fibergochi.beat();
+  const living = () => running && seen.onScreen() && fibergochi.alive && !fibergochi.waiting;
+
+  // The days, at the speed chosen: each step asks for the next, so a new speed is taken at once.
+  let clock: ReturnType<typeof setTimeout> = setTimeout(tick, PACES[pace]);
+  function tick(): void {
+    clock = setTimeout(tick, PACES[pace]);
+    if (!living()) return;
+    fibergochi.step();
     steps += 1;
     if (fibergochi.waiting || !fibergochi.alive) {
       keep();
@@ -88,18 +99,31 @@ export function mountFibergochi(host: HTMLElement): () => void {
     }
     if (steps % KEEP_EVERY === 0) keep();
     refresh();
-  }, PACE);
+  }
 
-  /** The keys on the egg change only what it is doing; the rest open or close a box. */
+  const beat = setInterval(() => {
+    if (!living()) return;
+    fibergochi.animate();
+    refresh();
+  }, BEAT);
+
+  /** The keys on the egg change what it is doing, or, alfa, open a box with the score. */
   const keys: Record<string, () => void> = {
     study: () => fibergochi.studyOrSleep(),
     http: () => fibergochi.browse(),
+    alfa: () => fibergochi.alfa(),
+    bar: () => fibergochi.goToBar(),
+    friends: () => fibergochi.makeFriends(),
     terminal: () => fibergochi.lookForTerminal(),
     beg: () => fibergochi.beg(),
-    // alfa, Bar and Amigos were never written, and do nothing, as they did not then.
   };
   const boxes: Record<string, () => void> = {
     pause: () => (running = !running),
+    speed: () => {
+      pace = NEXT_PACE[pace];
+      clearTimeout(clock);
+      clock = setTimeout(tick, PACES[pace]);
+    },
     new: () => (confirmingNew = true),
     "new-no": () => (confirmingNew = false),
     "new-yes": () => {
@@ -119,7 +143,8 @@ export function mountFibergochi(host: HTMLElement): () => void {
       refresh();
     } else if (keys[does]) {
       keys[does]();
-      refresh();
+      if (fibergochi.waiting) draw();
+      else refresh();
     } else if (boxes[does]) {
       boxes[does]();
       keep();
@@ -143,7 +168,8 @@ export function mountFibergochi(host: HTMLElement): () => void {
   draw();
 
   return () => {
-    clearInterval(clock);
+    clearTimeout(clock);
+    clearInterval(beat);
     seen.stop();
     keep();
     host.removeEventListener("click", onClick);

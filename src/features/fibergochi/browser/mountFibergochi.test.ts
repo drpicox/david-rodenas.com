@@ -13,12 +13,25 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("the Fibergochi, once the script is there", () => {
-  it("lives a step every half second, three to an hour", () => {
+  it("lives a step a second to begin with, the slowest of the three speeds of 1999, three to an hour", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
     expect(clock(host)).toBe("1, 0:00h (1)");
-    vi.advanceTimersByTime(1500);
+    vi.advanceTimersByTime(3000);
     expect(clock(host)).toBe("1, 1:30h (1)");
+  });
+
+  it("goes from slow to normal to fast and round again with the speed key, as it did", () => {
+    const host = document.createElement("div");
+    mountFibergochi(host);
+    press(host, "speed");
+    expect(host.querySelector('[data-do="speed"]')!.textContent).toContain("normal");
+    vi.advanceTimersByTime(1200);
+    expect(clock(host)).toBe("1, 1:30h (1)");
+    press(host, "speed");
+    expect(host.querySelector('[data-do="speed"]')!.textContent).toContain("fast");
+    press(host, "speed");
+    expect(host.querySelector('[data-do="speed"]')!.textContent).toContain("slow");
   });
 
   it("stands still while it is paused", () => {
@@ -47,7 +60,7 @@ describe("the Fibergochi, once the script is there", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
     const hidden = host.querySelectorAll("[hidden] img");
-    expect(hidden.length).toBe(39);
+    expect(hidden.length).toBe(51);
   });
 
   it("turns the drawing in the same picture, so the last one stays until the next is there", () => {
@@ -70,7 +83,7 @@ describe("the Fibergochi, once the script is there", () => {
   it("is kept in the browser, and found again on the next visit", () => {
     const first = document.createElement("div");
     const stop = mountFibergochi(first);
-    vi.advanceTimersByTime(1500);
+    vi.advanceTimersByTime(3000);
     stop();
     const second = document.createElement("div");
     mountFibergochi(second);
@@ -80,7 +93,7 @@ describe("the Fibergochi, once the script is there", () => {
   it("starts over only once asked twice", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
-    vi.advanceTimersByTime(1500);
+    vi.advanceTimersByTime(3000);
     press(host, "new");
     expect(host.textContent).toContain("Are you sure you want a new Fibergochi?");
     press(host, "new-yes");

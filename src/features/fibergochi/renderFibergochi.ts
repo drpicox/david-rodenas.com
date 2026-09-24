@@ -13,23 +13,33 @@ const SEEN: Record<string, string> = {
   http: "A terminal, and the Fibergochi browsing: http.",
   pract: "The Fibergochi at a terminal, doing a lab.",
   no: "The Fibergochi, shaking its head.",
+  bar0: "The Fibergochi at the bar with its friends, drinks on the table.",
+  amig: "The Fibergochi with a group of friends.",
+  suplica: "The Fibergochi on the floor, begging.",
 };
 
-/** The buttons on the egg, in their rows, with what the status bar said when the mouse was over each, put into English. */
+/**
+ * The keys on the egg, in their rows: what each does, its own little drawing
+ * of 1999, its name, and what the status bar said when the mouse was over
+ * it, put into English.
+ */
 const KEYS = [
-  [["study", "Study/Sleep", "To study or to sleep."]],
+  [["study", "estudio", "Study/Sleep", "to study or to sleep."]],
   [
-    ["http", "http", "To have a good time at a terminal (if you have one)."],
-    ["alfa", "alfa", "See the score."],
-    ["bar", "Bar", "Go to the bar, have a drink or play mus."],
+    ["http", "http", "http", "to have a good time at a terminal (if you have one)."],
+    ["alfa", "alfa", "alfa", "see the score."],
+    ["bar", "bar", "Bar", "go to the bar, have a drink or play mus."],
   ],
   "screen",
   [
-    ["friends", "Friends", "To make new friends."],
-    ["terminal", "Find terminal", "Look for a terminal to do labs, or not."],
-    ["beg", "Beg", "Beg, to try to get more passes."],
+    ["friends", "amigos", "Friends", "to make new friends."],
+    ["terminal", "bt", "Find terminal", "look for a terminal to do labs, or not."],
+    ["beg", "suplica", "Beg", "to try to get more passes."],
   ],
 ] as const;
+
+/** The three speeds of 1999, a step every second, every 0.4 seconds, or every hundredth. */
+const PACES = { slow: "slow", normal: "normal", fast: "fast" } as const;
 
 /** How much work, in words and in the Fibergochi's own hours of three steps: a little is under one, a lot is five or more. */
 function amount(steps: number, [none, little, some, lot]: readonly string[]): string {
@@ -51,13 +61,11 @@ const button = (does: string, label: string, { title = "", disabled = false } = 
  */
 export function renderFibergochi(
   fibergochi: Fibergochi,
-  { running, confirmingNew, picked = null }: { running: boolean; confirmingNew: boolean; picked?: string | null },
+  { running, confirmingNew, pace, picked = null }: { running: boolean; confirmingNew: boolean; pace: keyof typeof PACES; picked?: string | null },
 ): string {
-  const { day, hour } = fibergochi.state;
   // The keys on the egg answer nobody while a box is open, as nothing did behind an alert, nor after the end.
   const disabled = !fibergochi.alive || fibergochi.waiting || confirmingNew;
-  // After the last day of class a lamp blinks, an hour on and an hour off.
-  const lit = (on: boolean) => (on && (day < 20 || hour % 2 === 1) ? "on" : "off");
+  const lit = (on: boolean) => (on && fibergochi.lampsLit ? "on" : "off");
   const lamps = [
     ["exam", lit(fibergochi.examsPending), amount(fibergochi.studyLeft, ["nothing to study", "a little to study", "something to study", "a lot to study"])],
     ["lab", lit(fibergochi.labsPending), amount(fibergochi.labLeft, ["no lab to do", "a little lab work", "some lab work", "a lot of lab work"])],
@@ -74,10 +82,18 @@ export function renderFibergochi(
   const seen = SEEN[picture.replace(/\d$/, "")] ?? "";
   const screen = `<div class="screen"><ul class="lamps" data-show="lamps">${onEgg}</ul><img data-show="picture" src="/fibergochi/${picture}.gif" alt="${seen}" width="200" height="160"></div>`;
   const egg = KEYS.map((row) =>
-    row === "screen" ? screen : `<div class="keys">${row.map(([does, label, title]) => button(does, label, { title, disabled })).join("")}</div>`,
+    row === "screen"
+      ? screen
+      : `<div class="keys">${row
+          .map(([does, key, label, title]) => {
+            // Twice their size, so a finger can find them: they were drawn at 22 by 21, all but alfa's.
+            const [width, height] = key === "alfa" ? [15, 11] : [22, 21];
+            return button(does, `<img src="/fibergochi/keys/${key}.gif" alt="${label}" width="${width * 2}" height="${height * 2}">`, { title: `${label}: ${title}`, disabled });
+          })
+          .join("")}</div>`,
   ).join("");
 
-  return `<div class="fibergochi"><div class="egg"><p class="by"><span>by</span> Night</p>${egg}</div><div class="panel"><p class="time"><output data-show="clock">${fibergochi.clock}</output> ${button("pause", running ? "pause" : "go on")} ${button("new", "new")}</p><ul class="legend" data-show="legend">${legend}</ul>${dialog(fibergochi, confirmingNew)}</div></div>`;
+  return `<div class="fibergochi"><div class="egg"><p class="by"><span>by</span> Night</p>${egg}</div><div class="panel"><p class="time"><output data-show="clock">${fibergochi.clock}</output> ${button("pause", running ? "pause" : "go on")} ${button("speed", `speed: ${PACES[pace]}`, { title: "Change the speed of time." })} ${button("new", "new")}</p><ul class="legend" data-show="legend">${legend}</ul>${dialog(fibergochi, confirmingNew)}</div></div>`;
 }
 
 /** Whatever an alert, a confirm or a prompt asked in 1999, in the order they came. */

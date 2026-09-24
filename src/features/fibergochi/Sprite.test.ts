@@ -34,7 +34,7 @@ describe("the picture in the egg", () => {
   it("shakes its head for a while, and then goes back to what it was doing", () => {
     const sprite = new Sprite();
     sprite.play("normal");
-    sprite.shake(3);
+    sprite.flash("no", 3);
     expect(sprite.image).toMatch(/^no/);
     beats(sprite, 3);
     expect(sprite.image).toMatch(/^no/);
@@ -45,7 +45,7 @@ describe("the picture in the egg", () => {
   it("remembers what it was told while shaking its head, for when it stops", () => {
     const sprite = new Sprite();
     sprite.play("normal");
-    sprite.shake(2);
+    sprite.flash("no", 2);
     sprite.play("zz");
     expect(sprite.image).toMatch(/^no/);
     beats(sprite, 3);
@@ -55,7 +55,7 @@ describe("the picture in the egg", () => {
   it("goes back to the cross when it is all over, whatever it was doing", () => {
     const sprite = new Sprite();
     sprite.play("est");
-    sprite.shake(5);
+    sprite.flash("no", 5);
     sprite.stop();
     expect(sprite.image).toBe("x0");
     sprite.beat();
@@ -64,7 +64,7 @@ describe("the picture in the egg", () => {
 
   it("shows only drawings the site serves, every one of them from 1999", () => {
     const shown = new Set<string>();
-    for (const series of ["normal", "normal1", "normal2", "est", "zz", "bt", "http", "pract", "no"] as const) {
+    for (const series of ["normal", "normal1", "normal2", "est", "zz", "bt", "http", "pract", "no", "bar0", "amig", "suplica"] as const) {
       const sprite = new Sprite();
       sprite.play(series);
       for (let n = 0; n < 50; n += 1) shown.add((sprite.beat(), sprite.image));
@@ -72,6 +72,6 @@ describe("the picture in the egg", () => {
     expect(new Set(Sprite.everyImage)).toEqual(new Set([...shown, "x0"]));
     const missing = [...shown, "x0"].filter((image) => !existsSync(new URL(`../../../public/fibergochi/${image}.gif`, import.meta.url)));
     expect(missing).toEqual([]);
-    expect(shown.size).toBe(38);
+    expect(shown.size).toBe(50);
   });
 });

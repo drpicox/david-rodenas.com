@@ -2988,6 +2988,23 @@ main math[display="block"] {
   color: #ffff00;
 }
 
+/* A key is its own drawing of 1999, twice its size, square pixels and all. */
+.app .fibergochi .keys button {
+  padding: 1px;
+  line-height: 0;
+  background: none;
+}
+
+.app .fibergochi .keys button:hover {
+  background: none;
+  outline: 2px solid #000000;
+}
+
+.app .fibergochi .keys img {
+  display: block;
+  image-rendering: pixelated;
+}
+
 .app .fibergochi .egg button:disabled {
   opacity: 0.45;
   background: none;
@@ -3098,6 +3115,7 @@ main math[display="block"] {
 
 .app .fibergochi .time {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.6em;
   margin: 0 0 1em;

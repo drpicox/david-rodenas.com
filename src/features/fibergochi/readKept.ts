@@ -1,7 +1,25 @@
 import type { FibergochiState } from "./FibergochiState";
 
-const NUMBERS = ["step", "hour", "day", "term", "boredom", "sleep", "terminal", "enrolled", "passed", "left", "suggested"] as const;
-const DOING = ["idle", "asleep", "studying", "browsing", "looking", "lab"];
+const NUMBERS = [
+  "step",
+  "hour",
+  "day",
+  "term",
+  "boredom",
+  "stress",
+  "labHabit",
+  "studyHabit",
+  "chatHabit",
+  "barHabit",
+  "friends",
+  "sleep",
+  "terminal",
+  "enrolled",
+  "passed",
+  "left",
+  "suggested",
+] as const;
+const DOING = ["idle", "asleep", "studying", "browsing", "looking", "lab", "bar", "friends"];
 
 const numbers = (value: unknown, length: number) => Array.isArray(value) && value.length === length && value.every((n) => Number.isFinite(n));
 

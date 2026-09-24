@@ -10,6 +10,9 @@ const SERIES = {
   http: { frames: 8, pace: 2 },
   pract: { frames: 5, pace: 1 },
   no: { frames: 4, pace: 3 },
+  bar0: { frames: 6, pace: 1 },
+  amig: { frames: 4, pace: 3 },
+  suplica: { frames: 2, pace: 3 },
 } as const;
 
 type Series = keyof typeof SERIES;
@@ -17,8 +20,9 @@ type Series = keyof typeof SERIES;
 /**
  * The picture in the egg: a series of GIFs, `est0` to `est6`, turned a frame
  * every few beats. The file names are the ones of 1999, so the page shows the
- * same drawings. A shake of the head (`no`) is laid over whatever it was
- * doing, and when it ends that comes back.
+ * same drawings. A shake of the head (`no`), or begging on the floor
+ * (`suplica`), is laid over whatever it was doing for a few beats, and when
+ * it ends that comes back.
  */
 export class Sprite {
   /** Every drawing any series can show, so a browser can have them all before they are needed. */
@@ -46,10 +50,10 @@ export class Sprite {
     this.show(series);
   }
 
-  shake(beats: number): void {
+  flash(series: Series, beats: number): void {
     if (this.shaking < 0) this.after = this.series;
     this.shaking = beats;
-    this.show("no");
+    this.show(series);
   }
 
   /** The cross: there is no Fibergochi any more. */

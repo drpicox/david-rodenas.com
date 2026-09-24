@@ -3,7 +3,7 @@ import { Fibergochi } from "./Fibergochi";
 import { renderFibergochi } from "./renderFibergochi";
 
 const always = (value: number) => () => value;
-const running = { running: true, confirmingNew: false };
+const running = { running: true, confirmingNew: false, pace: "slow" } as const;
 
 describe("the Fibergochi, drawn", () => {
   it("shows the drawing of 1999 in the egg, told in words for whoever cannot see it", () => {
@@ -12,10 +12,11 @@ describe("the Fibergochi, drawn", () => {
     expect(html).toMatch(/alt="[^"]+"/);
   });
 
-  it("has the buttons of 1999, in English, with what the status bar said of each", () => {
+  it("has the keys of 1999, their own little drawings, named in English with what the status bar said of each", () => {
     const html = renderFibergochi(new Fibergochi(always(0.5)), running);
-    for (const label of ["Study/Sleep", "http", "alfa", "Bar", "Friends", "Find terminal", "Beg"]) expect(html).toContain(`>${label}</button>`);
-    expect(html).toContain('title="Beg, to try to get more passes."');
+    for (const [key, label] of [["estudio", "Study/Sleep"], ["http", "http"], ["alfa", "alfa"], ["bar", "Bar"], ["amigos", "Friends"], ["bt", "Find terminal"], ["suplica", "Beg"]])
+      expect(html).toContain(`<img src="/fibergochi/keys/${key}.gif" alt="${label}"`);
+    expect(html).toContain('title="Beg: to try to get more passes."');
   });
 
   it("lights the exam lamp when there is studying to do, and says the date as the box under the buttons did", () => {
@@ -57,11 +58,11 @@ describe("the Fibergochi, drawn", () => {
 
   it("offers the pause while it runs, and to go on while it does not", () => {
     expect(renderFibergochi(new Fibergochi(always(0.5)), running)).toContain(">pause</button>");
-    expect(renderFibergochi(new Fibergochi(always(0.5)), { running: false, confirmingNew: false })).toContain(">go on</button>");
+    expect(renderFibergochi(new Fibergochi(always(0.5)), { running: false, confirmingNew: false, pace: "slow" })).toContain(">go on</button>");
   });
 
   it("asks before throwing away the one there is, as it did", () => {
-    const html = renderFibergochi(new Fibergochi(always(0.5)), { running: false, confirmingNew: true });
+    const html = renderFibergochi(new Fibergochi(always(0.5)), { running: false, confirmingNew: true, pace: "slow" });
     expect(html).toContain("Are you sure you want a new Fibergochi?");
   });
 
