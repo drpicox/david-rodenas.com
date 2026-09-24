@@ -4,7 +4,7 @@ import { mountFibergochi } from "./mountFibergochi";
 
 const press = (host: HTMLElement, does: string) => host.querySelector<HTMLElement>(`[data-do="${does}"]`)!.click();
 const clock = (host: HTMLElement) => host.querySelector("[data-show=clock]")!.textContent;
-const picture = (host: HTMLElement) => host.querySelector("img")!.getAttribute("src");
+const picture = (host: HTMLElement) => host.querySelector("img[data-show=picture]")!.getAttribute("src");
 
 beforeEach(() => {
   localStorage.clear();
@@ -41,6 +41,23 @@ describe("the Fibergochi, once the script is there", () => {
     expect(picture(host)).toMatch(/\/no\d\.gif$/);
     expect(document.activeElement).toBe(beg);
     host.remove();
+  });
+
+  it("has every drawing asked for as soon as it starts, in a place nobody sees", () => {
+    const host = document.createElement("div");
+    mountFibergochi(host);
+    const hidden = host.querySelectorAll("[hidden] img");
+    expect(hidden.length).toBe(39);
+  });
+
+  it("turns the drawing in the same picture, so the last one stays until the next is there", () => {
+    const host = document.createElement("div");
+    mountFibergochi(host);
+    const before = host.querySelector("img[data-show=picture]");
+    press(host, "beg");
+    vi.advanceTimersByTime(500);
+    expect(host.querySelector("img[data-show=picture]")).toBe(before);
+    expect(picture(host)).toMatch(/\/no\d\.gif$/);
   });
 
   it("marks what a lamp means when it is pressed", () => {

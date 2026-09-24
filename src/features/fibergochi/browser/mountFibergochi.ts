@@ -1,8 +1,10 @@
+import { el } from "../../../platform/browser/el";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 import { Fibergochi } from "../Fibergochi";
 import type { FibergochiState } from "../FibergochiState";
 import { readKept } from "../readKept";
 import { renderFibergochi } from "../renderFibergochi";
+import { Sprite } from "../Sprite";
 
 const KEY = "fibergochi";
 /**
@@ -26,24 +28,35 @@ export function mountFibergochi(host: HTMLElement): () => void {
   let picked: string | null = null;
   let steps = 0;
   const seen = watchOnScreen(host);
+  const view = document.createElement("div");
+  // Every drawing, asked for at once and kept where nobody sees it, so a new frame is never waited for in view.
+  const drawings = el(
+    "div",
+    { hidden: true },
+    ...Sprite.everyImage.map((image) => el("img", { src: `/fibergochi/${image}.gif`, alt: "", width: 50, height: 40 })),
+  );
 
   const render = () => renderFibergochi(fibergochi, { running, confirmingNew, picked });
 
   function draw(): void {
-    const focused = document.activeElement instanceof HTMLElement && host.contains(document.activeElement) ? document.activeElement.dataset["do"] : undefined;
-    host.innerHTML = render();
-    if (focused) host.querySelector<HTMLElement>(`[data-do="${focused}"]`)?.focus();
+    const focused = document.activeElement instanceof HTMLElement && view.contains(document.activeElement) ? document.activeElement.dataset["do"] : undefined;
+    view.innerHTML = render();
+    if (focused) view.querySelector<HTMLElement>(`[data-do="${focused}"]`)?.focus();
   }
 
   /** Only the picture, the lamps and the numbers, when no box has opened or closed. */
   function refresh(): void {
     const fresh = document.createElement("div");
     fresh.innerHTML = render();
-    for (const live of host.querySelectorAll<HTMLElement>("[data-show]")) {
+    for (const live of view.querySelectorAll<HTMLElement>("[data-show]")) {
       const next = fresh.querySelector<HTMLElement>(`[data-show="${live.dataset["show"]}"]`);
       if (!next) continue;
+      // The same picture, given a new source: it goes on showing the last drawing until the next is ready.
       if (live instanceof HTMLImageElement) {
-        if (live.getAttribute("src") !== next.getAttribute("src")) live.replaceWith(next);
+        if (live.getAttribute("src") !== next.getAttribute("src")) {
+          live.src = next.getAttribute("src") ?? "";
+          live.alt = next.getAttribute("alt") ?? "";
+        }
       } else if (live.innerHTML !== next.innerHTML) live.innerHTML = next.innerHTML;
     }
   }
@@ -126,6 +139,7 @@ export function mountFibergochi(host: HTMLElement): () => void {
   host.addEventListener("click", onClick);
   host.addEventListener("submit", onSubmit);
   window.addEventListener("pagehide", keep);
+  host.replaceChildren(view, drawings);
   draw();
 
   return () => {

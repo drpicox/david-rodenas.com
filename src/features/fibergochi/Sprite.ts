@@ -21,6 +21,11 @@ type Series = keyof typeof SERIES;
  * doing, and when it ends that comes back.
  */
 export class Sprite {
+  /** Every drawing any series can show, so a browser can have them all before they are needed. */
+  static readonly everyImage: readonly string[] = Object.entries(SERIES).flatMap(([series, { frames }]) =>
+    Array.from({ length: frames }, (_, frame) => `${series}${frame}`),
+  );
+
   private series: Series = "x";
   private frame = 0;
   private wait = 0;

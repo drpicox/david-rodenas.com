@@ -69,6 +69,7 @@ describe("the picture in the egg", () => {
       sprite.play(series);
       for (let n = 0; n < 50; n += 1) shown.add((sprite.beat(), sprite.image));
     }
+    expect(new Set(Sprite.everyImage)).toEqual(new Set([...shown, "x0"]));
     const missing = [...shown, "x0"].filter((image) => !existsSync(new URL(`../../../public/fibergochi/${image}.gif`, import.meta.url)));
     expect(missing).toEqual([]);
     expect(shown.size).toBe(38);
