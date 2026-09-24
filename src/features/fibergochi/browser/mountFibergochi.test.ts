@@ -13,11 +13,11 @@ beforeEach(() => {
 afterEach(() => vi.useRealTimers());
 
 describe("the Fibergochi, once the script is there", () => {
-  it("lives a step every tenth of a second, three to an hour", () => {
+  it("lives a step every half second, three to an hour", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
     expect(clock(host)).toBe("1, 0:00h (1)");
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(1500);
     expect(clock(host)).toBe("1, 1:30h (1)");
   });
 
@@ -25,7 +25,7 @@ describe("the Fibergochi, once the script is there", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
     press(host, "pause");
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(5000);
     expect(clock(host)).toBe("1, 0:00h (1)");
     expect(host.textContent).toContain("go on");
   });
@@ -37,7 +37,7 @@ describe("the Fibergochi, once the script is there", () => {
     const beg = host.querySelector<HTMLElement>('[data-do="beg"]')!;
     beg.focus();
     beg.click();
-    vi.advanceTimersByTime(100);
+    vi.advanceTimersByTime(500);
     expect(picture(host)).toMatch(/\/no\d\.gif$/);
     expect(document.activeElement).toBe(beg);
     host.remove();
@@ -46,7 +46,7 @@ describe("the Fibergochi, once the script is there", () => {
   it("is kept in the browser, and found again on the next visit", () => {
     const first = document.createElement("div");
     const stop = mountFibergochi(first);
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(1500);
     stop();
     const second = document.createElement("div");
     mountFibergochi(second);
@@ -56,7 +56,7 @@ describe("the Fibergochi, once the script is there", () => {
   it("starts over only once asked twice", () => {
     const host = document.createElement("div");
     mountFibergochi(host);
-    vi.advanceTimersByTime(300);
+    vi.advanceTimersByTime(1500);
     press(host, "new");
     expect(host.textContent).toContain("Are you sure you want a new Fibergochi?");
     press(host, "new-yes");
@@ -67,7 +67,7 @@ describe("the Fibergochi, once the script is there", () => {
     const host = document.createElement("div");
     const stop = mountFibergochi(host);
     stop();
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(5000);
     expect(clock(host)).toBe("1, 0:00h (1)");
   });
 });

@@ -5,8 +5,11 @@ import { readKept } from "../readKept";
 import { renderFibergochi } from "../renderFibergochi";
 
 const KEY = "fibergochi";
-/** 1999 asked for a step every ten milliseconds; at a hundred, a term lasts two minutes. */
-const PACE = 100;
+/**
+ * 1999 asked for a step every ten milliseconds, too fast to look after.
+ * At half a second, a day lasts twenty-four seconds and a term ten minutes.
+ */
+const PACE = 500;
 /** Kept every ten steps of the clock, and whenever it is asked something. */
 const KEEP_EVERY = 10;
 

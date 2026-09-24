@@ -12,8 +12,9 @@ for its labs, sleep, and not get bored, until it gets its degree, or it is
 thrown out. I wrote it in JavaScript in February 1999; the code is signed
 *Night*. It was one of the first interactive pages I made.
 
-This is it again, with its own drawings. Its words were in Spanish, and
-here they are in English.
+This is it again, with its own drawings: I drew them pixel by pixel, in
+the week before it was finished. Its words were in Spanish, and here they
+are in English.
 
 ::fibergochi
 
@@ -29,10 +30,11 @@ and a terminal held. After the last day of class the first two blink.
 
 A day has sixteen hours, and a term has twenty-five days, twenty of them
 with classes. The marks come out on the twenty-second day. A subject is
-passed if less than an hour of work is left on it. Here a step comes every
-tenth of a second, so a term lasts two minutes. Time passes only while the
-egg is on screen. The Fibergochi is kept in your browser, as a cookie kept
-it then, and **new** starts another.
+passed if less than an hour of work is left on it. The code asked for a
+step every hundredth of a second; here it is every half second, so a day
+lasts twenty-four seconds and a term ten minutes. Time passes only while
+the egg is on screen. The Fibergochi is kept in your browser, as a cookie
+kept it then, and **new** starts another.
 
 Left alone, it is thrown out for boredom on the sixteenth day of its first
 term.
