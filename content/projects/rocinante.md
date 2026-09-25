@@ -25,10 +25,11 @@ it fuel, a third of a g.
 ## Things to try
 
 - **It owns the solar system and nothing else.** Mars in under four days,
-  Pluto in a month, on a thousand tonnes of fuel at most. Proxima Centauri
-  takes sixty-eight years: it burns half its fuel in the first ten weeks,
-  reaches 6% of the speed of light, and coasts with the engine off for
-  sixty-seven years. At that speed the two clocks still agree.
+  Pluto in a month, on a little over a thousand tonnes of fuel. Proxima
+  Centauri takes sixty-five years: in the first eleven weeks it burns a
+  little more than half its fuel, keeping just enough to stop, reaches 7% of
+  the speed of light, and coasts with the engine off for sixty-four years.
+  At that speed the two clocks still agree.
 - **Give it fuel.** Slide it up until the row for Proxima stops saying
   *coasts*: twenty ships' worth of fuel for every ship. The trip drops to
   seven years on board and eight and a half at home. This is the rocket

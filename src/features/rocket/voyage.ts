@@ -23,8 +23,8 @@ export interface Voyage {
 /**
  * The relativistic rocket, as the Usenet Physics FAQ works it out: a ship
  * that holds a steady acceleration by its own reckoning, speeds up to halfway
- * and slows down the rest. When the fuel will not last, it burns half of
- * what it has, coasts, and keeps the other half to stop.
+ * and slows down the rest. When the fuel will not last, it burns as long as
+ * it can and still stop, coasts, and stops with the last of it.
  *
  * Mass follows the rocket equation with the exhaust at `exhaust`·c:
  * m = m₀·exp(−aτ / (exhaust·c)).
@@ -38,8 +38,10 @@ export function voyage(metres: number, ship: Ship): Voyage {
   const needed = launchMass * (1 - Math.exp((-2 * a * halfway) / exhaust));
   const coasts = needed > ship.fuel;
 
-  // With fuel to spare the burn lasts to halfway; without, until half the fuel is gone.
-  const burnTime = coasts ? (exhaust / a) * Math.log(launchMass / (launchMass - ship.fuel / 2)) : halfway;
+  // With fuel to spare the burn lasts to halfway. Without, the two burns share the fuel so each changes
+  // the mass by the same ratio, the square root of the whole: half of it by weight would leave the stop
+  // with more than it needs, since the stop pushes a lighter ship.
+  const burnTime = coasts ? (exhaust / (2 * a)) * Math.log(launchMass / ship.dryMass) : halfway;
   const topSpeed = Math.tanh((a * burnTime) / C);
   const burnHomeTime = (C / a) * Math.sinh((a * burnTime) / C);
   const burnDistance = ((C * C) / a) * (Math.cosh((a * burnTime) / C) - 1);

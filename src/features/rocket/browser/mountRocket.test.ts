@@ -15,7 +15,7 @@ describe("the rocket, once the script is there", () => {
     const host = document.createElement("div");
     mountRocket(host);
     expect(row(host, "Proxima Centauri")?.className).toBe("chosen coasts");
-    expect(row(host, "Proxima Centauri")?.textContent).toContain("68 years");
+    expect(row(host, "Proxima Centauri")?.textContent).toContain("65 years");
   });
 
   it("stops coasting once it is given the twenty ships of fuel the trip takes", () => {

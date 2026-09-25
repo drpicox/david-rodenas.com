@@ -40,6 +40,33 @@ describe("a voyage that speeds up to halfway and slows down the rest", () => {
     expect(trip.burnTime * 2 + trip.coastTime).toBeCloseTo(trip.shipTime, 3);
   });
 
+  it("shares out what fuel it has so that the burn that stops it takes the last of it: both burns change its mass by the same ratio", () => {
+    const small = { dryMass: 25000, fuel: 5000, exhaust: 0.72, acceleration: 0.3 };
+    const trip = voyage(4.24 * LIGHT_YEAR, small);
+    const ratio = Math.exp((0.3 * 9.81 * trip.burnTime) / (0.72 * 299792458));
+    expect(30000 / ratio / ratio).toBeCloseTo(25000, 6);
+  });
+
+  it("never takes longer for more fuel, and does not jump where it stops having to coast", () => {
+    const toProxima = (ships: number, exhaust: number) =>
+      voyage(4.24 * LIGHT_YEAR, { dryMass: 25000, fuel: 25000 * ships, exhaust, acceleration: 0.3 }).shipTime / YEAR;
+    for (const exhaust of [0.1, 0.72, 1]) {
+      const times = [0.1, 0.5, 1, 2, 5, 10, 19, 19.9, 20, 20.1, 30, 1000].map((ships) => toProxima(ships, exhaust));
+      times.slice(1).forEach((time, at) => expect(time).toBeLessThanOrEqual(times[at]! + 1e-9));
+    }
+    // Where it stops coasting: the least fuel that lasts the whole way, found by halving.
+    let [low, high] = [1, 1000];
+    const coasts = (ships: number) => voyage(4.24 * LIGHT_YEAR, { dryMass: 25000, fuel: 25000 * ships, exhaust: 0.72, acceleration: 0.3 }).coasts;
+    for (let n = 0; n < 60; n += 1) [low, high] = coasts((low + high) / 2) ? [(low + high) / 2, high] : [low, (low + high) / 2];
+    expect(toProxima(low * 0.999, 0.72) / toProxima(high * 1.001, 0.72)).toBeCloseTo(1, 2);
+  });
+
+  it("goes faster with a faster exhaust on the same fuel, while it has to coast", () => {
+    const top = (exhaust: number) => voyage(4.24 * LIGHT_YEAR, { dryMass: 25000, fuel: 125000, exhaust, acceleration: 0.3 }).topSpeed;
+    expect(top(0.1)).toBeLessThan(top(0.3));
+    expect(top(0.3)).toBeLessThan(top(0.72));
+  });
+
   it("burns less than it carries when the trip is within reach", () => {
     const small = { dryMass: 25000, fuel: 5000, exhaust: 0.72, acceleration: 0.3 };
     const trip = voyage(0.52 * 1.495978707e11, small);
