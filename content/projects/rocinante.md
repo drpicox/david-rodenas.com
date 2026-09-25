@@ -40,6 +40,10 @@ it fuel, a third of a g.
   Andromeda is 29. You could go, inside a working life; nobody you knew would
   hear of it. The fuel for Andromeda is six million million ships for every
   ship, with an engine nobody knows how to build.
+- **Go where Project Hail Mary goes.** Tau Ceti is 11.9 light-years away.
+  With the perfect engine at one g it is 5.1 years on board and 13.7 at
+  home. Turn the acceleration up and see how little it buys at home, and
+  how much on board.
 
 ## What it is not
 
@@ -58,3 +62,22 @@ October 2025: the solar system and the thirty nearest stars in three
 dimensions, a ship to configure, and a sphere showing how far it can reach.
 Go there to fly it. This page keeps only the sums, written again for this
 site with nothing underneath.
+
+![The Rocinante Simulator: the inner solar system in three dimensions, the ship's dials on the right, and on the left a trip to Mars of 3.76 days and 132.71 tonnes of fuel](/rocinante-simulator.jpg "wide")
+
+Its Mars is this page's Mars: the same ship, 3.76 days and 133 tonnes.
+
+## The two books behind it
+
+The name is the ship of *The Expanse*, the novels of James S. A. Corey,
+the pen name of Daniel Abraham and Ty Franck, which begin with *Leviathan
+Wakes* in 2011, and the television series made of them. The *Rocinante* is
+named after Don Quixote's horse. What makes that universe possible is the
+Epstein drive, which keeps up a steady thrust on almost no fuel. This page
+is what the rocket equation says when there is no Epstein drive.
+
+*Project Hail Mary*, Andy Weir's novel of 2021, filmed in 2026, sends its
+ship to Tau Ceti on an engine fed by Astrophage, single-celled organisms
+that take in light and give it out again. Its story turns on the two clocks
+this page keeps apart: the years its crew lives through are not the years
+that pass at home.

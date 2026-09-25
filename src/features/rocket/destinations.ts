@@ -24,6 +24,7 @@ export const destinations: readonly Destination[] = [
   { name: "Proxima Centauri", metres: 4.24 * LIGHT_YEAR, said: "4.24 light-years" },
   { name: "Sirius", metres: 8.58 * LIGHT_YEAR, said: "8.58 light-years" },
   { name: "Epsilon Eridani", metres: 10.52 * LIGHT_YEAR, said: "10.52 light-years" },
+  { name: "Tau Ceti", metres: 11.91 * LIGHT_YEAR, said: "11.91 light-years" },
   { name: "the centre of the galaxy", metres: 26000 * LIGHT_YEAR, said: "26,000 light-years", towards: { ra: 17.76, dec: -29 } },
   { name: "Andromeda", metres: 2.5e6 * LIGHT_YEAR, said: "2.5 million light-years", towards: { ra: 0.712, dec: 41.27 } },
 ];
