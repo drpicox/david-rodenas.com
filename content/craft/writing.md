@@ -7,8 +7,7 @@ order: 2
 # A craft  
 is shared.
 
-I pair, I mob, I review by sitting beside someone rather than by leaving
-comments on their work — and I write it down, every Saturday. This is a way
+I pair, I mob now and then, and I write it down, every Saturday. This is a way
 through the essays that are about the craft itself, in the order the ideas
 came.
 
@@ -104,4 +103,4 @@ A small shop built test first, step by step, and what came out of it.
   Could the most popular methodology be what holds teams back?
 
 The rest, by subject, is in [essays](/essays/); what I have said about the
-same things out loud, agile among them, is in [talks](/talks/).
+same things out loud is in [talks](/talks/).
