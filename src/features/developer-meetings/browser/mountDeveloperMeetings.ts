@@ -6,39 +6,8 @@ import {
 import { summariseMeetings, type MeetingsSummary } from "../summariseMeetings";
 import { barChart } from "../../../platform/charts/barChart";
 import { el } from "../../../platform/browser/el";
-
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-const HOURS = Array.from({ length: WORK_WEEK.hoursADay }, (_, hour) => `${9 + hour}:00`);
-
-/** The feature-size slider is straight up to 500, then coarser, so both a task and an epic fit on it. */
-function sliderToFeatureSize(value: number): number {
-  if (value <= 500) return value;
-  if (value <= 750) return 500 + (value - 500) * 2;
-  if (value < 1000) return 1000 + (value - 750) * 35;
-  return 10000;
-}
-
-function featureSizeToSlider(size: number): number {
-  if (size <= 500) return size;
-  if (size <= 1000) return 500 + (size - 500) / 2;
-  if (size < 10000) return 750 + (size - 1000) / 35;
-  return 1000;
-}
-
-function heatGrid(title: string, cells: readonly (readonly number[])[]): HTMLElement {
-  const all = cells.flat();
-  const low = Math.min(...all);
-  const high = Math.max(...all);
-  const grid = el("div", { class: "week" }, el("span"), ...DAYS.map((day) => el("span", { class: "head" }, day)));
-  cells.forEach((row, hour) => {
-    grid.append(el("span", { class: "hour" }, HOURS[hour] ?? ""));
-    for (const value of row) {
-      const heat = high > low ? (value - low) / (high - low) : 0;
-      grid.append(el("span", { class: "cell", style: `--heat:${(0.1 + heat * 0.9).toFixed(2)}` }, String(Math.round(value))));
-    }
-  });
-  return el("div", {}, el("h4", {}, title), grid);
-}
+import { featureSizeScale } from "../featureSizeScale";
+import { heatGrid } from "./heatGrid";
 
 /** A week to paint meetings on, four dials, and what a developer gets done in it. */
 export function mountDeveloperMeetings(host: HTMLElement): void {
@@ -84,7 +53,7 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
     { class: "dials" },
     dial("focus", "Focus an hour", 0, 100),
     dial("fatigue", "Fatigue an hour", 0, 100),
-    dial("featureSize", "Feature size", 0, 1000, sliderToFeatureSize, featureSizeToSlider),
+    dial("featureSize", "Feature size", 0, 1000, featureSizeScale.sizeAt, featureSizeScale.positionOf),
     dial("weeks", "Weeks", 1, 16),
   );
 
@@ -141,8 +110,8 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
   };
 
   function drawWeek(): void {
-    week.replaceChildren(el("span"), ...DAYS.map((day) => el("span", { class: "head" }, day)));
-    HOURS.forEach((label, hour) => {
+    week.replaceChildren(el("span"), ...WORK_WEEK.dayNames.map((day) => el("span", { class: "head" }, day)));
+    WORK_WEEK.hourNames.forEach((label, hour) => {
       week.append(el("span", { class: "hour" }, label));
       for (let day = 0; day < WORK_WEEK.days; day += 1) {
         const key = `${day}-${hour}`;
@@ -213,7 +182,7 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
         { name: "Features ×100", className: "debt", values: summary.days.map((day) => (day.features / parameters.weeks) * 100) },
       ],
       { x: "", y: "A day, on average" },
-      DAYS,
+      WORK_WEEK.dayNames,
     );
     weekly.prepend(el("h4", {}, "The shape of a week"));
 

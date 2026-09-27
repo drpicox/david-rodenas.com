@@ -6,6 +6,8 @@ import { parseCommandLine } from "../shell/parseCommandLine";
 import type { Command } from "../shell/Command";
 import { Shell } from "../shell/Shell";
 import { suggest } from "../shell/suggest";
+import { typedLines } from "../shell/typedLines";
+import { carriedLine } from "./carriedLine";
 import { el } from "./el";
 
 export interface Terminal {
@@ -24,43 +26,12 @@ export interface TerminalOptions {
   readonly commands?: readonly Command[];
 }
 
-const PENDING_KEY = "shell-pending";
-
-/** What the shell had still to do, carried over a `cd` to the next page. */
-function carry(pending: string): void {
-  try {
-    if (pending) sessionStorage.setItem(PENDING_KEY, pending);
-  } catch {
-    // The next page simply starts clean.
-  }
-}
-
-function takeCarried(): string {
-  try {
-    const value = sessionStorage.getItem(PENDING_KEY) ?? "";
-    sessionStorage.removeItem(PENDING_KEY);
-    return value;
-  } catch {
-    return "";
-  }
-}
-
-/** Keys pressed before this script arrived: the lines they finished, and the one they were on. */
+/** Keys pressed before this script arrived, which the head script kept; the listening stops here. */
 function replayTyped(): { finished: string[]; unfinished: string } | null {
   window.__stopTyped?.();
   const keys = window.__typed ?? [];
   window.__typed = [];
-  if (keys.length === 0) return null;
-  const finished: string[] = [];
-  let line = "";
-  for (const key of keys) {
-    if (key === "Enter") {
-      finished.push(line);
-      line = "";
-    } else if (key === "Backspace") line = line.slice(0, -1);
-    else line += key;
-  }
-  return { finished, unfinished: line };
+  return typedLines(keys);
 }
 
 /**
@@ -151,7 +122,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
       perform(outcome);
       if (outcome.html && !outcome.text) printedPage = true;
       if (outcome.at && !options.moveTo?.(outcome.at)) {
-        carry(commands.slice(index + 1).join(" && "));
+        carriedLine.carry(commands.slice(index + 1).join(" && "));
         window.location.assign(outcome.at);
         return answered;
       }
@@ -257,7 +228,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   refreshLine();
 
   // Pick up where the last page left off: the rest of its line, and what was typed since.
-  const pending = takeCarried();
+  const pending = carriedLine.take();
   if (pending) run(pending);
   const typed = replayTyped();
   if (typed) {
