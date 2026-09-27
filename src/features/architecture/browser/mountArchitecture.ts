@@ -26,6 +26,7 @@ function coloursOf(element: Element): Colours {
     accent: read("--accent", "#1a4b9c"),
     soft: read("--accent-soft", "#6b83b8"),
     warn: read("--warn", "#b4443c"),
+    test: read("--hl-string", "#2f6f4e"),
   };
 }
 
@@ -91,7 +92,18 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   const playButton = el("button", { type: "button" }, "▶ play the history");
   const tangleButton = el("button", { type: "button" }, "tangle it");
   const testsBox = el("input", { type: "checkbox" });
-  const controls = el("div", { class: "architecture-controls" }, playButton, tangleButton, el("label", {}, testsBox, " the tests, and the files none of them reaches"), slider);
+  const controls = el("div", { class: "architecture-controls" }, playButton, tangleButton, el("label", {}, testsBox, " the tests"), slider);
+  // What the shapes mean, shown only while the tests are, since it is only then there is more than one.
+  const legend = el(
+    "p",
+    { class: "architecture-legend", hidden: true },
+    el("span", { class: "key file" }),
+    "a file, as full as the tests run it",
+    el("span", { class: "key untested" }),
+    "a file no test reaches",
+    el("span", { class: "key test" }),
+    "a test",
+  );
 
   const showCommit = (next: number, untangling = false) => {
     at = Math.max(0, Math.min(last, next));
@@ -120,6 +132,7 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   });
   testsBox.addEventListener("change", () => {
     tests = testsBox.checked;
+    legend.hidden = !tests;
     showCommit(at);
   });
   slider.addEventListener("input", () => {
@@ -147,7 +160,7 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
     scene.hovered = {};
   });
 
-  host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, canvas, caption, sparks));
+  host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, canvas, legend, caption, sparks));
   showCommit(at);
 
   const context = canvas.getContext("2d");

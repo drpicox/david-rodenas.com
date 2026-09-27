@@ -14,6 +14,8 @@ export interface Colours {
   readonly accent: string;
   readonly soft: string;
   readonly warn: string;
+  /** The colour a test is drawn in: green, as a test that passes is. */
+  readonly test: string;
 }
 
 interface Ball {
@@ -300,6 +302,13 @@ export class ArchitectureScene {
         context.moveTo(ball.body.x, ball.body.y);
         context.arc(ball.body.x, ball.body.y, Math.max(0, radius - 0.6), -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * share) / 100);
         context.closePath();
+        context.fill();
+      } else if (ball.test) {
+        // A test is a square, so it is never taken for a file: it is what reaches the files, not one of them.
+        const side = Math.max(0, (lit ? radius + 2 : radius) * 1.6);
+        context.beginPath();
+        context.rect(ball.body.x - side / 2, ball.body.y - side / 2, side, side);
+        context.fillStyle = colours.test;
         context.fill();
       } else if (untested) {
         context.strokeStyle = colours.warn;
