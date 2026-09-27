@@ -34,8 +34,6 @@ function aBrowser() {
   return { tools, visited, typed };
 }
 
-const said = (answer: { content: readonly { text: string }[] }) => answer.content.map((part) => part.text).join("\n");
-
 describe("the tools this site offers an agent in the reader's browser", () => {
   it("are one for each program, described by its summary and its parameters, and one for the prompt", () => {
     const { tools } = aBrowser();
@@ -47,8 +45,8 @@ describe("the tools this site offers an agent in the reader's browser", () => {
   it("answer a program's call with its words and its figures", async () => {
     const { tools } = aBrowser();
     const answer = await tools.get("savings")!.execute({ years: 0 });
-    expect(said(answer)).toContain("100 €");
-    expect(said(answer)).toContain('{"grown":100}');
+    expect(answer).toContain("100 €");
+    expect(answer).toContain('{"grown":100}');
   });
 
   it("show the reader what the agent asked: they go to the program's page, and its dials move", async () => {
@@ -68,9 +66,7 @@ describe("the tools this site offers an agent in the reader's browser", () => {
 
   it("refuse what the program would refuse, and say why, without moving anything", async () => {
     const { tools, visited } = aBrowser();
-    const answer = await tools.get("savings")!.execute({ rate: 99 });
-    expect(answer.isError).toBe(true);
-    expect(said(answer)).toBe("rate: 99 is outside 0 to 20");
+    await expect(tools.get("savings")!.execute({ rate: 99 })).rejects.toThrow("rate: 99 is outside 0 to 20");
     expect(visited).toEqual([]);
   });
 
@@ -78,7 +74,7 @@ describe("the tools this site offers an agent in the reader's browser", () => {
     const { tools, typed } = aBrowser();
     const answer = await tools.get("shell")!.execute({ line: "ls" });
     expect(typed).toEqual(["ls"]);
-    expect(said(answer)).toBe("README.md money/");
+    expect(answer).toBe("README.md money/");
   });
 });
 

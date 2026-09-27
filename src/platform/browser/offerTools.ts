@@ -7,7 +7,7 @@ import type { Values } from "../program/Values";
 import type { Outcome } from "../shell/Outcome";
 import { plainTextOf } from "../shell/plainTextOf";
 import { askProgram } from "./askProgram";
-import type { ModelContext, Tool, ToolAnswer } from "./ModelContext";
+import type { ModelContext, Tool } from "./ModelContext";
 
 export interface Surface {
   readonly programs: readonly Program[];
@@ -17,8 +17,6 @@ export interface Surface {
   /** Runs a line at the prompt, echo and all. */
   readonly run: (line: string) => Outcome[];
 }
-
-const words = (text: string, isError = false): ToolAnswer => ({ content: [{ type: "text", text }], ...(isError ? { isError } : {}) });
 
 /** The program's place on the page, going to the page that has it when this one does not. */
 function placeOf(name: string, { site, goTo }: Surface): HTMLElement | null {
@@ -38,10 +36,10 @@ function programTool(program: Program, surface: Surface): Tool {
     annotations: { readOnlyHint: true },
     async execute(input) {
       const settled = settleValues(program, input);
-      if ("error" in settled) return words(settled.error, true);
+      if ("error" in settled) throw new Error(settled.error);
       const answer = program.run(settled.values);
       show(program.name, settled.values, surface);
-      return words(`${answer.text}\n\n${JSON.stringify(answer.data)}`);
+      return `${answer.text}\n\n${JSON.stringify(answer.data)}`;
     },
   };
 }
@@ -63,7 +61,9 @@ function shellTool({ run, programs }: Surface): Tool {
     inputSchema: { type: "object", properties: { line: { type: "string", description: "the line to run, e.g. `cd projects && ls`" } }, required: ["line"], additionalProperties: false },
     async execute(input) {
       const outcomes = run(String(input["line"] ?? ""));
-      return words(outcomes.map(plainTextOf).filter(Boolean).join("\n\n"), outcomes.some((outcome) => outcome.error));
+      const said = outcomes.map(plainTextOf).filter(Boolean).join("\n\n");
+      if (outcomes.some((outcome) => outcome.error)) throw new Error(said);
+      return said;
     },
   };
 }

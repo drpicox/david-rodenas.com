@@ -1,15 +1,10 @@
-/** What a tool answers an agent: words, and whether they are a refusal. */
-export interface ToolAnswer {
-  readonly content: readonly { readonly type: "text"; readonly text: string }[];
-  readonly isError?: boolean;
-}
-
 export interface Tool {
   readonly name: string;
   readonly description: string;
   readonly inputSchema: object;
   readonly annotations?: { readonly readOnlyHint?: boolean };
-  execute(input: Record<string, unknown>): Promise<ToolAnswer>;
+  /** Answers in words; a refusal is thrown, so the agent is told it failed and why. */
+  execute(input: Record<string, unknown>): Promise<string>;
 }
 
 /**
