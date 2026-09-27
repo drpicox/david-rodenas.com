@@ -52,6 +52,9 @@ The top level says what this is: a frame, and the features standing in it.
   - `data/` — open data kept a finished year at a time: `YearlySource`, and
     the refresh that cannot lose what is already held
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
+  - `program/` — a demonstration as an input and an output: its still, its
+    command, and (in `browser/`) its dials and its WebMCP tool, all from one
+    `Program`
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,

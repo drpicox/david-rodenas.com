@@ -67,7 +67,7 @@ graph LR
   sky -. "follows whatever turns" .-> world
 ```
 
-Only one dotted line crosses between features, and §5 is about it. Everything
+Only one dotted line crosses between features, and §6 is about it. Everything
 else here is an island: cut it out and nothing else notices.
 
 ---
@@ -80,6 +80,7 @@ else here is an island: cut it out and nothing else notices.
 graph LR
   feature["a Feature"]
 
+  feature -- "programs" --> programs["a Program<br/><i>an input and an output:<br/>§4 makes it all four below</i>"]
   feature -- "commands" --> shell["the Shell<br/><i>alongside the site's own</i>"]
   feature -- "apps" --> apps["mountApps<br/><i>a ::name in the markdown</i>"]
   feature -- "stills" --> stills["fillStills<br/><i>what a program's place holds<br/>in the HTML, before any script</i>"]
@@ -88,13 +89,73 @@ graph LR
   feature -- "arrive(page)" --> moved["every time the page changes<br/>without a reload"]
 ```
 
-`main.ts` collects the browser's four from `allFeatures` and hands them to the
+`main.ts` collects the browser's from `allFeatures` and hands them to the
 frame; `vite.config.ts` collects the stills, and `tools/refresh-data.mjs` the
 sources — the two that happen in node. The frame knows the shape and no feature by name.
 
 ---
 
-## 4. A command, and the thing it causes
+## 4. A program, read four ways
+
+A demonstration used to be an app: a function of a DOM node that drew its own
+dials and ran its own arithmetic. Most of them were a pure function underneath
+already, with the dials copied from one app to the next. A `Program` says the
+function out loud — its parameters, and `run(values) → { text, html, data }` —
+and the frame makes the rest from that.
+
+```mermaid
+graph LR
+  program["<b>Program</b><br/>name, summary, parameters<br/>run(values) → text, html, data"]
+
+  program -- "programStill<br/><i>node, at build time</i>" --> still["the still<br/><i>$ name, and the figure it answers</i>"]
+  program -- "programCommand" --> command["a command<br/><i>name --option value</i>"]
+  program -- "browser/mountProgram" --> dials["the dials on its page<br/><i>run again on every move,<br/>the line that would ask the same under them</i>"]
+  program -- "browser/offerTools" --> tool["a WebMCP tool<br/><i>its JSON schema is the parameters;<br/>the answer is text and data</i>"]
+```
+
+A parameter is a quantity with a range, or a choice among names. Whoever asks
+— a slider, a command line, an agent — is settled by the same `settleValues`,
+which refuses what is out of range rather than moving it.
+
+The dials and the tool meet on the program's host, by two events:
+`PROGRAM_ASKED` in, which is how an agent's call moves the dials the reader is
+looking at, and `PROGRAM_RAN` out, which is how whatever a page draws around a
+program keeps in step without being part of it. The rocket's star map is that:
+its feature brings an app by the program's name, the app mounts the program's
+dials and puts the map above them.
+
+```mermaid
+sequenceDiagram
+  participant agent as an agent in the browser
+  participant tools as browser/offerTools
+  participant nav as the navigation
+  participant host as the program's host
+  participant dials as browser/mountProgram
+
+  agent->>tools: rocket { to: "Tau Ceti" }
+  tools->>tools: settleValues, run
+  alt the program is not on this page
+    tools->>nav: goTo(the page with ::rocket)
+  end
+  tools->>host: PROGRAM_ASKED { to: "Tau Ceti" }
+  host->>dials: the dials move, it runs again
+  dials-->>host: PROGRAM_RAN, for the star map
+  tools-->>agent: the trip in words, every trip as JSON
+```
+
+The prompt is offered too, as one more tool, `shell`: a line is run as if
+typed, echoed where the reader sees it, and answered in plain words. A
+browser without a model context — most of them, while WebMCP is a draft — is
+offered nothing and loses nothing.
+
+Not every demonstration is a program. The ones that keep a session —
+the Fibergochi, the adventure, the lagoon, the fish market, the letters drawn
+by hand, the next word written one at a time, a week of meetings painted on a
+calendar — are a state and a step, not a function of their dials, and stay apps.
+
+---
+
+## 5. A command, and the thing it causes
 
 The shell returns an `Outcome`: text, html, an error, and the two effects that
 are the shell's own business — `navigate`, because a shell over a site moves
@@ -123,7 +184,7 @@ words, and it is tested without a DOM.
 
 ---
 
-## 5. The connector: the sky follows the world
+## 6. The connector: the sky follows the world
 
 The stars used to live inside the worlds app, on the reasoning that a hand on
 the world moves them together. True — and no reason for one to be written
@@ -151,7 +212,7 @@ an empty room, which costs nothing.
 
 ---
 
-## 6. The same code, twice: node and the browser
+## 7. The same code, twice: node and the browser
 
 This is the shape the founding requirement forces, and the one that would
 actually crash if it were broken.
@@ -196,7 +257,7 @@ features read them back off the root. Nothing else in the frame knows what
 
 ---
 
-## 7. The rules, and where they are enforced
+## 8. The rules, and where they are enforced
 
 | Claim | Enforced by |
 |---|---|

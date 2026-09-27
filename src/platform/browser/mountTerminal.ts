@@ -9,8 +9,8 @@ import { suggest } from "../shell/suggest";
 import { el } from "./el";
 
 export interface Terminal {
-  /** Runs a line as if it had been typed, echo and all. */
-  run(line: string): void;
+  /** Runs a line as if it had been typed, echo and all, and says what was answered. */
+  run(line: string): Outcome[];
   /** The page moved by itself; the prompt follows. */
   moveTo(route: string): void;
 }
@@ -137,8 +137,9 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
   };
 
   // One command at a time, so that a move the page cannot make here can hand the rest of the line to the next page.
-  const run = (line: string) => {
+  const run = (line: string): Outcome[] => {
     clearHint();
+    const answered: Outcome[] = [];
     const echo = el("p", { class: "echo" }, el("span", { class: "ps1" }, shell.prompt), ` ${line}`);
     print(echo);
     let printedPage = false;
@@ -146,12 +147,13 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     for (let index = 0; index < commands.length; index += 1) {
       const [outcome] = shell.run(commands[index] ?? "");
       if (!outcome) continue;
+      answered.push(outcome);
       perform(outcome);
       if (outcome.html && !outcome.text) printedPage = true;
       if (outcome.at && !options.moveTo?.(outcome.at)) {
         carry(commands.slice(index + 1).join(" && "));
         window.location.assign(outcome.at);
-        return;
+        return answered;
       }
       if (outcome.error) break;
     }
@@ -160,6 +162,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     // A page printed is read from its first line; anything else is the end of the paper, which scrolls so its last line stands over the prompt.
     if (printedPage) echo.scrollIntoView({ block: "start" });
     else window.scrollTo({ top: document.documentElement.scrollHeight });
+    return answered;
   };
 
   const complete = () => {

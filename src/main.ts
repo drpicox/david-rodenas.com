@@ -1,9 +1,11 @@
 import "./styles.css";
 import { allFeatures } from "./features/allFeatures";
 import { appsOf } from "./platform/browser/appsOf";
+import { modelContextHere } from "./platform/browser/modelContextHere";
 import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
 import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
+import { offerTools } from "./platform/browser/offerTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
 import { commandsOf } from "./platform/plugin/commandsOf";
 import { siteCommands } from "./platform/shell/commands/siteCommands";
@@ -43,8 +45,12 @@ function mount(): void {
 
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);
-  const prompt = { run: (line: string) => terminal?.run(line) };
+  const prompt = { run: (line: string) => void terminal?.run(line) };
   for (const feature of allFeatures) feature.install?.(prompt);
+
+  // An agent in the reader's browser is offered what the reader is: the programs, and the prompt.
+  const programs = allFeatures.flatMap((feature) => feature.programs ?? []);
+  offerTools(modelContextHere(), { programs, site: siteInBrowser, goTo: (route) => goTo(route), run: (line) => terminal?.run(line) ?? [] });
 }
 
 if (document.readyState === "loading") {
