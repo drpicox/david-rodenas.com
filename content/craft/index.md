@@ -12,10 +12,13 @@ A guide can go unread. A type, a grammar or a test cannot be skipped, and it
 does not matter who writes the change — a person or an AI agent: it holds for
 both.
 
-These are small examples of it, and every one of them runs here.
+These are small examples of it, and every one of them runs here. And a
+craft is shared, so the essays about it are here too.
 
 - [The post is the test](/craft/the-post-is-the-test/)  
   Write a post, and see the test it becomes: each sentence is a step, named by its words.
+- [The craft, in writing](/craft/writing/)  
+  A craft is shared: a way through the essays about it, from tests as documentation to pairing and mobbing.
 - [How this site is built](/projects/architecture/)  
   Its source as boxes and arrows, commit by commit, and the rules it is held to.
 - [The post comes first](/teaching/software-lab/)  

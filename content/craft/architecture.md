@@ -1,4 +1,4 @@
 ---
 link: /projects/architecture/
-order: 2
+order: 12
 ---
