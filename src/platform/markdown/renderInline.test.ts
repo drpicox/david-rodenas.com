@@ -89,6 +89,10 @@ describe("line breaks", () => {
 });
 
 describe("image sizes", () => {
+  it("takes a card from the image's title: a picture for a layout that shows one beside each entry, fetched only when it is shown", () => {
+    expect(renderInline('![c](/c.jpg "card")')).toBe('<img src="/c.jpg" alt="c" class="card" loading="lazy">');
+  });
+
   it("takes a size from the image's title: large or wide", () => {
     expect(renderInline('![c](/c.jpeg "large")')).toBe('<img src="/c.jpeg" alt="c" class="large">');
     expect(renderInline('![c](/c.jpeg "wide")')).toBe('<img src="/c.jpeg" alt="c" class="wide">');

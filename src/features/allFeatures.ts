@@ -10,6 +10,7 @@ import { lagoonFeature } from "./lagoon/lagoonFeature";
 import { mazeFeature } from "./maze/mazeFeature";
 import { nextWordFeature } from "./next-word/nextWordFeature";
 import { packagesFeature } from "./packages/packagesFeature";
+import { portfolioFeature } from "./portfolio/portfolioFeature";
 import { postTestsFeature } from "./post-tests/postTestsFeature";
 import { rocketFeature } from "./rocket/rocketFeature";
 import { skyFeature } from "./sky/skyFeature";
@@ -45,4 +46,5 @@ export const allFeatures: readonly Feature[] = [
   mazeFeature,
   firstNetworkFeature,
   fibergochiFeature,
+  portfolioFeature,
 ];

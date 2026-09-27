@@ -54,6 +54,7 @@ graph LR
     lagoon["<b>lagoon</b><br/>a commons that breeds, the bots<br/>that share it, and a seat for yours"]
     maze["<b>maze</b><br/>the VRML maze generator of 2001,<br/>its dig and its spheres, Java's random"]
     firstnetwork["<b>first-network</b><br/>letters told apart by backpropagation,<br/>the visitor's own among them"]
+    portfolio["<b>portfolio</b><br/>a flag: the lists with pictures<br/>as cards the width of a program"]
     fibergochi["<b>fibergochi</b><br/>the student pet of 1999, its rules<br/>and its drawings, kept in the browser"]
     adventure["<b>adventure</b><br/>the text adventure of a first-year lab,<br/>sixty-four rooms, playable"]
     thesis["<b>thesis-results</b><br/>the measurements of the thesis,<br/>as a table with its bars"]
@@ -81,6 +82,7 @@ graph LR
   feature["a Feature"]
 
   feature -- "programs" --> programs["a Program<br/><i>an input and an output:<br/>§4 makes it all four below</i>"]
+  feature -- "flags" --> flags["the flags command<br/><i>a trial a reader switches on,<br/>kept, read off ?name=on,<br/>marked as data-flags on the root</i>"]
   feature -- "commands" --> shell["the Shell<br/><i>alongside the site's own</i>"]
   feature -- "apps" --> apps["mountApps<br/><i>a ::name in the markdown</i>"]
   feature -- "stills" --> stills["fillStills<br/><i>what a program's place holds<br/>in the HTML, before any script</i>"]

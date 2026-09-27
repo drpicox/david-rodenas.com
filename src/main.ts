@@ -1,12 +1,15 @@
 import "./styles.css";
 import { allFeatures } from "./features/allFeatures";
 import { appsOf } from "./platform/browser/appsOf";
+import { BrowserFlags } from "./platform/browser/BrowserFlags";
 import { modelContextHere } from "./platform/browser/modelContextHere";
 import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
 import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
+import { flagsCommand } from "./platform/flags/flagsCommand";
+import { flagsInAddress } from "./platform/flags/flagsInAddress";
 import { commandsOf } from "./platform/plugin/commandsOf";
 import { siteCommands } from "./platform/shell/commands/siteCommands";
 
@@ -17,7 +20,12 @@ import { siteCommands } from "./platform/shell/commands/siteCommands";
  * brought, wires the prompt to the shell, and starts them.
  */
 function mount(): void {
-  const commands = [...siteCommands, ...commandsOf(allFeatures)];
+  // The trials: what a link asks for is kept, and the command switches the rest.
+  const flags = allFeatures.flatMap((feature) => feature.flags ?? []);
+  const flagStore = new BrowserFlags();
+  for (const [name, on] of Object.entries(flagsInAddress(flags, window.location.search))) flagStore.set(name, on);
+
+  const commands = [...siteCommands, ...commandsOf(allFeatures), flagsCommand(flags, flagStore)];
   const apps = appsOf(allFeatures);
 
   const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);

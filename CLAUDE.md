@@ -32,6 +32,9 @@ traced, write the weaker sentence.
   changed, and never fails (`--year 2024` asks again, `--only no2` picks one)
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
+- `node tools/shoot-projects.mjs [names...]` — photograph the programs
+  running on their pages into `public/projects/shots/`, for the cards; needs
+  `npm run dev` running (`SITE=` if it is not on 5173)
 - `node tools/write-favicon.mjs [seed]` — grow one still world into
   `public/favicon.png`, the icon a browser has before the script runs
 
@@ -52,13 +55,16 @@ The top level says what this is: a frame, and the features standing in it.
   - `data/` — open data kept a finished year at a time: `YearlySource`, and
     the refresh that cannot lose what is already held
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
+  - `flags/` — trials a reader can switch on: `flags`, `?name=on`, and
+    `data-flags` on the root (set before paint) for a stylesheet to look at.
+    A feature adds one by declaring it
   - `program/` — a demonstration as an input and an output: its still, its
     command, and (in `browser/`) its dials and its WebMCP tool, all from one
     `Program`
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,
-  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`. A feature owns everything about itself: its rules,
+  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.
