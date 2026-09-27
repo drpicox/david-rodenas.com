@@ -22,6 +22,13 @@ describe("slides, played as keystrokes and pauses", () => {
     expect(shots.at(-1)?.text).toBe("ac!");
   });
 
+  it("shows a long first frame whole, so the reader does not wait for it, and types only what changes after", () => {
+    const long = "x".repeat(400);
+    const played = slidesPlayback([{ text: long }, { text: `${long}!` }]);
+    expect(played[0]?.text).toBe(long);
+    expect(played.filter((shot) => shot.caret !== undefined)).toHaveLength(1);
+  });
+
   it("types faster than a reader reads, and rubs out faster than it types", () => {
     const typed = shots[0]?.hold ?? 0;
     const rubbed = shots.find((shot, index) => index > 0 && shot.text.length < (shots[index - 1]?.text.length ?? 0))?.hold ?? 0;

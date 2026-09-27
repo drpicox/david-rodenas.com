@@ -24,6 +24,19 @@ describe("the keystrokes from one text to the next", () => {
     ]);
   });
 
+  it("types a new line from the end of the one above it, as a person does, and never runs it into the brace below", () => {
+    const texts = typingSteps("{\n  a;\n}", "{\n  a;\n  b;\n}").map((step) => step.text);
+    expect(texts).toContain("{\n  a;\n  b\n}");
+    expect(texts).not.toContain("{\n  a;\n  b}");
+    expect(texts.at(-1)).toBe("{\n  a;\n  b;\n}");
+  });
+
+  it("rubs out a whole line from its end, leaving the brace below where it was", () => {
+    const texts = typingSteps("{\n  a;\n  b;\n}", "{\n  a;\n}").map((step) => step.text);
+    expect(texts).toContain("{\n  a;\n  b\n}");
+    expect(texts.at(-1)).toBe("{\n  a;\n}");
+  });
+
   it("has nothing to type when nothing changed", () => {
     expect(typingSteps("same", "same")).toEqual([]);
   });

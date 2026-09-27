@@ -13,7 +13,8 @@ its steps come without thinking. This is it in JavaScript, as I taught it,
 split into the commits a student makes: each one a single move — a test, the
 code it asks for, or a clean-up — and the bar says whether the tests passed. Every
 commit is run here, in the page, as you reach it: walk it with the arrows, or
-jump from the strip.
+jump from the strip. Where one of my essays says something about a step, it is
+beside it, with a link to where I say it at length.
 
 ::bowling-kata
 
@@ -32,10 +33,8 @@ and passes at 28.
 
 **Add new code before removing the old.** Commit 10 creates a game for every
 test, and ignores it; only then do 11 and 12 take the old one out, one test at
-a time. Commits 19 to 23 do the same to the score itself: add a list of rolls
-beside the running total, write to both, read from the list, stop writing the
-total, delete it. After each step, the code works again. Elsewhere this shape
-is called a [parallel change](https://martinfowler.com/bliki/ParallelChange.html).
+a time. Commits 19 to 23 do the same to the score itself, in [five
+steps](#five-steps-and-the-code-works-after-each-one) of their own.
 
 **A test seen failing once.** The perfect game passes the moment it is
 written. A test that has never failed has not yet shown it can: so at commit
@@ -49,6 +48,23 @@ refactoring, [part one](https://medium.com/p/90b110a2ad17) and [part
 two](https://medium.com/p/1d28b3a78b08), then [what to
 test](https://medium.com/p/fc771d5e39e8) and [how to
 design](https://medium.com/p/a37d8d11be9c).
+
+## Five steps, and the code works after each one
+
+Probably the best thing the kata teaches, and it works on code of any size:
+how to change the way something is kept without ever breaking it. First name
+the parts — what keeps the data, what writes it, what reads it. Then add the
+new beside the old, write to both, read from the new, stop writing the old,
+and remove it:
+
+::kata-five-steps
+
+After each step the code works again, so each one could be committed and
+merged: a large change becomes many small ones, without stopping delivery.
+Elsewhere this shape is called a [parallel
+change](https://martinfowler.com/bliki/ParallelChange.html). I wrote the
+technique down in [Refactor Lessons Learned From The Bowling Game Kata
+(2/2)](https://medium.com/p/1d28b3a78b08).
 
 ## Whose it is
 

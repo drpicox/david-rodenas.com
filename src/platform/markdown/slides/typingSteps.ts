@@ -5,6 +5,20 @@ export interface Keystroke {
 }
 
 /**
+ * A whole line added or taken away can sit in more than one place — before
+ * the brace below it, or after the end of the line above. A person types it
+ * from the end of the line above, so it is slid back there: to where it
+ * starts with a line break, if it can get there.
+ */
+function slid(head: string, change: string, tail: string): [string, string, string] {
+  for (let back = 1; back <= Math.min(head.length, change.length); back += 1) {
+    if (head.at(-back) !== change.at(-back)) break;
+    if (head.at(-back) === "\n") return [head.slice(0, -back), head.slice(-back) + change.slice(0, -back), change.slice(-back) + tail];
+  }
+  return [head, change, tail];
+}
+
+/**
  * The keystrokes from one text to the next, as a person would make them: what
  * both share at the start and at the end stays; what changed in between is
  * rubbed out from its end, then what replaces it is typed a letter at a time.
@@ -14,10 +28,13 @@ export function typingSteps(from: string, to: string): Keystroke[] {
   while (start < from.length && start < to.length && from[start] === to[start]) start += 1;
   let end = 0;
   while (end < from.length - start && end < to.length - start && from[from.length - 1 - end] === to[to.length - 1 - end]) end += 1;
-  const head = from.slice(0, start);
-  const tail = from.slice(from.length - end);
-  const gone = from.slice(start, from.length - end);
-  const come = to.slice(start, to.length - end);
+  let head = from.slice(0, start);
+  let tail = from.slice(from.length - end);
+  let gone = from.slice(start, from.length - end);
+  let come = to.slice(start, to.length - end);
+  if (!gone) [head, come, tail] = slid(head, come, tail);
+  else if (!come) [head, gone, tail] = slid(head, gone, tail);
+  start = head.length;
   const steps: Keystroke[] = [];
   for (let length = gone.length - 1; length >= 0; length -= 1) steps.push({ text: head + gone.slice(0, length) + tail, caret: start + length });
   for (let length = 1; length <= come.length; length += 1) steps.push({ text: head + come.slice(0, length) + tail, caret: start + length });

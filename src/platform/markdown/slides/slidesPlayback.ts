@@ -14,15 +14,19 @@ const RUB = 14;
 const RUN = 450;
 const SAID = 1900;
 const PAUSE = 1300;
+/** A first frame longer than this is shown whole: typing it would only make the reader wait. */
+const TYPED = 160;
 
 /**
- * Slides as they are played: the first frame typed from nothing; a moment
- * while the tests run; what they said, held long enough to be read; then the
- * next frame, reached by rubbing out and typing only what changed.
+ * Slides as they are played: the first frame typed from nothing, or shown
+ * whole if it is long; a moment while the tests run; what they said, held
+ * long enough to be read; then the next frame, reached by rubbing out and
+ * typing only what changed.
  */
 export function slidesPlayback(slides: readonly Slide[]): Shot[] {
   const shots: Shot[] = [];
-  let text = "";
+  const first = slides[0]?.text ?? "";
+  let text = first.length > TYPED ? first : "";
   for (const slide of slides) {
     for (const keystroke of typingSteps(text, slide.text)) {
       shots.push({ ...keystroke, hold: keystroke.text.length < text.length ? RUB : TYPE });

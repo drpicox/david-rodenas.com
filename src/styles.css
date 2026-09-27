@@ -3653,6 +3653,31 @@ main li > img.card {
   cursor: default;
 }
 
+/* What my essays say about a step: beside the step, not over it. */
+.app .kata-lesson {
+  margin: 0 0 0.9em;
+  padding: 0.6em 0.9em;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  border-radius: 0 0.25em 0.25em 0;
+  text-align: left;
+}
+
+.app .kata-lesson h4 {
+  margin: 0 0 0.25em;
+  font-size: 0.85rem;
+}
+
+.app .kata-lesson p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.app .kata-lesson a {
+  white-space: normal;
+}
+
 .app .kata-hint {
   font-size: 0.78rem;
   color: var(--dim);

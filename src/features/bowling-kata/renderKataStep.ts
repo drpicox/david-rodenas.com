@@ -1,6 +1,7 @@
 import { escapeHtml } from "../../platform/markdown/escapeHtml";
 import { highlight } from "../../platform/markdown/highlight";
 import { changedLines } from "./changedLines";
+import { kataLessonAt } from "./kataLessonAt";
 import type { KataStep } from "./KataStep";
 import { runKata } from "./runKata";
 
@@ -26,8 +27,12 @@ export function renderKataStep(step: KataStep, previous?: KataStep): string {
   const bar = run.passed ? '<p class="kata-bar green">All tests pass.</p>' : `<p class="kata-bar red">${escapeHtml(run.message ?? "")}</p>`;
   const smells = step.smells.length ? `<div class="kata-smells"><h4>Still to clean</h4><ul>${step.smells.map((smell) => `<li>${escapeHtml(smell)}</li>`).join("")}</ul></div>` : "";
   const note = step.note ? `<p class="kata-note">${escapeHtml(step.note)}</p>` : "";
+  const lesson = kataLessonAt(step.commit);
+  const taught = lesson
+    ? `<aside class="kata-lesson"><h4>${escapeHtml(lesson.title)}</h4><p>${escapeHtml(lesson.text)} <a href="https://medium.com/p/${lesson.essay.id}" target="_blank" rel="noopener noreferrer">${escapeHtml(lesson.essay.title)}${lesson.essay.section ? ` — ${escapeHtml(lesson.essay.section)}` : ""}</a></p></aside>`
+    : "";
   return (
-    `<div class="kata-step"><p class="kata-move"><strong>commit ${step.commit}</strong> · ${MOVES[step.stage]}</p>${bar}` +
+    `<div class="kata-step"><p class="kata-move"><strong>commit ${step.commit}</strong> · ${MOVES[step.stage]}</p>${bar}${taught}` +
     `<div class="kata-files">${file("bowling.spec.js", step.test, previous?.test, "An empty file.")}${file("bowling.js", step.code, previous?.code, "Not written yet.")}</div>` +
     `${note}${smells}</div>`
   );

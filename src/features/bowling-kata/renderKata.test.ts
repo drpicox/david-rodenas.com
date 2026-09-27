@@ -50,6 +50,13 @@ describe("one commit of the kata", () => {
     expect(html).not.toMatch(/<span class="line added">[^\n]*all ones/);
   });
 
+  it("says what my essays say about the step, and links to where they say it", () => {
+    const html = renderKataStep(at(10), at(9));
+    expect(html).toContain('<aside class="kata-lesson"><h4>Add new code before removing the old</h4>');
+    expect(html).toContain('href="https://medium.com/p/90b110a2ad17"');
+    expect(renderKataStep(at(28), at(27))).not.toContain("kata-lesson");
+  });
+
   it("lists the smells still to clean, and the slide's own note", () => {
     const html = renderKataStep(at(18), at(17));
     expect(html).toContain("<li>ugly comment in test.</li>");
