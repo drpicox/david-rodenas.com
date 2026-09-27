@@ -95,9 +95,16 @@ export class ArchitectureScene {
 
   /** When the tests are shown, the files no test reaches directly are drawn hollow. */
   private reached: ReadonlySet<number> | null = null;
+  /** The share of each file's lines the tests run, by path, where it was counted: then every ball is a pie that full. */
+  private coverage: ReadonlyMap<string, number> | null = null;
 
-  show(snapshot: Snapshot, layout: Layout, { untangling = false, reached = null }: { untangling?: boolean; reached?: ReadonlySet<number> | null } = {}): void {
+  show(
+    snapshot: Snapshot,
+    layout: Layout,
+    { untangling = false, reached = null, coverage = null }: { untangling?: boolean; reached?: ReadonlySet<number> | null; coverage?: ReadonlyMap<string, number> | null } = {},
+  ): void {
     this.reached = reached;
+    this.coverage = coverage;
     this.layout = layout;
     if (this.still || this.balls.size === 0) this.height = this.wanted;
     const topRank = Math.max(0, ...layout.boxes.map((box) => box.rank));
@@ -279,10 +286,22 @@ export class ArchitectureScene {
       const lit = this.hovered.path === ball.path;
       const backed = focus !== undefined && !tied.has(ball.id);
       const untested = this.reached !== null && !ball.test && !ball.typesOnly && !this.reached.has(ball.id);
+      const share = !ball.test && !ball.typesOnly ? this.coverage?.get(ball.path) : undefined;
       context.globalAlpha = ball.alpha * (backed ? 0.22 : 1);
       context.beginPath();
-      context.arc(ball.body.x, ball.body.y, lit ? radius + 2 : Math.max(0, untested ? radius - 0.6 : radius), 0, Math.PI * 2);
-      if (untested) {
+      context.arc(ball.body.x, ball.body.y, lit ? radius + 2 : Math.max(0, untested || share !== undefined ? radius - 0.6 : radius), 0, Math.PI * 2);
+      if (share !== undefined) {
+        // A pie as full as the tests run the file: a whole ball is every line, an empty ring none.
+        context.strokeStyle = share >= 99.5 ? colours.accent : colours.warn;
+        context.lineWidth = 1.2;
+        context.stroke();
+        context.fillStyle = colours.accent;
+        context.beginPath();
+        context.moveTo(ball.body.x, ball.body.y);
+        context.arc(ball.body.x, ball.body.y, Math.max(0, radius - 0.6), -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * share) / 100);
+        context.closePath();
+        context.fill();
+      } else if (untested) {
         context.strokeStyle = colours.warn;
         context.lineWidth = 1.2;
         context.stroke();
@@ -297,7 +316,11 @@ export class ArchitectureScene {
       }
     }
 
-    if (focus) this.label(context, colours, `${focus.path}   needs ${needs.length} · needed by ${neededBy.length}`, focus.body.x, focus.body.y - 10);
+    if (focus) {
+      const share = this.coverage?.get(focus.path);
+      const run = share !== undefined && !focus.test && !focus.typesOnly ? ` · tests run ${Math.round(share)}% of it` : "";
+      this.label(context, colours, `${focus.path}   needs ${needs.length} · needed by ${neededBy.length}${run}`, focus.body.x, focus.body.y - 10);
+    }
     context.globalAlpha = 1;
   }
 

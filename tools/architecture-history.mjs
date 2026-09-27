@@ -1,18 +1,24 @@
 import { execFileSync, spawn } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { createServer } from "vite";
 
 /**
  * Reads the source at every commit that changed it and writes the history the
  * architecture page plays: `public/data/architecture.json`.
  *
- *   node tools/architecture-history.mjs
+ *   npm run coverage && node tools/architecture-history.mjs
+ *
+ * With the coverage counted first, it also writes `public/data/coverage.json`:
+ * how many of each file's lines the tests run, at the last commit.
  *
  * It runs here and not in the build, because a build checks out one commit and
  * the history is all of them. The graph is read with the same code the
  * architecture test uses, loaded through vite so this tool needs nothing else.
  */
 const OUT = "public/data/architecture.json";
+const COVERAGE = "public/data/coverage.json";
+const SUMMARY = "coverage/coverage-summary.json";
 const git = (...args) => execFileSync("git", args, { encoding: "utf8", maxBuffer: 1 << 28 });
 
 /** Every blob asked for at once, through one `git cat-file --batch`, which is what makes a hundred snapshots quick. */
@@ -89,6 +95,14 @@ try {
 
   const history = encodeHistory(played);
   writeFileSync(OUT, `${JSON.stringify(history)}\n`);
+
+  // The lines the tests run, if `npm run coverage` has counted them: only for the last commit, which is the one they ran on.
+  const { coverageOf } = await vite.ssrLoadModule("/src/features/architecture/coverageOf.ts");
+  if (existsSync(SUMMARY)) {
+    const coverage = coverageOf(JSON.parse(readFileSync(SUMMARY, "utf8")), resolve("src"), played.at(-1).commit.sha);
+    writeFileSync(COVERAGE, `${JSON.stringify(coverage)}\n`);
+    console.log(`${COVERAGE}: ${Object.keys(coverage.lines).length} files`);
+  } else console.log(`no ${SUMMARY}: run npm run coverage first to put the lines the tests run on the page`);
   const last = played.at(-1).graph;
   console.log(`${OUT}: ${commits.length} commits, ${last.modules.length} modules and ${last.dependencies.length} arrows at the end, ${(JSON.stringify(history).length / 1024).toFixed(0)} KB`);
 } finally {

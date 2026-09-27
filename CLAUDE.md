@@ -25,6 +25,9 @@ traced, write the weaker sentence.
 ## Commands
 
 - `npm test` — vitest, all of it
+- `npm run coverage` — the same, counting the lines each test runs, into
+  `coverage/`; `node tools/architecture-history.mjs` then puts it on the
+  architecture page
 - `npm run dev` — dev server
 - `npm run build` — `npm run data`, typecheck, then a static build into `dist/`
 - `npm run data` — fetch any finished year of open data that `public/data/`
@@ -104,6 +107,8 @@ talk to each other.
 - A test asserts a claim about the world, not the shape of the code. When a
   test fails, first ask whether the claim was wrong — twice tonight it was.
 - **No dependency that is not a requirement.** `eclipsi26` and `heatwave` ship
-  with no `package.json` at all; this repo has three devDependencies and zero
-  runtime ones. Adding a fourth needs a reason written down in `DECISIONS.md`.
+  with no `package.json` at all; this repo has three devDependencies that
+  matter — Vite, TypeScript, vitest — beside their types, jsdom for the
+  browser tests, and vitest's coverage reader (see `DECISIONS.md`), and zero
+  runtime ones. Adding another needs a reason written down in `DECISIONS.md`.
 - Comments say *why*. The code already says what.

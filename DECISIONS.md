@@ -7,6 +7,15 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### A fourth devDependency: `@vitest/coverage-v8` (27 September 2026)
+The architecture page shows what the tests reach, and which file a test
+imports is only half of it: a file can be imported and still have most of its
+lines never run. How many lines the tests run is something only the runtime
+knows, and V8 already counts it; this package is vitest's own reader of that
+count, versioned with vitest, and nothing else. It is a devDependency — it
+never reaches the browser — and `npm test` does not use it: only
+`npm run coverage` does.
+
 ### The site is prerendered, and the content is in the HTML
 The 2025 site was a terminal that built itself in JavaScript. It looked good
 and no search engine could read a word of it. Whatever else changes, this does

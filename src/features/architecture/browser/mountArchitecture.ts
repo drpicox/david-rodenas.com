@@ -1,6 +1,7 @@
 import { el } from "../../../platform/browser/el";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 import { decodeHistory } from "../decodeHistory";
+import type { Coverage } from "../Coverage";
 import type { History } from "../History";
 import type { Layout } from "../Layout";
 import { layoutArchitecture } from "../layoutArchitecture";
@@ -41,11 +42,15 @@ export function mountArchitecture(host: HTMLElement): () => void {
   let stop = () => {
     stopped = true;
   };
+  const coverage = fetch("/data/coverage.json")
+    .then((response) => (response.ok ? (response.json() as Promise<Coverage>) : null))
+    .catch(() => null);
   void fetch("/data/architecture.json")
     .then((response) => response.json() as Promise<History>)
-    .then((history) => {
+    .then(async (history) => {
+      const counted = await coverage;
       if (stopped) return;
-      stop = play(host, history);
+      stop = play(host, history, counted);
     })
     .catch(() => {
       // Without the history the still stays, and it is the last commit already.
@@ -53,7 +58,10 @@ export function mountArchitecture(host: HTMLElement): () => void {
   return () => stop();
 }
 
-function play(host: HTMLElement, history: History): () => void {
+function play(host: HTMLElement, history: History, counted: Coverage | null): () => void {
+  // The lines the tests run were counted at one commit only; the pies are drawn there, and the rings everywhere else.
+  const coverageAt = counted && history.commits.findIndex((commit) => commit.sha === counted.sha);
+  const coverage = counted ? new Map(Object.entries(counted.lines)) : null;
   const snapshots = decodeHistory(history);
   const metrics = snapshots.map(metricsOf);
   const layouts = new Map<string, Layout>();
@@ -91,7 +99,7 @@ function play(host: HTMLElement, history: History): () => void {
     const snapshot = snapshots[at];
     const commit = history.commits[at];
     if (!snapshot || !commit) return;
-    scene.show(snapshot, layoutAt(at, tests), { untangling, reached: tests ? reachedByTests(snapshot) : null });
+    scene.show(snapshot, layoutAt(at, tests), { untangling, reached: tests ? reachedByTests(snapshot) : null, coverage: tests && at === coverageAt ? coverage : null });
     caption.innerHTML = renderArchitectureCaption(commit, metrics[at] ?? metricsOf(snapshot));
     sparks.innerHTML = renderMetricsSparks(metrics, at);
   };

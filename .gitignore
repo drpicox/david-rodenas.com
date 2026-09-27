@@ -8,3 +8,4 @@ tools/planets.png
 
 # Personal: where the material comes from. Never committed, never pushed.
 *.local.md
+coverage/
