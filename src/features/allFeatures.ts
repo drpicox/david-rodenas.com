@@ -14,6 +14,7 @@ import { packagesFeature } from "./packages/packagesFeature";
 import { portfolioFeature } from "./portfolio/portfolioFeature";
 import { postTestsFeature } from "./post-tests/postTestsFeature";
 import { rocketFeature } from "./rocket/rocketFeature";
+import { stepNamesFeature } from "./step-names/stepNamesFeature";
 import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
@@ -49,4 +50,5 @@ export const allFeatures: readonly Feature[] = [
   fibergochiFeature,
   portfolioFeature,
   architectureFeature,
+  stepNamesFeature,
 ];
