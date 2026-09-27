@@ -673,12 +673,6 @@ a.ref::after {
   content: none;
 }
 
-/* A quote under a point says what the point looks like: the voice of a quote, the size of the words. */
-p:has(> strong:first-child) + blockquote {
-  margin: -0.2em 0 1.6em 1.2em;
-  font-size: 1.12rem;
-  line-height: 1.5;
-}
 
 hr {
   border: 0;
