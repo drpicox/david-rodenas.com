@@ -3191,10 +3191,7 @@ main li > img.card {
 
 [data-flags~="portfolio"] main ul:has(> li > img.card) > li {
   margin: 0;
-  padding: 0 0.9em 0.9em;
-  border: 1px solid var(--rule);
-  border-radius: 0.25em;
-  overflow: hidden;
+  padding: 0;
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -3203,15 +3200,17 @@ main li > img.card {
   content: none;
 }
 
+/* The edge is the picture's, not the card's: a white screenshot on a white page, or a dark one on a dark page, still has an outline. */
 [data-flags~="portfolio"] main li > img.card {
   display: block;
-  width: calc(100% + 1.8em);
+  width: 100%;
   max-width: none;
-  margin: 0 -0.9em 0.7em;
+  margin: 0 0 0.7em;
   aspect-ratio: 5 / 3;
   object-fit: cover;
   object-position: top;
-  border-bottom: 1px solid var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
 }
 
 [data-flags~="portfolio"] main li > img.card + a {
