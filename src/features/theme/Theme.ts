@@ -10,5 +10,5 @@ import type { ThemeChoice } from "./ThemeChoice";
  */
 export interface Theme {
   /** Takes a choice, and answers what the page settled on. A toggle only it can resolve. */
-  apply(choice: ThemeChoice): "light" | "dark" | "system";
+  apply(choice: ThemeChoice): "light" | "dark" | "system" | "pink";
 }

@@ -12,10 +12,10 @@ const site = new Site([
 ]);
 
 /** A theme that keeps its answer in a variable, which is all a test needs one to do. */
-function fakeTheme(): Theme & { asked: ThemeChoice[]; settled: "light" | "dark" | "system" } {
+function fakeTheme(): Theme & { asked: ThemeChoice[]; settled: "light" | "dark" | "system" | "pink" } {
   const fake = {
     asked: [] as ThemeChoice[],
-    settled: "dark" as "light" | "dark" | "system",
+    settled: "dark" as "light" | "dark" | "system" | "pink",
     apply(choice: ThemeChoice) {
       fake.asked.push(choice);
       return fake.settled;
@@ -51,11 +51,11 @@ describe("theme", () => {
   });
 
   // Whoever can click should not have to know that `theme system` is a thing to type.
-  it("shows all three, each with its sign, marks the one it landed on, and makes the others things to click", () => {
+  it("shows all of them, each with its sign, marks the one it landed on, and makes the others things to click", () => {
     const theme = fakeTheme();
     theme.settled = "dark";
     const outcome = run(theme, "/", ["dark"]);
-    expect(outcome.text).toBe("theme   ☀︎ light   [☾︎ dark]   ◐︎ system");
+    expect(outcome.text).toBe("theme   ☀︎ light   [☾︎ dark]   ◐︎ system   ❀︎ pink");
     expect(outcome.html).toContain('<strong aria-current="true">☾︎ dark</strong>');
     expect(outcome.html).toContain('data-run="theme light"');
     // What is shown is the choice; the command it runs is in its title, and in the echo once pressed.
@@ -65,10 +65,20 @@ describe("theme", () => {
     expect(outcome.html).not.toContain('data-run="theme dark"');
   });
 
+  // Pink is never where a toggle lands; it is there for whoever asks for it by name, or presses it here.
+  it("takes pink when it is asked for by name, and offers it to click from the others", () => {
+    const theme = fakeTheme();
+    theme.settled = "pink";
+    expect(run(theme, "/", ["pink"]).text).toBe("theme   ☀︎ light   ☾︎ dark   ◐︎ system   [❀︎ pink]");
+    expect(theme.asked).toEqual(["pink"]);
+    theme.settled = "light";
+    expect(run(theme, "/", ["light"]).html).toContain('data-run="theme pink"');
+  });
+
   it("marks the system when the system is deciding", () => {
     const theme = fakeTheme();
     theme.settled = "system";
-    expect(run(theme, "/", ["system"]).text).toBe("theme   ☀︎ light   ☾︎ dark   [◐︎ system]");
+    expect(run(theme, "/", ["system"]).text).toBe("theme   ☀︎ light   ☾︎ dark   [◐︎ system]   ❀︎ pink");
   });
 
   it("offers nothing to click when it refused", () => {

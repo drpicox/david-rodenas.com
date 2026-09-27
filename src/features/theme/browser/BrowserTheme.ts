@@ -17,6 +17,8 @@ function current(): "light" | "dark" {
     chosen = document.documentElement.dataset["theme"] ?? null;
   }
   if (chosen === "light" || chosen === "dark") return chosen;
+  // Pink is a light paper, so a toggle from it goes to the night.
+  if (chosen === "pink") return "light";
   return systemIsDark() ? "dark" : "light";
 }
 
@@ -26,7 +28,7 @@ function current(): "light" | "dark" {
  * the same key, so a reload does not flash.
  */
 export class BrowserTheme implements Theme {
-  apply(choice: ThemeChoice): "light" | "dark" | "system" {
+  apply(choice: ThemeChoice): "light" | "dark" | "system" | "pink" {
     const wanted = choice === "toggle" ? (current() === "dark" ? "light" : "dark") : choice;
     try {
       if (wanted === "system") localStorage.removeItem(KEY);

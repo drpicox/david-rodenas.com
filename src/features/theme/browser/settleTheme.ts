@@ -13,7 +13,7 @@ export function settleTheme(): void {
   } catch {
     chosen = null;
   }
-  const theme = forced ?? (chosen === "light" || chosen === "dark" ? chosen : null);
+  const theme = forced ?? (chosen === "light" || chosen === "dark" || chosen === "pink" ? chosen : null);
   if (theme) root.dataset["theme"] = theme;
   else delete root.dataset["theme"];
 }
