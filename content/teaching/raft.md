@@ -1,6 +1,6 @@
 ---
 title: Raft, and a recipe for concurrency
-summary: A consensus algorithm as a laboratory assignment in 2013, and the three-step recipe that lets someone who has never written concurrent code get it right.
+summary: A consensus algorithm as a laboratory assignment in 2013, and the three hints — above all a three-step recipe — that let someone who has never written concurrent code get it right.
 order: 4
 ---
 
@@ -8,9 +8,11 @@ order: 4
 
 In the autumn of 2013 the distributed systems laboratory at the UOC set its
 students a consensus algorithm to implement: Raft, which was then a draft
-going round, a year away from being presented. I worked on that laboratory,
-and [my implementation is public](https://github.com/drpicox/uoc-raft-2013p):
-one Java class over the course's skeleton, dated October 2013.
+going round, a year away from being presented. I taught that laboratory. The
+assignment took three months, and [my implementation is
+public](https://github.com/drpicox/uoc-raft-2013p): one Java class over the
+course's skeleton, dated October 2013, which was the reference the students'
+work was compared against, and was given back to them as the solution.
 
 Raft was designed to be understandable, and it is. The hard part of the
 assignment is somewhere else. A server is doing four things at once —
@@ -20,10 +22,36 @@ any two lines the network may hand it a message that makes it a different
 kind of server. That is a lot to ask of someone writing their first
 concurrent program.
 
-## The recipe
+So the students were given three hints, and the implementation follows
+them.
 
-So the implementation follows a recipe simple enough to be followed by
-someone who cannot yet reason about interleavings, and still concurrent:
+## One: the timeouts are always on
+
+The obvious way to write a timeout is to arm it, and to cancel it and arm it
+again whenever a message says it is not needed yet. Every one of those is a
+chance for a message and a timer to cross. Here the timers are started once,
+and they tick for as long as the server runs; each tick asks one question
+instead — *has a leader been heard from since the last one?* — and returns if
+it has:
+
+```java
+timerQueue.schedule(electionTimeoutTask, electionTimeout, electionTimeout);
+…
+private void electionTimeout() {
+    // abort timeout if leader has been seen
+    if (seenLeader.getAndSet(false)) { return; }
+```
+
+It does a little work for nothing, and it has no race left to lose.
+
+## Two: a recipe for the shared state
+
+The Java habit is to make the whole method `synchronized` and be safe. It is
+not always safe — a `synchronized` method is a monitor, and a student who
+knows mutexes and semaphores does not yet know what a monitor will do — and it
+makes long stretches of the program wait on each other. So the
+implementation follows a recipe simple enough to be followed by someone who
+cannot yet reason about interleavings, and still concurrent:
 
 ```flow
 lock1[1 · inside the guard\ncheck who you are\ncopy what you need] --> out[2 · outside the guard\ncompute, wait, talk\nto the network]
@@ -85,7 +113,49 @@ common info (from iteration to iteration may become rotten)* going in, and
 *execute inside the guard, any sent data could be changed and must be
 reevaluated* coming back.
 
-## Why it works
+## Three: the answer is handled where the question is asked
+
+A server sends many requests and gets their answers back in any order. The
+usual Java of the time had a handler for each kind of answer, somewhere else,
+matching answers to questions; every attempt written that way was hard to
+follow and full of races. The idea that worked came from JavaScript: each
+request goes to an executor as a small anonymous task that sends it, waits,
+and deals with its own answer, with everything it needs already in its local
+variables. Here is the vote, as the election asks for it:
+
+```java
+// request votes
+for (final Host otherHost : otherServers) {
+    executorQueue.execute(new Runnable() {
+        public void run() {
+            RequestVoteResponse response = RMIsd.getInstance()
+                .requestVote(otherHost, term, candidateId, lastLogIndex, lastLogTerm);
+            // not now or not me
+            if (response.getTerm() != term || !response.isVoteGranted()) { checkReceivedTerm(term); return; }
+
+            // who wons?
+            int votes = voteCount.incrementAndGet();
+            if (votes == minimumVoteCount) {
+                synchronized (GUARD) {
+                    if (persistentState.getCurrentTerm() != term || state != RaftState.CANDIDATE) {
+                        // Ops! Something changed while network RPC go and come
+                        return;
+                    }
+                    // I'm the leader
+                    state = RaftState.LEADER;
+                    // …
+                }
+            } // else greater values ignored to avoid become leader to often
+        }
+    });
+}
+```
+
+It is the second hint again, from the other side: the task carries the
+copies it was given, and when the answer arrives it takes the guard and
+checks that the world it was asked in is still there.
+
+## Why the recipe works
 
 It removes the two things a beginner gets wrong. There is one lock, so there
 is no order of locks to get wrong and no deadlock. And no lock is held while
