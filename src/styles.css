@@ -3242,3 +3242,129 @@ main li > img.card {
 [data-flags~="portfolio"] main li > img.card + a + br {
   display: none;
 }
+
+/* ---- the architecture: the source as boxes and arrows ---- */
+
+.app .architecture-figure {
+  margin: 0;
+}
+
+.app .architecture-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em 1em;
+  margin-bottom: 0.8em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .architecture-controls input[type="range"] {
+  flex: 1 1 12rem;
+  accent-color: var(--accent);
+}
+
+.app .architecture-canvas,
+.app svg.architecture {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  background: var(--paper);
+}
+
+.app .architecture-figure figcaption {
+  margin: 0.6em 0 0.3em;
+  font-size: 0.8rem;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.app .architecture-figure figcaption .measured {
+  font-variant-numeric: tabular-nums;
+}
+
+.app svg.architecture .band rect {
+  fill: none;
+  stroke: var(--rule);
+  stroke-dasharray: 2 4;
+}
+
+.app svg.architecture .band text {
+  font: bold 10px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.architecture .box rect {
+  fill: var(--sunken);
+  stroke: var(--rule);
+}
+
+.app svg.architecture .box.cyclic rect {
+  stroke: var(--warn);
+  stroke-width: 2;
+}
+
+.app svg.architecture .box text {
+  font: 9px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.architecture .ball {
+  fill: var(--accent);
+}
+
+.app svg.architecture .ball.test {
+  fill: var(--accent-soft);
+}
+
+.app svg.architecture .link {
+  fill: none;
+  stroke: var(--accent-soft);
+  opacity: 0.45;
+}
+
+.app svg.architecture .link.type-only {
+  stroke-dasharray: 4 3;
+}
+
+.app svg.architecture marker path {
+  fill: var(--accent-soft);
+}
+
+.app svg.sparks {
+  display: block;
+  width: 100%;
+  height: 3.2rem;
+  cursor: pointer;
+}
+
+.app svg.sparks polyline {
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.app svg.sparks .files {
+  stroke: var(--accent);
+  fill: var(--accent);
+}
+
+.app svg.sparks .crossing {
+  stroke: var(--accent-soft);
+  fill: var(--accent-soft);
+}
+
+.app svg.sparks text {
+  stroke: none;
+  font: 9px var(--mono);
+}
+
+.app svg.sparks .cycle {
+  fill: var(--warn);
+  opacity: 0.18;
+}
+
+.app svg.sparks .now {
+  stroke: var(--ink);
+  stroke-width: 1;
+}

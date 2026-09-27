@@ -51,4 +51,8 @@ Two labs I set, which are just as much things to play: they live under
 - [Sixty-four rooms](/teaching/adventure/) -- the text adventure of a first-year course, 2007, playable.
 - [The fishing lagoon](/teaching/fishing-lagoon/) -- a commons whose fish breed if left alone, 2018. Seat your own bot.
 
+## And the site itself
+
+- [How this site is built](/projects/architecture/) -- its source as boxes and arrows, commit by commit: the program an AI wrote, and the rules it is held to. Play it, tangle it, untangle it.
+
 Use `ls` to see them all, or `cat next-word` to read one here.

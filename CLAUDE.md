@@ -32,6 +32,10 @@ traced, write the weaker sentence.
   changed, and never fails (`--year 2024` asks again, `--only no2` picks one)
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
+- `node tools/architecture-history.mjs` — read the source at every commit
+  that changed it into `public/data/architecture.json`, the history the
+  architecture page plays; run it after committing, since a build checks out
+  one commit and cannot see the others
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs
   running on their pages into `public/projects/shots/`, for the cards; needs
   `npm run dev` running (`SITE=` if it is not on 5173)
