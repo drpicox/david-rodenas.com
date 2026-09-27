@@ -1,21 +1,22 @@
-import { readFileSync } from "node:fs";
-import { readdirSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { boxCycles } from "./features/architecture/boxCycles";
+import { readGraph } from "./features/architecture/readGraph";
+import { readSources } from "./features/architecture/readSources";
+import { valueExportsOf } from "./features/architecture/valueExportsOf";
 
 const SRC = new URL(".", import.meta.url).pathname.replace(/\/$/, "");
 const ROOT = dirname(SRC);
 
-function filesIn(directory: string, keep: (name: string) => boolean): string[] {
-  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    const path = join(directory, entry.name);
-    if (entry.isDirectory()) return filesIn(path, keep);
-    return keep(entry.name) ? [path] : [];
-  });
-}
-
-const sources = filesIn(SRC, (name) => name.endsWith(".ts") && !name.endsWith(".d.ts"));
-const here = (path: string) => relative(ROOT, path);
+/** The source as the compiler reads it: the same graph the architecture page draws. */
+const every = readSources(SRC);
+const graph = readGraph(every);
+const textOf = new Map(every.map((source) => [source.path, source.text]));
+const sources = every.filter((source) => !source.path.endsWith(".test.ts")).map((source) => source.path);
+/** The shipped source only: a test may reach wherever it has to, and its arrows are not the architecture's. */
+const shipped = { modules: graph.modules.filter((module) => !module.test), dependencies: graph.dependencies.filter((dependency) => !dependency.from.endsWith(".test.ts")) };
+const importsOf = (file: string) => graph.dependencies.filter((dependency) => dependency.from === file).map((dependency) => dependency.to);
 
 /**
  * The file with its comments and its strings taken out, so that a page which
@@ -47,16 +48,6 @@ function code(text: string): string {
   return kept;
 }
 
-/** What a file imports, as the paths of the files it names. */
-function importsOf(file: string): string[] {
-  const text = readFileSync(file, "utf8");
-  const specifiers = [...text.matchAll(/from\s+"(\.[^"]*)"/g)].map((match) => match[1] ?? "");
-  return specifiers.flatMap((specifier) => {
-    const target = resolve(dirname(file), specifier);
-    return [`${target}.ts`, target].filter((candidate) => sources.includes(candidate)).slice(0, 1);
-  });
-}
-
 /**
  * These are claims about the site, not about taste. Each one, broken, breaks
  * something a reader would notice — a build that crashes in node, a frame that
@@ -66,44 +57,51 @@ describe("the shape of the source", () => {
   // The browser entry is a browser file by definition; it is the page's first line of script.
   // This file names the globals to look for, so it cannot be one of the files looked at.
   const BROWSER = /(^|\/)browser\//;
-  const EXEMPT = [join(SRC, "main.ts"), join(SRC, "architecture.test.ts")];
+  const EXEMPT = ["main.ts", "architecture.test.ts"];
   const GLOBALS = /\b(document|window|localStorage|sessionStorage|navigator)\b/;
 
   it("keeps the DOM inside folders named browser/", () => {
     const trespassing = sources
       .filter((file) => !BROWSER.test(file) && !EXEMPT.includes(file))
-      .filter((file) => GLOBALS.test(code(readFileSync(file, "utf8"))));
-    expect(trespassing.map(here)).toEqual([]);
+      .filter((file) => GLOBALS.test(code(textOf.get(file) ?? "")));
+    expect(trespassing).toEqual([]);
   });
 
   it("never lets the frame import a feature", () => {
-    const wrongWay = sources
-      .filter((file) => file.startsWith(join(SRC, "platform")))
-      .filter((file) => importsOf(file).some((target) => target.startsWith(join(SRC, "features"))));
-    expect(wrongWay.map(here)).toEqual([]);
+    const wrongWay = sources.filter((file) => file.startsWith("platform/")).filter((file) => importsOf(file).some((target) => target.startsWith("features/")));
+    expect(wrongWay).toEqual([]);
   });
 
   // This is the one that would actually crash: the build renders every page in node.
   it("keeps the whole build-time renderer clear of the browser", () => {
     const seen = new Set<string>();
-    const queue = [join(SRC, "platform/page/renderDocument.ts")];
+    const queue = ["platform/page/renderDocument.ts"];
     while (queue.length > 0) {
       const file = queue.pop();
       if (!file || seen.has(file)) continue;
       seen.add(file);
       queue.push(...importsOf(file));
     }
-    const wouldCrash = [...seen].filter((file) => BROWSER.test(file) || GLOBALS.test(code(readFileSync(file, "utf8"))));
-    expect(wouldCrash.map(here)).toEqual([]);
+    const wouldCrash = [...seen].filter((file) => BROWSER.test(file) || GLOBALS.test(code(textOf.get(file) ?? "")));
+    expect(wouldCrash).toEqual([]);
     expect(seen.size).toBeGreaterThan(5);
   });
 
   // The build loads the features for their stills, and a tool loads them for their sources.
   it("keeps every feature loadable in node: the browser's copy of the site is handed to a program, never imported", () => {
-    const reaching = sources
-      .filter((file) => file.startsWith(join(SRC, "features")))
-      .filter((file) => importsOf(file).some((target) => target.endsWith("platform/browser/siteInBrowser.ts")));
-    expect(reaching.map(here)).toEqual([]);
+    const reaching = sources.filter((file) => file.startsWith("features/")).filter((file) => importsOf(file).includes("platform/browser/siteInBrowser.ts"));
+    expect(reaching).toEqual([]);
+  });
+
+  // A circle between boxes cannot be drawn with its arrows pointing one way, and none of its boxes can be read without the others.
+  it("has no boxes that need each other round in a circle", () => {
+    expect(boxCycles(shipped)).toEqual([]);
+  });
+
+  // Its types may travel with it: an interface beside the function it describes is one thing, not two.
+  it("exports one value a file, and names the file after it", () => {
+    const crowded = sources.map((file) => ({ file, values: valueExportsOf(textOf.get(file) ?? "") })).filter(({ values }) => values.length > 1);
+    expect(crowded.map(({ file, values }) => `${file}: ${values.join(", ")}`)).toEqual([]);
   });
 
   it("installs every feature there is a folder for", () => {

@@ -1,4 +1,5 @@
-import { DAYS_PER_WEEK, HOURS_PER_DAY, type MeetingsParameters, type WorkHour } from "./simulateMeetings";
+import { WORK_WEEK } from "./WORK_WEEK";
+import type { MeetingsParameters, WorkHour } from "./simulateMeetings";
 
 export interface DaySummary {
   readonly productivity: number;
@@ -24,7 +25,7 @@ export interface MeetingsSummary {
 }
 
 function grid(): number[][] {
-  return Array.from({ length: HOURS_PER_DAY }, () => new Array<number>(DAYS_PER_WEEK).fill(0));
+  return Array.from({ length: WORK_WEEK.hoursADay }, () => new Array<number>(WORK_WEEK.days).fill(0));
 }
 
 function bump(cells: number[][], { hour, day }: WorkHour, amount: number): void {
@@ -43,7 +44,7 @@ export function summariseMeetings(
   const totalFeatures = completed + Math.round((10 * carried) / featureSize) / 10;
   const totalProductivity = completed * featureSize + carried;
 
-  const days = Array.from({ length: DAYS_PER_WEEK }, () => ({ productivity: 0, features: 0, meetings: 0 }));
+  const days = Array.from({ length: WORK_WEEK.days }, () => ({ productivity: 0, features: 0, meetings: 0 }));
   const sums: HourGrids = { focus: grid(), fatigue: grid(), productivity: grid(), features: grid() };
 
   for (const hour of hours) {

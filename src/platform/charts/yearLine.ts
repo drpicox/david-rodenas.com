@@ -1,5 +1,6 @@
 import type { YearBar, YearBarsOptions } from "./yearBars";
-import { fixed, yearFrame } from "./yearFrame";
+import { yearFrame } from "./yearFrame";
+import { fixed } from "./fixed";
 
 /**
  * A dot a year, joined where the years are neighbours. For a figure such as a

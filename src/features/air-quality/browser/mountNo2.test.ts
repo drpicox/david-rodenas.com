@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { aStation, flatSums } from "../aStation";
+import { aStation } from "../aStation";
+import { flatSums } from "../flatSums";
 import { mountNo2 } from "./mountNo2";
 
 const station = aStation({

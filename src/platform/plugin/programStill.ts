@@ -1,6 +1,6 @@
-import type { Still } from "../plugin/Feature";
-import { initialValues } from "./initialValues";
-import type { Program } from "./Program";
+import type { Still } from "./Feature";
+import { initialValues } from "../program/initialValues";
+import type { Program } from "../program/Program";
 
 /**
  * A program before any script runs: the line that asks for it, and what that

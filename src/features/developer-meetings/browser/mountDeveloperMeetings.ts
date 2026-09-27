@@ -1,6 +1,5 @@
+import { WORK_WEEK } from "../WORK_WEEK";
 import {
-  DAYS_PER_WEEK,
-  HOURS_PER_DAY,
   simulateMeetings,
   type MeetingType,
 } from "../simulateMeetings";
@@ -9,7 +8,7 @@ import { barChart } from "../../../platform/charts/barChart";
 import { el } from "../../../platform/browser/el";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-const HOURS = Array.from({ length: HOURS_PER_DAY }, (_, hour) => `${9 + hour}:00`);
+const HOURS = Array.from({ length: WORK_WEEK.hoursADay }, (_, hour) => `${9 + hour}:00`);
 
 /** The feature-size slider is straight up to 500, then coarser, so both a task and an epic fit on it. */
 function sliderToFeatureSize(value: number): number {
@@ -50,7 +49,7 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
     "😴 Boring": { focus: -50, fatigue: -25 },
   };
   const calendar: Record<string, string> = {};
-  for (let day = 0; day < DAYS_PER_WEEK; day += 1) calendar[`${day}-3`] = "🍽️ Lunch";
+  for (let day = 0; day < WORK_WEEK.days; day += 1) calendar[`${day}-3`] = "🍽️ Lunch";
 
   let painting = "🏃 Sprint plan";
   let baseline: { summary: MeetingsSummary; weeks: number } | null = null;
@@ -145,7 +144,7 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
     week.replaceChildren(el("span"), ...DAYS.map((day) => el("span", { class: "head" }, day)));
     HOURS.forEach((label, hour) => {
       week.append(el("span", { class: "hour" }, label));
-      for (let day = 0; day < DAYS_PER_WEEK; day += 1) {
+      for (let day = 0; day < WORK_WEEK.days; day += 1) {
         const key = `${day}-${hour}`;
         const meeting = calendar[key];
         week.append(
@@ -187,7 +186,7 @@ export function mountDeveloperMeetings(host: HTMLElement): void {
     drawWeek();
     const hours = simulateMeetings({ ...parameters, calendar, meetingTypes });
     const summary = summariseMeetings(hours, parameters);
-    const totalHours = parameters.weeks * DAYS_PER_WEEK * HOURS_PER_DAY;
+    const totalHours = parameters.weeks * WORK_WEEK.days * WORK_WEEK.hoursADay;
 
     figures.replaceChildren(
       el("div", { class: "clean" }, el("strong", {}, summary.totalFeatures.toFixed(1)), "features finished"),

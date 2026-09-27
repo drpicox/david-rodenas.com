@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { icosahedron, positionOf, subdivide, type Mesh } from "./icosphere";
+import { icosahedron } from "./icosahedron";
+import type { Mesh } from "./Mesh";
+import { positionOf } from "./positionOf";
+import { subdivide } from "./subdivide";
 
 const flat = () => 0;
 

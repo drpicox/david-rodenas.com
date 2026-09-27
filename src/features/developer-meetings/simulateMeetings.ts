@@ -1,3 +1,4 @@
+import { WORK_WEEK } from "./WORK_WEEK";
 export interface MeetingType {
   /** Added to the hour's focus when this meeting happens; usually negative. */
   readonly focus: number;
@@ -32,9 +33,6 @@ export interface WorkHour {
   readonly featureCompleted: boolean;
 }
 
-export const DAYS_PER_WEEK = 5;
-export const HOURS_PER_DAY = 8;
-
 const clamp = (value: number): number => Math.max(0, Math.min(100, value));
 
 /**
@@ -51,11 +49,11 @@ export function simulateMeetings(parameters: MeetingsParameters): WorkHour[] {
   let completedFeatures = 0;
 
   for (let week = 0; week < weeks; week += 1) {
-    for (let day = 0; day < DAYS_PER_WEEK; day += 1) {
+    for (let day = 0; day < WORK_WEEK.days; day += 1) {
       let hourFocus = 0;
       let hourFatigue = 0;
 
-      for (let hour = 0; hour < HOURS_PER_DAY; hour += 1) {
+      for (let hour = 0; hour < WORK_WEEK.hoursADay; hour += 1) {
         const meeting = meetingTypes[calendar[`${day}-${hour}`] ?? ""];
         if (meeting) {
           hourFocus = clamp(hourFocus + meeting.focus);

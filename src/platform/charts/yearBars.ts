@@ -1,4 +1,5 @@
-import { fixed, yearFrame, type YearSpan } from "./yearFrame";
+import { yearFrame, type YearSpan } from "./yearFrame";
+import { fixed } from "./fixed";
 
 export interface YearBar {
   readonly year: number;

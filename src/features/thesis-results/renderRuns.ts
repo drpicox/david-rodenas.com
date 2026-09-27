@@ -1,4 +1,5 @@
-import { machines, type Run } from "./graphMatchingRuns";
+import { type Run } from "./graphMatchingRuns";
+import { machines } from "./machines";
 
 const NAMES = { pairs: (graphs: number) => `Matching every pair of ${graphs} graphs`, "common-labelling": (graphs: number) => `Finding one labelling common to ${graphs} graphs` };
 

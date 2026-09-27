@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aStation, flatSums } from "./aStation";
+import { aStation } from "./aStation";
+import { flatSums } from "./flatSums";
 import { no2Grid } from "./no2Grid";
 import { renderNo2Heatmap } from "./renderNo2Heatmap";
 

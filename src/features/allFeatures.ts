@@ -1,4 +1,5 @@
 import type { Feature } from "../platform/plugin/Feature";
+import { architectureFeature } from "./architecture/architectureFeature";
 import { adventureFeature } from "./adventure/adventureFeature";
 import { airQualityFeature } from "./air-quality/airQualityFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
@@ -47,4 +48,5 @@ export const allFeatures: readonly Feature[] = [
   firstNetworkFeature,
   fibergochiFeature,
   portfolioFeature,
+  architectureFeature,
 ];

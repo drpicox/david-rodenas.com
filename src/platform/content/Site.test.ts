@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "./Site";
-import { nameOf, parentOf, routeOf } from "./routeOf";
+import { routeOf } from "./routeOf";
+import { nameOf } from "./nameOf";
+import { parentOf } from "./parentOf";
 
 describe("routeOf", () => {
   it("puts the root index at the root", () => {

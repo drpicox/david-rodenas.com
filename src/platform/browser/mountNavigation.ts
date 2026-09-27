@@ -1,6 +1,7 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
-import { APPEARANCE, declaredAppearance } from "../page/declaredAppearance";
+import { declaredAppearance } from "../page/declaredAppearance";
+import { APPEARANCE } from "../page/APPEARANCE";
 import { isHere } from "../page/isHere";
 import { renderMain } from "../page/renderMain";
 

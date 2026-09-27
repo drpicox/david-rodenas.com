@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { colourise, fractalise, sea, temperatures } from "./filters";
-import { generateWorld, PIPELINE } from "./generateWorld";
-import { latitudeOfVertex, type World } from "./World";
+import { colourise } from "./filters/colourise";
+import { fractalise } from "./filters/fractalise";
+import { sea } from "./filters/sea";
+import { temperatures } from "./filters/temperatures";
+import { generateWorld } from "./generateWorld";
+import { PIPELINE } from "./PIPELINE";
+import { latitudeOfVertex } from "./latitudeOfVertex";
+import type { World } from "./World";
 
 /** Mean warmth of the corners whose latitude falls in a band. */
 function warmthNear(world: World, latitude: number): number {

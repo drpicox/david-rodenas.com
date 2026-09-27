@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { aProgram } from "./aProgram";
+import { aProgram } from "../program/aProgram";
 import { programStill } from "./programStill";
 
 describe("a program before any script runs", () => {

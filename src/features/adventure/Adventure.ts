@@ -1,10 +1,10 @@
-import { items, monsters, rooms } from "./englishWorld";
+import { englishWorld } from "./englishWorld";
 import type { Item, Monster, Room } from "./World";
+
+const { items, monsters, rooms } = englishWorld;
 
 export type Direction = "norte" | "sur" | "este" | "oeste";
 const DIRECTIONS: readonly Direction[] = ["norte", "sur", "este", "oeste"];
-/** The directions as they are said to the player. */
-export const DIRECTION_NAMES: Readonly<Record<Direction, string>> = { norte: "north", sur: "south", este: "east", oeste: "west" };
 const STEP: Readonly<Record<Direction, readonly [number, number]>> = { norte: [1, 0], sur: [-1, 0], este: [0, 1], oeste: [0, -1] };
 
 /** What the room holds now: an item, a monster, or nothing. */
@@ -30,7 +30,8 @@ export interface Seen {
   readonly key?: string;
 }
 
-export const LIFE = 16;
+/** What the player starts with, and the most food can bring them back to. */
+const LIFE = 16;
 const START: readonly [number, number] = [0, 0];
 const GOAL: readonly [number, number] = [1, 0];
 

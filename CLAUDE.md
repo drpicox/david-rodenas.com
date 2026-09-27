@@ -64,7 +64,7 @@ The top level says what this is: a frame, and the features standing in it.
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,
-  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`. A feature owns everything about itself: its rules,
+  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.
@@ -80,7 +80,14 @@ talk to each other.
 
 - **TDD, the whole cycle.** Red, green, refactor. The refactor is not optional.
 - **One export per file, and the file is named after it.** A file that needs a
-  second export usually wanted to be two files.
+  second export usually wanted to be two files. It counts values — functions,
+  classes, constants — and a value's own types may travel with it. Things that
+  only make sense together are one value: `WORK_WEEK`, `englishWorld`,
+  `headerWorld`. `architecture.test.ts` counts them.
+- **No two boxes need each other round in a circle.** A box is a folder of
+  `src/platform/` or a feature; a circle between boxes cannot be drawn with its
+  arrows pointing one way. The graph is read by the compiler, in
+  `features/architecture/`, and the same test checks it.
 - **A folder named `browser/` is the only place the DOM exists.** Everywhere
   else is plain node, and is tested there. This is what lets the same code
   render pages at build time and answer commands in the browser, and it is the

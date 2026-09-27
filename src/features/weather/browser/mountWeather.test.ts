@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { aWeatherStation, steadyYear } from "../aWeatherStation";
+import { aWeatherStation } from "../aWeatherStation";
+import { steadyYear } from "../steadyYear";
 import { mountWeather } from "./mountWeather";
 
 const station = aWeatherStation({ "2022": steadyYear(2022, 21), "2023": steadyYear(2023, 21), "2024": steadyYear(2024, 26), "2025": steadyYear(2025, 26) });

@@ -3,7 +3,7 @@ import { SphereRaster } from "../SphereRaster";
 import type { World } from "../World";
 import { HEADER_RECIPE, type WorldRecipe } from "../WorldRecipe";
 import { el } from "../../../platform/browser/el";
-import { forgetHeaderWorld, rememberHeaderWorld, savedHeaderWorld } from "./headerWorld";
+import { headerWorld } from "./headerWorld";
 import { turning } from "../turning";
 import { spinPlanet } from "./spinPlanet";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
@@ -47,7 +47,7 @@ export function mountWorlds(host: HTMLElement): () => void {
 
   const grow = () => {
     world = growWorld(dials);
-    const kept = savedHeaderWorld();
+    const kept = headerWorld.saved();
     caption.textContent =
       `World ${dials.seed}: ${world.mesh.faceCount.toLocaleString("en")} triangles. ` +
       (kept
@@ -61,7 +61,7 @@ export function mountWorlds(host: HTMLElement): () => void {
   const toHeader = el("button", {
     type: "button",
     onclick: () => {
-      rememberHeaderWorld({ ...dials });
+      headerWorld.remember({ ...dials });
       if (headerMark) spinPlanet(headerMark, { ...dials });
       grow();
     },
@@ -70,7 +70,7 @@ export function mountWorlds(host: HTMLElement): () => void {
     type: "button",
     hidden: true,
     onclick: () => {
-      forgetHeaderWorld();
+      headerWorld.forget();
       if (headerMark) spinPlanet(headerMark);
       grow();
     },

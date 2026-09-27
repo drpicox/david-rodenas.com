@@ -1,5 +1,7 @@
-import { items as spanishItems, monsters as spanishMonsters, rooms as spanishRooms } from "./originalWorld";
-import type { Item, Monster, Room } from "./World";
+import { originalWorld } from "./originalWorld";
+
+const { items: spanishItems, monsters: spanishMonsters, rooms: spanishRooms } = originalWorld;
+import type { Item, Monster, Room, World } from "./World";
 
 /**
  * The same world in English: every name and every description translated,
@@ -171,11 +173,14 @@ const TEXTS: Readonly<Record<string, string>> = {
 
 const translate = (table: Readonly<Record<string, string>>, name: string) => table[name] ?? name;
 
-export const items: readonly Item[] = spanishItems.map((item) => ({ ...item, name: translate(ITEM_NAMES, item.name) }));
-export const monsters: readonly Monster[] = spanishMonsters.map((monster) => ({ ...monster, name: translate(MONSTER_NAMES, monster.name), drops: translate(ITEM_NAMES, monster.drops) }));
-export const rooms: Readonly<Record<string, Room>> = Object.fromEntries(
+const items: readonly Item[] = spanishItems.map((item) => ({ ...item, name: translate(ITEM_NAMES, item.name) }));
+const monsters: readonly Monster[] = spanishMonsters.map((monster) => ({ ...monster, name: translate(MONSTER_NAMES, monster.name), drops: translate(ITEM_NAMES, monster.drops) }));
+const rooms: Readonly<Record<string, Room>> = Object.fromEntries(
   Object.entries(spanishRooms).map(([where, room]) => [
     where,
     { ...room, name: translate(ROOM_NAMES, room.name), holds: translate(ITEM_NAMES, translate(MONSTER_NAMES, room.holds)), text: TEXTS[where] ?? room.text },
   ]),
 );
+
+/** The same world with its names and its words in English: the one the page plays. */
+export const englishWorld: World = { items, monsters, rooms };

@@ -1,4 +1,4 @@
-import { programStill } from "../program/programStill";
+import { programStill } from "./programStill";
 import type { Feature, Still } from "./Feature";
 
 /** Every still the features bring, and one for each program that has none drawn by hand. Runs in node, for the build. */

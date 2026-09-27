@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aWeatherStation, steadyYear } from "./aWeatherStation";
+import { aWeatherStation } from "./aWeatherStation";
+import { steadyYear } from "./steadyYear";
 import { renderWeatherFigure } from "./renderWeatherFigure";
 
 const ALL = Array.from({ length: 12 }, (_, month) => month);

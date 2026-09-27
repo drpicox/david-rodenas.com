@@ -1,9 +1,10 @@
 import { niceTicks } from "./niceTicks";
-import { chartFrame, type ChartLabels, type Series } from "./lineChart";
+import { CHART } from "./CHART";
+import type { ChartLabels } from "./ChartLabels";
+import { chartFrame } from "./chartFrame";
+import type { Series } from "./Series";
 
-const W = 480;
-const H = 240;
-const PAD = { top: 10, right: 10, bottom: 34, left: 36 };
+const { width: W, height: H, pad: PAD } = CHART;
 
 /** Grouped bars, one group per x, as inline SVG markup. */
 export function barChart(series: readonly Series[], labels: ChartLabels, categories?: readonly string[]): string {

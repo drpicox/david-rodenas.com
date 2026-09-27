@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aStation, flatSums } from "./aStation";
+import { aStation } from "./aStation";
+import { flatSums } from "./flatSums";
 import { renderNo2Figure } from "./renderNo2Figure";
 
 const station = aStation({

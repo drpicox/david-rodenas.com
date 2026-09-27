@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aStation, flatSums } from "./aStation";
+import { aStation } from "./aStation";
+import { flatSums } from "./flatSums";
 import { no2AnnualMeans } from "./no2AnnualMeans";
 
 describe("the mean of each year", () => {

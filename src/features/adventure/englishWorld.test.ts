@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { items, monsters, rooms } from "./englishWorld";
-import { rooms as spanish } from "./originalWorld";
+import { englishWorld } from "./englishWorld";
+import { originalWorld } from "./originalWorld";
+
+const { items, monsters, rooms } = englishWorld;
+const spanish = originalWorld.rooms;
 
 describe("the world in English", () => {
   it("names everything, and every room's contents still name an item or a monster", () => {

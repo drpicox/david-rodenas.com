@@ -1,4 +1,7 @@
-import { colourise, fractalise, sea, temperatures } from "./filters";
+import { colourise } from "./filters/colourise";
+import { fractalise } from "./filters/fractalise";
+import { sea } from "./filters/sea";
+import { temperatures } from "./filters/temperatures";
 import { generateWorld } from "./generateWorld";
 import type { World } from "./World";
 import type { WorldRecipe } from "./WorldRecipe";

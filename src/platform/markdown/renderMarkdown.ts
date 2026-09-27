@@ -3,6 +3,7 @@ import { renderMath } from "./renderMath";
 import { highlight } from "./highlight";
 import { renderBars } from "./renderBars";
 import { renderInline } from "./renderInline";
+import { slugOf } from "./slugOf";
 
 /**
  * A block is a run of lines that becomes one element. Splitting on blank lines
@@ -43,16 +44,6 @@ function blocksOf(markdown: string): string[][] {
   });
   if (current.length) blocks.push(current);
   return blocks;
-}
-
-/** `## Title` becomes an `h2` with an id, so a link can point at it. */
-export function slugOf(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 }
 
 /** A heading is one line, unless every line but the last asks for a break: then it is one heading, broken where it says. */

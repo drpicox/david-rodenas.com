@@ -54,6 +54,7 @@ graph LR
     lagoon["<b>lagoon</b><br/>a commons that breeds, the bots<br/>that share it, and a seat for yours"]
     maze["<b>maze</b><br/>the VRML maze generator of 2001,<br/>its dig and its spheres, Java's random"]
     firstnetwork["<b>first-network</b><br/>letters told apart by backpropagation,<br/>the visitor's own among them"]
+    architecture["<b>architecture</b><br/>the source read as a graph:<br/>boxes, arrows, and the rules on them"]
     portfolio["<b>portfolio</b><br/>a flag: the lists with pictures<br/>as cards the width of a program"]
     fibergochi["<b>fibergochi</b><br/>the student pet of 1999, its rules<br/>and its drawings, kept in the browser"]
     adventure["<b>adventure</b><br/>the text adventure of a first-year lab,<br/>sixty-four rooms, playable"]

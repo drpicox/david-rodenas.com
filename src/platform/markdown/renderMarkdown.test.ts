@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { renderMarkdown, slugOf } from "./renderMarkdown";
+import { renderMarkdown } from "./renderMarkdown";
+import { slugOf } from "./slugOf";
 
 describe("slugOf", () => {
   it("makes an id a link can point at", () => {

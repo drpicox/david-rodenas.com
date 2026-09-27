@@ -15,6 +15,13 @@ export interface Monster {
   readonly drops: string;
 }
 
+/** Everything a game is played in: what can be carried, what can be fought, and the sixty-four rooms by where they are. */
+export interface World {
+  readonly items: readonly Item[];
+  readonly monsters: readonly Monster[];
+  readonly rooms: Readonly<Record<string, Room>>;
+}
+
 export interface Room {
   readonly name: string;
   /** North, south, east, west: -1 a wall, 0 open, otherwise the key that opens it. */

@@ -1,3 +1,4 @@
+import { fixed } from "./fixed";
 import { niceTicks } from "./niceTicks";
 
 const W = 720;
@@ -26,8 +27,6 @@ export interface YearFrame {
   /** The finished SVG around whatever marks it is given. */
   wrap(label: string, marks: string): string;
 }
-
-export const fixed = (value: number) => value.toFixed(1);
 
 /**
  * The part every chart of years has in common: a true time axis — a year with

@@ -19,6 +19,3 @@ export function declaredAppearance(page: Page): Record<string, string> {
   if (sky) declared["data-sky"] = sky;
   return declared;
 }
-
-/** Every attribute the above can write, so that whoever moves between pages can clear the rest. */
-export const APPEARANCE = ["data-page-theme", "data-sky"] as const;

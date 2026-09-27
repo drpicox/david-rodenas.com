@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { aWeatherStation, steadyYear } from "./aWeatherStation";
+import { aWeatherStation } from "./aWeatherStation";
+import { steadyYear } from "./steadyYear";
 import { daysPerYear } from "./daysPerYear";
 import { renderDaysCalendar } from "./renderDaysCalendar";
 

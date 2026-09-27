@@ -1,4 +1,4 @@
-import type { Item, Monster, Room } from "./World";
+import type { Item, Monster, Room, World } from "./World";
 
 /**
  * The world of the 2007 adventure, word for word: the three text files the C
@@ -12,7 +12,7 @@ import type { Item, Monster, Room } from "./World";
  * the key it drops — was never there and the game could not be finished.
  * Here the gnome is on its bridge.
  */
-export const items: readonly Item[] = [
+const items: readonly Item[] = [
   {
     "name": "llave de laton",
     "kind": "key",
@@ -135,7 +135,7 @@ export const items: readonly Item[] = [
   }
 ];
 
-export const monsters: readonly Monster[] = [
+const monsters: readonly Monster[] = [
   {
     "name": "mosca acida",
     "attack": 4,
@@ -271,7 +271,7 @@ export const monsters: readonly Monster[] = [
 ];
 
 /** By "i,j". An exit is -1 for a wall, 0 for open, and otherwise the value of the key that opens it. */
-export const rooms: Readonly<Record<string, Room>> = {
+const rooms: Readonly<Record<string, Room>> = {
   "0,0": {
     "name": "Bienvenida",
     "exits": [
@@ -977,3 +977,6 @@ export const rooms: Readonly<Record<string, Room>> = {
     "text": "El bosque se extiende oscuro y misterioso. La luz se desdibuja a\ntraves de las hojas. Se escuchan los ruidos de los animales y\nsus otros habitantes."
   }
 };
+
+/** The world as the lab of 2007 wrote it, in Spanish, word for word. */
+export const originalWorld: World = { items, monsters, rooms };

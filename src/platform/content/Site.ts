@@ -1,6 +1,8 @@
 import type { Page, Source } from "./Page";
 import { parseFrontMatter } from "./parseFrontMatter";
-import { nameOf, parentOf, routeOf } from "./routeOf";
+import { routeOf } from "./routeOf";
+import { nameOf } from "./nameOf";
+import { parentOf } from "./parentOf";
 
 function pageOf(source: Source): Page {
   const { fields, body } = parseFrontMatter(source.markdown);
