@@ -23,7 +23,7 @@ const WIDTH = 1200;
 
 /** What to photograph: the program's place on its page, from its top, at a card's proportions. */
 const SHOTS = [
-  { name: "rocket", route: "/projects/rocinante/", selector: '.app[data-app="rocket"] canvas' },
+  { name: "architecture", route: "/projects/architecture/", selector: '.app[data-app="architecture"] canvas' },
   { name: "fish-market", route: "/projects/fish-market/", selector: '.app[data-app="fish-market"]' },
   { name: "letters", route: "/projects/first-network/", selector: '.app[data-app="letters"]' },
   { name: "fibergochi", route: "/projects/fibergochi/", selector: '.app[data-app="fibergochi"]' },

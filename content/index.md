@@ -44,7 +44,7 @@ longest:
 
 ## More to run
 
-- ![The near stars, with the trip to Proxima Centauri drawn](/projects/shots/rocket.jpg "card") [A relativistic rocket](/projects/rocinante/)  
+- ![The Rocinante Simulator: the inner solar system in three dimensions, and the ship's dials](/rocinante-simulator.jpg "card") [A relativistic rocket](/projects/rocinante/)  
   Both clocks, the ship's and home's, and the fuel.
 
 - ![The auction floor: five buyers and a box of prawns](/projects/shots/fish-market.jpg "card") [The agent that won the fish auction](/projects/fish-market/)  
@@ -53,11 +53,11 @@ longest:
 - ![The Fibergochi, a stick figure in a yellow egg](/projects/shots/fibergochi.jpg "card") [The Fibergochi](/projects/fibergochi/)  
   A student kept like a Tamagotchi, 1999. Playable.
 
-- ![A letter A drawn on a grid, and the network reading it](/projects/shots/letters.jpg "card") [The first network](/projects/first-network/)  
+- ![A letter A drawn on a grid, and the network reading it](/projects/shots/letters.jpg "card") [My first neural network](/projects/first-network/)  
   Letters told apart by backpropagation, first written in C in 1994. Draw your own.
 
-- ![The map of the adventure beside its first room](/projects/shots/adventure.jpg "card") [Sixty-four rooms](/teaching/adventure/)  
-  A text adventure from a first-year course.
+- ![The source of this site as boxes and arrows, the features above the frame they stand on](/projects/shots/architecture.jpg "card") [How this site is built](/projects/architecture/)  
+  Its source as boxes and arrows, commit by commit: the program an AI wrote, and the rules it is held to.
 
 - ![A fractal planet of seas, land and snow](/projects/shots/worlds.jpg "card") [The planet in the header](/projects/worlds/)  
   Grown as this page opened, by a program I wrote in 2000. Reload for another.

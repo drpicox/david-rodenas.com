@@ -2836,7 +2836,7 @@ main math[display="block"] {
   margin: 0 0.5em;
 }
 
-/* The first network: a grid to draw on, and what the network makes of it. */
+/* My first neural network: a grid to draw on, and what the network makes of it. */
 .app .letters {
   display: flex;
   flex-wrap: wrap;

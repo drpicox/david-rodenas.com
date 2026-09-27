@@ -1,10 +1,10 @@
 ---
-title: The first network
+title: My first neural network
 summary: A network that tells letters apart, taught by backpropagation, first written in C in 1994 and shown to my class on the PC I carried from home. Draw on its grid, and teach it letters of your own.
 order: 41
 ---
 
-# The first network
+# My first neural network
 
 In 1994, in my second year of BUP, I wrote a neural network in C that told
 two letters apart, drawn on a small grid. To learn how, I went to the
