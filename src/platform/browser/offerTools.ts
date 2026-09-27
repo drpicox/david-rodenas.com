@@ -18,6 +18,13 @@ export interface Surface {
   readonly run: (line: string) => Outcome[];
 }
 
+/**
+ * A refusal, said in words. Not thrown: Chrome answers a tool that throws with
+ * a message of its own that the invocation failed, and the reason — the one
+ * thing an agent needs to ask again better — is lost on the way.
+ */
+const refused = (reason: string) => `Refused, nothing was run: ${reason}`;
+
 /** The program's place on the page, going to the page that has it when this one does not. */
 function placeOf(name: string, { site, goTo }: Surface): HTMLElement | null {
   const selector = `.app[data-app="${name}"]`;
@@ -36,7 +43,7 @@ function programTool(program: Program, surface: Surface): Tool {
     annotations: { readOnlyHint: true },
     async execute(input) {
       const settled = settleValues(program, input);
-      if ("error" in settled) throw new Error(settled.error);
+      if ("error" in settled) return refused(settled.error);
       const answer = program.run(settled.values);
       show(program.name, settled.values, surface);
       return `${answer.text}\n\n${JSON.stringify(answer.data)}`;
@@ -62,8 +69,7 @@ function shellTool({ run, programs }: Surface): Tool {
     async execute(input) {
       const outcomes = run(String(input["line"] ?? ""));
       const said = outcomes.map(plainTextOf).filter(Boolean).join("\n\n");
-      if (outcomes.some((outcome) => outcome.error)) throw new Error(said);
-      return said;
+      return outcomes.some((outcome) => outcome.error) ? refused(said) : said;
     },
   };
 }

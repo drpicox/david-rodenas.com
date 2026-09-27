@@ -66,7 +66,7 @@ describe("the tools this site offers an agent in the reader's browser", () => {
 
   it("refuse what the program would refuse, and say why, without moving anything", async () => {
     const { tools, visited } = aBrowser();
-    await expect(tools.get("savings")!.execute({ rate: 99 })).rejects.toThrow("rate: 99 is outside 0 to 20");
+    expect(await tools.get("savings")!.execute({ rate: 99 })).toBe("Refused, nothing was run: rate: 99 is outside 0 to 20");
     expect(visited).toEqual([]);
   });
 

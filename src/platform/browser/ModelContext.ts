@@ -3,7 +3,7 @@ export interface Tool {
   readonly description: string;
   readonly inputSchema: object;
   readonly annotations?: { readonly readOnlyHint?: boolean };
-  /** Answers in words; a refusal is thrown, so the agent is told it failed and why. */
+  /** Answers in words, a refusal among them. */
   execute(input: Record<string, unknown>): Promise<string>;
 }
 
