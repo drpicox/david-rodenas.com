@@ -3219,3 +3219,8 @@ main li > img.card {
   font-weight: 600;
   margin-bottom: 0.2em;
 }
+
+/* On a card the title is a line of its own already; the break that puts the words under it in a list would leave a gap. */
+[data-flags~="portfolio"] main li > img.card + a + br {
+  display: none;
+}

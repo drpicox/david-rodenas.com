@@ -25,6 +25,7 @@ const WIDTH = 1200;
 const SHOTS = [
   { name: "rocket", route: "/projects/rocinante/", selector: '.app[data-app="rocket"] canvas' },
   { name: "fish-market", route: "/projects/fish-market/", selector: '.app[data-app="fish-market"]' },
+  { name: "letters", route: "/projects/first-network/", selector: '.app[data-app="letters"]' },
   { name: "fibergochi", route: "/projects/fibergochi/", selector: '.app[data-app="fibergochi"]' },
   { name: "adventure", route: "/teaching/adventure/", selector: '.app[data-app="adventure"]' },
   { name: "worlds", route: "/projects/worlds/", selector: '.app[data-app="worlds"]' },
