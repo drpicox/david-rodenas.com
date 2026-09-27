@@ -668,6 +668,18 @@ a[target="_blank"]::after {
   opacity: 0.7;
 }
 
+/* A reference, [1, 2], is known to lead to an essay; a row of arrows would outnumber it. */
+a.ref::after {
+  content: none;
+}
+
+/* A quote under a point says what the point looks like: the voice of a quote, the size of the words. */
+p:has(> strong:first-child) + blockquote {
+  margin: -0.2em 0 1.6em 1.2em;
+  font-size: 1.12rem;
+  line-height: 1.5;
+}
+
 hr {
   border: 0;
   border-top: 1px solid var(--rule);
@@ -3517,10 +3529,12 @@ main li > img.card {
   fill: var(--hl-string);
 }
 
-/* ---- the post is the test: each sentence a step, and the tests it becomes ---- */
+/* ---- a sentence is a step: each one named by its words, and the tests a post becomes ---- */
 
 .app textarea.step-post,
-.app pre.step-post {
+.app pre.step-post,
+.app textarea.genie-source,
+.app pre.genie-source {
   display: block;
   box-sizing: border-box;
   width: 100%;
@@ -3793,4 +3807,108 @@ main li > img.card {
   display: block;
   font: 0.75rem var(--mono);
   color: var(--warn);
+}
+
+/* ---- small steps: a row that fills, a red put right at once ---- */
+
+/* It stands in the text, as wide as the words, not out in a program's width; its button beside it. */
+.app[data-app="small-steps"] {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  width: auto;
+  margin: 0.2em 0 1.6em;
+}
+
+.app .small-steps-row {
+  flex: 1;
+  min-width: 0;
+}
+
+/* One row, however many steps: they share the width. */
+.app .small-steps {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app .small-steps li {
+  height: 0.9rem;
+  border-radius: 2px;
+  background: var(--hl-string);
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.app .small-steps li.red {
+  background: var(--warn);
+}
+
+.app .small-steps li.clean {
+  background: color-mix(in srgb, var(--hl-string) 55%, var(--paper));
+}
+
+.app .small-steps li.empty {
+  opacity: 0.12;
+}
+
+/* ---- Gherkin Genie: a scenario, the steps it wishes for, and the run ---- */
+
+.app .genie {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: 0.8em 1.2em;
+  align-items: start;
+}
+
+/* The files are code, read from the left, whatever the figure around them does. */
+.app .genie .genie-source {
+  margin: 0 0 0.8em;
+  font-size: 0.78rem;
+  text-align: left;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.app .genie-output {
+  text-align: left;
+}
+
+.app .genie-output .kata-bar {
+  margin-top: 0;
+}
+
+.app pre.genie-wished {
+  margin: 0;
+}
+
+/* ---- the player: pause what moves, go on, or play it again ---- */
+
+.app button.player {
+  flex: none;
+  width: 1.8em;
+  height: 1.8em;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dim);
+  font: 0.75rem var(--mono);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.app button.player:hover,
+.app button.player:focus-visible {
+  color: var(--ink);
+  border-color: var(--dim);
+}
+
+/* ---- a list of points, each a bold line: room before the next, so each one reads as one ---- */
+
+main p:has(> strong:first-child):not(h2 + p) {
+  margin-top: 2.4em;
 }

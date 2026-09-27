@@ -73,10 +73,13 @@ The top level says what this is: a frame, and the features standing in it.
     `Program`
   - `testing/` — a test file run in the page the way Jest would run it, with
     its messages, for the examples that are about tests
+  - `browser/mountPlayer` — how anything that moves is played: only on screen,
+    with a button to pause it, resting on its last frame, never for a reader
+    who asked for less motion
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,
-  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`, `adventure/`, `post-tests/`, `thesis-results/`, `step-names/`, `bowling-kata/`, `tests-as-examples/`. A feature owns everything about itself: its rules,
+  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`, `adventure/`, `post-tests/`, `thesis-results/`, `step-names/`, `bowling-kata/`, `tests-as-examples/`, `gherkin-genie/`, `small-steps/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.

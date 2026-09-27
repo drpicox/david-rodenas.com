@@ -1,10 +1,16 @@
 import { escapeHtml } from "./escapeHtml";
 
-/** A link that leaves the site opens in its own tab, and says so to robots. */
+/**
+ * A link that leaves the site opens in its own tab, and says so to robots. A
+ * link numbered like a footnote is a reference, and the stylesheet lets it go
+ * without the arrow that every other leaving link wears: a row of them would
+ * be more arrows than numbers.
+ */
 function anchor(label: string, href: string): string {
   const external = /^https?:/.test(href);
   const rel = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-  return `<a href="${escapeHtml(href)}"${rel}>${label}</a>`;
+  const ref = /^\d+$/.test(label) ? ' class="ref"' : "";
+  return `<a href="${escapeHtml(href)}"${rel}${ref}>${label}</a>`;
 }
 
 const SIZES = ["large", "wide", "card"];
@@ -25,11 +31,12 @@ function image(alt: string, src: string, title?: string): string {
  * The three things that have to be taken in one piece, in the order they win.
  * A code span beats both, because nothing inside one is markup any more; an
  * image beats a link, because a link is what is left of an image once the `!`
- * is gone.
+ * is gone. A link's label holds no bracket, so that links can be listed
+ * inside brackets of their own: `[[1](…), [2](…)]`.
  */
-const WHOLE = /(`[^`]+`|!\[[^\]]*\]\([^)\s]+(?:\s+"[^"]*")?\)|\[[^\]]+\]\([^)\s]+\))/g;
+const WHOLE = /(`[^`]+`|!\[[^\]]*\]\([^)\s]+(?:\s+"[^"]*")?\)|\[[^[\]]+\]\([^)\s]+\))/g;
 const IMAGE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)$/;
-const LINK = /^\[([^\]]+)\]\(([^)\s]+)\)$/;
+const LINK = /^\[([^[\]]+)\]\(([^)\s]+)\)$/;
 
 /**
  * First pass: the things that are one thing.

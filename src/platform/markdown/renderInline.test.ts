@@ -51,6 +51,15 @@ describe("renderInline", () => {
     );
   });
 
+  it("marks a link numbered like a footnote as a reference, which needs no arrow to say it leaves", () => {
+    expect(renderInline("[1](https://medium.com/p/a)")).toBe('<a href="https://medium.com/p/a" target="_blank" rel="noopener noreferrer" class="ref">1</a>');
+    expect(renderInline("[one](https://medium.com/p/a)")).not.toContain('class="ref"');
+  });
+
+  it("keeps a bracket out of a link's label, so links can be listed inside brackets", () => {
+    expect(renderInline("read [[1](/a/), [2](/b/)]")).toBe('read [<a href="/a/" class="ref">1</a>, <a href="/b/" class="ref">2</a>]');
+  });
+
   it("escapes an address once, not twice", () => {
     expect(renderInline("[q](https://example.com/?a=1&b=2)")).toContain('href="https://example.com/?a=1&amp;b=2"');
   });
