@@ -3641,8 +3641,39 @@ main li > img.card {
 
 .app .kata-nav {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.6em;
   margin-bottom: 0.8em;
+}
+
+/* At either end, the way that is not there looks it. */
+.app .kata-nav button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.app .kata-hint {
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+/* The way on, marked until it is taken: a slow breath, not a blink. */
+.app .kata-nav button.invite {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app .kata-nav button.invite {
+    animation: kata-invite 2.4s ease-in-out infinite;
+  }
+}
+
+@keyframes kata-invite {
+  50% {
+    box-shadow: 0 0 0 0.25em color-mix(in srgb, var(--accent) 30%, transparent);
+  }
 }
 
 .app .kata-move {

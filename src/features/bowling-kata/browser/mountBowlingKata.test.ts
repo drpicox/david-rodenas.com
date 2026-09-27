@@ -33,6 +33,15 @@ describe("the kata, walked in the page", () => {
     expect(host.querySelector(".kata-bar")?.textContent).toBe('Expected: "fail". Received: 300.');
   });
 
+  it("invites the reader in: says the commits can be clicked, and marks the way on until the first move", () => {
+    const host = mounted();
+    expect(host.querySelector(".kata-hint")?.textContent).toBe("click any commit, or use ← →");
+    const next = [...host.querySelectorAll("button")][1];
+    expect(next?.classList.contains("invite")).toBe(true);
+    next?.click();
+    expect(next?.classList.contains("invite")).toBe(false);
+  });
+
   it("walks with the arrow keys", () => {
     const host = mounted();
     host.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));

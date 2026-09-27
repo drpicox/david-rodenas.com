@@ -16,9 +16,12 @@ export function mountBowlingKata(host: HTMLElement): void {
   const strip = el("div");
   const step = el("div");
   const previous = el("button", { type: "button" }, "← previous");
-  const next = el("button", { type: "button" }, "next →");
+  // The way on is marked until the reader takes it, or any other step.
+  const next = el("button", { type: "button", class: "invite" }, "next →");
+  const hint = el("span", { class: "kata-hint" }, "click any commit, or use ← →");
 
   const show = (commit: number) => {
+    if (commit !== at) next.classList.remove("invite");
     at = Math.max(0, Math.min(LAST, commit));
     strip.innerHTML = renderKataStrip(KATA_STEPS, at);
     step.innerHTML = renderKataStep(KATA_STEPS[at]!, KATA_STEPS[at - 1]);
@@ -40,6 +43,6 @@ export function mountBowlingKata(host: HTMLElement): void {
     event.preventDefault();
   });
 
-  host.replaceChildren(el("div", { class: "kata" }, strip, el("div", { class: "kata-nav" }, previous, next), step));
+  host.replaceChildren(el("div", { class: "kata" }, strip, el("div", { class: "kata-nav" }, previous, next, hint), step));
   show(0);
 }
