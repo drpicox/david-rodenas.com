@@ -32,6 +32,9 @@ traced, write the weaker sentence.
   changed, and never fails (`--year 2024` asks again, `--only no2` picks one)
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
+- `node tools/shoot-projects.mjs [names...]` — photograph the programs
+  running on their pages into `public/projects/shots/`, for the cards; needs
+  `npm run dev` running (`SITE=` if it is not on 5173)
 - `node tools/write-favicon.mjs [seed]` — grow one still world into
   `public/favicon.png`, the icon a browser has before the script runs
 
@@ -58,7 +61,7 @@ The top level says what this is: a frame, and the features standing in it.
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `next-word/`,
-  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`. A feature owns everything about itself: its rules,
+  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.

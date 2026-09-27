@@ -7,12 +7,18 @@ function anchor(label: string, href: string): string {
   return `<a href="${escapeHtml(href)}"${rel}>${label}</a>`;
 }
 
-const SIZES = ["large", "wide"];
+const SIZES = ["large", "wide", "card"];
 
-/** The title of an image is where its size goes: `"large"` or `"wide"`. Any other title is left alone. */
+/**
+ * The title of an image is where its size goes: `"large"` or `"wide"`, or
+ * `"card"` for the picture a layout of cards shows beside an entry and the
+ * plain one does not. A card waits to be fetched until it is shown, so a
+ * reader who never sees it never downloads it. Any other title is left alone.
+ */
 function image(alt: string, src: string, title?: string): string {
   const size = title && SIZES.includes(title) ? ` class="${title}"` : "";
-  return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${size}>`;
+  const lazy = title === "card" ? ' loading="lazy"' : "";
+  return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${size}${lazy}>`;
 }
 
 /**

@@ -31,19 +31,19 @@ More than 250 on [Medium](https://drpicox.medium.com), one every Saturday
 since 2022, and not one missed. The most read, and two of the ones read
 longest:
 
-- [The JavaScript framework war is over](https://medium.com/p/bd110ddab732)
-- [Software Development Is A Beautiful Mess](https://drpicox.medium.com/software-development-is-a-beautiful-mess-45edab1fab73)
-- [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)
+- ![The cover of the essay](/essays/covers/framework-war.jpg "card") [The JavaScript framework war is over](https://medium.com/p/bd110ddab732)
+- ![The cover of the essay](/essays/covers/beautiful-mess.jpg "card") [Software Development Is A Beautiful Mess](https://drpicox.medium.com/software-development-is-a-beautiful-mess-45edab1fab73)
+- ![The cover of the essay](/essays/covers/scrum-vs-xp.jpg "card") [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)
 
 [All of them, by subject.](/essays/)
 
 ## More to run
 
-- [A relativistic rocket](/projects/rocinante/) -- both clocks, the ship's and home's, and the fuel.
-- [The agent that won the fish auction](/projects/fish-market/) -- December 2000. Seat your own.
-- [The Fibergochi](/projects/fibergochi/) -- a student kept like a Tamagotchi, 1999. Playable.
-- [Sixty-four rooms](/teaching/adventure/) -- a text adventure from a first-year course.
-- [The planet in the header](/projects/worlds/) -- grown as this page opened, by a program I wrote in 2000. Reload for another.
+- ![The near stars, with the trip to Proxima Centauri drawn](/projects/shots/rocket.jpg "card") [A relativistic rocket](/projects/rocinante/) -- both clocks, the ship's and home's, and the fuel.
+- ![The auction floor: five buyers and a box of prawns](/projects/shots/fish-market.jpg "card") [The agent that won the fish auction](/projects/fish-market/) -- December 2000. Seat your own.
+- ![The Fibergochi, a stick figure in a yellow egg](/projects/shots/fibergochi.jpg "card") [The Fibergochi](/projects/fibergochi/) -- a student kept like a Tamagotchi, 1999. Playable.
+- ![The map of the adventure beside its first room](/projects/shots/adventure.jpg "card") [Sixty-four rooms](/teaching/adventure/) -- a text adventure from a first-year course.
+- ![A fractal planet of seas, land and snow](/projects/shots/worlds.jpg "card") [The planet in the header](/projects/worlds/) -- grown as this page opened, by a program I wrote in 2000. Reload for another.
 
 [All of them.](/projects/)
 

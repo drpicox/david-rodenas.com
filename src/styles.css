@@ -3169,3 +3169,53 @@ main math[display="block"] {
   grid-template-columns: 1fr;
   margin-bottom: 0.4em;
 }
+
+/* ---- portfolio: a trial, off unless asked for ---- */
+
+/* A card's picture belongs to the card layout; the plain one is words. */
+main li > img.card {
+  display: none;
+}
+
+/* A list whose entries have pictures becomes cards, the width of a program. */
+[data-portfolio="on"] main ul:has(> li > img.card) {
+  --wide: min(60rem, 100vw - 2rem);
+  width: var(--wide);
+  margin: 1em 0 2em calc((100% - var(--wide)) / 2);
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+  gap: 1.2em;
+}
+
+[data-portfolio="on"] main ul:has(> li > img.card) > li {
+  margin: 0;
+  padding: 0 0.9em 0.9em;
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  overflow: hidden;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+[data-portfolio="on"] main ul:has(> li > img.card) > li::marker {
+  content: none;
+}
+
+[data-portfolio="on"] main li > img.card {
+  display: block;
+  width: calc(100% + 1.8em);
+  max-width: none;
+  margin: 0 -0.9em 0.7em;
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+  object-position: top;
+  border-bottom: 1px solid var(--rule);
+}
+
+[data-portfolio="on"] main li > img.card + a {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.2em;
+}
