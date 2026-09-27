@@ -1,18 +1,12 @@
 import type { Feature } from "../../platform/plugin/Feature";
-import { BrowserLayout } from "./browser/BrowserLayout";
-import { settleLayout } from "./browser/settleLayout";
-import { portfolioCommand } from "./portfolioCommand";
-
-const layout = new BrowserLayout();
 
 /**
  * A trial: the lists that have pictures, laid out as cards the width of a
- * program, with the picture above the words. Off unless asked for — by
- * `portfolio`, or by `?portfolio=on` in a link — and the choice is kept.
- * The pictures are in the HTML either way; only the layout changes.
+ * program, with the picture above the words. It is only a flag — `flags
+ * portfolio on`, or `?portfolio=on` in a link — and a stylesheet rule under
+ * `[data-flags~="portfolio"]`; the pictures are in the HTML either way.
  */
 export const portfolioFeature: Feature = {
   name: "portfolio",
-  commands: [portfolioCommand(layout)],
-  install: () => settleLayout(layout),
+  flags: [{ name: "portfolio", description: "the lists with pictures as cards, the width of a program" }],
 };

@@ -1,0 +1,53 @@
+import { describe, expect, it } from "vitest";
+import { Site } from "../content/Site";
+import type { Flag } from "./Flag";
+import { flagsCommand } from "./flagsCommand";
+import type { FlagStore } from "./FlagStore";
+
+const context = { site: new Site([{ file: "index.md", markdown: "---\ntitle: Home\n---\n" }]), cwd: "/", commands: [] };
+const FLAGS: Flag[] = [
+  { name: "portfolio", description: "lists with pictures as cards" },
+  { name: "loud", description: "everything in capitals" },
+];
+
+function aStore(...on: string[]): FlagStore {
+  const kept = new Set(on);
+  return { isOn: (name) => kept.has(name), set: (name, value) => void (value ? kept.add(name) : kept.delete(name)) };
+}
+
+const run = (store: FlagStore, ...args: string[]) => flagsCommand(FLAGS, store).run(context, args);
+
+describe("the flags command", () => {
+  it("lists every flag, each with its two choices, the one it is at marked, and what it does", () => {
+    expect(run(aStore("loud")).text).toBe(["portfolio   on [off]  lists with pictures as cards", "loud       [on] off   everything in capitals"].join("\n"));
+  });
+
+  it("makes each other choice something to click, which runs the command its title names", () => {
+    const html = run(aStore()).html ?? "";
+    expect(html).toContain('<a href="#" data-run="flags portfolio on" title="flags portfolio on">on</a>');
+    expect(html).toContain('<strong aria-current="true">off</strong>');
+  });
+
+  it("turns one on or off, and lists them all again", () => {
+    const store = aStore();
+    expect(run(store, "portfolio", "on").text).toContain("portfolio  [on] off   lists with pictures as cards");
+    expect(store.isOn("portfolio")).toBe(true);
+    run(store, "portfolio", "off");
+    expect(store.isOn("portfolio")).toBe(false);
+  });
+
+  it("toggles one named without a choice", () => {
+    const store = aStore("portfolio");
+    run(store, "portfolio");
+    expect(store.isOn("portfolio")).toBe(false);
+  });
+
+  it("refuses a flag there is not, and a choice that is neither", () => {
+    expect(run(aStore(), "colour")).toEqual({ text: "flags: colour: no such flag. Try flags", error: true });
+    expect(run(aStore(), "loud", "maybe")).toEqual({ text: "flags: loud: choose on or off", error: true });
+  });
+
+  it("says so when there are none", () => {
+    expect(flagsCommand([], aStore()).run(context, []).text).toBe("No flags to try just now.");
+  });
+});

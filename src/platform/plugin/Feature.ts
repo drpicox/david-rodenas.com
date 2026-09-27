@@ -1,6 +1,7 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
+import type { Flag } from "../flags/Flag";
 import type { Program } from "../program/Program";
 import type { Command } from "../shell/Command";
 
@@ -41,6 +42,8 @@ export interface Prompt {
  */
 export interface Feature {
   readonly name: string;
+  /** Trials a reader can switch the site into, by `flags` or by a link. */
+  readonly flags?: readonly Flag[];
   /** Commands it adds to the shell, alongside the site's own. */
   readonly commands?: readonly Command[];
   /**

@@ -182,6 +182,13 @@ describe("counting visits", () => {
   });
 });
 
+describe("the flags a reader has on", () => {
+  it("mark the root before it is painted, so a trial that changes the layout does not jump into it", () => {
+    const html = renderDocument(site, site.at("/")!, assets);
+    expect(html.indexOf('localStorage.getItem("flags")')).toBeLessThan(html.indexOf("<body>"));
+  });
+});
+
 describe("typing before the script arrives", () => {
   it("is caught from the first byte of the page, so nothing typed is lost", () => {
     const html = render("/");
