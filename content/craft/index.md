@@ -28,12 +28,22 @@ shown that it can. At the end of the kata the perfect game passes the moment
 it is written, so it is made to fail once, and only then gets its 300 back.
 [[1](https://medium.com/p/6813582074f3), [2](https://medium.com/p/dfaf65024d9)]
 
-```js
+```slides js
+test("perfect game", () => {
+  rollMany(12, 10);
+  expect(g.score()).toBe(300);
+});
+--- green All tests pass.
 test("perfect game", () => {
   rollMany(12, 10);
   expect(g.score()).toBe("fail");
 });
-// Expected: "fail". Received: 300.
+--- red Expected: "fail". Received: 300.
+test("perfect game", () => {
+  rollMany(12, 10);
+  expect(g.score()).toBe(300);
+});
+--- green All tests pass.
 ```
 
 **A test is an example of use.** I write it the way I would explain the code
@@ -42,12 +52,13 @@ that the tests looking inside sleep through: [an
 example](/craft/a-test-is-an-example/) shows it.
 [[1](https://medium.com/p/73a356df3523), [2](https://medium.com/p/54c509852ab8), [3](https://medium.com/p/4a83e4012b17)]
 
-```js
+```slides js
 it("delivers messages to listeners", () => {
   dispatcher.addListener(cb);
   dispatcher.deliver("message");
   expect(cb).toHaveBeenCalledWith("message");
 });
+--- green All tests pass.
 ```
 
 **The need comes first, in its own words.** A feature starts as the words of
@@ -55,7 +66,9 @@ whoever needs it — in my course, [the post came first](/teaching/software-lab/
 — and [each sentence becomes a step](/craft/a-sentence-is-a-step/) of its test.
 [[1](https://medium.com/p/788421126b13), [2](https://medium.com/p/301eddc7e566)]
 
-```
+```slides
+* The last post title should be "Hello Blog", this post
+---
 * The last post title should be "Hello Blog", this post
 context.theLastPostTitleShouldBeSThisPost("Hello Blog");
 ```
@@ -69,9 +82,11 @@ easy change](https://x.com/KentBeck/status/250733358307500032). [The
 book](/book/) is the rest, whole.
 [[1](https://medium.com/p/f678a10ac1fa), [2](https://medium.com/p/24e3408767dc), [3](https://medium.com/p/a37d8d11be9c)]
 
-```
-- score += rolls[frameIndex]+rolls[frameIndex + 1];
-+ score += sumOfBallsInFrame(rolls, frameIndex);
+```slides js
+score += rolls[frameIndex]+rolls[frameIndex + 1];
+--- green All tests pass.
+score += sumOfBallsInFrame(rolls, frameIndex);
+--- green All tests pass.
 ```
 
 **I build the tools.** When a part of the work can be done by a program, I
@@ -82,7 +97,9 @@ steps](/craft/a-sentence-is-a-step/), graders that read a repository's history,
 of passing a test in the fewest keystrokes](https://david-rodenas.com/test-putter/).
 [[1](https://medium.com/p/d4e6be5e7ef1), [2](https://medium.com/p/c7b59f00eefe), [3](https://medium.com/p/a824a05b7273)]
 
-```
+```slides
+Given I have 12 cucumbers
+---
 Given I have 12 cucumbers
 givenIHaveNCucumbers(number1)
 ```
@@ -103,10 +120,27 @@ often keep the solution to myself and propose trying again in steps so small
 that the way becomes plain. It looks simple, and it takes practice; that is what
 [katas](/craft/kata/) are for. [[1](https://medium.com/p/264b61d489f8)]
 
-```js
-return 7+4;
-return a + 4;
-return a + b;
+```slides js
+function add(a, b) {
+  return 11;
+}
+--- green All tests pass.
+function add(a, b) {
+  return 0+11;
+}
+--- green All tests pass.
+function add(a, b) {
+  return 7+4;
+}
+--- green All tests pass.
+function add(a, b) {
+  return a + 4;
+}
+--- green All tests pass.
+function add(a, b) {
+  return a + b;
+}
+--- green All tests pass.
 ```
 
 **Curious before right.** In a review I try to understand why the author did
@@ -125,10 +159,11 @@ built that way. And a change to how we work is an experiment, with a date to
 look back at it together.
 [[1](https://medium.com/p/834692848569), [2](https://medium.com/p/70a3c6cb4e45), [3](https://medium.com/p/9e94fba6beb3)]
 
-```js
+```slides js
 it("has no boxes that need each other round in a circle", () => {
   expect(boxCycles(shipped)).toEqual([]);
 });
+--- green All tests pass.
 ```
 
 **The credit is the team's.** When a system where every new feature brought
@@ -155,7 +190,12 @@ have the Hippocratic oath, and we have testing.
 find the mistake and fix it, in the design and in the requirement alike.
 [[1](https://medium.com/p/aa012cd24186), [2](https://medium.com/p/9e94fba6beb3), [3](https://medium.com/p/b5d0b6faca9e)]
 
-```
+```slides
+  1,  2,  3  ✅ # ascending order!
+---
+  1,  2,  3  ✅ # ascending order!
+  1,  1,  1  ❌ # but it might be a <= b < c
+---
   1,  2,  3  ✅ # ascending order!
   1,  1,  1  ❌ # but it might be a <= b < c
   1,  2,  2  ❌ # or it might be a < b <= c
@@ -169,8 +209,12 @@ because pushed, it invents something. When I caught myself letting my
 assistant do the designing, I switched it off until the design was mine again.
 [[1](https://medium.com/p/dfaf65024d9), [2](https://medium.com/p/0b5058e302bf), [3](https://medium.com/p/37023881ba0a)]
 
-```js
+```slides js
 function Greeting({ name }) {
+  return <h1>Hello, {name}!</h1>;
+}
+---
+function Greeting({ name = 'John' }) {
   return <h1>Hello, {name}!</h1>;
 }
 ```

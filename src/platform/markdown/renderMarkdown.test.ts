@@ -118,6 +118,12 @@ describe("a fenced block's language", () => {
     );
   });
 
+  it("plays a slides fence as frames of code in its language, rather than one listing", () => {
+    const html = renderMarkdown("```slides js\nlet a = 1;\n--- red Expected: 2. Received: 1.\nlet a = 2;\n```");
+    expect(html).toMatch(/^<figure class="slides" data-language="js">/);
+    expect(html).toContain('<p class="slide-status red">Expected: 2. Received: 1.</p>');
+  });
+
   it("draws a flow fence as a diagram rather than a listing", () => {
     const html = renderMarkdown("```flow\nA[post] --> B[test]\n```");
     expect(html).toMatch(/^<figure class="flow"><svg /);

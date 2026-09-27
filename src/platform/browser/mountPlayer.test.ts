@@ -58,12 +58,13 @@ describe("a player for what moves on a page", () => {
     expect(host.dataset["frame"]).toBe("1");
   });
 
-  it("stops for good when the page it is on goes away", () => {
+  it("stops for good when the page it is on goes away, and takes its button with it", () => {
     const host = document.createElement("div");
     const stop = mountPlayer(host, counting(host).start);
     stop();
     vi.advanceTimersByTime(5000);
     expect(host.dataset["frame"]).toBe("1");
+    expect(host.querySelector("button")).toBeNull();
   });
 
   it("leaves the still alone for a reader who asked for less motion", () => {

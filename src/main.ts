@@ -7,6 +7,7 @@ import { countEvent } from "./platform/browser/countEvent";
 import { modelContextHere } from "./platform/browser/modelContextHere";
 import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
+import { mountSlides } from "./platform/browser/mountSlides";
 import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
@@ -52,10 +53,13 @@ function mount(): void {
 
   // A page change swaps <main>: the programs on the old one stop, the ones on the new one start.
   let stopApps = mountApps(apps, { site: siteInBrowser });
+  let stopSlides = mountSlides(document);
   let terminal: Terminal | null = null;
   const goTo = mountNavigation(siteInBrowser, (arrived, kept) => {
     stopApps();
     stopApps = mountApps(apps, { site: siteInBrowser });
+    stopSlides();
+    stopSlides = mountSlides(document);
     for (const feature of allFeatures) feature.arrive?.(arrived);
     // A move the shell made itself is not news to the shell; a link's is.
     if (!kept) terminal?.moveTo(arrived.route);
@@ -65,6 +69,8 @@ function mount(): void {
   const clearPage = () => {
     stopApps();
     stopApps = () => {};
+    stopSlides();
+    stopSlides = () => {};
     document.querySelector("main")?.replaceChildren();
   };
   // What is run at the prompt is counted by the command's name alone: what follows it is whatever the reader typed, and stays theirs.

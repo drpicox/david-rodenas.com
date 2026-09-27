@@ -3921,7 +3921,8 @@ main li > img.card {
 
 /* ---- the player: pause what moves, go on, or play it again ---- */
 
-.app button.player {
+.app button.player,
+.slides button.player {
   flex: none;
   width: 1.8em;
   height: 1.8em;
@@ -3936,7 +3937,9 @@ main li > img.card {
 }
 
 .app button.player:hover,
-.app button.player:focus-visible {
+.app button.player:focus-visible,
+.slides button.player:hover,
+.slides button.player:focus-visible {
   color: var(--ink);
   border-color: var(--dim);
 }
@@ -3945,4 +3948,84 @@ main li > img.card {
 
 main p:has(> strong:first-child):not(h2 + p) {
   margin-top: 2.4em;
+}
+
+/* ---- slides: code in frames, typed from one to the next, then run ---- */
+
+/* Every frame sits in the same place, so the screen is as tall as the tallest and nothing jumps. */
+.slides {
+  position: relative;
+  margin: 0 0 1.4em;
+  text-align: left;
+}
+
+.slides-screen {
+  display: grid;
+}
+
+.slides .slide {
+  grid-area: 1 / 1;
+  visibility: hidden;
+}
+
+.slides .slide.current,
+.slides.playing .slide.live {
+  visibility: visible;
+}
+
+.slides.playing .slide.current {
+  visibility: hidden;
+}
+
+.slides pre {
+  margin: 0;
+}
+
+.slides .slide-status {
+  margin: 0.35em 0 0;
+  padding: 0.3em 0.7em;
+  border-radius: 0.2em;
+  font: 0.78rem var(--mono);
+}
+
+.slides .slide-status.red {
+  background: var(--warn);
+  color: var(--paper);
+}
+
+.slides .slide-status.green {
+  background: var(--hl-string);
+  color: var(--paper);
+}
+
+.slides .slide-status.note {
+  color: var(--dim);
+}
+
+.slides .caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1.15em;
+  margin-right: -0.5em;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  opacity: 0.8;
+}
+
+.slides button.player {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+}
+
+/* Whoever asked for less motion reads the frames one after another, as a storyboard. */
+@media (prefers-reduced-motion: reduce) {
+  .slides-screen {
+    display: block;
+  }
+
+  .slides .slide {
+    visibility: visible;
+    margin-bottom: 0.8em;
+  }
 }

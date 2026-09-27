@@ -73,5 +73,6 @@ export function mountPlayer(host: HTMLElement, start: () => Playback): () => voi
   return () => {
     halt();
     observer?.disconnect();
+    button.remove();
   };
 }
