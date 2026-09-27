@@ -5,7 +5,7 @@ import {
   type MeetingType,
 } from "../simulateMeetings";
 import { summariseMeetings, type MeetingsSummary } from "../summariseMeetings";
-import { barChart } from "../../../platform/browser/charts/barChart";
+import { barChart } from "../../../platform/charts/barChart";
 import { el } from "../../../platform/browser/el";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];

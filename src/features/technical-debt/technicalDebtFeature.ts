@@ -1,8 +1,8 @@
 import type { Feature } from "../../platform/plugin/Feature";
-import { mountTechnicalDebt } from "./browser/mountTechnicalDebt";
+import { technicalDebtProgram } from "./technicalDebtProgram";
 
-/** What shortcuts cost, compounded, with the dials on the outside. */
+/** What shortcuts cost, compounded: a program, and so a page's dials, a command and a tool. */
 export const technicalDebtFeature: Feature = {
   name: "technical-debt",
-  apps: { "technical-debt": mountTechnicalDebt },
+  programs: [technicalDebtProgram],
 };

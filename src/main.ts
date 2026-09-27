@@ -1,9 +1,11 @@
 import "./styles.css";
 import { allFeatures } from "./features/allFeatures";
+import { appsOf } from "./platform/browser/appsOf";
 import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
 import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
+import { commandsOf } from "./platform/plugin/commandsOf";
 import { siteCommands } from "./platform/shell/commands/siteCommands";
 
 /**
@@ -13,8 +15,8 @@ import { siteCommands } from "./platform/shell/commands/siteCommands";
  * brought, wires the prompt to the shell, and starts them.
  */
 function mount(): void {
-  const commands = [...siteCommands, ...allFeatures.flatMap((feature) => feature.commands ?? [])];
-  const apps = Object.assign({}, ...allFeatures.map((feature) => feature.apps ?? {}));
+  const commands = [...siteCommands, ...commandsOf(allFeatures)];
+  const apps = appsOf(allFeatures);
 
   const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   const route = here(window.location.pathname);

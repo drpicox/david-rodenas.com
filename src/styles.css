@@ -3145,3 +3145,16 @@ main math[display="block"] {
 .app .fibergochi .dialog input {
   margin: 0.4em 0.4em 0 0;
 }
+
+/* The line under a program's dials is the command that would ask the same: moving a dial teaches it. */
+.app .program-line {
+  margin: 0 0 1em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* A program answering at the prompt draws in its page's frame, at the width of the paper. */
+.screen .program-out {
+  width: auto;
+  margin: 0.5em 0 1em;
+}

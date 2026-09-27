@@ -1,4 +1,4 @@
-import { niceTicks } from "../../charts/niceTicks";
+import { niceTicks } from "./niceTicks";
 
 export interface Series {
   readonly name: string;

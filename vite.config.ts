@@ -8,6 +8,7 @@ import { fillStills } from "./src/platform/page/fillStills";
 import { formerAddresses } from "./src/platform/page/formerAddresses";
 import { renderDocument } from "./src/platform/page/renderDocument";
 import { renderRedirect } from "./src/platform/page/renderRedirect";
+import { stillsOf } from "./src/platform/plugin/stillsOf";
 
 const CONTENT = "content";
 const ORIGIN = "https://david-rodenas.com";
@@ -27,7 +28,7 @@ function readSite(): Site {
 }
 
 const PUBLIC = "public";
-const stills = Object.assign({}, ...allFeatures.map((feature) => feature.stills ?? {}));
+const stills = stillsOf(allFeatures);
 
 /**
  * The document, with each program's place already holding its still. A still

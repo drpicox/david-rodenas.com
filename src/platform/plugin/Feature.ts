@@ -1,6 +1,7 @@
 import type { Page } from "../content/Page";
 import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
+import type { Program } from "../program/Program";
 import type { Command } from "../shell/Command";
 
 /** What a program is handed besides its place: the site it stands in, for the few that read it. */
@@ -41,6 +42,11 @@ export interface Feature {
   readonly name: string;
   /** Commands it adds to the shell, alongside the site's own. */
   readonly commands?: readonly Command[];
+  /**
+   * Demonstrations with an input and an output. Each is, without more said, a
+   * command, a program in a page, its still, and a tool an agent can call.
+   */
+  readonly programs?: readonly Program[];
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
   /** What stands in a program's place in the HTML, by the program's name. Runs in node: no DOM. */
