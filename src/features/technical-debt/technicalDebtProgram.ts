@@ -1,7 +1,27 @@
 import { barChart } from "../../platform/charts/barChart";
 import { lineChart } from "../../platform/charts/lineChart";
 import type { Program } from "../../platform/program/Program";
-import { simulateTechnicalDebt } from "./simulateTechnicalDebt";
+import type { Values } from "../../platform/program/Values";
+import { simulateTechnicalDebt, type TechnicalDebtOutcome } from "./simulateTechnicalDebt";
+
+/** The simulation, handed the fractions it has always counted in. */
+const simulated = (values: Values): TechnicalDebtOutcome =>
+  simulateTechnicalDebt({
+    baseTime: Number(values["base-time"]),
+    shortcutFactor: Number(values["shortcuts"]) / 100,
+    interestRate: Number(values["interest"]) / 100,
+    timeHorizon: Number(values["timeline"]),
+  });
+
+/** Features delivered so far, on each road: the one chart that says the whole argument. */
+const cumulativeChart = ({ months }: TechnicalDebtOutcome): string =>
+  `<div class="chart"><h4>Cumulative features</h4>${lineChart(
+    [
+      { name: "Clean", className: "clean", values: months.map((month) => month.cleanCumulative) },
+      { name: "Debt-driven", className: "debt", values: months.map((month) => month.debtCumulative) },
+    ],
+    { x: "Months", y: "Features" },
+  )}</div>`;
 
 /**
  * Two teams, four parameters, two charts. Percentages are said as percentages,
@@ -21,12 +41,8 @@ export const technicalDebtProgram: Program = {
     const shortcuts = Number(values["shortcuts"]);
     const interest = Number(values["interest"]);
     const timeline = Number(values["timeline"]);
-    const { months, breakEvenMonth } = simulateTechnicalDebt({
-      baseTime: Number(values["base-time"]),
-      shortcutFactor: shortcuts / 100,
-      interestRate: interest / 100,
-      timeHorizon: timeline,
-    });
+    const outcome = simulated(values);
+    const { months, breakEvenMonth } = outcome;
     const last = months[months.length - 1];
     const clean = last?.cleanCumulative ?? 0;
     const debt = last?.debtCumulative ?? 0;
@@ -49,13 +65,6 @@ export const technicalDebtProgram: Program = {
       `<div><strong>${breakEven}</strong>break-even</div>`,
       `<div><strong>${percent}</strong>${verdict} on the shortcut road</div>`,
     ].join("");
-    const cumulative = lineChart(
-      [
-        { name: "Clean", className: "clean", values: months.map((month) => month.cleanCumulative) },
-        { name: "Debt-driven", className: "debt", values: months.map((month) => month.debtCumulative) },
-      ],
-      { x: "Months", y: "Features" },
-    );
     const monthly = barChart(
       [
         { name: "Clean", className: "clean", values: months.slice(1).map((month) => month.cleanMonthly) },
@@ -68,9 +77,10 @@ export const technicalDebtProgram: Program = {
       text: `clean ${clean} features, debt-driven ${debt}, break-even ${breakEven}\n${insight}`,
       html:
         `<div class="figures">${figures}</div>` +
-        `<div class="charts"><div class="chart"><h4>Cumulative features</h4>${cumulative}</div><div class="chart"><h4>Monthly delivery rate</h4>${monthly}</div></div>` +
+        `<div class="charts">${cumulativeChart(outcome)}<div class="chart"><h4>Monthly delivery rate</h4>${monthly}</div></div>` +
         `<p>${insight}</p>`,
       data: { cleanFeatures: clean, debtFeatures: debt, breakEvenMonth, months },
     };
   },
+  glance: (values) => cumulativeChart(simulated(values)),
 };

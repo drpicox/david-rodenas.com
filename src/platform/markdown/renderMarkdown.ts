@@ -125,11 +125,16 @@ function quote(lines: string[]): string | null {
   return `<blockquote>${renderInline(body)}</blockquote>`;
 }
 
-/** `::name` — a place on the page where a program mounts. The words around it are still words. */
+/**
+ * `::name` — a place on the page where a program mounts. The words around it
+ * are still words. `::name --dial --dial` shows it small: only those dials in
+ * the reader's hand, the rest left where they start.
+ */
 function app(lines: string[]): string | null {
-  const match = /^::([a-z0-9-]+)$/.exec(lines[0] ?? "");
+  const match = /^::([a-z0-9-]+)((?:\s+--[a-z0-9-]+)*)$/.exec(lines[0] ?? "");
   if (!match || lines.length !== 1) return null;
-  return `<div class="app" data-app="${match[1]}"></div>`;
+  const dials = (match[2] ?? "").split(/\s+/).filter(Boolean).map((option) => option.slice(2));
+  return `<div class="app" data-app="${match[1]}"${dials.length ? ` data-dials="${dials.join(" ")}"` : ""}></div>`;
 }
 
 function rule(lines: string[]): string | null {

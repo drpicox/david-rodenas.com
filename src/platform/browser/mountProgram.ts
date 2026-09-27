@@ -45,19 +45,22 @@ function choose(parameter: ChoiceParameter, moved: (value: string) => void): Dia
 /**
  * A program on its page: a dial for each parameter, and the program run again
  * whenever one moves. The dials know nothing of what they drive, and the line
- * under them is the command that would have asked the same.
+ * under them is the command that would have asked the same. A place that
+ * names its dials shows only those, and the program's glance.
  */
 export function mountProgram(program: Program): App {
   return (host) => {
     let values: Values = initialValues(program);
+    const shown = host.dataset["dials"]?.split(" ");
+    const small = shown !== undefined && program.glance !== undefined;
     const line = el("code");
-    const figure = el("div", { class: "program-figure" });
+    const figure = el("div", { class: small ? "program-figure glance" : "program-figure" });
 
     const tell = (name: string) => (value: number | string) => {
       values = { ...values, [name]: value };
       draw();
     };
-    const dials = program.parameters.map((parameter) => ({
+    const dials = program.parameters.filter((parameter) => !shown || shown.includes(parameter.name)).map((parameter) => ({
       name: parameter.name,
       dial: "choices" in parameter ? choose(parameter, tell(parameter.name)) : slide(parameter, tell(parameter.name)),
     }));
@@ -65,7 +68,7 @@ export function mountProgram(program: Program): App {
     function draw(): void {
       for (const { name, dial } of dials) dial.settle(values[name] ?? "");
       line.textContent = `$ ${commandLineOf(program, values)}`;
-      figure.innerHTML = program.run(values).html;
+      figure.innerHTML = small ? (program.glance?.(values) ?? "") : program.run(values).html;
       host.dispatchEvent(new CustomEvent<Values>(PROGRAM_RAN, { detail: values }));
     }
 

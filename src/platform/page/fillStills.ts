@@ -1,4 +1,4 @@
-const PLACE = /<div class="app" data-app="([a-z0-9-]+)"><\/div>/g;
+const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?><\/div>/g;
 
 /**
  * A program draws when the script runs; a still is what stands in its place
@@ -8,10 +8,10 @@ const PLACE = /<div class="app" data-app="([a-z0-9-]+)"><\/div>/g;
  * renderer, because the renderer also runs in the browser, where the program
  * itself is about to draw and the data is not at hand.
  */
-export function fillStills(html: string, stillOf: (name: string) => string | undefined): string {
-  return html.replace(PLACE, (place, name: string) => {
+export function fillStills(html: string, stillOf: (name: string, dials: readonly string[]) => string | undefined): string {
+  return html.replace(PLACE, (place, name: string, dials: string | undefined) => {
     try {
-      const still = stillOf(name);
+      const still = stillOf(name, dials ? dials.split(" ") : []);
       return still === undefined ? place : place.replace("></div>", `>${still}</div>`);
     } catch {
       return place;

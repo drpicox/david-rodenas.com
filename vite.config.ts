@@ -36,7 +36,7 @@ const stills = stillsOf(allFeatures);
  */
 function render(built: Site, page: Parameters<typeof renderDocument>[1], assets: Parameters<typeof renderDocument>[2]): string {
   const read = (path: string) => readFileSync(join(PUBLIC, path), "utf8");
-  return fillStills(renderDocument(built, page, assets), (name) => stills[name]?.(read));
+  return fillStills(renderDocument(built, page, assets), (name, dials) => stills[name]?.(read, dials));
 }
 
 /**

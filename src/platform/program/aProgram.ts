@@ -17,4 +17,5 @@ export const aProgram: Program = {
     const grown = Math.round(values["paid"] === "every month" ? sum * (1 + rate / 12) ** (12 * years) : sum * (1 + rate) ** years);
     return { text: `${grown} €`, html: `<p><strong>${grown}</strong> €</p>`, data: { grown } };
   },
+  glance: (values) => `<strong>${Math.round(Number(values["sum"]) * (1 + Number(values["rate"]) / 100) ** Number(values["years"]))}</strong>`,
 };

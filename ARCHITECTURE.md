@@ -113,6 +113,11 @@ graph LR
   program -- "browser/offerTools" --> tool["a WebMCP tool<br/><i>its JSON schema is the parameters;<br/>the answer is text and data</i>"]
 ```
 
+A page can show a program small: `::technical-debt --shortcuts` in the
+markdown puts only that dial in the reader's hand, leaves the others where they
+start, and draws the program's `glance` — one figure — instead of all of its
+answer. The home does that; the program's own page has the whole of it.
+
 A parameter is a quantity with a range, or a choice among names. Whoever asks
 — a slider, a command line, an agent — is settled by the same `settleValues`,
 which refuses what is out of range rather than moving it.

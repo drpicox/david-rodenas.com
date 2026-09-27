@@ -61,6 +61,17 @@ describe("a program on its page, once the script is there", () => {
     ]);
   });
 
+  it("shows only the dials its place names, and its glance, where a page shows it small", () => {
+    const host = document.createElement("div");
+    host.dataset["dials"] = "years";
+    mountProgram(aProgram)(host, { site: undefined as never });
+    expect([...host.querySelectorAll("label")].map((label) => label.textContent)).toEqual(["Years: 2"]);
+    expect(host.querySelector(".program-figure.glance")?.innerHTML).toBe("<strong>121</strong>");
+    slide(host, "years", 0);
+    expect(host.querySelector(".program-figure")?.textContent).toBe("100");
+    expect(host.querySelector(".program-line")?.textContent).toBe("$ savings --years 0");
+  });
+
   it("is asked from outside, as an agent asks it, and moves its dials to say so", () => {
     const host = mounted();
     askProgram(host, { rate: 0, years: 5 });

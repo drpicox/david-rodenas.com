@@ -63,6 +63,10 @@ describe("an app block", () => {
     expect(renderMarkdown("::technical-debt")).toBe('<div class="app" data-app="technical-debt"></div>');
   });
 
+  it("hands a program the dials a page shows it with, written as options: the rest stay where they start", () => {
+    expect(renderMarkdown("::technical-debt --shortcuts --interest")).toBe('<div class="app" data-app="technical-debt" data-dials="shortcuts interest"></div>');
+  });
+
   it("is only a line that is nothing but the name", () => {
     expect(renderMarkdown("::not an app")).toBe("<p>::not an app</p>");
   });

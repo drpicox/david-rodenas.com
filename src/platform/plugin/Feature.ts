@@ -21,8 +21,9 @@ export type App = (host: HTMLElement, surroundings: Surroundings) => (() => void
  * What a program's place holds before any script runs, written into the HTML
  * at build time. `read` gives the text of a file the site serves, by the path
  * the browser would ask for it at — so a still and its program read the same data.
+ * `dials` are the ones its place named, when a page shows it small.
  */
-export type Still = (read: (path: string) => string) => string;
+export type Still = (read: (path: string) => string, dials: readonly string[]) => string;
 
 /** What a feature is handed when it is installed: the site's one control surface. */
 export interface Prompt {

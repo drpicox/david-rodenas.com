@@ -18,4 +18,10 @@ export interface Program {
   readonly parameters: readonly Parameter[];
   /** Always handed a value for every parameter, already inside its range. */
   run(values: Values): ProgramRun;
+  /**
+   * The answer at a glance, as markup, for a page that shows the program
+   * small — one figure, where its own page has the whole of it. Without one,
+   * a small program shows all of its answer.
+   */
+  glance?(values: Values): string;
 }

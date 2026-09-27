@@ -3158,3 +3158,14 @@ main math[display="block"] {
   width: auto;
   margin: 0.5em 0 1em;
 }
+
+/* A program shown small is one dial and one figure: it keeps to the column of the words around it. */
+.app[data-dials] {
+  width: auto;
+  margin: 1em 0 2em;
+}
+
+.app[data-dials] .dials {
+  grid-template-columns: 1fr;
+  margin-bottom: 0.4em;
+}

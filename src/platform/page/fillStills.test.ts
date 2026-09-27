@@ -10,6 +10,12 @@ describe("what a program's place holds before any script runs", () => {
     expect(html).toContain('<div class="app" data-app="no2"><table>47</table></div>');
   });
 
+  it("hands the still the dials its place was given", () => {
+    const small = renderMarkdown("::savings --rate");
+    expect(fillStills(small, (name, dials) => `${name}: ${dials.join(",")}`)).toBe('<div class="app" data-app="savings" data-dials="rate">savings: rate</div>');
+    expect(fillStills(page, (name, dials) => (name === "no2" ? `${dials.length}` : undefined))).toContain('data-app="no2">0</div>');
+  });
+
   it("leaves a program that has no still exactly as it was", () => {
     const html = fillStills(page, () => undefined);
     expect(html).toBe(page);

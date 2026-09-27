@@ -24,7 +24,7 @@ describe("the letter reader, once the script is there", () => {
   it("opens on what the build already drew", () => {
     const host = document.createElement("div");
     mountLetters(host);
-    expect(host.querySelector(".letters")!.outerHTML).toBe(lettersStill(() => ""));
+    expect(host.querySelector(".letters")!.outerHTML).toBe(lettersStill(() => "", []));
   });
 
   it("turns a cell on or off when it is pressed, and reads the drawing again", () => {

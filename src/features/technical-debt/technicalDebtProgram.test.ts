@@ -36,6 +36,13 @@ describe("technical debt, as a program", () => {
     expect(debtFeatures).toBeGreaterThan(0);
   });
 
+  it("at a glance, is only the two roads added up: one chart and nothing else", () => {
+    const glance = technicalDebtProgram.glance?.(initialValues(technicalDebtProgram)) ?? "";
+    expect(glance.match(/<svg/g)).toHaveLength(1);
+    expect(glance).toContain("Cumulative features");
+    expect(glance).not.toContain("figures");
+  });
+
   it("draws the two charts the page always drew", () => {
     const { html } = run();
     expect(html).toContain("Cumulative features");
