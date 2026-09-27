@@ -9,4 +9,10 @@ export interface Flag {
   readonly name: string;
   /** One line on what turning it on changes. */
   readonly description: string;
+  /**
+   * The share of readers it is on for, drawn once for each one, for a trial
+   * that is weighed by what they do: `0.5` is one in two. A reader who
+   * chooses for themselves has left the trial.
+   */
+  readonly trial?: number;
 }

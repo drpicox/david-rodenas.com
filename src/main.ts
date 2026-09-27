@@ -1,7 +1,9 @@
 import "./styles.css";
 import { allFeatures } from "./features/allFeatures";
 import { appsOf } from "./platform/browser/appsOf";
+import { eventName } from "./platform/analytics/eventName";
 import { BrowserFlags } from "./platform/browser/BrowserFlags";
+import { countEvent } from "./platform/browser/countEvent";
 import { modelContextHere } from "./platform/browser/modelContextHere";
 import { mountApps } from "./platform/browser/mountApps";
 import { mountNavigation } from "./platform/browser/mountNavigation";
@@ -9,6 +11,7 @@ import { mountTerminal, type Terminal } from "./platform/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
 import { flagsCommand } from "./platform/flags/flagsCommand";
+import { enterTrials } from "./platform/flags/enterTrials";
 import { flagsInAddress } from "./platform/flags/flagsInAddress";
 import { commandsOf } from "./platform/plugin/commandsOf";
 import { siteCommands } from "./platform/shell/commands/siteCommands";
@@ -24,6 +27,21 @@ function mount(): void {
   const flags = allFeatures.flatMap((feature) => feature.flags ?? []);
   const flagStore = new BrowserFlags();
   for (const [name, on] of Object.entries(flagsInAddress(flags, window.location.search))) flagStore.set(name, on);
+
+  // A reader in a trial is counted once a visit under the side they are on, and so is what they open from the home.
+  const trials = enterTrials(flags, flagStore, Math.random);
+  const sideOf = (trial: { name: string; on: boolean }) => `${trial.name}-${trial.on ? "on" : "off"}`;
+  for (const trial of trials) countEvent(eventName("trial", sideOf(trial)));
+  document.addEventListener(
+    "click",
+    (event) => {
+      const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>("main a[href]");
+      if (!anchor || window.location.pathname !== "/" || trials.length === 0) return;
+      const href = anchor.host === window.location.host ? anchor.pathname : anchor.href;
+      for (const trial of trials) countEvent(eventName(sideOf(trial), "open", href));
+    },
+    { capture: true },
+  );
 
   const commands = [...siteCommands, ...commandsOf(allFeatures), flagsCommand(flags, flagStore)];
   const apps = appsOf(allFeatures);
@@ -49,7 +67,9 @@ function mount(): void {
     stopApps = () => {};
     document.querySelector("main")?.replaceChildren();
   };
-  terminal = mountTerminal(siteInBrowser, page ? route : "/", { moveTo: (route) => goTo(route, { keep: true }), clearPage, commands });
+  // What is run at the prompt is counted by the command's name alone: what follows it is whatever the reader typed, and stays theirs.
+  const heard = (word: string) => countEvent(eventName("command", commands.some((command) => command.name === word) ? word : "unknown"));
+  terminal = mountTerminal(siteInBrowser, page ? route : "/", { moveTo: (route) => goTo(route, { keep: true }), clearPage, commands, heard });
 
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);

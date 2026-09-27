@@ -6,5 +6,5 @@ interface Window {
 
 /** GoatCounter, when its script has arrived. */
 interface Window {
-  goatcounter?: { count?: (vars: { path: string; title?: string }) => void };
+  goatcounter?: { count?: (vars: { path: string; title?: string; event?: boolean }) => void };
 }

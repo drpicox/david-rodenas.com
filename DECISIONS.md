@@ -7,6 +7,22 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### Trials, weighed with GoatCounter events (27 September 2026)
+A flag can be a trial: on for a share of readers, drawn once for each and kept
+in their browser, so the site they see does not change under them on a
+reload. What is kept is which site they see, not anything about them. Out of
+the trial goes anyone who chooses for themselves.
+
+GoatCounter has no experiments, but it counts an event once a visit, so an
+event named after the side a reader is on counts visits on that side:
+`trial-portfolio-on`, and what those visits open from the home,
+`portfolio-on-open-projects/rocinante`. Beside the trials: the theme a visit
+arrives with and the one it sets, `theme-start-dark`, `theme-set-pink`, and
+the commands run at the prompt, by name alone — `command-ls`,
+`command-unknown` — because what follows a command is whatever the reader
+typed, and it is not sent anywhere. Nothing joins one event to another: there
+is no one to join them to.
+
 ### A fourth devDependency: `@vitest/coverage-v8` (27 September 2026)
 The architecture page shows what the tests reach, and which file a test
 imports is only half of it: a file can be imported and still have most of its

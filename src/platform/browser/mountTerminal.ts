@@ -24,6 +24,8 @@ export interface TerminalOptions {
   readonly clearPage?: () => void;
   /** The site's own commands and whatever the features brought. */
   readonly commands?: readonly Command[];
+  /** Told the first word of every command run, and nothing after it. */
+  readonly heard?: (word: string) => void;
 }
 
 /** Keys pressed before this script arrived, which the head script kept; the listening stops here. */
@@ -116,6 +118,7 @@ export function mountTerminal(site: Site, route: string, options: TerminalOption
     let printedPage = false;
     const commands = parseCommandLine(line).map((words) => words.join(" "));
     for (let index = 0; index < commands.length; index += 1) {
+      options.heard?.((commands[index] ?? "").split(" ")[0] ?? "");
       const [outcome] = shell.run(commands[index] ?? "");
       if (!outcome) continue;
       answered.push(outcome);

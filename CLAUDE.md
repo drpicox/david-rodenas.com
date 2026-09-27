@@ -64,7 +64,10 @@ The top level says what this is: a frame, and the features standing in it.
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
   - `flags/` — trials a reader can switch on: `flags`, `?name=on`, and
     `data-flags` on the root (set before paint) for a stylesheet to look at.
-    A feature adds one by declaring it
+    A feature adds one by declaring it; `trial: 0.5` puts it on for one
+    reader in two, drawn once each and kept, until they choose for themselves
+  - `analytics/` — the names GoatCounter events are counted under; the
+    counting itself is `browser/countEvent`
   - `program/` — a demonstration as an input and an output: its still, its
     command, and (in `browser/`) its dials and its WebMCP tool, all from one
     `Program`

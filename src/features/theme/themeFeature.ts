@@ -1,5 +1,6 @@
 import type { Feature } from "../../platform/plugin/Feature";
 import { BrowserTheme } from "./browser/BrowserTheme";
+import { countThemeAtStart } from "./browser/countThemeAtStart";
 import { mountThemeToggle } from "./browser/mountThemeToggle";
 import { settleTheme } from "./browser/settleTheme";
 import { themeCommand } from "./themeCommand";
@@ -15,7 +16,10 @@ import { themeCommand } from "./themeCommand";
 export const themeFeature: Feature = {
   name: "theme",
   commands: [themeCommand(new BrowserTheme())],
-  install: (prompt) => mountThemeToggle(() => prompt.run("theme")),
+  install: (prompt) => {
+    countThemeAtStart();
+    return mountThemeToggle(() => prompt.run("theme"));
+  },
   // A new page may insist on its own; the reader's choice has to be weighed against it again.
   arrive: () => settleTheme(),
 };

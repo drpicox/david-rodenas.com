@@ -8,5 +8,6 @@ import type { Feature } from "../../platform/plugin/Feature";
  */
 export const portfolioFeature: Feature = {
   name: "portfolio",
-  flags: [{ name: "portfolio", description: "the lists with pictures as cards, the width of a program" }],
+  // One reader in two sees it, drawn once each, to weigh it by what they open from the home.
+  flags: [{ name: "portfolio", description: "the lists with pictures as cards, the width of a program", trial: 0.5 }],
 };

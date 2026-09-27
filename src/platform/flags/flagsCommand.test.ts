@@ -12,7 +12,8 @@ const FLAGS: Flag[] = [
 
 function aStore(...on: string[]): FlagStore {
   const kept = new Set(on);
-  return { isOn: (name) => kept.has(name), set: (name, value) => void (value ? kept.add(name) : kept.delete(name)) };
+  const turn = (name: string, value: boolean) => void (value ? kept.add(name) : kept.delete(name));
+  return { isOn: (name) => kept.has(name), set: turn, chosen: () => false, drawn: () => undefined, draw: turn };
 }
 
 const run = (store: FlagStore, ...args: string[]) => flagsCommand(FLAGS, store).run(context, args);

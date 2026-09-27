@@ -1,6 +1,8 @@
 import type { Theme } from "../Theme";
 import type { ThemeChoice } from "../ThemeChoice";
 import { settleTheme } from "./settleTheme";
+import { eventName } from "../../../platform/analytics/eventName";
+import { countEvent } from "../../../platform/browser/countEvent";
 
 const KEY = "theme";
 
@@ -37,6 +39,7 @@ export class BrowserTheme implements Theme {
       // Without storage the choice still holds until the page is left.
     }
     settleTheme();
+    countEvent(eventName("theme", "set", wanted));
     return wanted;
   }
 }
