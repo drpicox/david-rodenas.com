@@ -2412,6 +2412,29 @@ figure.bars figcaption {
   color: var(--dim);
 }
 
+/* A flag's switch reads like the theme's row of choices: the one in force stands out, the other is there to press. */
+.screen dl.flags dt {
+  font-family: var(--mono);
+  color: var(--ink);
+}
+
+.screen dl.flags .switch {
+  margin-left: 0.6em;
+}
+
+.screen dl.flags .switch strong {
+  color: var(--accent);
+}
+
+.screen dl.flags .switch a {
+  color: var(--dim);
+}
+
+.screen dl.flags dd {
+  font-family: var(--text);
+  font-size: 0.85rem;
+}
+
 @media (max-width: 40rem) {
   .screen dl.help {
     grid-template-columns: 1fr;

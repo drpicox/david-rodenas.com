@@ -19,13 +19,14 @@ function listed(flags: readonly Flag[], store: FlagStore): Outcome {
     const choices = CHOICES.map((choice) => (choice === at(flag) ? `[${choice}]` : ` ${choice} `)).join("");
     return `${flag.name.padEnd(width)}  ${choices}  ${flag.description}`;
   });
-  const html = flags.map((flag) => {
+  // The markup is `help`'s list, which folds on a narrow screen; the words wrap there, where a line of text could only run off the edge.
+  const rows = flags.map((flag) => {
     const choices = CHOICES.map((choice) =>
       choice === at(flag) ? `<strong aria-current="true">${choice}</strong>` : `<a href="#" data-run="flags ${flag.name} ${choice}" title="flags ${flag.name} ${choice}">${choice}</a>`,
-    ).join("  ");
-    return `${flag.name.padEnd(width)}  ${choices}   ${escapeHtml(flag.description)}`;
+    ).join(" ");
+    return `<dt>${escapeHtml(flag.name)} <span class="switch">${choices}</span></dt><dd>${escapeHtml(flag.description)}</dd>`;
   });
-  return { text: text.map((line) => line.trimEnd()).join("\n"), html: `<pre class="choices">${html.join("\n")}</pre>` };
+  return { text: text.map((line) => line.trimEnd()).join("\n"), html: `<dl class="help flags">${rows.join("")}</dl>` };
 }
 
 /** `flags`: the trials the site can be switched into, and the switch for each. */

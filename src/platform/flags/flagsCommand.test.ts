@@ -28,6 +28,12 @@ describe("the flags command", () => {
     expect(html).toContain('<strong aria-current="true">off</strong>');
   });
 
+  it("lays the markup out as a list that folds on a narrow screen, the switch apart from the words that say what it does", () => {
+    const html = run(aStore()).html ?? "";
+    expect(html).toMatch(/^<dl class="help flags"><dt>portfolio <span class="switch">/);
+    expect(html).toContain("<dd>lists with pictures as cards</dd>");
+  });
+
   it("turns one on or off, and lists them all again", () => {
     const store = aStore();
     expect(run(store, "portfolio", "on").text).toContain("portfolio  [on] off   lists with pictures as cards");
