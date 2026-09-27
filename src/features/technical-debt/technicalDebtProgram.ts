@@ -18,11 +18,11 @@ export const technicalDebtProgram: Program = {
     { name: "timeline", label: "Timeline", description: "months to look ahead", min: 6, max: 60, step: 1, initial: 24, show: (v) => `${v} months` },
   ],
   run(values) {
-    const shortcuts = values["shortcuts"] ?? 0;
-    const interest = values["interest"] ?? 0;
-    const timeline = values["timeline"] ?? 0;
+    const shortcuts = Number(values["shortcuts"]);
+    const interest = Number(values["interest"]);
+    const timeline = Number(values["timeline"]);
     const { months, breakEvenMonth } = simulateTechnicalDebt({
-      baseTime: values["base-time"] ?? 1,
+      baseTime: Number(values["base-time"]),
       shortcutFactor: shortcuts / 100,
       interestRate: interest / 100,
       timeHorizon: timeline,

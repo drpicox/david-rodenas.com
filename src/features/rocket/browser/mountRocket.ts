@@ -1,73 +1,41 @@
+import { askProgram } from "../../../platform/browser/askProgram";
 import { el } from "../../../platform/browser/el";
-import { firstShip } from "../firstShip";
-import { renderVoyages } from "../renderVoyages";
-import type { Ship } from "../Ship";
+import { mountProgram } from "../../../platform/browser/mountProgram";
+import { PROGRAM_RAN } from "../../../platform/browser/PROGRAM_RAN";
+import type { App } from "../../../platform/plugin/Feature";
+import { initialValues } from "../../../platform/program/initialValues";
+import type { Values } from "../../../platform/program/Values";
+import { rocketProgram } from "../rocketProgram";
+import { shipOf } from "../shipOf";
 import { mountStarMap } from "./mountStarMap";
 
-interface Dial {
-  readonly key: "acceleration" | "fuel" | "exhaust";
-  readonly label: string;
-  readonly min: number;
-  readonly max: number;
-  readonly step: number;
-  /** The slider runs on a scale of its own where the quantity spans too many sizes to slide along. */
-  readonly toSlider: (value: number) => number;
-  readonly fromSlider: (position: number) => number;
-  readonly show: (value: number) => string;
-}
-
-const same = (value: number) => value;
-const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumSignificantDigits: 2 });
-const DIALS: readonly Dial[] = [
-  { key: "acceleration", label: "Acceleration", min: 0.05, max: 3, step: 0.05, toSlider: same, fromSlider: same, show: (v) => `${v.toFixed(2)} g` },
-  // From a tenth of the ship to what Andromeda takes, ten million million ships of fuel: only a logarithm slides that far.
-  { key: "fuel", label: "Fuel", min: -1, max: 13, step: 0.05, toSlider: (v) => Math.log10(v / firstShip.dryMass), fromSlider: (p) => firstShip.dryMass * 10 ** p, show: (v) => `${compact.format(v / firstShip.dryMass)} × the ship` },
-  { key: "exhaust", label: "Exhaust speed", min: 0.01, max: 1, step: 0.01, toSlider: same, fromSlider: same, show: (v) => `${Math.round(v * 100)}% of c` },
-];
-
-/** The table the build already wrote, with the map of the near stars and the ship's dials above it; a row, or a star, is pressed to fly that trip. */
-export function mountRocket(host: HTMLElement): () => void {
-  let ship: Ship = firstShip;
-  let chosen = "Proxima Centauri";
-  const figure = el("div");
-
-  const draw = () => {
-    figure.innerHTML = renderVoyages(ship, chosen);
+/**
+ * The rocket's program on its dials, with the map of the near stars above it.
+ * The map is not part of the program: it hears what the program ran with, and
+ * a star pressed on it, or a row of the table, asks the program for that trip.
+ */
+export const mountRocket: App = (host, surroundings) => {
+  let values: Values = initialValues(rocketProgram);
+  const ran = (event: Event) => {
+    values = (event as CustomEvent<Values>).detail;
   };
+  host.addEventListener(PROGRAM_RAN, ran);
+  const stopProgram = mountProgram(rocketProgram)(host, surroundings);
 
-  const dials = el(
-    "div",
-    { class: "dials" },
-    ...DIALS.map((dial) => {
-      const output = el("output", {}, dial.show(ship[dial.key]));
-      const input = el("input", {
-        type: "range",
-        min: dial.min,
-        max: dial.max,
-        step: dial.step,
-        value: dial.toSlider(ship[dial.key]),
-        oninput: () => {
-          ship = { ...ship, [dial.key]: dial.fromSlider(Number(input.value)) };
-          output.textContent = dial.show(ship[dial.key]);
-          draw();
-        },
-      });
-      return el("label", {}, `${dial.label}: `, output, input);
-    }),
-  );
-
-  figure.addEventListener("click", (event) => {
+  const chosen = (event: Event) => {
     const destination = (event.target as Element | null)?.closest("[data-destination]")?.getAttribute("data-destination");
-    if (!destination) return;
-    chosen = destination;
-    draw();
-  });
+    if (destination) askProgram(host, { to: destination });
+  };
+  host.addEventListener("click", chosen);
 
   const canvas = el("canvas", { class: "starmap", "aria-label": "The stars within twelve light-years of the Sun, turning, with the ship flying the chosen trip" });
-  host.replaceChildren(canvas, dials, figure);
-  draw();
-  return mountStarMap(canvas, () => ({ ship, chosen }), (name) => {
-    chosen = name;
-    draw();
-  });
-}
+  host.prepend(canvas);
+  const stopMap = mountStarMap(canvas, () => ({ ship: shipOf(values), chosen: String(values["to"]) }), (name) => askProgram(host, { to: name }));
+
+  return () => {
+    stopMap();
+    stopProgram?.();
+    host.removeEventListener(PROGRAM_RAN, ran);
+    host.removeEventListener("click", chosen);
+  };
+};

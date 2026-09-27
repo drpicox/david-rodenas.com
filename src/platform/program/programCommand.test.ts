@@ -24,14 +24,19 @@ describe("a program, typed at the prompt", () => {
     expect(run().html).toBe('<div class="app program-out"><p><strong>121</strong> €</p></div>');
   });
 
+  it("takes a choice as a word", () => {
+    expect(run("--paid", "every-month").text).toBe("122 €");
+  });
+
   it("says what it was told wrong, and fails", () => {
     expect(run("--rate", "99")).toEqual({ text: "savings: rate: 99 is outside 0 to 20", error: true });
   });
 
   it("lists its options on --help, with their ranges and where they start", () => {
     const help = run("--help").text ?? "";
-    expect(help).toContain("savings [--sum n] [--rate n] [--years n]");
+    expect(help).toContain("savings [--sum n] [--rate n] [--years n] [--paid once-a-year|every-month]");
     expect(help).toContain("--rate   yearly interest, in percent (0 to 20, 10)");
     expect(help).toContain("--sum    what goes in, in euros (1 to 1000000, 100)");
+    expect(help).toContain("--paid   how often the interest is added (once-a-year)");
   });
 });

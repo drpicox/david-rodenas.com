@@ -1,4 +1,4 @@
-import type { Parameter } from "./Parameter";
+import type { NumberParameter } from "./NumberParameter";
 
 export interface Slider {
   readonly min: number;
@@ -8,8 +8,8 @@ export interface Slider {
   valueAt(position: number): number;
 }
 
-/** The range input a parameter is slid along: its own scale, or its logarithm's. */
-export function sliderOf(parameter: Parameter): Slider {
+/** The range input a quantity is slid along: its own scale, or its logarithm's. */
+export function sliderOf(parameter: NumberParameter): Slider {
   if (parameter.scale !== "log") {
     return { min: parameter.min, max: parameter.max, step: parameter.step, positionOf: (value) => value, valueAt: (position) => position };
   }

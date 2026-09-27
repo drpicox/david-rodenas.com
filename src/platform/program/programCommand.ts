@@ -1,14 +1,17 @@
 import type { Command } from "../shell/Command";
+import type { Parameter } from "./Parameter";
 import type { Program } from "./Program";
 import { readOptions } from "./readOptions";
 import { settleValues } from "./settleValues";
+import { wordOf } from "./wordOf";
+
+const takes = (parameter: Parameter) => ("choices" in parameter ? parameter.choices.map(wordOf).join("|") : "n");
+const range = (parameter: Parameter) => ("choices" in parameter ? wordOf(parameter.initial) : `${parameter.min} to ${parameter.max}, ${parameter.initial}`);
 
 function helpOf(program: Program): string {
-  const usage = [program.name, ...program.parameters.map((parameter) => `[--${parameter.name} n]`)].join(" ");
+  const usage = [program.name, ...program.parameters.map((parameter) => `[--${parameter.name} ${takes(parameter)}]`)].join(" ");
   const width = Math.max(...program.parameters.map((parameter) => parameter.name.length + 2));
-  const options = program.parameters.map(
-    (parameter) => `  ${`--${parameter.name}`.padEnd(width)}  ${parameter.description} (${parameter.min} to ${parameter.max}, ${parameter.initial})`,
-  );
+  const options = program.parameters.map((parameter) => `  ${`--${parameter.name}`.padEnd(width)}  ${parameter.description} (${range(parameter)})`);
   return [usage, `  ${program.summary}`, "", ...options].join("\n");
 }
 

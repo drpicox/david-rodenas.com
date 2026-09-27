@@ -1,5 +1,7 @@
 import { destinations } from "./destinations";
+import { saidSpeed } from "./saidSpeed";
 import { saidTime } from "./saidTime";
+import { saidTonnes } from "./saidTonnes";
 import type { Ship } from "./Ship";
 import { voyage, type Voyage } from "./voyage";
 
@@ -8,21 +10,6 @@ const G = 9.81;
 const W = 720;
 const H = 170;
 const PAD = { top: 12, right: 10, bottom: 24, left: 40 };
-
-/** 0.95 is "95%"; 0.99999 is "99.999%": as many nines as it has, because past 99% the nines are the whole story. */
-function saidSpeed(share: number): string {
-  if (share < 0.01) return `${Math.round((share * C) / 1000).toLocaleString("en-US")} km/s`;
-  if (share < 0.99) return `${(share * 100).toPrecision(2)}% of c`;
-  const nines = Math.min(12, Math.ceil(-Math.log10(1 - share)));
-  return `${(Math.floor(share * 10 ** nines) / 10 ** (nines - 2)).toFixed(nines - 2)}% of c`;
-}
-
-const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumSignificantDigits: 3 });
-
-function tonnes(mass: number): string {
-  if (mass >= 1e6) return `${compact.format(mass)} t`;
-  return `${mass >= 100 ? Math.round(mass).toLocaleString("en-US") : mass.toPrecision(2)} t`;
-}
 
 /** Speed against the ship's own clock: the burn bends over towards light, the coast is flat, the stop is the burn backwards. */
 function profile(trip: Voyage, ship: Ship): string {
@@ -58,7 +45,7 @@ export function renderVoyages(ship: Ship, chosen: string): string {
   const rows = trips
     .map(({ destination, trip }) => {
       const classes = [destination.name === chosen ? "chosen" : "", trip.coasts ? "coasts" : ""].filter(Boolean).join(" ");
-      const fuel = trip.coasts ? `all ${tonnes(ship.fuel)}, then coasts` : tonnes(trip.fuelBurnt);
+      const fuel = trip.coasts ? `all ${saidTonnes(ship.fuel)}, then coasts` : saidTonnes(trip.fuelBurnt);
       return (
         `<tr${classes ? ` class="${classes}"` : ""} data-destination="${destination.name}"><th scope="row">${destination.name}</th><td>${destination.said}</td>` +
         `<td>${saidTime(trip.shipTime)}</td><td>${saidTime(trip.homeTime)}</td><td>${saidSpeed(trip.topSpeed)}</td><td>${fuel}</td></tr>`
