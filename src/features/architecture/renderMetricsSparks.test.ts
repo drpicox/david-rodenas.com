@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Metrics } from "./Metrics";
 import { renderMetricsSparks } from "./renderMetricsSparks";
 
-const metrics = (files: number, crossing: number, inCycles = 0): Metrics => ({ files, tests: 0, lines: 0, boxes: 0, arrows: crossing, crossing, typeOnly: 0, inCycles, tested: 0 });
+const metrics = (files: number, crossing: number, inCycles = 0): Metrics => ({ files, tests: 0, lines: 0, boxes: 0, arrows: crossing, crossing, typeOnly: 0, inCycles, testable: 0, tested: 0 });
 const history = [metrics(10, 4), metrics(20, 9, 2), metrics(30, 12)];
 
 describe("what the source measured, commit by commit", () => {

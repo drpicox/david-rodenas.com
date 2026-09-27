@@ -185,7 +185,7 @@ export function layoutArchitecture(snapshot: Snapshot, { tests = false, width = 
         const left = x + (size.width - size.inner) / 2;
         (members.get(box) ?? []).forEach((module, place) => {
           const [column, row] = [place % size.columns, Math.floor(place / size.columns)];
-          balls.push({ id: module.id, path: module.path, box, x: left + (column + 0.5) * CELL, y: y + LABEL + (row + 0.5) * CELL, radius: radiusOf(module.lines), test: module.test });
+          balls.push({ id: module.id, path: module.path, box, x: left + (column + 0.5) * CELL, y: y + LABEL + (row + 0.5) * CELL, radius: radiusOf(module.lines), test: module.test, typesOnly: module.typesOnly ?? false });
         });
         x += size.width + BOX_GAP;
         lineHeight = Math.max(lineHeight, size.height);

@@ -1,5 +1,6 @@
 import { posix } from "node:path";
 import { importsOf } from "./importsOf";
+import { onlyTypes } from "./onlyTypes";
 import type { Dependency, SourceGraph } from "./SourceGraph";
 
 export interface Source {
@@ -22,7 +23,7 @@ function resolved(from: string, specifier: string, known: ReadonlySet<string>): 
  */
 export function readGraph(sources: readonly Source[]): SourceGraph {
   const known = new Set(sources.map((source) => source.path));
-  const modules = sources.map((source) => ({ path: source.path, lines: source.text.split("\n").length, test: source.path.endsWith(".test.ts") }));
+  const modules = sources.map((source) => ({ path: source.path, lines: source.text.split("\n").length, test: source.path.endsWith(".test.ts"), typesOnly: onlyTypes(source.text) }));
   const dependencies: Dependency[] = [];
   for (const source of sources) {
     const arrows = new Map<string, boolean>();

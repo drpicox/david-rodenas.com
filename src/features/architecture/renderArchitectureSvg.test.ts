@@ -11,7 +11,7 @@ const layout: Layout = {
     { name: "platform/program", label: "program", x: 10, y: 120, width: 80, height: 40, rank: 0, cyclic: false },
     { name: "platform/shell", label: "shell", x: 120, y: 120, width: 80, height: 40, rank: 0, cyclic: true },
   ],
-  balls: [{ id: 7, path: "features/rocket/voyage.ts", box: "features/rocket", x: 30, y: 30, radius: 4, test: false }],
+  balls: [{ id: 7, path: "features/rocket/voyage.ts", box: "features/rocket", x: 30, y: 30, radius: 4, test: false, typesOnly: false }],
   links: [
     { from: "features/rocket", to: "platform/program", count: 3, typeOnly: true, x1: 36.7, y1: 50, x2: 50, y2: 120 },
     { from: "features/rocket", to: "platform/shell", count: 1, typeOnly: false, x1: 63.3, y1: 50, x2: 160, y2: 120 },

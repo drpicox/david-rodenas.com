@@ -132,6 +132,8 @@ function play(host: HTMLElement, history: History): () => void {
     const [x, y] = toScene(event);
     scene.hovered = scene.hit(x, y);
     canvas.style.cursor = scene.hovered.path || scene.hovered.box ? "pointer" : "";
+    // What is under the pointer, said on the element too, for whoever reads the page without looking at it.
+    canvas.dataset["hovered"] = scene.hovered.path ?? scene.hovered.box ?? "";
   });
   canvas.addEventListener("mouseleave", () => {
     scene.hovered = {};

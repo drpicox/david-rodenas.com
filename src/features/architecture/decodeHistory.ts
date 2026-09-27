@@ -9,7 +9,7 @@ export function decodeHistory(history: History): Snapshot[] {
   const arrows = new Map<string, boolean>();
   return history.changes.map((change) => {
     for (const id of change.removed) modules.delete(id);
-    for (const [id, path, lines, test] of change.added) modules.set(id, { id, path, lines, test });
+    for (const [id, path, lines, test, typesOnly] of change.added) modules.set(id, typesOnly ? { id, path, lines, test, typesOnly } : { id, path, lines, test });
     for (const [id, path] of change.moved) {
       const module = modules.get(id);
       if (module) modules.set(id, { ...module, path });

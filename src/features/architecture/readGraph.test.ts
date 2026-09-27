@@ -13,8 +13,9 @@ describe("the graph of the source", () => {
   const graph = readGraph(sources);
 
   it("has a module for every file, with its length, and knows which are tests", () => {
-    expect(graph.modules).toContainEqual({ path: "platform/shell/index.ts", lines: 3, test: false });
-    expect(graph.modules).toContainEqual({ path: "features/theme/Theme.test.ts", lines: 2, test: true });
+    expect(graph.modules).toContainEqual({ path: "platform/shell/index.ts", lines: 3, test: false, typesOnly: false });
+    expect(graph.modules).toContainEqual({ path: "features/theme/Theme.test.ts", lines: 2, test: true, typesOnly: false });
+    expect(graph.modules).toContainEqual({ path: "platform/content/Page.ts", lines: 2, test: false, typesOnly: true });
   });
 
   it("resolves an import to the file it names, a folder to its index, and keeps whether it needs only a type", () => {

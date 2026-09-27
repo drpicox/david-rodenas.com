@@ -6,6 +6,7 @@ const snapshot = {
     { id: 0, path: "platform/p/a.ts", lines: 10, test: false },
     { id: 1, path: "platform/q/b.ts", lines: 20, test: false },
     { id: 2, path: "features/f/c.ts", lines: 30, test: false },
+    { id: 4, path: "features/f/Shape.ts", lines: 5, test: false, typesOnly: true },
     { id: 3, path: "features/f/c.test.ts", lines: 5, test: true },
   ],
   dependencies: [
@@ -18,7 +19,7 @@ const snapshot = {
 
 describe("what a snapshot measures", () => {
   it("counts the files that ship apart from the tests, and their lines", () => {
-    expect(metricsOf(snapshot)).toMatchObject({ files: 3, tests: 1, lines: 60, boxes: 3 });
+    expect(metricsOf(snapshot)).toMatchObject({ files: 4, tests: 1, lines: 65, boxes: 3 });
   });
 
   it("counts the arrows that ship, those that cross boxes, and those that need only a type", () => {
@@ -29,7 +30,7 @@ describe("what a snapshot measures", () => {
     expect(metricsOf(snapshot).inCycles).toBe(2);
   });
 
-  it("counts the files a test reaches directly", () => {
-    expect(metricsOf(snapshot).tested).toBe(1);
+  it("counts the files a test reaches directly, out of those with something in them to test", () => {
+    expect(metricsOf(snapshot)).toMatchObject({ testable: 3, tested: 1 });
   });
 });

@@ -22,6 +22,8 @@ export interface BallPlace {
   readonly y: number;
   readonly radius: number;
   readonly test: boolean;
+  /** Nothing in it runs, so nothing in it can be tested. */
+  readonly typesOnly: boolean;
 }
 
 /** All the arrows from one box to another, drawn as one, as thick as there are many. */

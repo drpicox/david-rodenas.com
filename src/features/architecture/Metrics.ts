@@ -13,6 +13,8 @@ export interface Metrics {
   readonly typeOnly: number;
   /** Boxes caught in a circle with others. */
   readonly inCycles: number;
-  /** Shipped files at least one test imports directly. */
+  /** Shipped files with something in them to run: the ones a test could reach. */
+  readonly testable: number;
+  /** Of those, the ones at least one test imports directly. */
   readonly tested: number;
 }

@@ -15,7 +15,9 @@ frame or a feature, and every arrow a box that needs another. It is read from
 the source by the TypeScript compiler, at every commit that changed it. Play
 it and watch it grow; tangle it to see the same files with nobody saying
 where anything goes, and untangle it again. Put the tests in, and every file
-no test imports directly is drawn as a ring.
+with something in it to run that no test imports directly is drawn as a
+ring. Point at a file, and its own arrows come out: what it needs, and what
+needs it.
 
 ::architecture
 

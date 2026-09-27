@@ -4,7 +4,7 @@ import { encodeHistory } from "./encodeHistory";
 import type { SourceGraph } from "./SourceGraph";
 
 const commit = (sha: string) => ({ sha, date: "2026-09-07", subject: sha });
-const module = (path: string, lines = 10) => ({ path, lines, test: path.endsWith(".test.ts") });
+const module = (path: string, lines = 10) => ({ path, lines, test: path.endsWith(".test.ts"), typesOnly: false });
 const needs = (from: string, to: string, typeOnly = false) => ({ from, to, typeOnly });
 
 const first: SourceGraph = { modules: [module("core/a.ts"), module("core/b.ts"), module("ui/c.ts")], dependencies: [needs("ui/c.ts", "core/a.ts"), needs("core/a.ts", "core/b.ts", true)] };

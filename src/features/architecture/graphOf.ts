@@ -6,7 +6,7 @@ export function graphOf(snapshot: Snapshot, shippedOnly = false): SourceGraph {
   const kept = snapshot.modules.filter((module) => !shippedOnly || !module.test);
   const pathOf = new Map(kept.map((module) => [module.id, module.path]));
   return {
-    modules: kept.map(({ path, lines, test }) => ({ path, lines, test })),
+    modules: kept.map(({ path, lines, test, typesOnly = false }) => ({ path, lines, test, typesOnly })),
     dependencies: snapshot.dependencies.flatMap(({ from, to, typeOnly }) => {
       const [a, b] = [pathOf.get(from), pathOf.get(to)];
       return a !== undefined && b !== undefined ? [{ from: a, to: b, typeOnly }] : [];

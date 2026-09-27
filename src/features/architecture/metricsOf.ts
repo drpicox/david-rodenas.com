@@ -8,6 +8,7 @@ import type { Snapshot } from "./Snapshot";
 /** The figures of one snapshot, read off the same graph the rules are. */
 export function metricsOf(snapshot: Snapshot): Metrics {
   const shipped = graphOf(snapshot, true);
+  const testable = new Set(snapshot.modules.filter((module) => !module.test && !module.typesOnly).map((module) => module.id));
   const crossing = shipped.dependencies.filter((dependency) => boxOf(dependency.from) !== boxOf(dependency.to));
   return {
     files: shipped.modules.length,
@@ -18,6 +19,7 @@ export function metricsOf(snapshot: Snapshot): Metrics {
     crossing: crossing.length,
     typeOnly: shipped.dependencies.filter((dependency) => dependency.typeOnly).length,
     inCycles: boxCycles(shipped).flat().length,
-    tested: reachedByTests(snapshot).size,
+    testable: testable.size,
+    tested: [...reachedByTests(snapshot)].filter((id) => testable.has(id)).length,
   };
 }

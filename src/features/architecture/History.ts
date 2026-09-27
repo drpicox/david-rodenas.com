@@ -12,8 +12,8 @@ export interface Commit {
  * another appearing.
  */
 export interface Change {
-  /** `[id, path, lines, test]` for each module that appeared. */
-  readonly added: readonly (readonly [number, string, number, boolean])[];
+  /** `[id, path, lines, test, typesOnly]` for each module that appeared; the last is left out when false. */
+  readonly added: readonly (readonly [number, string, number, boolean, boolean?])[];
   readonly removed: readonly number[];
   /** `[id, path]` for each module that moved. */
   readonly moved: readonly (readonly [number, string])[];

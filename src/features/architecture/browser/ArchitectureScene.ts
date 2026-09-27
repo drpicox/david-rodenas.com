@@ -26,6 +26,7 @@ interface Ball {
   box: string;
   path: string;
   test: boolean;
+  typesOnly: boolean;
   /** Seconds to wait before flying, so an untangling falls into place from the top down. */
   wait: number;
   trail: { x: number; y: number }[];
@@ -107,7 +108,7 @@ export class ArchitectureScene {
       const ball = this.balls.get(place.id);
       const wait = untangling ? (topRank - (rankOf.get(place.box) ?? 0)) * 0.07 + Math.random() * 0.12 : 0;
       if (ball) {
-        Object.assign(ball, { leaving: false, box: place.box, path: place.path, test: place.test, radius: place.radius, wait });
+        Object.assign(ball, { leaving: false, box: place.box, path: place.path, test: place.test, typesOnly: place.typesOnly, radius: place.radius, wait });
       } else {
         // A new file is born where it will stand, from nothing, unless the tangle is showing: then anywhere near the middle.
         const [x, y] = this.mode === "tangle" ? [this.width / 2 + (Math.random() - 0.5) * 80, this.height / 2 + (Math.random() - 0.5) * 80] : [place.x, place.y];
@@ -121,6 +122,7 @@ export class ArchitectureScene {
           box: place.box,
           path: place.path,
           test: place.test,
+          typesOnly: place.typesOnly,
           wait,
           trail: [],
           bornAt: this.time,
@@ -241,7 +243,14 @@ export class ArchitectureScene {
       context.fillText(box.label, box.x + 6, box.y + 10);
     }
 
-    this.drawLinks(context, colours);
+    // A file under the pointer brings its own arrows, and everything it is not tied to steps back.
+    const focus = this.hovered.path ? [...this.balls.values()].find((ball) => ball.path === this.hovered.path) : undefined;
+    const needs = focus ? this.fileLinks.filter(([from]) => from === focus.id).map(([, to]) => to) : [];
+    const neededBy = focus ? this.fileLinks.filter(([, to]) => to === focus.id).map(([from]) => from) : [];
+    const tied = new Set([...(focus ? [focus.id] : []), ...needs, ...neededBy]);
+
+    this.drawLinks(context, colours, focus !== undefined);
+    if (focus) this.drawFileArrows(context, colours, focus, needs, neededBy);
 
     // The balls last, over everything, with the trail of any that is flying across the picture.
     for (const ball of this.balls.values()) {
@@ -268,8 +277,9 @@ export class ArchitectureScene {
         context.stroke();
       }
       const lit = this.hovered.path === ball.path;
-      const untested = this.reached !== null && !ball.test && !this.reached.has(ball.id);
-      context.globalAlpha = ball.alpha;
+      const backed = focus !== undefined && !tied.has(ball.id);
+      const untested = this.reached !== null && !ball.test && !ball.typesOnly && !this.reached.has(ball.id);
+      context.globalAlpha = ball.alpha * (backed ? 0.22 : 1);
       context.beginPath();
       context.arc(ball.body.x, ball.body.y, lit ? radius + 2 : Math.max(0, untested ? radius - 0.6 : radius), 0, Math.PI * 2);
       if (untested) {
@@ -287,14 +297,47 @@ export class ArchitectureScene {
       }
     }
 
-    if (this.hovered.path) {
-      const ball = [...this.balls.values()].find((one) => one.path === this.hovered.path);
-      if (ball) this.label(context, colours, ball.path, ball.body.x, ball.body.y - 10);
-    }
+    if (focus) this.label(context, colours, `${focus.path}   needs ${needs.length} · needed by ${neededBy.length}`, focus.body.x, focus.body.y - 10);
     context.globalAlpha = 1;
   }
 
-  private drawLinks(context: CanvasRenderingContext2D, colours: Colours): void {
+  /** One file's own arrows: out to what it needs, in from what needs it, each with its head at the ball it points to. */
+  private drawFileArrows(context: CanvasRenderingContext2D, colours: Colours, focus: Ball, needs: readonly number[], neededBy: readonly number[]): void {
+    const arrow = (from: Ball, to: Ball, colour: string, alpha: number) => {
+      const [dx, dy] = [to.body.x - from.body.x, to.body.y - from.body.y];
+      const length = Math.hypot(dx, dy) || 1;
+      const [ux, uy] = [dx / length, dy / length];
+      const end = { x: to.body.x - ux * (to.size.x + 2), y: to.body.y - uy * (to.size.x + 2) };
+      // A slight bow, always to the same side, so an arrow there and one back do not lie on each other.
+      const control = { x: (from.body.x + end.x) / 2 - uy * length * 0.12, y: (from.body.y + end.y) / 2 + ux * length * 0.12 };
+      context.globalAlpha = alpha;
+      context.strokeStyle = colour;
+      context.fillStyle = colour;
+      context.lineWidth = 1.4;
+      context.beginPath();
+      context.moveTo(from.body.x, from.body.y);
+      context.quadraticCurveTo(control.x, control.y, end.x, end.y);
+      context.stroke();
+      const [hx, hy] = [end.x - control.x, end.y - control.y];
+      const angle = Math.atan2(hy, hx);
+      context.beginPath();
+      context.moveTo(end.x, end.y);
+      context.lineTo(end.x - 7 * Math.cos(angle - 0.4), end.y - 7 * Math.sin(angle - 0.4));
+      context.lineTo(end.x - 7 * Math.cos(angle + 0.4), end.y - 7 * Math.sin(angle + 0.4));
+      context.closePath();
+      context.fill();
+    };
+    for (const id of needs) {
+      const to = this.balls.get(id);
+      if (to) arrow(focus, to, colours.accent, 0.9);
+    }
+    for (const id of neededBy) {
+      const from = this.balls.get(id);
+      if (from) arrow(from, focus, colours.soft, 0.75);
+    }
+  }
+
+  private drawLinks(context: CanvasRenderingContext2D, colours: Colours, stepBack: boolean): void {
     // In the tangle every file needs every file it needs, one thread each: the spaghetti.
     if (this.boxAlpha < 0.98) {
       context.globalAlpha = (1 - this.boxAlpha) * 0.22;
@@ -323,7 +366,7 @@ export class ArchitectureScene {
       const y2 = to.y;
       const lit = hovered !== undefined && (link.from === hovered || link.to === hovered);
       const faded = hovered !== undefined && !lit;
-      context.globalAlpha = this.boxAlpha * Math.min(from.alpha, to.alpha) * (lit ? 0.95 : faded ? 0.08 : 0.4);
+      context.globalAlpha = this.boxAlpha * Math.min(from.alpha, to.alpha) * (stepBack ? 0.06 : lit ? 0.95 : faded ? 0.08 : 0.4);
       context.strokeStyle = lit ? colours.accent : colours.soft;
       context.lineWidth = Math.min(4, 0.8 + Math.log2(link.count) * 0.7) * (lit ? 1.4 : 1);
       context.setLineDash(link.typeOnly ? [4, 3] : []);

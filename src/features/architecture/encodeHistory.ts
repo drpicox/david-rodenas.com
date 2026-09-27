@@ -34,7 +34,7 @@ export function encodeHistory(played: readonly Played[]): History {
     }
 
     const now = new Map<number, Kept>();
-    const added: [number, string, number, boolean][] = [];
+    const added: [number, string, number, boolean, boolean?][] = [];
     for (const module of graph.modules) {
       let id = idOf.get(module.path);
       if (id === undefined) {
@@ -43,7 +43,7 @@ export function encodeHistory(played: readonly Played[]): History {
         idOf.set(module.path, id);
       }
       now.set(id, { path: module.path, lines: module.lines });
-      if (!before.has(id)) added.push([id, module.path, module.lines, module.test]);
+      if (!before.has(id)) added.push(module.typesOnly ? [id, module.path, module.lines, module.test, true] : [id, module.path, module.lines, module.test]);
     }
     for (const [path, id] of idOf) if (!now.has(id) || now.get(id)?.path !== path) idOf.delete(path);
 

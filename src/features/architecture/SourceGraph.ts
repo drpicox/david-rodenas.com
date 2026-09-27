@@ -5,6 +5,8 @@ export interface Module {
   readonly lines: number;
   /** A test is a module too, so the picture can say what the tests reach. */
   readonly test: boolean;
+  /** Nothing in it runs — interfaces and types only — so there is nothing in it to test. */
+  readonly typesOnly: boolean;
 }
 
 /**
