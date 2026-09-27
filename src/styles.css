@@ -39,7 +39,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"]):not([data-theme="pink"]) {
     --paper: #15181d;
     --ink: #ccd2da;
     --dim: #868e9a;
@@ -74,6 +74,25 @@
   --heat-warm: #a8492c;
   --heat-warm-top: #ffe6d8;
   color-scheme: dark;
+}
+
+/* Pink is only ever asked for by name. A light paper, so the system's night does not reach it. */
+:root[data-theme="pink"] {
+  --paper: #fff4f8;
+  --ink: #2a1520;
+  --dim: #8a6474;
+  --rule: #f1d0dc;
+  --sunken: #fde6ee;
+  --lead: var(--ink);
+  --accent: #c2185b;
+  --accent-soft: #e07aa3;
+  --hl-string: #7a3e9d;
+  --warn: #b4443c;
+  --heat: #e07aa3;
+  --heat-top: #5a0f2e;
+  --heat-warm: #e08a5b;
+  --heat-warm-top: #5c1609;
+  color-scheme: light;
 }
 
 /*
@@ -2220,7 +2239,7 @@ main,
   margin-top: 0.8em;
 }
 
-/* The theme's three choices: the one in force stands out, the others are there to press. */
+/* The theme's choices: the one in force stands out, the others are there to press. */
 pre.choices strong {
   color: var(--accent);
 }
