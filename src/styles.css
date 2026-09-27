@@ -2437,37 +2437,129 @@ figure.bars figcaption {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   grid-auto-rows: minmax(0, 1fr);
-  gap: 2px;
   aspect-ratio: 1;
+  padding: 3px;
+  border-radius: 4px;
+  background: var(--sunken);
 }
 
+/* A room not stood in yet is fog: the map keeps its secrets. */
 .app .adventure .cell {
+  position: relative;
   min-height: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1px;
   padding: 2px;
   overflow: hidden;
-  border: 1px solid var(--rule);
-  border-radius: 2px;
-  background: var(--sunken);
+  border: 2px solid transparent;
   font-family: var(--mono);
-  font-size: 0.55rem;
-  line-height: 1.1;
+  font-size: 0.5rem;
+  line-height: 1.05;
   text-align: center;
   color: var(--dim);
   word-break: break-word;
 }
 
+/* A room stood in is floor, with its walls where there is no way out. */
 .app .adventure .cell.seen {
-  background: var(--paper);
+  background:
+    linear-gradient(135deg, transparent 0 48%, color-mix(in srgb, var(--rule) 45%, transparent) 48% 52%, transparent 52%) 0 0 / 8px 8px,
+    var(--paper);
   color: var(--ink);
 }
 
+.app .adventure .cell.wall-n { border-top-color: var(--ink); }
+.app .adventure .cell.wall-s { border-bottom-color: var(--ink); }
+.app .adventure .cell.wall-e { border-right-color: var(--ink); }
+.app .adventure .cell.wall-w { border-left-color: var(--ink); }
+.app .adventure .cell.door-n { border-top: 2px dashed var(--warn); }
+.app .adventure .cell.door-s { border-bottom: 2px dashed var(--warn); }
+.app .adventure .cell.door-e { border-right: 2px dashed var(--warn); }
+.app .adventure .cell.door-w { border-left: 2px dashed var(--warn); }
+
 .app .adventure .cell.here {
-  border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
-  color: var(--accent);
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+    var(--paper);
+}
+
+.app .adventure .cell .room {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app .adventure svg.pixel {
+  display: block;
+  width: 1.1rem;
+  height: 1.1rem;
+  image-rendering: pixelated;
+}
+
+.app .adventure .cell .player {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  animation: adventure-bob 1.4s ease-in-out infinite;
+}
+
+.app .adventure .cell .player svg.pixel {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+@keyframes adventure-bob {
+  50% { transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app .adventure .cell .player { animation: none; }
+}
+
+.app .adventure .seen .item,
+.app .adventure .seen .monster {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.app .adventure .seen .item svg.pixel,
+.app .adventure .seen .monster svg.pixel {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.app .adventure .gear {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4em 0.9em;
+}
+
+.app .adventure .gear .held {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.app .adventure .hearts {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.app .adventure .heart {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--rule);
+}
+
+.app .adventure .heart.full {
+  background: var(--warn);
 }
 
 .app .adventure .seen {

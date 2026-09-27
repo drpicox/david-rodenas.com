@@ -17,7 +17,9 @@ The game was written in Spanish for the class and is translated here, word
 for word; its own words still work at the prompt — `norte`, `sur`, `este`,
 `oeste`, `coger`, `atacar` — beside the English ones. You start in the south-west corner with sixteen points of life and
 nothing in your hands, and the pantry is one room away through a door you
-have no key for. The map fills in as you go.
+have no key for. The map fills in as you go, walls and doors and all. The map and its little
+pictures are this page's: the game itself was only words, and they are all
+still here, as it printed them.
 
 ## Four schemas, and nothing else
 

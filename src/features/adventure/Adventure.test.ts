@@ -3,6 +3,24 @@ import { Adventure } from "./Adventure";
 
 const play = (game: Adventure, line: string) => line.split(/\s+/).filter(Boolean).map((word) => game.run(word));
 
+describe("the rooms the map can draw", () => {
+  it("are only those stood in, with their ways out and what they hold", () => {
+    const charted = new Adventure().charted();
+    expect(charted).toEqual([{ where: "0,0", name: "Welcome", exits: [-1, -1, 0, -1], holds: { kind: "weapon", name: "newspaper" } }]);
+  });
+
+  it("follow the game: a door opened is open, and a thing taken is gone", () => {
+    const game = new Adventure();
+    game.go("este");
+    game.take();
+    game.go("norte");
+    const keys = game.charted().find((room) => room.name === "Use the keys");
+    expect(keys?.holds).toBeNull();
+    expect(keys?.exits[0]).toBe(0);
+    expect(game.charted().map((room) => room.where).sort()).toEqual(["0,0", "0,1", "1,1"]);
+  });
+});
+
 describe("the 2007 adventure, rule for rule", () => {
   it("starts in the welcome room with full life and nothing in hand, and describes what it sees", () => {
     const seen = new Adventure().look();

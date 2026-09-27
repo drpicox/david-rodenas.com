@@ -1,5 +1,7 @@
+import type { Charted } from "./Charted";
 import { englishWorld } from "./englishWorld";
-import type { Item, Monster, Room } from "./World";
+import type { Item, ItemKind, Monster, Room } from "./World";
+import { LIFE } from "./LIFE";
 
 const { items, monsters, rooms } = englishWorld;
 
@@ -21,6 +23,8 @@ export interface Seen {
   readonly text: string;
   readonly monster?: string;
   readonly item?: string;
+  /** What kind of thing the item is, for the picture of it. */
+  readonly itemKind?: ItemKind;
   /** The open directions, and whether each is a locked door. */
   readonly exits: readonly { readonly direction: Direction; readonly locked: boolean }[];
   readonly at: readonly [number, number];
@@ -30,8 +34,6 @@ export interface Seen {
   readonly key?: string;
 }
 
-/** What the player starts with, and the most food can bring them back to. */
-const LIFE = 16;
 const START: readonly [number, number] = [0, 0];
 const GOAL: readonly [number, number] = [1, 0];
 
@@ -116,13 +118,30 @@ export class Adventure {
     return game;
   }
 
+  /** Every room stood in, as the map draws it: ways out and what is in it, as they are now. */
+  charted(): Charted[] {
+    return [...this.visited].sort().flatMap((where) => {
+      const place = this.places.get(where);
+      if (!place) return [];
+      const { holds } = place;
+      return [
+        {
+          where,
+          name: place.room.name,
+          exits: [place.exits[0], place.exits[1], place.exits[2], place.exits[3]],
+          holds: holds ? ("item" in holds ? { kind: holds.item.kind, name: holds.item.name } : { kind: "monster", name: holds.monster.name }) : null,
+        },
+      ];
+    });
+  }
+
   look(): Seen {
     const { room, exits, holds } = this.place();
     return {
       name: room.name,
       text: room.text,
       ...(holds && "monster" in holds ? { monster: holds.monster.name } : {}),
-      ...(holds && "item" in holds ? { item: holds.item.name } : {}),
+      ...(holds && "item" in holds ? { item: holds.item.name, itemKind: holds.item.kind } : {}),
       exits: DIRECTIONS.flatMap((direction, index) => ((exits[index] ?? -1) >= 0 ? [{ direction, locked: (exits[index] ?? 0) > 0 }] : [])),
       at: [this.at[0], this.at[1]],
       life: this.life,
