@@ -1,7 +1,10 @@
 import type { SmallStep } from "./randomSteps";
 
-/** A place in the row: nothing yet, a test failing, a test passing, or a clean step. */
-export type Mark = "empty" | "red" | "green" | "clean";
+/**
+ * A place in the row: nothing yet, a test failing, a test just put right and
+ * showing it for a moment, a test passing, or a clean step.
+ */
+export type Mark = "empty" | "red" | "fixed" | "green" | "clean";
 
 /** What the row shows, and for how long before the next frame, in milliseconds. */
 export interface Frame {
@@ -10,7 +13,8 @@ export interface Frame {
 }
 
 const STEP = 220;
-const RED = 520;
+/** Long enough to see it being put right: the stylesheet fills it with green from below while it waits. */
+const RED = 950;
 const FULL = 2200;
 const WIPE = 45;
 
@@ -29,7 +33,7 @@ export function smallStepsFrames(steps: readonly SmallStep[], { wipe = true }: {
     if (step === "test") {
       marks[index] = "red";
       show(RED);
-      marks[index] = "green";
+      marks[index] = "fixed";
     } else marks[index] = "clean";
     show(index === steps.length - 1 ? FULL : STEP);
   });

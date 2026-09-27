@@ -3841,6 +3841,46 @@ main li > img.card {
   background: var(--warn);
 }
 
+/* Red is not left red: the green rises from below while it waits, and once
+   it is put right it glows for a moment, to be remembered. The still never
+   carries these marks, so a reader who asked for less motion never sees them. */
+.app .small-steps li {
+  position: relative;
+  overflow: hidden;
+}
+
+.app .small-steps li.red::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--hl-string);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: small-step-mend 0.9s ease-in forwards;
+}
+
+.app .small-steps li.fixed {
+  overflow: visible;
+  animation: small-step-fixed 1.4s ease-out;
+}
+
+@keyframes small-step-mend {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes small-step-fixed {
+  0% {
+    transform: scaleY(1.9);
+    box-shadow: 0 0 0.5rem 0.2rem var(--hl-string);
+  }
+  100% {
+    transform: none;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
 .app .small-steps li.clean {
   background: color-mix(in srgb, var(--hl-string) 55%, var(--paper));
 }

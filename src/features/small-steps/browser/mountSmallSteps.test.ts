@@ -8,14 +8,14 @@ describe("small steps, playing in the page", () => {
 
   const classes = (host: HTMLElement) => [...host.querySelectorAll("li")].map((li) => li.className);
 
-  it("starts empty, puts a failing test in red, and turns it green before the next step", () => {
+  it("starts empty, puts a failing test in red, and shows it put right before the next step", () => {
     const host = document.createElement("div");
     const stop = mountSmallSteps(host);
     expect(classes(host).every((mark) => mark === "empty")).toBe(true);
     vi.advanceTimersByTime(230);
     expect(classes(host)[0]).toBe("red");
-    vi.advanceTimersByTime(530);
-    expect(classes(host)[0]).toBe("green");
+    vi.advanceTimersByTime(1000);
+    expect(classes(host)[0]).toBe("fixed");
     stop();
   });
 
@@ -23,7 +23,7 @@ describe("small steps, playing in the page", () => {
     const host = document.createElement("div");
     mountSmallSteps(host);
     vi.advanceTimersByTime(120_000);
-    expect(classes(host).every((mark) => mark === "green" || mark === "clean")).toBe(true);
+    expect(classes(host).every((mark) => mark === "fixed" || mark === "clean")).toBe(true);
     host.querySelector<HTMLButtonElement>("button.player")?.click();
     expect(host.querySelector("button.player")?.getAttribute("aria-label")).toBe("Pause");
     expect(classes(host).every((mark) => mark === "empty")).toBe(true);
