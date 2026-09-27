@@ -12,7 +12,6 @@ import type { Headline } from "./Headline";
 export const HEADLINES: readonly Headline[] = [
   { text: "More than\nhalf a million views\non Medium.", href: "/essays/" },
   { text: "One essay\nevery Saturday\nsince 2022.", href: "/essays/" },
-  { text: "When a rule matters,\nI turn it into code,\nnot a guide.", href: "/work/" },
   { text: "I made\nthe AngularJS compiler\nfaster.", href: "/open-source/angularjs/" },
   { text: "Two public APIs\nof AngularJS\nare mine.", href: "/open-source/angularjs/" },
   { text: "I wrote a book\non technical debt\nand its emotional cost.", href: "/book/" },

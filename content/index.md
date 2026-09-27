@@ -9,9 +9,7 @@ the foundations
 other engineers build on.
 
 Computer enthusiast, doctor and engineer. Former vice-dean of COEINF, the
-professional college of computer engineers of Catalonia. When a rule matters,
-I turn it into code instead of a guide, so it holds for a person and for an
-AI agent alike: [what that looks like](/work/).
+professional college of computer engineers of Catalonia.
 
 ## The book
 
