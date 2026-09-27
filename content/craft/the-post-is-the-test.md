@@ -1,7 +1,7 @@
 ---
 title: The post is the test
 summary: My students got stuck on the regular expressions that tie each step of a test to its code, so a step's sentence became the code's name, and a post became the test. The idea, running, and where it went after the course.
-order: 1
+order: 3
 ---
 
 # A sentence is a step.  
@@ -9,7 +9,8 @@ The post is the test.
 
 A behaviour test written in plain sentences needs, for every sentence, a
 piece of code that knows what to do with it, and the usual way to find that
-piece is a regular expression written to match the sentence. That is where my
+piece is a pattern — a regular expression, or a Cucumber expression — written
+to match the sentence. That is where my
 students got stuck: on the expressions, and on naming the functions behind
 the steps.
 

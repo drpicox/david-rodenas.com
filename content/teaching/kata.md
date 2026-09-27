@@ -69,3 +69,10 @@ commit number and the test bar status. If the test bar status matches the
 condition of your current tests, and there is a commit number, then commit the
 git repository with the commit number as a message. Once you have finished it,
 remember to push changes.
+
+Two messages on the JavaScript slides are printed wrong. When the fourth test
+fails, the runner says `Expected: 24. Received: NaN.`; and when the fifth is
+made to fail, `Expected: "fail". Received: 300.`
+
+[The kata, one commit at a time](/craft/kata/) follows the JavaScript slides:
+every commit run in the page, with what the runner really says.

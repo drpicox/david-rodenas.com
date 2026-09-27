@@ -3552,3 +3552,245 @@ main li > img.card {
   overflow-x: auto;
   font-size: 0.78rem;
 }
+
+/* ---- the kata, one commit at a time ---- */
+
+.app .kata:focus-visible,
+.app[data-app="bowling-kata"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* A clean step changes no behaviour: the same green, quieter. */
+.app .kata-strip,
+.app .kata-legend {
+  --kata-clean: color-mix(in srgb, var(--hl-string) 55%, var(--paper));
+}
+
+.app .kata-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(1.45rem, 1fr));
+  gap: 3px;
+  margin: 0 0 0.8em;
+  padding: 0;
+  list-style: none;
+  font: 0.65rem var(--mono);
+}
+
+.app .kata-strip li {
+  display: grid;
+  place-items: center;
+  height: 1.45rem;
+  border-radius: 2px;
+  color: var(--paper);
+  cursor: pointer;
+}
+
+.app .kata-strip li.green {
+  background: var(--hl-string);
+}
+
+/* Half paper already, so its number takes the ink. */
+.app .kata-strip li.green.clean {
+  background: var(--kata-clean);
+  color: var(--ink);
+}
+
+.app .kata-legend {
+  margin: -0.4em 0 0.8em;
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+
+.app .kata-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin: 0 0.3em 0 0.8em;
+  border-radius: 2px;
+  vertical-align: -0.05em;
+  background: var(--hl-string);
+}
+
+.app .kata-legend span.red::before {
+  margin-left: 0;
+  background: var(--warn);
+}
+
+.app .kata-legend span.clean::before {
+  background: var(--kata-clean);
+}
+
+.app .kata-strip li.red {
+  background: var(--warn);
+}
+
+.app .kata-strip li.here {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.app .kata-nav {
+  display: flex;
+  gap: 0.6em;
+  margin-bottom: 0.8em;
+}
+
+.app .kata-move {
+  margin: 0 0 0.4em;
+  font: 0.85rem var(--mono);
+  color: var(--dim);
+}
+
+.app .kata-move strong {
+  color: var(--ink);
+}
+
+.app .kata-bar {
+  margin: 0 0 0.8em;
+  padding: 0.35em 0.7em;
+  border-radius: 0.25em;
+  font: 0.85rem var(--mono);
+  color: var(--paper);
+}
+
+.app .kata-bar.green {
+  background: var(--hl-string);
+}
+
+.app .kata-bar.red {
+  background: var(--warn);
+}
+
+.app .kata-files {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: 0.8em;
+}
+
+.app .kata-file {
+  margin: 0;
+  min-width: 0;
+}
+
+.app .kata-file figcaption {
+  margin-bottom: 0.2em;
+  font: 0.75rem var(--mono);
+  color: var(--dim);
+}
+
+/* A figure centres what it holds; code reads from the left. */
+.app .kata-file pre {
+  margin: 0;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* Aligned to the top of its line, so a run of marked lines is one unbroken band. */
+.app .kata-file .line {
+  display: inline-block;
+  min-width: 100%;
+  vertical-align: top;
+}
+
+/* The mark stands in the margin, clear of the first letter. */
+.app .kata-file .line.added {
+  margin-left: -0.6em;
+  padding-left: 0.6em;
+  background: color-mix(in srgb, var(--hl-string) 16%, transparent);
+  box-shadow: inset 3px 0 0 var(--hl-string);
+}
+
+.app .kata-empty {
+  margin: 0;
+  padding: 0.8em;
+  border: 1px dashed var(--rule);
+  border-radius: 0.25em;
+  font: 0.8rem var(--mono);
+  color: var(--dim);
+}
+
+.app .kata-note {
+  margin: 0.8em 0 0;
+  padding-left: 0.8em;
+  border-left: 3px solid var(--accent-soft);
+  font-size: 0.85rem;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.app .kata-smells {
+  margin-top: 0.8em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .kata-smells h4,
+.app .dispatcher-tests h4 {
+  margin: 0 0 0.2em;
+  font: 0.75rem var(--mono);
+  color: var(--dim);
+}
+
+.app .kata-smells ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+/* ---- a test is an example: the same tests, three dispatchers ---- */
+
+.app .dispatcher-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.2em;
+  margin-bottom: 0.8em;
+  font-size: 0.85rem;
+}
+
+.app .dispatcher-run {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
+  gap: 0.8em 1.2em;
+}
+
+.app .said-change {
+  margin: 0 0 0.8em;
+  font-size: 0.85rem;
+}
+
+.app .test-results {
+  margin: 0 0 0.8em;
+  padding: 0;
+  list-style: none;
+}
+
+.app .test-results li {
+  margin: 0 0 0.35em;
+  padding-left: 1.3em;
+  position: relative;
+  font-size: 0.8rem;
+}
+
+.app .test-results li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.3em;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--hl-string);
+}
+
+.app .test-results li.red::before {
+  background: var(--warn);
+}
+
+.app .test-results .said {
+  display: block;
+  font: 0.75rem var(--mono);
+  color: var(--warn);
+}

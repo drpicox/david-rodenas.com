@@ -54,6 +54,8 @@ graph LR
     lagoon["<b>lagoon</b><br/>a commons that breeds, the bots<br/>that share it, and a seat for yours"]
     maze["<b>maze</b><br/>the VRML maze generator of 2001,<br/>its dig and its spheres, Java's random"]
     firstnetwork["<b>first-network</b><br/>letters told apart by backpropagation,<br/>the visitor's own among them"]
+    bowlingkata["<b>bowling-kata</b><br/>Robert C. Martin's kata, commit<br/>by commit, each one run in the page"]
+    testsasexamples["<b>tests-as-examples</b><br/>the same tests against a dispatcher<br/>refactored, and one with a bug"]
     stepnames["<b>step-names</b><br/>a sentence read as a method,<br/>and the tests a post becomes"]
     architecture["<b>architecture</b><br/>the source read as a graph:<br/>boxes, arrows, and the rules on them"]
     portfolio["<b>portfolio</b><br/>a flag: the lists with pictures<br/>as cards the width of a program"]
