@@ -1,6 +1,8 @@
 import type { Body } from "../Body";
 import type { Layout } from "../Layout";
-import { reachOf } from "../reachOf";
+import type { Lenses, Pointing } from "../lensesOf";
+import { type Pointed, pointedAt } from "../pointedAt";
+import { rampColour } from "../rampColour";
 import type { Snapshot } from "../Snapshot";
 import { springTowards } from "../springTowards";
 import { tangleStep } from "../tangleStep";
@@ -19,9 +21,14 @@ export interface Colours {
   readonly test: string;
   /** The arrows of what needs a file: warm, never to be taken for the blue of what it needs. */
   readonly arrowIn: string;
-  /** A change: the ring a file a commit changed is touched with. */
+  /** A change: the ring a file a commit changed is touched with, and the middle of the warm ramp. */
   readonly heat: string;
+  /** The far end of the warm ramp: as hot as it gets. */
+  readonly heatTop: string;
 }
+
+/** What the lenses add to a snapshot: the colour of each ball, the threads of what changed together, the arrows against stability, the groups. */
+export type Seen = Pick<Lenses, "tones" | "ramp" | "threads" | "against" | "groups">;
 
 interface Ball {
   readonly body: Body;
@@ -88,8 +95,10 @@ export class ArchitectureScene {
   /** The file-level arrows, drawn in the tangle, where there are no boxes to gather them. */
   private fileLinks: [number, number][] = [];
   hovered: { path?: string; box?: string } = {};
-  /** How far a file's arrows reach when it is pointed at: one is what it names itself; more is its blast radius. */
-  reach = 1;
+  /** What pointing at a file brings out: its arrows, as far as asked; its group; or what changed with it. */
+  pointing: Pointing = "1";
+  /** What the lenses asked for: nothing, until they ask. */
+  private seen: Seen = { tones: null, ramp: null, threads: [], against: new Set(), groups: null };
 
   /** How tall the picture is now: it follows the snapshot, and the tangle, as they grow and shrink. */
   height = TANGLE_HEIGHT;
@@ -118,6 +127,7 @@ export class ArchitectureScene {
       coverage = null,
       sizes = null,
       changed = null,
+      seen = null,
     }: {
       untangling?: boolean;
       reached?: ReadonlySet<number> | null;
@@ -125,8 +135,10 @@ export class ArchitectureScene {
       sizes?: ReadonlyMap<number, number> | null;
       /** The files the commit being shown changed, when it has just come: each rings once. */
       changed?: ReadonlySet<number> | null;
+      seen?: Seen | null;
     } = {},
   ): void {
+    if (seen) this.seen = seen;
     this.reached = reached;
     this.coverage = coverage;
     this.layout = layout;
@@ -206,7 +218,9 @@ export class ArchitectureScene {
       this.tangleClock += seconds;
       const live = [...this.balls.entries()].filter(([, ball]) => !ball.leaving);
       const at = new Map(live.map(([id], position) => [id, position]));
-      const links = this.fileLinks.flatMap(([from, to]) => {
+      // What changed together pulls too, when its threads are drawn: the tangle the history would make.
+      const pairs: (readonly [number, number])[] = [...this.fileLinks, ...this.seen.threads.map(({ a, b }) => [a, b] as const)];
+      const links = pairs.flatMap(([from, to]) => {
         const [a, b] = [at.get(from), at.get(to)];
         return a !== undefined && b !== undefined ? [[a, b] as [number, number]] : [];
       });
@@ -288,14 +302,16 @@ export class ArchitectureScene {
       context.fillText(box.label, box.x + 6, box.y + 10);
     }
 
-    // A file under the pointer brings its own arrows, as far as they are asked to reach, and everything it is not tied to steps back.
+    // A file under the pointer brings out what it is asked to — its arrows, its group, or what changed with it — and everything else steps back.
     const focus = this.hovered.path ? [...this.balls.values()].find((ball) => ball.path === this.hovered.path) : undefined;
-    const needs = focus ? reachOf(this.fileLinks, focus.id, this.reach, "needs") : new Map<number, number>();
-    const neededBy = focus ? reachOf(this.fileLinks, focus.id, this.reach, "neededBy") : new Map<number, number>();
-    const tied = new Set([...(focus ? [focus.id] : []), ...needs.keys(), ...neededBy.keys()]);
+    const pointed = focus ? pointedAt(focus.id, this.pointing, this.fileLinks, this.seen.groups, this.seen.threads) : null;
+    const tied = pointed?.tied ?? new Set<number>();
 
     this.drawLinks(context, colours, focus !== undefined);
-    if (focus) this.drawFileArrows(context, colours, focus, needs, neededBy);
+    this.drawThreads(context, colours, focus?.id, pointed);
+    if (focus && pointed) this.drawFileArrows(context, colours, focus, pointed.needs, pointed.neededBy);
+    const stops = this.seen.ramp === "warm" ? [colours.dim, colours.heat, colours.heatTop] : [colours.rule, colours.soft, colours.accent];
+    const fillOf = (ball: Ball & { id: number }) => (this.seen.tones && !ball.test ? rampColour(stops, this.seen.tones.get(ball.id) ?? 0) : colours.accent);
 
     // The balls last, over everything, with the trail of any that is flying across the picture.
     for (const ball of this.balls.values()) {
@@ -343,7 +359,7 @@ export class ArchitectureScene {
         context.strokeStyle = share >= 99.5 ? colours.accent : colours.warn;
         context.lineWidth = 1.2;
         context.stroke();
-        context.fillStyle = colours.accent;
+        context.fillStyle = fillOf(ball);
         context.beginPath();
         context.moveTo(ball.body.x, ball.body.y);
         context.arc(ball.body.x, ball.body.y, Math.max(0, radius - 0.6), -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * share) / 100);
@@ -361,7 +377,7 @@ export class ArchitectureScene {
         context.lineWidth = 1.2;
         context.stroke();
       } else {
-        context.fillStyle = ball.test ? colours.soft : colours.accent;
+        context.fillStyle = fillOf(ball);
         context.fill();
       }
       if (lit) {
@@ -371,23 +387,63 @@ export class ArchitectureScene {
       }
     }
 
-    if (focus) {
-      const share = this.coverage?.get(focus.path);
-      const run = share !== undefined && !focus.test && !focus.typesOnly ? ` · tests run ${Math.round(share)}% of it` : "";
-      // Those it names itself, and, when the arrows reach further, how many are within that reach.
-      const count = (found: ReadonlyMap<number, number>) => {
-        const near = [...found.values()].filter((distance) => distance === 1).length;
-        return this.reach > 1 && found.size > near ? `${near} (${found.size} within ${Number.isFinite(this.reach) ? this.reach : "any"})` : `${near}`;
-      };
-      this.label(context, colours, [
-        { text: `${focus.path}   ` },
-        { text: `needs ${count(needs)}`, key: colours.accent },
-        { text: " · " },
-        { text: `needed by ${count(neededBy)}`, key: colours.arrowIn },
-        { text: `${run}   click: its source` },
-      ], focus.body.x, focus.body.y - 10);
-    }
+    if (focus && pointed) this.label(context, colours, [{ text: `${focus.path}   ` }, ...this.saidOf(focus, pointed, colours), { text: "   click: its source" }], focus.body.x, focus.body.y - 10);
     context.globalAlpha = 1;
+  }
+
+  /** What pointing at a file brought out, in words for its label: its arrows and how far, its group and the boxes in it, or what changed with it. */
+  private saidOf(focus: Ball & { id: number }, pointed: Pointed, colours: Colours): { text: string; key?: string }[] {
+    const share = this.coverage?.get(focus.path);
+    const run = share !== undefined && !focus.test && !focus.typesOnly ? [{ text: ` · tests run ${Math.round(share)}% of it` }] : [];
+    const nameOf = (id: number) => this.balls.get(id)?.path.split("/").pop() ?? "";
+    if (this.pointing === "group") {
+      const boxes = new Map<string, number>();
+      for (const id of pointed.tied) {
+        const box = this.balls.get(id)?.box;
+        if (box) boxes.set(box, (boxes.get(box) ?? 0) + 1);
+      }
+      const most = [...boxes].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+      const named = most.slice(0, 3).map(([box, count]) => `${box.split("/").pop()} ${count}`).join(", ");
+      const rest = most.length > 3 ? ` and ${most.length - 3} more` : "";
+      return [{ text: `its group: ${pointed.tied.size} files in ${most.length} ${most.length === 1 ? "box" : "boxes"}: ${named}${rest}`, key: colours.accent }, ...run];
+    }
+    if (this.pointing === "together") {
+      const named = pointed.partners.slice(0, 3).map(([id, together]) => `${nameOf(id)} ${together}×`).join(", ");
+      const rest = pointed.partners.length > 3 ? ` and ${pointed.partners.length - 3} more` : "";
+      return [{ text: pointed.partners.length > 0 ? `changed with ${named}${rest}` : "changed with no file twice", key: colours.heat }, ...run];
+    }
+    // Those it names itself, and, when the arrows reach further, how many are within that reach.
+    const depth = { "1": 1, "2": 2, "3": 3, all: Infinity }[this.pointing] ?? 1;
+    const count = (found: ReadonlyMap<number, number>) => {
+      const near = [...found.values()].filter((distance) => distance === 1).length;
+      return depth > 1 && found.size > near ? `${near} (${found.size} within ${Number.isFinite(depth) ? depth : "any"})` : `${near}`;
+    };
+    return [{ text: `needs ${count(pointed.needs)}`, key: colours.accent }, { text: " · " }, { text: `needed by ${count(pointed.neededBy)}`, key: colours.arrowIn }, ...run];
+  }
+
+  /**
+   * The threads of what changed together, over the arrows: warm, as thick as
+   * how often, dashed where no arrow joins the two. Pointing at a file to see
+   * what changed with it brings its own threads out; pointing for anything
+   * else lets them step back.
+   */
+  private drawThreads(context: CanvasRenderingContext2D, colours: Colours, focus: number | undefined, pointed: Pointed | null): void {
+    if (this.seen.threads.length === 0) return;
+    const own = this.pointing === "together" && pointed !== null;
+    context.strokeStyle = colours.heat;
+    for (const { a, b, together, joined } of this.seen.threads) {
+      const [from, to] = [this.balls.get(a), this.balls.get(b)];
+      if (!from || !to) continue;
+      const mine = own && (a === focus || b === focus);
+      context.globalAlpha = Math.min(from.alpha, to.alpha) * (focus === undefined ? (joined === "none" ? 0.75 : 0.45) : mine ? 0.95 : 0.06);
+      context.lineWidth = 0.8 + Math.log2(together) * 0.9;
+      context.setLineDash(joined === "none" ? [4, 3] : []);
+      context.beginPath();
+      context.moveTo(from.body.x, from.body.y);
+      context.lineTo(to.body.x, to.body.y);
+      context.stroke();
+    }
+    context.setLineDash([]);
   }
 
   /**
@@ -462,9 +518,13 @@ export class ArchitectureScene {
       const y2 = to.y;
       const lit = hovered !== undefined && (link.from === hovered || link.to === hovered);
       const faded = hovered !== undefined && !lit;
-      context.globalAlpha = this.boxAlpha * Math.min(from.alpha, to.alpha) * (stepBack ? 0.06 : lit ? 0.95 : faded ? 0.08 : 0.4);
-      context.strokeStyle = lit ? colours.accent : colours.soft;
-      context.lineWidth = Math.min(4, 0.8 + Math.log2(link.count) * 0.7) * (lit ? 1.4 : 1);
+      // Seen for how stable each box is, an arrow from a box to a less stable one is drawn as what it is: against the rule.
+      const against = this.seen.ramp === "cool" && this.seen.against.has(`${link.from}>${link.to}`);
+      // Where the threads of what changed together are drawn, the arrows step back for them.
+      const quiet = this.seen.threads.length > 0 ? 0.2 : 0.4;
+      context.globalAlpha = this.boxAlpha * Math.min(from.alpha, to.alpha) * (stepBack ? 0.06 : lit ? 0.95 : faded ? 0.08 : against ? 0.85 : quiet);
+      context.strokeStyle = against ? colours.warn : lit ? colours.accent : colours.soft;
+      context.lineWidth = Math.min(4, 0.8 + Math.log2(link.count) * 0.7) * (lit || against ? 1.4 : 1);
       context.setLineDash(link.typeOnly ? [4, 3] : []);
       const bend = Math.max(18, (y2 - y1) / 2);
       context.beginPath();

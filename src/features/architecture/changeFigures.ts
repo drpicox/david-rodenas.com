@@ -1,13 +1,23 @@
+import { againstStabilityOf } from "./againstStabilityOf";
+import { boxLinksOf } from "./boxLinksOf";
+import { cascadeFrom } from "./cascadeFrom";
 import { cascadeOf } from "./cascadeOf";
 import { couplingsOf } from "./couplingsOf";
 import type { Coverage } from "./Coverage";
+import { groundOf } from "./groundOf";
 import { historyUpTo } from "./historyUpTo";
+import { measuresOf } from "./measuresOf";
 import { propagationCostOf } from "./propagationCostOf";
 import type { HistoryRead } from "./readHistory";
+import { renderBridgesFigure } from "./renderBridgesFigure";
 import { renderCascadeFigure } from "./renderCascadeFigure";
 import { renderChangeMatrixFigure } from "./renderChangeMatrixFigure";
+import { renderCouplingFigure } from "./renderCouplingFigure";
 import { renderCouplingsFigure } from "./renderCouplingsFigure";
+import { renderGroundFigure } from "./renderGroundFigure";
+import { renderGroupsFigure } from "./renderGroupsFigure";
 import { renderHotspotsFigure } from "./renderHotspotsFigure";
+import { renderReachFigure } from "./renderReachFigure";
 import { renderRipplesFigure } from "./renderRipplesFigure";
 import { renderSettlingFigure } from "./renderSettlingFigure";
 import { renderStabilityFigure } from "./renderStabilityFigure";
@@ -49,7 +59,8 @@ export const changeFigures: Readonly<Record<string, ChangeFigure>> = {
   },
   "change-stability": (read, commit) => {
     const { history, source, lives } = at(read, commit);
-    return renderStabilityFigure(stabilityOf(source, lives, sweepsOf(history)));
+    const boxes = stabilityOf(source, lives, sweepsOf(history));
+    return renderStabilityFigure(boxes, againstStabilityOf(boxLinksOf(source), boxes));
   },
   "change-cascade": (read, commit) => {
     const { history, snapshots, source } = at(read, commit);
@@ -67,4 +78,18 @@ export const changeFigures: Readonly<Record<string, ChangeFigure>> = {
     const { history, snapshots } = at(read, commit);
     return renderTestedChangesFigure(testedChangesOf(history, snapshots));
   },
+  "change-ground": (read, commit) => {
+    const standings = measuresOf.standings(read);
+    return renderGroundFigure(groundOf(standings, cascadeFrom(standings, commit), commit), at(read, commit).lives);
+  },
+  "change-coupling": (read, commit) => renderCouplingFigure(at(read, commit).source),
+  "tangle-groups": (read, commit) => {
+    const { source } = at(read, commit);
+    return renderGroupsFigure(source, measuresOf.groups(source));
+  },
+  "tangle-bridges": (read, commit) => {
+    const { source } = at(read, commit);
+    return renderBridgesFigure(source, measuresOf.bridges(source));
+  },
+  "tangle-reach": (read, commit) => renderReachFigure(read.snapshots, commit),
 };

@@ -1,5 +1,6 @@
 import { fixed } from "../../platform/charts/fixed";
 import { escapeHtml } from "../../platform/markdown/escapeHtml";
+import type { AgainstStability } from "./againstStabilityOf";
 import { breakablePath } from "./breakablePath";
 import { plural } from "./plural";
 import type { BoxStability } from "./stabilityOf";
@@ -57,6 +58,18 @@ function plotOf(boxes: readonly BoxStability[]): string {
   );
 }
 
+/** The arrows against the rule of stable dependencies, counted, and the steepest named. */
+function againstOf(against: readonly AgainstStability[]): string {
+  const [steepest] = against;
+  if (!steepest) return " No arrow between boxes goes against his rule of stable dependencies.";
+  // When most of them leave one box, that box is the story, and it is named.
+  const leaving = new Map<string, number>();
+  for (const { from } of against) leaving.set(from, (leaving.get(from) ?? 0) + 1);
+  const [box, count = 0] = [...leaving].sort((a, b) => b[1] - a[1])[0] ?? [];
+  const most = box && count * 2 > against.length ? ` ${count} of them leave ${box}.` : "";
+  return ` ${plural(against.length, "arrow")} between boxes ${against.length === 1 ? "goes" : "go"} from a box to a less stable one, against his rule of stable dependencies; the steepest, from ${steepest.from} to ${steepest.to}.${most}`;
+}
+
 /** How many boxes stand in the zone of pain, and, by name, the ones there that changed. */
 function captionOf(boxes: readonly BoxStability[]): string {
   const count = boxes.filter(inPain).length;
@@ -87,6 +100,6 @@ function tableOf(boxes: readonly BoxStability[]): string {
  * only hurts for what keeps changing, and that is the one thing his picture
  * cannot show, so each box is as warm as the history says its files changed.
  */
-export function renderStabilityFigure(boxes: readonly BoxStability[]): string {
-  return `<figure class="changes-figure">${plotOf(boxes)}<figcaption>${captionOf(boxes)}</figcaption>${tableOf(boxes)}</figure>`;
+export function renderStabilityFigure(boxes: readonly BoxStability[], against: readonly AgainstStability[] = []): string {
+  return `<figure class="changes-figure">${plotOf(boxes)}<figcaption>${captionOf(boxes)}${againstOf(against)}</figcaption>${tableOf(boxes)}</figure>`;
 }

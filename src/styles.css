@@ -3415,6 +3415,15 @@ main li > img.card {
   white-space: nowrap;
 }
 
+/* The lenses: a second row, under the player's. */
+.app .architecture-controls.lenses {
+  margin-top: -0.3em;
+}
+
+.app .architecture-legend.lenses-said {
+  margin: 0.5em 0 0;
+}
+
 .app .architecture-controls select {
   font: inherit;
   color: var(--ink);
@@ -4760,4 +4769,193 @@ main p:has(> strong:first-child):not(h2 + p) {
   text-align: left;
   font-size: 0.78rem;
   color: var(--ink);
+}
+
+/* ---- a box's two couplings: what needs it coming in, in orange; what it needs going out, in blue ---- */
+
+.app svg.coupling {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.app svg.coupling text {
+  font-size: 11px;
+}
+
+.app svg.coupling .side,
+.app svg.coupling .coupled {
+  fill: var(--ink);
+}
+
+.app svg.coupling .side {
+  font-weight: 600;
+}
+
+.app svg.coupling .arrow {
+  fill: none;
+  stroke-width: 1.4;
+}
+
+.app svg.coupling .arrow.in {
+  stroke: var(--arrow-in);
+}
+
+.app svg.coupling .arrow.out {
+  stroke: var(--accent);
+}
+
+.app svg.coupling .head.in {
+  fill: var(--arrow-in);
+}
+
+.app svg.coupling .head.out {
+  fill: var(--accent);
+}
+
+.app svg.coupling .box {
+  fill: var(--sunken);
+  stroke: var(--rule);
+}
+
+.app svg.coupling .box-name {
+  fill: var(--dim);
+  font-family: var(--mono);
+}
+
+.app svg.coupling .file {
+  fill: var(--paper);
+  stroke: var(--dim);
+  stroke-width: 1;
+}
+
+.app svg.coupling .file.needing {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+
+.app .coupling-choice {
+  display: block;
+  margin-bottom: 0.6em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* ---- what each file's ground predicted: a dot a file, the line where they agree ---- */
+
+.app svg.ground,
+.app svg.reach {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.app svg.ground .frame {
+  fill: none;
+  stroke: var(--rule);
+}
+
+.app svg.ground .even {
+  stroke: var(--dim);
+  stroke-dasharray: 3 3;
+}
+
+.app svg.ground .even-name {
+  font-style: italic;
+  fill: var(--dim);
+}
+
+.app svg.ground .file {
+  fill: var(--accent-soft);
+  opacity: 0.55;
+}
+
+.app svg.ground .file.above {
+  fill: var(--heat-warm);
+  opacity: 1;
+}
+
+.app svg.ground .file.below {
+  fill: var(--accent);
+  opacity: 1;
+}
+
+.app svg.ground .name {
+  fill: var(--ink);
+  font-size: 10px;
+}
+
+/* ---- what the tangle shows: its groups, its bridges, how far a change could reach ---- */
+
+.app svg.groups text.group {
+  font-size: 11px;
+  fill: var(--ink);
+}
+
+.app svg.groups .part.frame,
+.app .changes-legend .key.frame {
+  fill: var(--accent);
+  background: var(--accent);
+}
+
+.app svg.groups .part.feature,
+.app .changes-legend .key.feature {
+  fill: var(--accent-soft);
+  background: var(--accent-soft);
+}
+
+.app svg.groups .part.root,
+.app .changes-legend .key.root {
+  fill: var(--dim);
+  background: var(--dim);
+}
+
+.app table.bridges {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.bridges th,
+.app table.bridges td {
+  padding: 0.3em 0.5em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app table.bridges thead th {
+  font-weight: normal;
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app table.bridges td:nth-child(n + 2),
+.app table.bridges th:nth-child(n + 2) {
+  text-align: right;
+}
+
+.app table.bridges code {
+  font-size: 0.78rem;
+}
+
+.app svg.reach .reach {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.app .changes-legend .key.dot {
+  border-radius: 50%;
+}
+
+.app .changes-legend .key.dot.above {
+  background: var(--heat-warm);
+}
+
+.app .changes-legend .key.dot.below {
+  background: var(--accent);
+}
+
+.app .changes-legend .key.dot.even {
+  background: var(--accent-soft);
+  opacity: 0.55;
 }

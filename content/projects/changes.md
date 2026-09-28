@@ -1,6 +1,6 @@
 ---
 title: How this site changes
-summary: The history of this site's source, read for what changes, how often and with what — the files that settle and the ones that never do, how far a change travels, and the dependencies no arrow shows.
+summary: The history of this site's source, read for what changes, how often and with what — the picture of the source seen through its changes, the files that never settle, how far a change travels and who inherits it, and the dependencies no arrow shows.
 order: 91
 ---
 
@@ -10,8 +10,8 @@ order: 91
 stands. This is how often each one moves. Git keeps every commit, and every
 commit says which files it changed; read over the whole history, that says
 what the arrows cannot: which files settle and which never do, how far a
-change travels, and which files change together although nothing in the
-code joins them.
+change travels, which files inherit the changes of what they stand on, and
+which change together although nothing in the code joins them.
 
 Like the picture of how it is built, every figure here is read off the
 history at every push, so it is always the commit being published. Play the
@@ -19,6 +19,22 @@ history, drag it, or press a commit on the picture of changes, and every
 figure below shows the source as it stood then.
 
 ::change-player
+
+## The picture, as it changed
+
+The picture of how this site is built, seen through its history: each ball
+as big as the commits that have changed it so far, and warm as it changed
+lately, cooling by half every six commits; a warm thread between two files
+that changed together twice or more, dashed where no arrow joins them. Play
+the history and the heat moves: a feature being written glows and cools,
+while the frame under it warms again whenever a feature asks something new
+of it. Tangle it, and what changed together pulls together too. Point at a
+file for what changed with it, or change the lenses for anything else the
+picture of how it is built can show.
+
+::change-graph
+
+## Where the changes went
 
 ::change-matrix
 
@@ -28,7 +44,8 @@ the files that are gone have a row of their own. Each column is a commit.
 Read across, the features come in one after another, each written in a
 burst and then mostly left alone, while the frame under them keeps being
 touched. Read down, a column shaded from top to bottom is a sweep: one
-commit that changed more than thirty files at once.
+commit that changed more than thirty files at once. Point at a cell for
+what its commit did there.
 
 ## Written, then left alone
 
@@ -57,32 +74,6 @@ page every page is written into; the terminal that takes it over in the
 browser. A hotspot that no test runs is where a change most easily breaks
 something nobody sees.
 
-## Two kinds of unstable
-
-Robert C. Martin measures how stable a component is by its place, not by
-its history. Its instability is Ce / (Ca + Ce): its own files that need
-something outside it, over those and the files outside it that need
-something in it. It is 0 for a box that is needed and needs nothing, which
-is hard to change, because whatever needs it may have to change with it;
-and 1 for a box nothing needs, which is free to. Its abstractness
-is how much of it can be depended on without depending on what it does:
-here, the share of its files that hold nothing but types.
-
-He draws one against the other. A box on the line between the two corners,
-the main sequence, is as abstract as its place asks. A box at the bottom
-left is needed by much and concrete, hard to change with nothing abstract in
-it to change instead: the zone of pain. And he says what his picture cannot
-show, that only what keeps changing hurts there; so each box here is as warm
-as the history says its files changed, the sweeps left out.
-
-::change-stability
-
-The frame stands near that corner, as a frame would: everything is built on
-it, and most of it is plain code. Where the two kinds of unstable disagree,
-a box that is hard to change and changes anyway, is where a change costs
-most, because what needs it may have to move with it. Whether it does, the
-history can say too.
-
 ## How far a change travels
 
 When a file changes, what needs it may have to change with it, and what
@@ -104,16 +95,81 @@ not, and much less often two arrows apart than one. The blast radius drawn
 on the picture of how this site is built, with its reach set to all, is how
 far a change could go, not how far changes went.
 
+## Standing on moving ground
+
+A file that stands on files that keep changing is more likely to change with
+them, by as much as the figure above says for each distance. Added up over
+every commit, for each file, that is how many changes its ground made
+likely: what it inherits from what it stands on, its exposure. Set against
+what it did:
+
+::change-ground
+
+Near the line, a file changed about as often as its ground made likely. Far
+above it, a file changed for reasons of its own: it grows with every
+feature, or it keeps being reworked. Far below, a file stood on moving
+ground and did not move — a list of what a feature brings, which nothing
+under it unsettles. On the picture above, colour set to exposure shows every
+file's.
+
+## Two kinds of unstable
+
+Robert C. Martin measures how stable a component is by its place among the
+others, not by its history, and he counts two kinds of coupling to do it:
+
+- **Ca, its afferent couplings**: the files elsewhere that need something
+  in it. Each may have to change when it does, so the more there are, the
+  more it answers for, and the harder it is to change.
+- **Ce, its efferent couplings**: its own files that need something
+  elsewhere. Each may have to change when what it needs does, so the more
+  there are, the more it depends, and the more often something else makes
+  it change.
+
+He counts files, not arrows: a file that needs three things elsewhere is one
+to Ce. His instability puts the two together, I = Ce / (Ca + Ce): 0 for a
+box that is only needed, hard to change because whatever needs it may have
+to change with it; 1 for a box that only needs, which nothing stops from
+changing. Pick a box, and see its two couplings drawn and the sum worked
+out:
+
+::change-coupling
+
+His rule for them is to depend in the direction of stability: an arrow
+should go from a box to one more stable than itself, so that what is hard to
+change never needs what is easy to change, and keeps changing. On the
+picture above, colour set to stability draws every box as deep as it is
+stable, and the arrows that go against the rule in red. When this was
+written, most of them left the list of features: one file, needed by one,
+which by his count stands half way, and which has to point at every
+feature, because putting them together is what it is for.
+
+He also measures how abstract a box is: here, the share of its files that
+hold nothing but types, which can be depended on without depending on what
+anything does. And he draws the two against each other. A box on the line
+between the two corners, the main sequence, is as abstract as its place
+asks. A box at the bottom left is needed by much and concrete, hard to
+change with nothing abstract in it to change instead: the zone of pain. And
+he says what his picture cannot show, that only what keeps changing hurts
+there; so each box here is as warm as the history says its files changed,
+the sweeps left out.
+
+::change-stability
+
+The frame stands near that corner, as a frame would: everything is built on
+it, and most of it is plain code. Where the two kinds of unstable disagree,
+a box that is hard to change and changes anyway, is where a change costs
+most, because what needs it may have to move with it.
+
 ## An arrow onto a type
 
-The dashed arrows on that picture need only a type: a box that depends on
-an interface, not on what implements it. That is dependency inversion, and
-its promise is that a change to what implements the interface does not
-reach those that use it: there is no arrow for it to travel, and the figure
-above counts how seldom files change with nothing changed below them. What
-an arrow onto a type can still carry is a change to the type itself. For
-each kind of arrow, how often a change at its head came with a change at
-its tail:
+The dashed arrows on the picture need only a type: a box that depends on an
+interface, not on what implements it. That is dependency inversion, and its
+promise is that a change to what implements the interface does not reach
+those that use it: there is no arrow for it to travel, and the figure of how
+far a change travels counts how seldom files change with nothing changed
+below them. What an arrow onto a type can still carry is a change to the
+type itself. For each kind of arrow, how often a change at its head came
+with a change at its tail:
 
 ::change-ripples
 
@@ -125,21 +181,21 @@ mostly that file's, which the caption says when it is so.
 ## What changes together
 
 Two files that keep changing in the same commits are tied in the history,
-whatever the arrows say. Harald Gall, Karin Hajek and Mehdi Jazayeri called it
-logical coupling (1998). A commit that changed more than thirty files is
+whatever the arrows say. Harald Gall, Karin Hajek and Mehdi Jazayeri called
+it logical coupling (1998). A commit that changed more than thirty files is
 left out: a rename across the whole source changes everything at once, and
 says nothing about what needs what.
 
 ::change-together
 
 Where there is an arrow, changing together says it is a strong one: it
-carries.
-The pairs worth reading are those with no arrow between them, near or far:
-they share something the compiler cannot see. Among them are the page the
-build writes, in node, and the terminal that takes it over in the browser.
-This site's first rule is that the content is in the HTML, and this is its
-price: the page and the script that reads it must agree on its markup, a
-contract no import states, kept by changing both.
+carries. The pairs worth reading are those with no arrow between them, near
+or far: they share something the compiler cannot see. Among them are the
+page the build writes, in node, and the terminal that takes it over in the
+browser. This site's first rule is that the content is in the HTML, and this
+is its price: the page and the script that reads it must agree on its
+markup, a contract no import states, kept by changing both. On the picture
+above, they are the dashed threads.
 
 ## With its test
 

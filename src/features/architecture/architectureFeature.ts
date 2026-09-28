@@ -2,6 +2,7 @@ import type { Feature } from "../../platform/plugin/Feature";
 import { architectureStill } from "./architectureStill";
 import { changeApps } from "./browser/changeApps";
 import { mountArchitecture } from "./browser/mountArchitecture";
+import { shownCommit } from "./browser/shownCommit";
 import { changeStills } from "./changeStills";
 
 /**
@@ -14,6 +15,7 @@ import { changeStills } from "./changeStills";
  */
 export const architectureFeature: Feature = {
   name: "architecture",
-  apps: { architecture: mountArchitecture, ...changeApps },
+  // The picture of how the site is built leads its page: the figures of what the tangle shows follow its player.
+  apps: { architecture: mountArchitecture({ lead: shownCommit }), ...changeApps },
   stills: { architecture: architectureStill, ...changeStills },
 };

@@ -1,4 +1,5 @@
 import type { Still } from "../../platform/plugin/Feature";
+import { architectureStill } from "./architectureStill";
 import { changeFigures } from "./changeFigures";
 import type { Coverage } from "./Coverage";
 import { readHistory } from "./readHistory";
@@ -22,6 +23,8 @@ function coverageIn(read: (path: string) => string): Coverage | null {
  * where the player will stand.
  */
 export const changeStills: Readonly<Record<string, Still>> = {
+  // The picture of the source, as the architecture page has it at the last commit, until the page draws it through its lenses.
+  "change-graph": architectureStill,
   "change-player": (read) => {
     const { history } = readHistory(read(HISTORY));
     return `<p class="shown-commit">${renderShownCommit(history.commits, history.commits.length - 1)}</p>`;

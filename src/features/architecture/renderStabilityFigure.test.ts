@@ -42,4 +42,12 @@ describe("the figure of how stable each box is, and how often it changed", () =>
   it("has every box's figures in a table", () => {
     expect(figure.match(/<tr><td><code>/g)).toHaveLength(6);
   });
+
+  it("says how many arrows between boxes go against the rule of stable dependencies, and the steepest", () => {
+    const against = [{ from: "platform/plugin", to: "platform/shell", count: 2, rise: 0.39 }, { from: "platform/browser", to: "platform/shell", count: 10, rise: 0.13 }];
+    expect(renderStabilityFigure(boxes, against)).toContain("2 arrows between boxes go from a box to a less stable one, against his rule of stable dependencies; the steepest, from platform/plugin to platform/shell.");
+    const most = [0.5, 0.4, 0.3].map((rise, at) => ({ from: "features/allFeatures.ts", to: `features/f${at}`, count: 1, rise }));
+    expect(renderStabilityFigure(boxes, [...most, against[0]!])).toContain("3 of them leave features/allFeatures.ts.");
+    expect(renderStabilityFigure(boxes, [])).toContain("No arrow between boxes goes against his rule of stable dependencies.");
+  });
 });
