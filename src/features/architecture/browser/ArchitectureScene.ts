@@ -118,6 +118,8 @@ export class ArchitectureScene {
     this.reached = reached;
     this.coverage = coverage;
     this.layout = layout;
+    // A commit shown while tangled brings files that need room: the tangle warms a little, to let them find it.
+    if (this.mode === "tangle") this.tangleClock = Math.min(this.tangleClock, 1.2);
     if (this.still || this.balls.size === 0) this.height = this.wanted;
     const topRank = Math.max(0, ...layout.boxes.map((box) => box.rank));
     const rankOf = new Map(layout.boxes.map((box) => [box.name, box.rank]));
@@ -169,7 +171,15 @@ export class ArchitectureScene {
   }
 
   setMode(mode: Mode): void {
+    if (mode === "tangle" && this.mode !== "tangle") this.tangleClock = 0;
     this.mode = mode;
+  }
+
+  /** Seconds the tangle has been cooling: it starts hot, to spread, and cools until it is still — really still, not crawling. */
+  private tangleClock = 0;
+
+  private get heat(): number {
+    return Math.exp(-this.tangleClock / 1.8);
   }
 
   step(seconds: number): void {
@@ -179,6 +189,7 @@ export class ArchitectureScene {
     this.boxAlpha = ease(this.boxAlpha, this.mode === "boxes" ? 1 : 0, seconds, 5);
 
     if (this.mode === "tangle") {
+      this.tangleClock += seconds;
       const live = [...this.balls.entries()].filter(([, ball]) => !ball.leaving);
       const at = new Map(live.map(([id], position) => [id, position]));
       const links = this.fileLinks.flatMap(([from, to]) => {
@@ -188,7 +199,7 @@ export class ArchitectureScene {
       tangleStep(
         live.map(([, ball]) => ball.body),
         links,
-        { width: this.width, height: this.height },
+        { width: this.width, height: this.height, heat: this.heat },
       );
     }
 

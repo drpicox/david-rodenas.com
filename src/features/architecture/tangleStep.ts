@@ -9,14 +9,23 @@ const PULL = 0.02;
 const GRAVITY = 0.004;
 /** How much of its speed a ball keeps from one step to the next. */
 const FRICTION = 0.82;
+/** Two files almost on each other push no harder than this: closer, the push would fling them. */
+const CLOSEST = 100;
+/** No file moves further than this in a step, however it is pushed: a crowd jostles, it does not explode. */
+const FASTEST = 12;
 
 /**
  * One step of the tangle: the files with no boxes, only the forces of what
  * they need. It is a plain force-directed layout (Fruchterman and Reingold's
  * idea: charges apart, springs together, friction to settle), and it is what
  * a code base looks like before anyone has said where anything goes.
+ *
+ * As in theirs, it cools: `heat` is how far a file may move in a step, from
+ * one when the tangle begins down to nearly nothing, so a crowd as big as
+ * this site's comes to rest instead of shaking for ever; and the walls take
+ * the speed out of whatever runs into them.
  */
-export function tangleStep(bodies: Body[], links: readonly (readonly [number, number])[], { width, height }: { width: number; height: number }): void {
+export function tangleStep(bodies: Body[], links: readonly (readonly [number, number])[], { width, height, heat = 1 }: { width: number; height: number; heat?: number }): void {
   const fx = new Float64Array(bodies.length);
   const fy = new Float64Array(bodies.length);
   for (let i = 0; i < bodies.length; i += 1) {
@@ -26,7 +35,7 @@ export function tangleStep(bodies: Body[], links: readonly (readonly [number, nu
       let dx = a.x - b.x;
       let dy = a.y - b.y;
       if (dx === 0 && dy === 0) [dx, dy] = [(i % 7) - 3 || 1, (j % 5) - 2 || 1];
-      const squared = Math.max(4, dx * dx + dy * dy);
+      const squared = Math.max(CLOSEST, dx * dx + dy * dy);
       const push = REPULSION / squared;
       const length = Math.sqrt(squared);
       fx[i] = (fx[i] ?? 0) + (dx / length) * push;
@@ -47,10 +56,16 @@ export function tangleStep(bodies: Body[], links: readonly (readonly [number, nu
     fx[to] = (fx[to] ?? 0) - (dx / length) * pull;
     fy[to] = (fy[to] ?? 0) - (dy / length) * pull;
   }
+  const fastest = FASTEST * heat;
   bodies.forEach((body, index) => {
     body.vx = (body.vx + (fx[index] ?? 0) + (width / 2 - body.x) * GRAVITY) * FRICTION;
     body.vy = (body.vy + (fy[index] ?? 0) + (height / 2 - body.y) * GRAVITY) * FRICTION;
-    body.x = Math.min(width, Math.max(0, body.x + body.vx));
-    body.y = Math.min(height, Math.max(0, body.y + body.vy));
+    const speed = Math.hypot(body.vx, body.vy);
+    if (speed > fastest) [body.vx, body.vy] = [(body.vx / speed) * fastest, (body.vy / speed) * fastest];
+    const [x, y] = [body.x + body.vx, body.y + body.vy];
+    body.x = Math.min(width, Math.max(0, x));
+    body.y = Math.min(height, Math.max(0, y));
+    if (body.x !== x) body.vx = 0;
+    if (body.y !== y) body.vy = 0;
   });
 }

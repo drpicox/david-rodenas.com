@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { randomOf } from "../../platform/random/randomOf";
 import type { Body } from "./Body";
 import { tangleStep } from "./tangleStep";
 
@@ -27,6 +28,28 @@ describe("the tangle: files with no boxes, only the pull of what they need", () 
       expect(body.y).toBeGreaterThanOrEqual(0);
       expect(body.y).toBeLessThanOrEqual(400);
     }
+  });
+
+  it("comes to rest even round a file that many others need, the way the files at the heart of a code base are", () => {
+    // One file in the middle, and a hundred that need it, all around it: the shape of el.ts, or escapeHtml.ts.
+    const bodies = [at(300, 200), ...Array.from({ length: 100 }, (_, index) => at(300 + 250 * Math.cos(index), 200 + 180 * Math.sin(index)))];
+    const links = bodies.slice(1).map((_, index) => [index + 1, 0] as [number, number]);
+    run(bodies, links, 1200);
+    expect(Math.max(...bodies.map((body) => Math.hypot(body.vx, body.vy)))).toBeLessThan(0.5);
+  });
+
+  it("settles a code base as crowded as this site's, cooling as the scene cools it, and never flings a file across the picture", () => {
+    const random = randomOf(7);
+    const bodies = Array.from({ length: 640 }, () => at(550 + (random() - 0.5) * 80, 380 + (random() - 0.5) * 80));
+    const links = Array.from({ length: 1320 }, () => [Math.floor(random() ** 3 * 640), Math.floor(random() * 640)] as [number, number]);
+    let fastest = 0;
+    for (let step = 0; step < 900; step += 1) {
+      tangleStep(bodies, links, { width: 1100, height: 760, heat: Math.exp(-step / 150) });
+      fastest = Math.max(fastest, ...bodies.map((body) => Math.hypot(body.vx, body.vy)));
+    }
+    expect(fastest).toBeLessThanOrEqual(12 + 1e-9);
+    // At rest, not crawling: a twentieth of a pixel a step is nothing to see.
+    expect(Math.max(...bodies.map((body) => Math.hypot(body.vx, body.vy)))).toBeLessThan(0.05);
   });
 
   it("comes to rest instead of shaking for ever", () => {
