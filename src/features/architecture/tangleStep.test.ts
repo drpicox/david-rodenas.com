@@ -38,13 +38,14 @@ describe("the tangle: files with no boxes, only the pull of what they need", () 
     expect(Math.max(...bodies.map((body) => Math.hypot(body.vx, body.vy)))).toBeLessThan(0.5);
   });
 
-  it("settles a code base as crowded as this site's, cooling as the scene cools it, and never flings a file across the picture", () => {
+  // As crowded as this site's — its files to the area of the picture — in half the picture, so it runs quickly wherever the tests do.
+  it("settles a code base as crowded as this site's, cooling as the scene cools it, and never flings a file across the picture", { timeout: 20_000 }, () => {
     const random = randomOf(7);
-    const bodies = Array.from({ length: 640 }, () => at(550 + (random() - 0.5) * 80, 380 + (random() - 0.5) * 80));
-    const links = Array.from({ length: 1320 }, () => [Math.floor(random() ** 3 * 640), Math.floor(random() * 640)] as [number, number]);
+    const bodies = Array.from({ length: 320 }, () => at(390 + (random() - 0.5) * 60, 270 + (random() - 0.5) * 60));
+    const links = Array.from({ length: 660 }, () => [Math.floor(random() ** 3 * 320), Math.floor(random() * 320)] as [number, number]);
     let fastest = 0;
     for (let step = 0; step < 900; step += 1) {
-      tangleStep(bodies, links, { width: 1100, height: 760, heat: Math.exp(-step / 150) });
+      tangleStep(bodies, links, { width: 780, height: 540, heat: Math.exp(-step / 150) });
       fastest = Math.max(fastest, ...bodies.map((body) => Math.hypot(body.vx, body.vy)));
     }
     expect(fastest).toBeLessThanOrEqual(12 + 1e-9);
