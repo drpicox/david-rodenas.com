@@ -35,6 +35,13 @@ describe("how big a ball is drawn", () => {
     expect(late?.get(2)).toBeGreaterThan(late?.get(3) ?? Infinity);
   });
 
+  it("by a measure taken elsewhere — how far a change to it could reach, how much it stands between the others — on the scale of the largest", () => {
+    const radii = radiiBy(snapshot as never, "bridges", { counts: new Map([[1, 0], [2, 9], [3, 1]]) });
+    expect(radii?.get(2)).toBeGreaterThan(radii?.get(3) ?? Infinity);
+    expect(radii?.get(3)).toBeGreaterThan(radii?.get(1) ?? Infinity);
+    expect(radiiBy(snapshot as never, "reachedBy", { counts: new Map([[1, 2]]) })?.get(1)).toBe(radii?.get(2));
+  });
+
   it("by its lines, which is the layout's own size and needs nothing more", () => {
     expect(radiiBy(snapshot as never, "lines")).toBeNull();
   });

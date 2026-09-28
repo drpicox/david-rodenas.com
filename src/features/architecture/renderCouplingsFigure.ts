@@ -1,7 +1,7 @@
 import { breakablePath } from "./breakablePath";
 import type { Coupling } from "./couplingsOf";
+import { joinedBy } from "./joinedBy";
 import type { Life } from "./Life";
-import { reachOf } from "./reachOf";
 import type { Snapshot } from "./Snapshot";
 
 /**
@@ -16,10 +16,8 @@ export function renderCouplingsFigure(couplings: readonly Coupling[], lives: rea
   const standing = new Set(snapshot.modules.map((module) => module.id));
   const ships = (id: number) => standing.has(id) && lifeOf.get(id)?.test === false;
   const links = snapshot.dependencies.map(({ from, to }) => [from, to] as const);
-  const joined = (a: number, b: number) => {
-    const distance = Math.min(reachOf(links, a, Infinity, "needs").get(b) ?? Infinity, reachOf(links, b, Infinity, "needs").get(a) ?? Infinity);
-    return distance === 1 ? "an arrow" : Number.isFinite(distance) ? "arrows through others" : "no arrow at all";
-  };
+  const WORDS = { arrow: "an arrow", through: "arrows through others", none: "no arrow at all" } as const;
+  const joined = (a: number, b: number) => WORDS[joinedBy(links, a, b)];
   const shown = couplings.filter(({ a, b }) => ships(a) && ships(b)).slice(0, count);
   const rows = shown.map(({ a, b, together }) => ({ together, a: lifeOf.get(a)?.path ?? "", b: lifeOf.get(b)?.path ?? "", joined: joined(a, b) }));
   const hidden = rows.filter((row) => row.joined === "no arrow at all").length;

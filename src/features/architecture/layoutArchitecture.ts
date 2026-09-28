@@ -1,5 +1,6 @@
 import { bandOf } from "./bandOf";
 import { boxCycles } from "./boxCycles";
+import { boxLinksOf } from "./boxLinksOf";
 import { boxOf } from "./boxOf";
 import type { BallPlace, BandPlace, BoxLink, BoxPlace, Layout, LinkPlace } from "./Layout";
 import type { Snapshot } from "./Snapshot";
@@ -40,17 +41,6 @@ function ranksOf(nodes: readonly string[], needs: ReadonlyMap<string, ReadonlySe
   };
   for (const node of nodes) rank(node);
   return rankOf;
-}
-
-function linksBetween(snapshot: Snapshot, boxOfId: ReadonlyMap<number, string>): BoxLink[] {
-  const linkOf = new Map<string, BoxLink>();
-  for (const { from, to, typeOnly } of snapshot.dependencies) {
-    const [a, b] = [boxOfId.get(from), boxOfId.get(to)];
-    if (a === undefined || b === undefined || a === b) continue;
-    const link = linkOf.get(`${a}>${b}`) ?? { from: a, to: b, count: 0, typeOnly: true };
-    linkOf.set(`${a}>${b}`, { ...link, count: link.count + 1, typeOnly: link.typeOnly && typeOnly });
-  }
-  return [...linkOf.values()].sort((a, b) => a.from.localeCompare(b.from) || a.to.localeCompare(b.to));
 }
 
 /** The rows, top to bottom: each level in turn, and inside it, every box above what it needs, ordered to sit near what points at it. */
@@ -130,13 +120,12 @@ function portsOf(links: readonly BoxLink[], placed: ReadonlyMap<string, BoxPlace
 export function layoutArchitecture(snapshot: Snapshot, { tests = false, width = 1100 }: LayoutOptions = {}): Layout {
   const modules = snapshot.modules.filter((module) => tests || !module.test);
   const kept = new Map(modules.map((module) => [module.id, module]));
-  const boxOfId = new Map(modules.map((module) => [module.id, boxOf(module.path)]));
   const members = new Map<string, Module[]>();
   for (const module of [...modules].sort((a, b) => a.path.localeCompare(b.path))) {
     const box = boxOf(module.path);
     members.set(box, [...(members.get(box) ?? []), module]);
   }
-  const links = linksBetween(snapshot, boxOfId);
+  const links = boxLinksOf(snapshot, tests);
   const circles = boxCycles({
     modules: [],
     dependencies: snapshot.dependencies.flatMap(({ from, to, typeOnly }) => {

@@ -1,3 +1,4 @@
+import { reachedByOf } from "./reachedByOf";
 import type { Snapshot } from "./Snapshot";
 
 /**
@@ -8,20 +9,6 @@ import type { Snapshot } from "./Snapshot";
  * architecture promises at worst; how far changes really went is the history's.
  */
 export function propagationCostOf(snapshot: Snapshot): number {
-  const shipped = new Set(snapshot.modules.filter((module) => !module.test).map((module) => module.id));
-  const neededBy = new Map<number, number[]>();
-  for (const { from, to } of snapshot.dependencies) if (shipped.has(from) && shipped.has(to)) neededBy.set(to, [...(neededBy.get(to) ?? []), from]);
-  let reachable = 0;
-  for (const id of shipped) {
-    const reached = new Set([id]);
-    const queue = [id];
-    for (let here = queue.pop(); here !== undefined; here = queue.pop())
-      for (const next of neededBy.get(here) ?? [])
-        if (!reached.has(next)) {
-          reached.add(next);
-          queue.push(next);
-        }
-    reachable += reached.size;
-  }
-  return shipped.size > 0 ? reachable / shipped.size ** 2 : 0;
+  const reached = [...reachedByOf(snapshot).values()];
+  return reached.length > 0 ? reached.reduce((sum, count) => sum + count + 1, 0) / reached.length ** 2 : 0;
 }

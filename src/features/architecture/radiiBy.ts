@@ -1,12 +1,18 @@
 import type { Snapshot } from "./Snapshot";
 
 /** What a ball's size can say about its file. */
-export type Sizing = "lines" | "neededBy" | "needs" | "changes";
+export type Sizing = "lines" | "neededBy" | "needs" | "reachedBy" | "bridges" | "changes";
 
-/** The commits that changed each file so far, and the most any file is changed by the end: the scale a ball grows on while the history plays. */
-export interface ChangeCounts {
+/**
+ * A measure of each file taken elsewhere, for the sizes the snapshot alone
+ * cannot give: the commits that changed it so far, how far a change to it
+ * could reach, how much it stands between the others. `most` is the scale,
+ * when it should not be the largest now — for the changes, the most any file
+ * is changed by the end, so that a ball only grows as the history plays.
+ */
+export interface Measured {
   readonly counts: ReadonlyMap<number, number>;
-  readonly most: number;
+  readonly most?: number;
 }
 
 /** As big as the layout's biggest ball, so a ball never outgrows the place it has. */
@@ -26,13 +32,14 @@ function countArrows(snapshot: Snapshot, sizing: "neededBy" | "needs"): Map<numb
 /**
  * How big each ball is drawn, when its size says something other than its
  * lines: by how many files need it — the ones a change would reach first, a
- * hotspot — by how many it needs, or by how many commits have changed it so
- * far, which grows as the history plays and stops where the file settled. By
- * lines, the layout's own size stands, and there is nothing to say.
+ * hotspot — by how many it needs, or by a measure taken elsewhere: how far a
+ * change to it could reach, how much it stands between the others, how many
+ * commits have changed it so far. By lines, the layout's own size stands,
+ * and there is nothing to say.
  */
-export function radiiBy(snapshot: Snapshot, sizing: Sizing, changes?: ChangeCounts): Map<number, number> | null {
+export function radiiBy(snapshot: Snapshot, sizing: Sizing, measured?: Measured): Map<number, number> | null {
   if (sizing === "lines") return null;
-  const counts = sizing === "changes" ? (changes?.counts ?? new Map<number, number>()) : countArrows(snapshot, sizing);
-  const most = Math.max(1, sizing === "changes" ? (changes?.most ?? 0) : 0, ...counts.values());
+  const counts = sizing === "neededBy" || sizing === "needs" ? countArrows(snapshot, sizing) : (measured?.counts ?? new Map<number, number>());
+  const most = Math.max(1, measured?.most ?? 0, ...counts.values());
   return new Map(snapshot.modules.map((module) => [module.id, SMALLEST + (BIGGEST - SMALLEST) * Math.sqrt((counts.get(module.id) ?? 0) / most)]));
 }
