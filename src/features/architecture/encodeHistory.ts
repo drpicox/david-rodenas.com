@@ -6,6 +6,8 @@ export interface Played {
   readonly graph: SourceGraph;
   /** `[before, after]` for each file git saw renamed in this commit. */
   readonly renamed: readonly (readonly [string, string])[];
+  /** Every file git saw this commit edit or move, by its path after it. */
+  readonly touched: readonly string[];
 }
 
 interface Kept {
@@ -25,7 +27,7 @@ export function encodeHistory(played: readonly Played[]): History {
   let arrowsBefore = new Map<string, boolean>();
   const changes: Change[] = [];
 
-  for (const { graph, renamed } of played) {
+  for (const { graph, renamed, touched } of played) {
     for (const [from, to] of renamed) {
       const id = idOf.get(from);
       if (id === undefined) continue;
@@ -57,6 +59,8 @@ export function encodeHistory(played: readonly Played[]): History {
       if (was.lines !== kept.lines) resized.push([id, kept.lines]);
     }
 
+    const changed = [...new Set(touched.map((path) => idOf.get(path)))].filter((id): id is number => id !== undefined && before.has(id)).sort((a, b) => a - b);
+
     const arrows = new Map<string, boolean>();
     const linked: [number, number, boolean][] = [];
     for (const { from, to, typeOnly } of graph.dependencies) {
@@ -68,7 +72,7 @@ export function encodeHistory(played: readonly Played[]): History {
     }
     const unlinked = [...arrowsBefore.keys()].filter((key) => !arrows.has(key)).map((key) => key.split(">").map(Number) as [number, number]);
 
-    changes.push({ added, removed, moved, resized, linked, unlinked });
+    changes.push({ added, removed, moved, resized, changed, linked, unlinked });
     before = now;
     arrowsBefore = arrows;
   }

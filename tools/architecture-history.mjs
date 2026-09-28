@@ -17,6 +17,11 @@ import { createServer } from "vite";
  * it on every push, so the page is always the commit being published. Here it
  * is for seeing the page as it will be. The graph is read with the same code the
  * architecture test uses, loaded through vite so this tool needs nothing else.
+ *
+ * The history is the main line's, each commit against the one before it on
+ * that line: a branch's commits arrive with the merge that brought them. Taken
+ * in the order of their dates instead, a branch's commits and the main line's
+ * took turns, and each looked as if it had deleted the files of the other.
  */
 const OUT = "public/data/architecture.json";
 const COVERAGE = "public/data/coverage.json";
@@ -47,20 +52,27 @@ function readBlobs(shas) {
   });
 }
 
-/** For each commit, the files git saw renamed in it, as `[before, after]` relative to `src/`. */
-function renamesByCommit() {
-  const renames = new Map();
+/**
+ * For each commit, what git saw it do under `src/`, against the commit before
+ * it on the main line: the files it renamed, as `[before, after]`, and every
+ * file it edited or moved, by its path after it — both relative to `src/`.
+ */
+function touchesByCommit() {
+  const touches = new Map();
   let current = null;
-  for (const line of git("log", "-M", "--name-status", "--format=@%H", "--", "src").split("\n")) {
+  for (const line of git("log", "--first-parent", "--diff-merges=first-parent", "-M", "--name-status", "--format=@%H", "--", "src").split("\n")) {
     if (line.startsWith("@")) {
-      current = line.slice(1);
-      renames.set(current, []);
-    } else if (line.startsWith("R") && current) {
-      const [, from, to] = line.split("\t");
-      if (from?.startsWith("src/") && to?.startsWith("src/")) renames.get(current).push([from.slice(4), to.slice(4)]);
+      current = { renamed: [], touched: [] };
+      touches.set(line.slice(1), current);
+      continue;
     }
+    const [status = "", ...paths] = line.split("\t");
+    const [from, to = from] = paths;
+    if (!current || !to?.startsWith("src/")) continue;
+    if (status.startsWith("R") && from.startsWith("src/")) current.renamed.push([from.slice(4), to.slice(4)]);
+    if (/^[MRT]/.test(status)) current.touched.push(to.slice(4));
   }
-  return renames;
+  return touches;
 }
 
 const vite = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "warn" });
@@ -68,14 +80,14 @@ try {
   const { readGraph } = await vite.ssrLoadModule("/src/features/architecture/readGraph.ts");
   const { encodeHistory } = await vite.ssrLoadModule("/src/features/architecture/encodeHistory.ts");
 
-  const commits = git("log", "--reverse", "--format=%H%x09%ad%x09%s", "--date=iso-strict", "--", "src")
+  const commits = git("log", "--reverse", "--first-parent", "--format=%H%x09%ad%x09%s", "--date=iso-strict", "--", "src")
     .trim()
     .split("\n")
     .map((line) => {
       const [sha, date, subject] = line.split("\t");
       return { sha, date, subject };
     });
-  const renames = renamesByCommit();
+  const touches = touchesByCommit();
 
   const trees = commits.map(({ sha }) =>
     git("ls-tree", "-r", sha, "--", "src")
@@ -92,7 +104,8 @@ try {
   const played = commits.map((commit, index) => ({
     commit: { sha: commit.sha.slice(0, 7), date: commit.date, subject: commit.subject },
     graph: readGraph(trees[index].map(({ blob, path }) => ({ path: path.slice(4), text: texts.get(blob) ?? "" }))),
-    renamed: renames.get(commit.sha) ?? [],
+    renamed: touches.get(commit.sha)?.renamed ?? [],
+    touched: touches.get(commit.sha)?.touched ?? [],
   }));
 
   const history = encodeHistory(played);

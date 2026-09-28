@@ -10,9 +10,10 @@ const needs = (from: string, to: string, typeOnly = false) => ({ from, to, typeO
 const first: SourceGraph = { modules: [module("core/a.ts"), module("core/b.ts"), module("ui/c.ts")], dependencies: [needs("ui/c.ts", "core/a.ts"), needs("core/a.ts", "core/b.ts", true)] };
 const second: SourceGraph = { modules: [module("platform/a.ts", 12), module("core/b.ts"), module("features/d.ts")], dependencies: [needs("features/d.ts", "platform/a.ts"), needs("platform/a.ts", "core/b.ts")] };
 
+// Git saw the second commit edit core/b.ts, rename core/a.ts with an edit, bring features/d.ts, and touch the stylesheet.
 const played = [
-  { commit: commit("one"), graph: first, renamed: [] },
-  { commit: commit("two"), graph: second, renamed: [["core/a.ts", "platform/a.ts"] as const] },
+  { commit: commit("one"), graph: first, renamed: [], touched: [] },
+  { commit: commit("two"), graph: second, renamed: [["core/a.ts", "platform/a.ts"] as const], touched: ["core/b.ts", "platform/a.ts", "features/d.ts", "styles.css"] },
 ];
 
 describe("the history of the source, kept as what changed", () => {
@@ -29,6 +30,10 @@ describe("the history of the source, kept as what changed", () => {
     expect(change?.removed).toEqual([2]);
     expect(change?.unlinked).toEqual([[2, 0]]);
     expect(change?.linked).toEqual([[3, 0, false], [0, 1, false]]);
+  });
+
+  it("says which modules a commit changed, by their number: a file edited or moved, never one it brought, nor what is not a module", () => {
+    expect(history.changes[1]?.changed).toEqual([0, 1]);
   });
 
   it("gives every snapshot back whole, as it was at its commit", () => {
@@ -48,7 +53,7 @@ describe("the history of the source, kept as what changed", () => {
   });
 
   it("is small: an unchanged commit costs nothing but its line", () => {
-    const again = encodeHistory([...played, { commit: commit("three"), graph: second, renamed: [] }]);
-    expect(again.changes[2]).toEqual({ added: [], removed: [], moved: [], resized: [], linked: [], unlinked: [] });
+    const again = encodeHistory([...played, { commit: commit("three"), graph: second, renamed: [], touched: [] }]);
+    expect(again.changes[2]).toEqual({ added: [], removed: [], moved: [], resized: [], changed: [], linked: [], unlinked: [] });
   });
 });

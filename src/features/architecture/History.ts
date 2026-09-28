@@ -19,6 +19,12 @@ export interface Change {
   readonly moved: readonly (readonly [number, string])[];
   /** `[id, lines]` for each module that grew or shrank. */
   readonly resized: readonly (readonly [number, number])[];
+  /**
+   * Every module the commit edited or moved, as git saw it against the commit
+   * before: what the page counts as a change. A module it brought is not in
+   * it — being written is not being changed.
+   */
+  readonly changed: readonly number[];
   /** `[from, to, typeOnly]` for each arrow that appeared, or changed what it needs. */
   readonly linked: readonly (readonly [number, number, boolean])[];
   /** `[from, to]` for each arrow that went. */

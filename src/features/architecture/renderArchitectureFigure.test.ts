@@ -4,8 +4,8 @@ import { renderArchitectureFigure } from "./renderArchitectureFigure";
 
 const graph = (paths: string[]) => ({ modules: paths.map((path) => ({ path, lines: 10, test: path.endsWith(".test.ts"), typesOnly: false })), dependencies: [] });
 const history = encodeHistory([
-  { commit: { sha: "aaaaaaa", date: "2026-09-07T10:00:00+02:00", subject: "The first page" }, graph: graph(["core/a.ts"]), renamed: [] },
-  { commit: { sha: "bbbbbbb", date: "2026-09-08T11:00:00+02:00", subject: "The folders say what the site is" }, graph: graph(["platform/a.ts", "features/b/b.ts", "features/b/b.test.ts"]), renamed: [["core/a.ts", "platform/a.ts"]] },
+  { commit: { sha: "aaaaaaa", date: "2026-09-07T10:00:00+02:00", subject: "The first page" }, graph: graph(["core/a.ts"]), renamed: [], touched: [] },
+  { commit: { sha: "bbbbbbb", date: "2026-09-08T11:00:00+02:00", subject: "The folders say what the site is" }, graph: graph(["platform/a.ts", "features/b/b.ts", "features/b/b.test.ts"]), renamed: [["core/a.ts", "platform/a.ts"]], touched: ["platform/a.ts"] },
 ]);
 
 describe("the figure of the architecture at one commit", () => {
