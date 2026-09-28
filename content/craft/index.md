@@ -89,6 +89,27 @@ score += sumOfBallsInFrame(rolls, frameIndex);
 --- green All tests pass.
 ```
 
+**To the trunk, small and often.** Continuous delivery is small steps for a
+whole team: every change integrated into the trunk soon after it is made,
+through a pipeline fast enough that nobody waits for it, so that the code is
+always releasable — and everyone is working on nearly the same code, as if in
+a meeting that never interrupts them. When a team integrates too seldom, I
+look at what is in its way before I look at the team: how often it merges,
+and what makes merging slow — often the CI, the speed of light of a team, and
+one that can be changed. This site goes out on every push.
+[[1](https://medium.com/p/70a3c6cb4e45), [2](https://medium.com/p/723ec18bee7c), [3](https://medium.com/p/c65f670d288f)]
+
+```yaml
+on:
+  push:
+    branches: [main]
+# …
+      - run: npm ci
+      - run: npm run coverage
+      - run: node tools/architecture-history.mjs
+      - run: npm run build
+```
+
 **I build the tools.** When a part of the work can be done by a program, I
 write the program, so that nothing starts from scratch: [a compiler from posts
 to tests](/teaching/software-lab/), [a reader of Gherkin that names its own
