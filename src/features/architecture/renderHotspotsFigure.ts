@@ -7,9 +7,9 @@ const W = 300;
 const H = 12;
 const PAD = 3;
 
-/** A file's life on a line as long as the whole history: a dot where it was written, a mark for every commit that changed it. */
-function lifeOf(life: Life, commits: number): string {
-  const x = (at: number) => fixed(PAD + (at / Math.max(1, commits - 1)) * (W - PAD * 2));
+/** A file's life on a line as long as the whole history, to the commit shown: a dot where it was written, a mark for every commit that changed it. */
+function lifeOf(life: Life, commits: number, span: number): string {
+  const x = (at: number) => fixed(PAD + (at / Math.max(1, span - 1)) * (W - PAD * 2));
   const end = life.went ?? commits - 1;
   const changes = life.changed.map((at) => `<line class="change" x1="${x(at)}" x2="${x(at)}" y1="1.5" y2="${H - 1.5}"/>`).join("");
   return (
@@ -24,9 +24,11 @@ function lifeOf(life: Life, commits: number): string {
  * run, and its life along the whole history — whether it changed in a burst
  * and settled, or keeps being changed. A hotspot no test runs is where a
  * change most easily breaks something without anyone knowing. Only the
- * files that ship, and are still there.
+ * files that ship, and are still there. Shown at a commit before the last, the
+ * lives are drawn on the line of the whole history, `span` commits long, so
+ * that as the history plays they grow along it instead of being stretched.
  */
-export function renderHotspotsFigure(lives: readonly Life[], commits: number, coverage: Coverage | null, count = 12): string {
+export function renderHotspotsFigure(lives: readonly Life[], commits: number, coverage: Coverage | null, count = 12, span = commits): string {
   const hottest = lives
     .filter((life) => !life.test && life.went === undefined)
     .sort((a, b) => b.changed.length - a.changed.length || b.lines - a.lines || a.path.localeCompare(b.path))
@@ -35,7 +37,7 @@ export function renderHotspotsFigure(lives: readonly Life[], commits: number, co
   const rows = hottest
     .map((life) => {
       const share = tested(life);
-      return `<tr><td><code>${breakablePath(life.path)}</code></td><td>${life.changed.length}</td><td>${life.lines}</td><td>${share === undefined ? "–" : `${Math.round(share)}%`}</td><td>${lifeOf(life, commits)}</td></tr>`;
+      return `<tr><td><code>${breakablePath(life.path)}</code></td><td>${life.changed.length}</td><td>${life.lines}</td><td>${share === undefined ? "–" : `${Math.round(share)}%`}</td><td>${lifeOf(life, commits, span)}</td></tr>`;
     })
     .join("");
   const untested = hottest.filter((life) => tested(life) === 0).length;

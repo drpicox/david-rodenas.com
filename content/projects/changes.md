@@ -14,7 +14,11 @@ change travels, and which files have to change together although nothing in
 the code says so.
 
 Like the picture of how it is built, every figure here is read off the
-history at every push, so it is always the commit being published.
+history at every push, so it is always the commit being published. Play the
+history, drag it, or press a commit on the picture of changes, and every
+figure below shows the source as it stood then.
+
+::change-player
 
 ::change-matrix
 

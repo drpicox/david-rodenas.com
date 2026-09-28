@@ -1,6 +1,6 @@
 import { bandOf } from "./bandOf";
-import { boxOf } from "./boxOf";
 import type { Life } from "./Life";
+import { matrixRowOf } from "./matrixRowOf";
 
 /** One box of the source as it stands now, and what every commit did in it. */
 export interface MatrixRow {
@@ -27,7 +27,7 @@ export function changeMatrixOf(lives: readonly Life[], bands: readonly string[])
   };
   for (const life of lives) {
     if (life.test) continue;
-    const box = life.went === undefined ? boxOf(life.path) : null;
+    const box = matrixRowOf(life);
     const row = rows.get(box) ?? { born: life.born, cells: new Map() };
     row.born = Math.min(row.born, life.born);
     rows.set(box, row);

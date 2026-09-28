@@ -20,4 +20,10 @@ describe("the figure of where the changes went", () => {
     expect(figure).toContain("3 changes to files that ship");
     expect(figure).toContain("and 2 files written");
   });
+
+  it("at an earlier commit, counts only up to it, and says how far into the history it is", () => {
+    const earlier = renderChangeMatrixFigure(read, 1);
+    expect(earlier).toContain("2 of 3 commits, from 7 to 8 September 2026: 1 change to files that ship, and 2 files written.");
+    expect(earlier).toContain('class="future"');
+  });
 });

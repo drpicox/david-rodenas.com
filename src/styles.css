@@ -4694,3 +4694,70 @@ main p:has(> strong:first-child):not(h2 + p) {
     color: var(--dim);
   }
 }
+
+/* The player stands above the figures of the page on how the source changes, and stays in sight while they are read. */
+.app[data-app="change-player"] {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  padding: 0.45em 0;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid var(--rule);
+}
+
+.app .change-player {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3em 1em;
+}
+
+.app .change-player input[type="range"] {
+  flex: 1 1 12rem;
+  accent-color: var(--accent);
+}
+
+.app .shown-commit {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* One line, whatever the commit said: the player keeps its height while the history plays. */
+.app .change-player .shown-commit {
+  flex: 1 1 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.app svg.change-matrix {
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+/* What came after the commit shown: still there, not yet. */
+.app svg.change-matrix .future {
+  fill: var(--paper);
+  opacity: 0.75;
+}
+
+.app svg.change-matrix .now {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.app svg.change-matrix .pointed {
+  fill: var(--accent);
+  opacity: 0.12;
+}
+
+.app .changes-pointed {
+  min-height: 1.3em;
+  margin: 0.35em 0 0;
+  text-align: left;
+  font-size: 0.78rem;
+  color: var(--ink);
+}

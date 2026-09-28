@@ -40,4 +40,11 @@ describe("the figure of the files that change most", () => {
     expect(uncounted).toContain("<td>–</td>");
     expect(uncounted).not.toContain("no line a test runs");
   });
+
+  it("at an earlier commit, draws each life on the line of the whole history, ending at the commit shown", () => {
+    // Ten commits shown of twenty: the lines stop half way, and the first mark is where it would be on the whole line.
+    const halfway = renderHotspotsFigure(lives, 10, null, 1, 20);
+    expect(halfway).toMatch(/<line class="lived" x1="3\.0" x2="142\.3"/);
+    expect(halfway).toMatch(/<line class="change" x1="18\.5"/);
+  });
 });

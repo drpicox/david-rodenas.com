@@ -36,4 +36,21 @@ describe("the picture of where the changes went", () => {
     expect(svg).toContain(">7 Sep<");
     expect(svg).toContain(">14 Sep<");
   });
+
+  it("says, for a pointer to be read, where the commits begin, how wide each one is, and where each row stands", () => {
+    expect(svg).toMatch(/<svg class="change-matrix" data-left="150" data-step="236"/);
+    expect([...svg.matchAll(/<text class="row" data-box="([^"]*)" data-top="([\d.]+)"/g)].map(([, box, top]) => [box, Number(top)])).toEqual([
+      ["main.ts", 16],
+      ["platform/page", 51],
+      ["", 70],
+    ]);
+  });
+
+  it("marks the commit being shown, and dims the ones after it", () => {
+    const at1 = renderChangeMatrix(rows, commits, new Set([2]), 1);
+    // Four commits of 236 each from 150: the second is shown, so what comes after starts at 622.
+    expect(at1).toMatch(/<line class="now" x1="504\.0"/);
+    expect(at1).toMatch(/<rect class="future" x="622\.0" y="0" width="472\.0"/);
+    expect(svg).not.toContain('class="future"');
+  });
 });
