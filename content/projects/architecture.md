@@ -20,13 +20,19 @@ ring.
 
 A ball is as big as the number of files that need it, so the hotspots — the
 files a change reaches first — stand out; it can be as big as what it needs,
-or as its lines, instead. Point at a file, and its own arrows come out: in
+as its lines, or as the commits that have changed it so far, which grows as
+the history plays and stops where a file settles. Every file a commit
+changes rings as it comes. Point at a file, and its own arrows come out: in
 blue what it needs, in orange what needs it. Give them a reach of two, three
 or all, and they go on from there: the blast radius of a change, in both
 directions. Click a file, a box or a commit, and it opens on
 [GitHub](https://github.com/drpicox/david-rodenas.com) as it stood then.
 
 ::architecture
+
+How often each file changes, how far a change travels, and which files
+change together with no arrow between them is the other half of this
+picture: [how this site changes](/projects/changes/).
 
 ## The arrows point one way
 

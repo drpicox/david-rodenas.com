@@ -19,6 +19,8 @@ export interface Colours {
   readonly test: string;
   /** The arrows of what needs a file: warm, never to be taken for the blue of what it needs. */
   readonly arrowIn: string;
+  /** A change: the ring a file a commit changed is touched with. */
+  readonly heat: string;
 }
 
 interface Ball {
@@ -36,6 +38,8 @@ interface Ball {
   wait: number;
   trail: { x: number; y: number }[];
   bornAt: number;
+  /** When the commit shown last changed it: it rings, warm, as it is touched. */
+  touchedAt: number;
 }
 
 interface Rect {
@@ -113,7 +117,15 @@ export class ArchitectureScene {
       reached = null,
       coverage = null,
       sizes = null,
-    }: { untangling?: boolean; reached?: ReadonlySet<number> | null; coverage?: ReadonlyMap<string, number> | null; sizes?: ReadonlyMap<number, number> | null } = {},
+      changed = null,
+    }: {
+      untangling?: boolean;
+      reached?: ReadonlySet<number> | null;
+      coverage?: ReadonlyMap<string, number> | null;
+      sizes?: ReadonlyMap<number, number> | null;
+      /** The files the commit being shown changed, when it has just come: each rings once. */
+      changed?: ReadonlySet<number> | null;
+    } = {},
   ): void {
     this.reached = reached;
     this.coverage = coverage;
@@ -131,6 +143,7 @@ export class ArchitectureScene {
       const radius = sizes?.get(place.id) ?? place.radius;
       if (ball) {
         Object.assign(ball, { leaving: false, box: place.box, path: place.path, test: place.test, typesOnly: place.typesOnly, radius, wait });
+        if (changed?.has(place.id)) ball.touchedAt = this.time;
       } else {
         // A new file is born where it will stand, from nothing, unless the tangle is showing: then anywhere near the middle.
         const [x, y] = this.mode === "tangle" ? [this.width / 2 + (Math.random() - 0.5) * 80, this.height / 2 + (Math.random() - 0.5) * 80] : [place.x, place.y];
@@ -148,6 +161,7 @@ export class ArchitectureScene {
           wait,
           trail: [],
           bornAt: this.time,
+          touchedAt: -Infinity,
         });
       }
     }
@@ -305,6 +319,16 @@ export class ArchitectureScene {
         context.lineWidth = 1.2;
         context.beginPath();
         context.arc(ball.body.x, ball.body.y, radius + age * 22, 0, Math.PI * 2);
+        context.stroke();
+      }
+      const touched = this.time - ball.touchedAt;
+      if (touched < 0.9 && !this.still) {
+        // The ring a change is made with: warm, and a little tighter than a birth's, so that a new file and a changed one are told apart.
+        context.globalAlpha = (1 - touched / 0.9) * 0.8;
+        context.strokeStyle = colours.heat;
+        context.lineWidth = 1.8;
+        context.beginPath();
+        context.arc(ball.body.x, ball.body.y, radius + 1.5 + touched * 14, 0, Math.PI * 2);
         context.stroke();
       }
       const lit = this.hovered.path === ball.path;

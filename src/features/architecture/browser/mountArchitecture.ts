@@ -1,10 +1,12 @@
 import { el } from "../../../platform/browser/el";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
+import { changesUpTo } from "../changesUpTo";
 import { decodeHistory } from "../decodeHistory";
 import type { Coverage } from "../Coverage";
 import type { History } from "../History";
 import type { Layout } from "../Layout";
 import { layoutArchitecture } from "../layoutArchitecture";
+import { livesOf } from "../livesOf";
 import { metricsOf } from "../metricsOf";
 import { radiiBy, type Sizing } from "../radiiBy";
 import { reachedByTests } from "../reachedByTests";
@@ -30,6 +32,7 @@ function coloursOf(element: Element): Colours {
     warn: read("--warn", "#b4443c"),
     test: read("--hl-string", "#2f6f4e"),
     arrowIn: read("--arrow-in", "#c96a24"),
+    heat: read("--heat-warm", "#e08a5b"),
   };
 }
 
@@ -68,6 +71,9 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   const coverage = counted ? new Map(Object.entries(counted.lines)) : null;
   const snapshots = decodeHistory(history);
   const metrics = snapshots.map(metricsOf);
+  const lives = livesOf(history);
+  // A ball sized by its changes grows on the scale of the file changed most by the end, so it only grows as the history plays.
+  const most = Math.max(0, ...lives.map((life) => life.changed.length));
   const layouts = new Map<string, Layout>();
   const layoutAt = (at: number, tests: boolean) => {
     const key = `${at}:${tests}`;
@@ -89,6 +95,8 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   let mode: Mode = "boxes";
   let playing = false;
   let beat = 0;
+  /** The commit last shown, so that what a commit changed rings when it comes, and not again when the picture is only redrawn. */
+  let shown = -1;
 
   const canvas = el("canvas", { class: "architecture-canvas", "aria-label": "The source of this site: its files as balls, its folders as boxes, and arrows for what needs what" });
   const caption = el("figcaption");
@@ -98,7 +106,7 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   const tangleButton = el("button", { type: "button" }, "tangle it");
   const testsBox = el("input", { type: "checkbox" });
   const option = (value: string, words: string, chosen = false) => el("option", { value, selected: chosen }, words);
-  const sizeBox = el("select", { "aria-label": "What a ball's size says" }, option("neededBy", "needed by", true), option("needs", "needs"), option("lines", "lines"));
+  const sizeBox = el("select", { "aria-label": "What a ball's size says" }, option("neededBy", "needed by", true), option("needs", "needs"), option("changes", "changes"), option("lines", "lines"));
   const reachBox = el("select", { "aria-label": "How far a file's arrows reach" }, option("1", "1", true), option("2", "2"), option("3", "3"), option("Infinity", "all"));
   const controls = el(
     "div",
@@ -132,8 +140,10 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
       untangling,
       reached: tests ? reachedByTests(snapshot) : null,
       coverage: tests && at === coverageAt ? coverage : null,
-      sizes: radiiBy(snapshot, sizing),
+      sizes: radiiBy(snapshot, sizing, sizing === "changes" ? { counts: changesUpTo(lives, at), most } : undefined),
+      changed: at === shown ? null : new Set(history.changes[at]?.changed ?? []),
     });
+    shown = at;
     caption.innerHTML = renderArchitectureCaption(commit, metrics[at] ?? metricsOf(snapshot));
     sparks.innerHTML = renderMetricsSparks(metrics, at);
   };
