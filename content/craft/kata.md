@@ -72,4 +72,5 @@ The kata, its steps and the notes on its slides are Robert C. Martin's, from
 his slides of 2005. Mine are the JavaScript, the commits a student makes one
 by one, each labelled with its move, and the perfect game made to fail. The
 slides it follows are on [the kata's page](/teaching/kata/), with a version in
-Java.
+Java; here the game keeps its state in private fields, `#score`, where the
+slides still write `_score`.

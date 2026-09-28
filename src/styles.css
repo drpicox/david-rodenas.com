@@ -3760,6 +3760,17 @@ main li > img.card {
   vertical-align: top;
 }
 
+/* What the commit took away is still there, where it was, going. */
+.app .kata-file .line.removed {
+  margin-left: -0.6em;
+  padding-left: 0.6em;
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--warn);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--warn) 70%, transparent);
+  opacity: 0.75;
+}
+
 /* The mark stands in the margin, clear of the first letter. */
 .app .kata-file .line.added {
   margin-left: -0.6em;

@@ -1,6 +1,6 @@
 import { escapeHtml } from "../../platform/markdown/escapeHtml";
 import { highlight } from "../../platform/markdown/highlight";
-import { changedLines } from "./changedLines";
+import { lineDiff } from "./lineDiff";
 import { kataLessonAt } from "./kataLessonAt";
 import type { KataStep } from "./KataStep";
 import { runKata } from "./runKata";
@@ -8,11 +8,17 @@ import { runKata } from "./runKata";
 /** What each move is, and not how it came out: the bar says that. */
 const MOVES: Readonly<Record<KataStep["stage"], string>> = { test: "Test: write or change a test", code: "Code: write what the test asks for", clean: "Clean: tidy, and stay green" };
 
-/** A file of the commit; `empty` is what to say when it has nothing in it yet. */
+const CLASSES = { same: "line", added: "line added", removed: "line removed" } as const;
+
+/**
+ * A file of the commit, with what the commit did to it: the lines it added
+ * marked, and the ones it took away still there, struck through, where they
+ * were. `empty` is what to say when the file has nothing in it yet.
+ */
 function file(name: string, source: string, before: string | undefined, empty: string): string {
-  if (!source.trim()) return `<figure class="kata-file"><figcaption>${name}</figcaption><p class="kata-empty">${empty}</p></figure>`;
-  const changed = before === undefined ? source.split("\n").map(() => false) : changedLines(before, source);
-  const lines = source.split("\n").map((line, index) => `<span class="line${changed[index] ? " added" : ""}">${highlight(line, "js") || " "}</span>`);
+  const diff = before === undefined ? source.split("\n").map((line) => ({ kind: "same" as const, line })) : lineDiff(before, source);
+  if (!source.trim() && !diff.some((line) => line.kind === "removed")) return `<figure class="kata-file"><figcaption>${name}</figcaption><p class="kata-empty">${empty}</p></figure>`;
+  const lines = diff.map(({ kind, line }) => `<span class="${CLASSES[kind]}">${highlight(line, "js") || " "}</span>`);
   return `<figure class="kata-file"><figcaption>${name}</figcaption><pre><code>${lines.join("\n")}</code></pre></figure>`;
 }
 

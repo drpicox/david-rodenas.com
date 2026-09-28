@@ -42,6 +42,12 @@ describe("one commit of the kata", () => {
     expect(renderKataStep(at(16), at(15))).toContain('<p class="kata-bar green">All tests pass.</p>');
   });
 
+  it("shows what the commit took away, where it was, struck through", () => {
+    const html = renderKataStep(at(22), at(21));
+    expect(html).toMatch(/<span class="line removed">[^\n]*\.#score \+= pins;<\/span>/);
+    expect(renderKataStep(at(11), at(10))).toMatch(/<span class="line removed">[^\n]* g = [^\n]*Game\(\);<\/span>/);
+  });
+
   it("shows both files, with the lines this commit changed marked", () => {
     const html = renderKataStep(at(17), at(16));
     expect(html).toContain("bowling.spec.js");

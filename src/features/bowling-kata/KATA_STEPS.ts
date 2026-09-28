@@ -61,15 +61,15 @@ const T = {
 
 const game = (...members: string[]) => `export default class Game {\n${members.join("\n")}\n}`;
 const method = (name: string, ...body: string[]) => (body.length ? `  ${name} {\n${body.map((line) => `    ${line}`).join("\n")}\n  }` : `  ${name} {}`);
-const sumLoop = ["let score = 0;", "for (let i = 0; i < this._rolls.length; i++) {", "  score += this._rolls[i];", "}", "return score;"];
+const sumLoop = ["let score = 0;", "for (let i = 0; i < this.#rolls.length; i++) {", "  score += this.#rolls[i];", "}", "return score;"];
 const frames = (...branch: string[]) => [
-  "const rolls = this._rolls;",
+  "const rolls = this.#rolls;",
   "let score = 0;",
   ...branch,
   "return score;",
 ];
-const ROLLS_FIELD = "  _rolls = [];";
-const PUSH = method("roll(pins)", "this._rolls.push(pins);");
+const ROLLS_FIELD = "  #rolls = [];";
+const PUSH = method("roll(pins)", "this.#rolls.push(pins);");
 
 const IS_SPARE = "function isSpare(rolls, frameIndex) {\n  return rolls[frameIndex] + rolls[frameIndex + 1] == 10;\n}";
 const IS_STRIKE = "function isStrike(rolls, frameIndex) {\n  return rolls[frameIndex] === 10;\n}";
@@ -95,23 +95,23 @@ const C = {
   roll: game(method("roll()")),
   scoreEmpty: game(method("roll()"), method("score()")),
   scoreZero: game(method("roll()"), method("score()", "return 0;")),
-  summing: game("  _score = 0;", method("roll(pins)", "this._score += pins;"), method("score()", "return this._score;")),
-  rollsField: game("  _score = 0;", ROLLS_FIELD, method("roll(pins)", "this._score += pins;"), method("score()", "return this._score;")),
-  bothWritten: game("  _score = 0;", ROLLS_FIELD, method("roll(pins)", "this._score += pins;", "this._rolls.push(pins);"), method("score()", "return this._score;")),
-  readFromRolls: game("  _score = 0;", ROLLS_FIELD, method("roll(pins)", "this._score += pins;", "this._rolls.push(pins);"), method("score()", ...sumLoop)),
-  oldUnwritten: game("  _score = 0;", ROLLS_FIELD, PUSH, method("score()", ...sumLoop)),
+  summing: game("  #score = 0;", method("roll(pins)", "this.#score += pins;"), method("score()", "return this.#score;")),
+  rollsField: game("  #score = 0;", ROLLS_FIELD, method("roll(pins)", "this.#score += pins;"), method("score()", "return this.#score;")),
+  bothWritten: game("  #score = 0;", ROLLS_FIELD, method("roll(pins)", "this.#score += pins;", "this.#rolls.push(pins);"), method("score()", "return this.#score;")),
+  readFromRolls: game("  #score = 0;", ROLLS_FIELD, method("roll(pins)", "this.#score += pins;", "this.#rolls.push(pins);"), method("score()", ...sumLoop)),
+  oldUnwritten: game("  #score = 0;", ROLLS_FIELD, PUSH, method("score()", ...sumLoop)),
   rollsOnly: game(ROLLS_FIELD, PUSH, method("score()", ...sumLoop)),
   twoAtATime: game(
     ROLLS_FIELD,
     PUSH,
-    method("score()", "const rolls = this._rolls;", "let score = 0;", "let i = 0;", "for (let frame = 0; frame < 10; frame++) {", "  score += rolls[i] + rolls[i + 1];", "  i += 2;", "}", "return score;"),
+    method("score()", "const rolls = this.#rolls;", "let score = 0;", "let i = 0;", "for (let frame = 0; frame < 10; frame++) {", "  score += rolls[i] + rolls[i + 1];", "  i += 2;", "}", "return score;"),
   ),
   spareByI: game(
     ROLLS_FIELD,
     PUSH,
     method(
       "score()",
-      "const rolls = this._rolls;",
+      "const rolls = this.#rolls;",
       "let score = 0;",
       "let i = 0;",
       "for (let frame = 0; frame < 10; frame++) {",

@@ -39,6 +39,11 @@ describe("the Bowling Game Kata, commit by commit", () => {
     }
   });
 
+  it("keeps the game's state in private fields, as JavaScript now can, rather than behind an underscore", () => {
+    for (const step of KATA_STEPS) expect(step.code, `commit ${step.commit}`).not.toMatch(/\b_(score|rolls)\b/);
+    expect(KATA_STEPS.at(-1)?.code).toContain("#rolls = [];");
+  });
+
   it("keeps every clean step green: a refactor is only a refactor if the tests stay green", () => {
     for (const step of KATA_STEPS.filter((one) => one.stage === "clean")) expect(runKata(step.test, step.code).passed, `commit ${step.commit}`).toBe(true);
   });
