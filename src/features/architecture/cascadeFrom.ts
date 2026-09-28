@@ -1,4 +1,4 @@
-import type { Cascade } from "./cascadeOf";
+import type { Cascade } from "./Cascade";
 import type { Standing } from "./standingsOf";
 
 /** The cascade counted from where each file stood, up to a commit: the files seen at each distance from the nearest change below them, and how many changed too, the nearest first and nothing changed below last. */

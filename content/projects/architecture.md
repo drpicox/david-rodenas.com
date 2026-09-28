@@ -23,9 +23,9 @@ that need it — the hotspots, the files a change reaches first — or as the
 files it needs; as all the files a change to it could reach, near or far; as
 much as it stands between the others; as the commits that have changed it so
 far, which grows as the history plays and stops where a file settles; or as
-its lines. It can be coloured by how lately it changed, by how much the
-changes below it made it likely to change, or by how stable its box is, with
-the arrows that go against stability in red. Threads can be drawn between the
+its lines. It can be coloured by how lately it changed, by how often files
+standing where it stands changed, or by how stable its box is, with the
+arrows that go against stability in red. Threads can be drawn between the
 files that changed together, dashed where no arrow joins them; tangled, they
 pull the files together too. Every file a commit changes rings as it comes.
 
@@ -50,19 +50,20 @@ everything seems to pass through. Both can be counted, and the figures here
 follow the picture's history as it plays.
 
 **The groups the arrows make.** The Louvain method (Blondel and others,
-2008) finds the groups a graph makes without being told any: it moves each
-file into the group that keeps the most arrows inside it, then treats each
-group as one file and starts again, until nothing moves. How much a grouping
-keeps inside itself, beyond what arrows drawn at random would, is its
-modularity (Newman and Girvan, 2004), and it can be worked out for the boxes
-too.
+2008) finds the groups a graph makes without being told any. How much a
+grouping keeps its arrows inside its groups, beyond what arrows drawn at
+random would, is its modularity (Newman and Girvan, 2004); the method moves
+each file into the neighbouring group that raises it most, then treats each
+group as one file and starts again, until nothing moves. The modularity of
+the boxes can be worked out the same way.
 
 ::tangle-groups
 
-Many features make a group of their own: islands, as the rules want. Where
-the arrows gather several boxes into one group, some features lean on a
-part of the frame more than on anything else, and it goes with them. Set
-pointing to show its group, and the picture draws any file's.
+Some features make a group of their own, whole: islands, as the rules want.
+Where the arrows gather several boxes into one group, their files are more
+tied to one another than to the rest — often a feature and the part of the
+frame it leans on most, sometimes features that lean on the same things.
+Set pointing to show its group, and the picture draws any file's.
 
 **The bridges.** Some files stand between the others: most of the shortest
 ways from one file to another pass through them, the arrows read either
@@ -72,8 +73,10 @@ way. Set the size to bridges, and the picture shows how much each does.
 
 When this was written, on 28 September 2026, the first three were the
 contract every feature fulfils, the one way to make an element on the page,
-and the one way to make text safe to print: the files a change would be felt
-through on most roads across the source.
+and the one way to make text safe to print: files where much of the source
+meets. Read either way, the arrows say where the parts of the source meet,
+not which way a change would go; a file that needs nothing carries no change
+through it.
 
 **How far a change could reach.** Every arrow is a road a change could take
 back to what needs it. The share of the source a change to one file could
@@ -83,8 +86,8 @@ picture shows each file's.
 
 ::tangle-reach
 
-A source that grows by features, which only the list of features needs,
-sees it fall: a change inside a new feature can reach little beyond it. How far changes did go,
+A source that grows by features, which little else needs, sees it fall: a
+change inside a new feature can reach little beyond it. How far changes did go,
 rather than could, is on [how this site changes](/projects/changes/).
 
 ## The arrows point one way

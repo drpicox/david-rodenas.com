@@ -47,10 +47,12 @@ describe("the lenses the picture of the source is seen through", () => {
     expect(tones?.get(4)).toBe(0);
   });
 
-  it("colours a file by its exposure: the most exposed whole, one standing on nothing that moved not at all", () => {
+  it("colours a file by what its ground would lead one to expect: the most exposed whole, one standing on nothing that moved at the share any file changes, and only the files there are", () => {
     const { tones } = lensesOf(read, LAST, choice({ colour: "exposure" }));
     expect(Math.max(...(tones?.values() ?? []))).toBe(1);
-    expect(tones?.get(3)).toBe(0);
+    // mid stood one arrow over every change to low; side, over nothing.
+    expect(tones?.get(3) ?? 1).toBeLessThan(tones?.get(1) ?? 0);
+    expect([...(tones?.keys() ?? [])].every((id) => read.snapshots[LAST]?.modules.some((module) => module.id === id))).toBe(true);
   });
 
   it("colours a file by how stable its box is, and marks the box arrows that go against stability", () => {
@@ -75,7 +77,7 @@ describe("the lenses the picture of the source is seen through", () => {
   it("says in words what each lens shows", () => {
     const { said } = lensesOf(read, LAST, choice({ sizing: "bridges", colour: "exposure", together: true, pointing: "together" }));
     expect(said).toContain("as big as it stands between the others");
-    expect(said).toContain("warm as the changes below it made it likely to change");
+    expect(said).toContain("warm as often as files that stood where it stood changed");
     expect(said).toContain("dashed where no arrow joins them");
     expect(said).toContain("point at a file for what changed with it");
   });

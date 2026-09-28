@@ -60,11 +60,16 @@ export function renderGroupsFigure(snapshot: Snapshot, groups: ReadonlyMap<numbe
   const boxes = new Map(snapshot.modules.filter((module) => !module.test).map((module) => [module.id, boxOf(module.path)]));
   const names = [...new Set(boxes.values())];
   const byBox = new Map([...boxes].map(([id, box]) => [id, names.indexOf(box)]));
-  const single = sized.filter((group) => group.boxes.length === 1).length;
+  // A feature is an island when a group holds all of its files and nothing else: the whole box, alone.
+  const filesOf = new Map<string, number>();
+  for (const box of boxes.values()) filesOf.set(box, (filesOf.get(box) ?? 0) + 1);
+  const features = [...filesOf.keys()].filter((box) => bandOf(box) === "features" && box.includes("/") && !box.endsWith(".ts"));
+  const islands = features.filter((box) => sized.some((group) => group.boxes.length === 1 && group.boxes[0]?.[0] === box && group.files === filesOf.get(box)));
   const alone = sized.length - drawnGroups.length;
   const said =
     `The arrows alone, with no box said, gather the ${plural(groups.size, "file")} that ship into ${plural(sized.length, "group")}` +
-    `${alone > 0 ? `, ${plural(alone, "group")} of fewer than ${LEAST} files among them, not drawn` : ""}. ${single} of them hold the files of a single box. ` +
+    `${alone > 0 ? `, ${plural(alone, "group")} of fewer than ${LEAST} files among them, not drawn` : ""}. ` +
+    `${islands.length} of the ${plural(features.length, "feature")} ${islands.length === 1 ? "is a group to itself" : "are a group to themselves"}: all of ${islands.length === 1 ? "its" : "their"} files, and nothing else. ` +
     `Drawn as the boxes say, the source has a modularity of ${modularityOf(snapshot, byBox).toFixed(2)}; drawn as the arrows would, ${modularityOf(snapshot, groups).toFixed(2)}.`;
   const key = (kind: string, words: string) => `<span class="key ${kind}"></span>${words}`;
   return `<figure class="changes-figure">${svg}<p class="changes-legend">${key("frame", "a box of the frame")}${key("feature", "a feature")}${key("root", "the top of the source")}</p><figcaption>${escapeHtml(said)}</figcaption></figure>`;

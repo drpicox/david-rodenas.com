@@ -17,12 +17,13 @@ interface Placed extends Ground {
 }
 
 /**
- * What each file's ground predicted, beside what it did: across, the changes
- * the changes below it made likely — its exposure — and up, the changes it
- * had, both on the same square-root scale so that the many files with few
- * can be told apart, and the line where the two agree drawn through them.
- * A file far above the line changed for reasons of its own; one far below it
- * stood on moving ground and did not move. The furthest are named.
+ * What each file's ground would lead one to expect, beside what it did:
+ * across, the changes files that stood where it stood had, commit by commit —
+ * its exposure — and up, the changes it had, both on the same square-root
+ * scale so that the many files with few can be told apart, and the line where
+ * the two agree drawn through them. A file far above the line changed for
+ * reasons of its own; one far below it stood where files change, and did not.
+ * The furthest are named.
  */
 export function renderGroundFigure(ground: ReadonlyMap<number, Ground>, lives: readonly Life[]): string {
   const standing = new Map(lives.filter((life) => !life.test && life.went === undefined).map((life) => [life.id, life.path]));
@@ -55,22 +56,22 @@ export function renderGroundFigure(ground: ReadonlyMap<number, Ground>, lives: r
   };
   const names = [...above.slice(0, 2).map((file, at) => name(file, "above", at)), ...below.slice(0, 2).map((file, at) => name(file, "below", at))].join("");
   const svg =
-    `<svg class="ground" viewBox="0 0 ${W} ${H}" role="img" aria-label="Every file by the changes its ground made likely and the changes it had">` +
+    `<svg class="ground" viewBox="0 0 ${W} ${H}" role="img" aria-label="Every file by the changes its ground would lead one to expect and the changes it had">` +
     `<rect class="frame" x="${PLOT.left}" y="${PLOT.top}" width="${innerW}" height="${innerH}"/>` +
     `<line class="even" x1="${fixed(x(0))}" y1="${fixed(y(0))}" x2="${fixed(x(most))}" y2="${fixed(y(most))}"/>` +
-    `<text class="even-name" x="${fixed(x(most * 0.62))}" y="${fixed(y(most * 0.62) + 14)}">as its ground made likely</text>` +
+    `<text class="even-name" x="${fixed(x(most * 0.62))}" y="${fixed(y(most * 0.62) + 14)}">as its ground would lead one to expect</text>` +
     `${dots}${names}${ticks}` +
-    `<text class="axis" x="${fixed(PLOT.left + innerW / 2)}" y="${H - 8}" text-anchor="middle">what its ground made likely, in changes</text>` +
+    `<text class="axis" x="${fixed(PLOT.left + innerW / 2)}" y="${H - 8}" text-anchor="middle">what its ground would lead one to expect, in changes</text>` +
     `<text class="axis" transform="translate(12 ${fixed(PLOT.top + innerH / 2)}) rotate(-90)" text-anchor="middle">the changes it had</text></svg>`;
 
   const said = [
-    `The files that stand on the most that moved: ${listOf(exposed.map((file) => `${file.path} (${tenth(file.expected)})`))}.`,
-    above.length > 0 ? `The ones that changed far more than their ground explains: ${listOf(above.slice(0, NAMED).map((file) => `${file.path} (${file.actual} against ${tenth(file.expected)})`))}.` : "",
-    below.length > 0 ? `The ones that moved far less than theirs made likely: ${listOf(below.slice(0, NAMED).map((file) => `${file.path} (${file.actual} against ${tenth(file.expected)})`))}.` : "",
+    `The files whose ground would lead one to expect the most changes: ${listOf(exposed.map((file) => `${file.path} (${tenth(file.expected)})`))}.`,
+    above.length > 0 ? `The ones that changed far more than theirs would: ${listOf(above.slice(0, NAMED).map((file) => `${file.path} (${file.actual} against ${tenth(file.expected)})`))}.` : "",
+    below.length > 0 ? `The ones that changed far less: ${listOf(below.slice(0, NAMED).map((file) => `${file.path} (${file.actual} against ${tenth(file.expected)})`))}.` : "",
   ]
     .filter(Boolean)
     .join(" ");
   const key = (kind: string, words: string) => `<span class="key dot ${kind}"></span>${words}`;
-  const legend = `<p class="changes-legend">${key("above", "changed far more than its ground made likely")}${key("below", "far less")}${key("even", "about as its ground made likely")}</p>`;
+  const legend = `<p class="changes-legend">${key("above", "changed far more than its ground would lead one to expect")}${key("below", "far less")}${key("even", "about as much")}</p>`;
   return `<figure class="changes-figure">${svg}${legend}<figcaption>${escapeHtml(said)}</figcaption></figure>`;
 }

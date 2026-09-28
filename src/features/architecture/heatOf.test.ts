@@ -18,4 +18,8 @@ describe("how hot each file is at a commit", () => {
     expect(heat.get(2)).toBe(0);
     expect(heat.get(3)).toBe(0);
   });
+
+  it("leaves a sweep out: a rename across the source warms nothing", () => {
+    expect(heatOf([life(0, 0, [2, 10])], 10, 6, new Set([10])).get(0)).toBeCloseTo(0.5 ** (8 / 6));
+  });
 });

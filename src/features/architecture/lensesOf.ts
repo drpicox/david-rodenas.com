@@ -59,7 +59,7 @@ const SIZES: Readonly<Record<Sizing, string>> = {
 const COLOURS: Readonly<Record<ColourLens, string>> = {
   plain: "",
   heat: "warm as it changed lately, cooling by half every six commits",
-  exposure: "warm as the changes below it made it likely to change",
+  exposure: "warm as often as files that stood where it stood changed",
   stability: "as deep as its box is stable, by Robert C. Martin's measure, with the box arrows that go against it in red",
 };
 const POINTING: Readonly<Record<Pointing, string>> = {
@@ -81,11 +81,13 @@ function scaled(values: ReadonlyMap<number, number>): Map<number, number> {
 function coloured(read: HistoryRead, at: number, colour: ColourLens, snapshot: Snapshot): Pick<Lenses, "tones" | "ramp" | "against"> {
   const none = { tones: null, ramp: null, against: new Set<string>() };
   if (colour === "plain") return none;
-  if (colour === "heat") return { ...none, ramp: "warm", tones: new Map([...heatOf(read.lives, at)].map(([id, heat]) => [id, Math.min(1, heat)])) };
+  if (colour === "heat") return { ...none, ramp: "warm", tones: new Map([...heatOf(read.lives, at, undefined, sweepsOf(read.history))].map(([id, heat]) => [id, Math.min(1, heat)])) };
   if (colour === "exposure") {
     const standings = measuresOf.standings(read);
     const ground = groundOf(standings, cascadeFrom(standings, at), at);
-    return { ...none, ramp: "warm", tones: scaled(new Map([...ground].map(([id, { expected }]) => [id, expected]))) };
+    // Scaled over the files there are at the commit: one gone long ago does not set how warm the rest are.
+    const standing = new Set(snapshot.modules.map((module) => module.id));
+    return { ...none, ramp: "warm", tones: scaled(new Map([...ground].filter(([id]) => standing.has(id)).map(([id, { expected }]) => [id, expected]))) };
   }
   const then = historyUpTo(read, at);
   const boxes = stabilityOf(snapshot, then.lives, sweepsOf(then.history));
@@ -108,7 +110,10 @@ export function lensesOf(read: HistoryRead, at: number, choice: LensChoice): Len
   const snapshot = read.snapshots[at] ?? NOTHING;
   // The sizes the snapshot alone cannot give, each measured only when asked for.
   const measures: Partial<Record<Sizing, () => Measured>> = {
-    changes: () => ({ counts: changesUpTo(read.lives, at), most: Math.max(0, ...read.lives.map((life) => life.changed.length)) }),
+    changes: () => {
+      const sweeps = sweepsOf(read.history);
+      return { counts: changesUpTo(read.lives, at, sweeps), most: Math.max(0, ...read.lives.map((life) => life.changed.filter((commit) => !sweeps.has(commit)).length)) };
+    },
     reachedBy: () => ({ counts: measuresOf.reach(snapshot) }),
     bridges: () => ({ counts: measuresOf.bridges(snapshot) }),
   };

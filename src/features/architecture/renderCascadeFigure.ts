@@ -1,5 +1,5 @@
 import { fixed } from "../../platform/charts/fixed";
-import type { Cascade } from "./cascadeOf";
+import type { Cascade } from "./Cascade";
 import { percent } from "./percent";
 
 const W = 640;

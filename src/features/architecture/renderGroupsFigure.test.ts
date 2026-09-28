@@ -24,7 +24,7 @@ describe("the figure of the groups the arrows make", () => {
 
   it("says how many groups there are, how many are a single box, and the modularity of the boxes against the groups'", () => {
     expect(figure).toContain("into 3 groups");
-    expect(figure).toContain("2 of them hold the files of a single box");
+    expect(figure).toContain("1 of the 2 features is a group to itself: all of its files, and nothing else");
     expect(figure).toMatch(/Drawn as the boxes say, the source has a modularity of 0\.\d+; drawn as the arrows would, 0\.\d+/);
   });
 });

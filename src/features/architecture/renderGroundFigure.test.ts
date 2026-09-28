@@ -27,12 +27,12 @@ describe("the figure of what each file's ground predicted", () => {
   });
 
   it("says which stand on the most that moved, which changed for reasons of their own, and which were spared", () => {
-    expect(figure).toContain("stand on the most that moved: main.ts (12), features/f/fFeature.ts (3) and platform/page/render.ts (1.5)");
-    expect(figure).toContain("changed far more than their ground explains: platform/page/render.ts (15 against 1.5)");
-    expect(figure).toContain("moved far less than theirs made likely: features/f/fFeature.ts (0 against 3)");
+    expect(figure).toContain("The files whose ground would lead one to expect the most changes: main.ts (12), features/f/fFeature.ts (3) and platform/page/render.ts (1.5)");
+    expect(figure).toContain("The ones that changed far more than theirs would: platform/page/render.ts (15 against 1.5)");
+    expect(figure).toContain("The ones that changed far less: features/f/fFeature.ts (0 against 3)");
   });
 
   it("keys its colours: far above its ground, far below it, and near the line", () => {
-    expect(figure).toMatch(/class="changes-legend"[\s\S]*changed far more than its ground made likely[\s\S]*far less[\s\S]*about as its ground made likely/);
+    expect(figure).toMatch(/class="changes-legend"[\s\S]*changed far more than its ground would lead one to expect[\s\S]*far less[\s\S]*about as much/);
   });
 });

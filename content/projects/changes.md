@@ -1,6 +1,6 @@
 ---
 title: How this site changes
-summary: The history of this site's source, read for what changes, how often and with what — the picture of the source seen through its changes, the files that never settle, how far a change travels and who inherits it, and the dependencies no arrow shows.
+summary: The history of this site's source, read for what changes, how often and with what — the picture of the source seen through its changes, the files that never settle, how far a change travels and which files stand where changes are, and the dependencies no arrow shows.
 order: 91
 ---
 
@@ -10,8 +10,8 @@ order: 91
 stands. This is how often each one moves. Git keeps every commit, and every
 commit says which files it changed; read over the whole history, that says
 what the arrows cannot: which files settle and which never do, how far a
-change travels, which files inherit the changes of what they stand on, and
-which change together although nothing in the code joins them.
+change travels, which files stand where changes happen, and which change
+together although nothing in the code joins them.
 
 Like the picture of how it is built, every figure here is read off the
 history at every push, so it is always the commit being published. Play the
@@ -27,8 +27,8 @@ as big as the commits that have changed it so far, and warm as it changed
 lately, cooling by half every six commits; a warm thread between two files
 that changed together twice or more, dashed where no arrow joins them. Play
 the history and the heat moves: a feature being written glows and cools,
-while the frame under it warms again whenever a feature asks something new
-of it. Tangle it, and what changed together pulls together too. Point at a
+while the frame under the features warms again each time a new one is
+written. Tangle it, and what changed together pulls together too. Point at a
 file for what changed with it, or change the lenses for anything else the
 picture of how it is built can show.
 
@@ -97,20 +97,21 @@ far a change could go, not how far changes went.
 
 ## Standing on moving ground
 
-A file that stands on files that keep changing is more likely to change with
-them, by as much as the figure above says for each distance. Added up over
-every commit, for each file, that is how many changes its ground made
-likely: what it inherits from what it stands on, its exposure. Set against
-what it did:
+A file standing near files that change changes more often than one standing
+far from them, by as much as the figure above says for each distance. Added
+up over every commit, for each file, the share of files that changed where
+it stood is how many changes its ground would lead one to expect: its
+exposure. It says where a file stood, not what moved it. Set against what it
+did:
 
 ::change-ground
 
-Near the line, a file changed about as often as its ground made likely. Far
-above it, a file changed for reasons of its own: it grows with every
-feature, or it keeps being reworked. Far below, a file stood on moving
-ground and did not move — a list of what a feature brings, which nothing
-under it unsettles. On the picture above, colour set to exposure shows every
-file's.
+Near the line, a file changed about as often as files standing where it
+stood. Far above it, a file changed for reasons of its own: it grows with
+every feature, or it keeps being reworked. Far below, a file stood where
+files change, and did not — a list of what a feature brings, which changes
+little whatever changes under it. On the picture above, colour set to
+exposure shows every file's.
 
 ## Two kinds of unstable
 
@@ -125,8 +126,8 @@ others, not by its history, and he counts two kinds of coupling to do it:
   there are, the more it depends, and the more often something else makes
   it change.
 
-He counts files, not arrows: a file that needs three things elsewhere is one
-to Ce. His instability puts the two together, I = Ce / (Ca + Ce): 0 for a
+He counts classes, not arrows, and here a file stands for a class: a file
+that needs three things elsewhere is one to Ce. His instability puts the two together, I = Ce / (Ca + Ce): 0 for a
 box that is only needed, hard to change because whatever needs it may have
 to change with it; 1 for a box that only needs, which nothing stops from
 changing. Pick a box, and see its two couplings drawn and the sum worked
@@ -139,7 +140,7 @@ should go from a box to one more stable than itself, so that what is hard to
 change never needs what is easy to change, and keeps changing. On the
 picture above, colour set to stability draws every box as deep as it is
 stable, and the arrows that go against the rule in red. When this was
-written, most of them left the list of features: one file, needed by one,
+written, on 28 September 2026, most of them left the list of features: one file, needed by one,
 which by his count stands half way, and which has to point at every
 feature, because putting them together is what it is for.
 

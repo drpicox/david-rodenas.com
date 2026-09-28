@@ -18,6 +18,7 @@ describe("the figure of the files that stand between the others", () => {
   });
 
   it("says which file most ways pass through, and on what share of them", () => {
-    expect(figure).toContain("platform/plugin/Feature.ts stands on 100% of the shortest ways between two other files");
+    expect(figure).toContain("platform/plugin/Feature.ts stands on 100% of the shortest ways between two other files that ship, the arrows read either way; where several ways are as short, each counts for its share.");
+    expect(figure).not.toContain("take it away");
   });
 });

@@ -207,7 +207,11 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
     setPlaying(false);
     showCommit(Number(slider.value));
   });
-  const stopFollowing = follow?.on((commit) => showCommit(commit ?? last)) ?? (() => {});
+  // Following the page, the commit it moves to is shown when the picture is on screen: off it, nothing is worked out for nobody.
+  let wanted = at;
+  const stopFollowing = follow?.on((commit) => {
+    wanted = commit ?? last;
+  }) ?? (() => {});
   // The lines below are a drawing scaled to fit: a point on them is read in the drawing's own units, and it can be dragged along.
   const commitUnder = (event: PointerEvent) => {
     const drawing = sparks.querySelector("svg");
@@ -289,6 +293,7 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
     if (!watch.onScreen()) return;
     // The colours follow the theme, which can change under the picture.
     if (frames++ % 30 === 0) colours = coloursOf(host);
+    if (follow && wanted !== at) showCommit(wanted);
     if (playing) {
       beat += seconds;
       if (beat >= BEAT) {
