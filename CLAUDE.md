@@ -37,8 +37,9 @@ traced, write the weaker sentence.
   `tools/planets.png`, so a person can look at them
 - `node tools/architecture-history.mjs` — read the source at every commit
   that changed it into `public/data/architecture.json`, the history the
-  architecture page plays; run it after committing, since a build checks out
-  one commit and cannot see the others
+  architecture page plays. The deploy runs it, with `npm run coverage`, on
+  every push, with the whole history checked out; run it here only to see the
+  page in dev. Its output is not committed back by the deploy
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs
   running on their pages into `public/projects/shots/`, for the cards; needs
   `npm run dev` running (`SITE=` if it is not on 5173); `THEME=dark` takes

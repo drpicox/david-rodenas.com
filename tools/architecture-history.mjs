@@ -12,8 +12,10 @@ import { createServer } from "vite";
  * With the coverage counted first, it also writes `public/data/coverage.json`:
  * how many of each file's lines the tests run, at the last commit.
  *
- * It runs here and not in the build, because a build checks out one commit and
- * the history is all of them. The graph is read with the same code the
+ * It runs before the build and not inside it, because the history is every
+ * commit and a build needs only one: the deploy checks out all of them and runs
+ * it on every push, so the page is always the commit being published. Here it
+ * is for seeing the page as it will be. The graph is read with the same code the
  * architecture test uses, loaded through vite so this tool needs nothing else.
  */
 const OUT = "public/data/architecture.json";

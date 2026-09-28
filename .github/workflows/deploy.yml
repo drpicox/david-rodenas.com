@@ -27,7 +27,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # The whole history, not one commit: the architecture page draws every commit that changed the source.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -35,17 +38,22 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm test
+      # The tests, counting the lines each one runs, for the architecture page to show.
+      - run: npm run coverage
+      # Every commit that changed the source, read into the history the architecture page plays, so it is always the commit being published.
+      - run: node tools/architecture-history.mjs
       - run: npm run build
 
       # The build fetched whatever finished year was missing into public/data.
       # Keeping it is what makes the next build ask for nothing; losing it only
       # costs asking again, so a failure here never stops the deploy. A push
       # made with the workflow's own token does not start another workflow.
+      # The architecture and its coverage are made again at every deploy, so they are not committed back:
+      # a commit from every deploy would leave main behind wherever it was pushed from.
       - name: Keep the year the build fetched
         continue-on-error: true
         run: |
-          git add public/data
+          git add public/data ':!public/data/architecture.json' ':!public/data/coverage.json'
           git diff --cached --quiet && echo "No new year." && exit 0
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
