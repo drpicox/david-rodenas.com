@@ -3986,6 +3986,45 @@ main li > img.card {
   margin: 0;
 }
 
+/* The words to edit lie over their coloured copy: the same box, the same letters, the same place.
+   The textarea keeps the caret and the selection; its own letters are transparent, so the colours show. */
+.app .genie-editor {
+  display: grid;
+  margin: 0 0 0.8em;
+}
+
+.app .genie-editor > .genie-source {
+  grid-area: 1 / 1;
+  margin: 0;
+  overflow: auto;
+  white-space: pre;
+  line-height: 1.5;
+}
+
+.app .genie-editor > pre.genie-colours {
+  pointer-events: none;
+  border-color: transparent;
+  overflow: hidden;
+}
+
+/* Code inside a file is the file's own size: the coloured copy must match the letters above it. */
+.app .genie-source code {
+  font: inherit;
+}
+
+.app .genie-editor > textarea.genie-source {
+  position: relative;
+  color: transparent;
+  background: transparent;
+  caret-color: var(--ink);
+  resize: none;
+}
+
+.app .genie-editor > textarea.genie-source::selection {
+  color: transparent;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
 /* ---- the player: pause what moves, go on, or play it again ---- */
 
 .app button.player,

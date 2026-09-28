@@ -119,3 +119,20 @@ describe("highlight, QBasic", () => {
     expect(highlight('PRINT "it\'s R";', "basic")).toBe('<span class="hl-k">PRINT</span> <span class="hl-s">&quot;it\'s R&quot;</span>;');
   });
 });
+
+describe("Gherkin, which a feature is written in", () => {
+  it("marks the keyword that opens a line, a quoted string, a number, a tag and a comment", () => {
+    const out = highlight('@shop\nFeature: Shop\n  # stock\n  Scenario: Buy\n    Given "John" has 3 apples\n    And the stock is:\n      | name |', "gherkin");
+    expect(out).toContain('<span class="hl-a">@shop</span>');
+    expect(out).toContain('<span class="hl-k">Feature:</span> Shop');
+    expect(out).toContain('<span class="hl-c"># stock</span>');
+    expect(out).toContain('<span class="hl-k">Scenario:</span> Buy');
+    expect(out).toContain('<span class="hl-k">Given</span> <span class="hl-s">&quot;John&quot;</span> has <span class="hl-n">3</span> apples');
+    expect(out).toContain('<span class="hl-k">And</span> the stock is:');
+    expect(out).toContain("| name |");
+  });
+
+  it("marks only the keyword a line opens with, not the same word inside a sentence", () => {
+    expect(highlight("Then I give it and then some", "gherkin")).toBe('<span class="hl-k">Then</span> I give it and then some');
+  });
+});

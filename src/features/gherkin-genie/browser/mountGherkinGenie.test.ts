@@ -34,6 +34,13 @@ describe("Gherkin Genie, in the page", () => {
     expect(host.querySelector(".kata-bar")?.textContent).toBe("Every scenario passes.");
   });
 
+  it("colours what is typed as it is typed", () => {
+    const host = mounted();
+    const steps = host.querySelector<HTMLTextAreaElement>('[data-genie="steps"]')!;
+    type(steps, "class Steps {}");
+    expect(steps.previousElementSibling?.innerHTML).toContain('<span class="hl-k">class</span> Steps {}');
+  });
+
   it("asks again as soon as the feature gains a step", () => {
     const host = mounted();
     const feature = host.querySelector<HTMLTextAreaElement>('[data-genie="feature"]')!;

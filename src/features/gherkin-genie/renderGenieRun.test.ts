@@ -5,10 +5,11 @@ import { renderGenieRun } from "./renderGenieRun";
 import { runGenie } from "./runGenie";
 
 describe("what the page shows of a run", () => {
-  it("prints the wished steps as they are, to be copied", () => {
+  it("prints the wished steps as they are, to be copied, the code coloured as code", () => {
     const html = renderGenieRun(runGenie(EXAMPLE_FEATURE, EXAMPLE_STEPS));
     expect(html).toContain('<pre class="genie-wished">There are missing steps. Please implement them:');
-    expect(html).toContain("whenIEatNCucumbers(number1) {\n    throw new Error(&quot;Unimplemented&quot;);");
+    expect(html).toContain('<span class="hl-k">class</span> WishedSteps {');
+    expect(html).toContain('<span class="hl-k">throw</span> <span class="hl-k">new</span> Error(<span class="hl-s">&quot;Unimplemented&quot;</span>);');
   });
 
   it("shows each scenario green or red once it runs, with what the runner said", () => {

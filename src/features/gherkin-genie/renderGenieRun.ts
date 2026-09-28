@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../platform/markdown/escapeHtml";
+import { highlight } from "../../platform/markdown/highlight";
 import type { GenieRun } from "./runGenie";
 
 const bar = (passed: boolean, words: string) => `<p class="kata-bar ${passed ? "green" : "red"}">${escapeHtml(words)}</p>`;
@@ -10,7 +11,11 @@ const bar = (passed: boolean, words: string) => `<p class="kata-bar ${passed ? "
  */
 export function renderGenieRun(run: GenieRun): string {
   if (run.error) return bar(false, run.error);
-  if (run.wished) return `<pre class="genie-wished">${escapeHtml(run.wished)}</pre>`;
+  if (run.wished) {
+    // The first line is Genie speaking; what follows is the code it hands over, and reads as code.
+    const [said = "", ...code] = run.wished.split("\n");
+    return `<pre class="genie-wished">${escapeHtml(said)}\n${highlight(code.join("\n"), "js")}</pre>`;
+  }
   const tests = run.run;
   if (!tests) return "";
   const items = tests.results.map(

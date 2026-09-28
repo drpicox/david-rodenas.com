@@ -228,6 +228,30 @@ function html(code: string): string {
  * arrives, and because a few dozen lines with tests are easier to trust than
  * a few thousand without.
  */
+const GHERKIN_OPENS = /^(\s*)(Feature:|Background:|Scenario Outline:|Scenario:|Example:|Examples:|Rule:|Given|When|Then|And|But|\*)(?=\s|$)/;
+
+/**
+ * Gherkin, line by line: the keyword a line opens with, a tag, a comment,
+ * and inside a step its quoted strings and its numbers — the values a step
+ * hands to its code. The rest is the sentence, and stays as it is written.
+ */
+function gherkin(code: string): string {
+  return code
+    .split("\n")
+    .map((line) => {
+      const trimmed = line.trimStart();
+      const indent = line.slice(0, line.length - trimmed.length);
+      if (trimmed.startsWith("#")) return indent + span("c", trimmed);
+      if (trimmed.startsWith("@")) return indent + span("a", trimmed);
+      const opens = GHERKIN_OPENS.exec(line);
+      const keyword = opens ? indent + span("k", opens[2] ?? "") : "";
+      const rest = opens ? line.slice(opens[0].length) : line;
+      if (!opens) return escapeHtml(line);
+      return keyword + rest.split(/("[^"]*"|\b\d+(?:\.\d+)?\b)/).map((piece) => (/^"/.test(piece) ? span("s", piece) : /^\d/.test(piece) ? span("n", piece) : escapeHtml(piece))).join("");
+    })
+    .join("\n");
+}
+
 export function highlight(code: string, language: string): string {
   if (language === "js" || language === "javascript") return cLike(code, JAVASCRIPT, false);
   if (language === "c") return cLike(code, C, true);
@@ -235,5 +259,6 @@ export function highlight(code: string, language: string): string {
   if (language === "prolog") return prolog(code);
   if (language === "html") return html(code);
   if (language === "basic") return basic(code);
+  if (language === "gherkin" || language === "feature") return gherkin(code);
   return escapeHtml(code);
 }
