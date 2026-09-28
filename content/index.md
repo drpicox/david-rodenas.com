@@ -23,6 +23,14 @@ one of them saves time on each and pays interest on it after.
 
 ::technical-debt --shortcuts
 
+## The craft
+
+Small, safe steps, always: a test that fails is put right before the next step
+is taken, and the code is never more than a step away from working. [How I
+work, and why.](/craft/)
+
+::small-steps
+
 ## Essays
 
 > > More than half a million views.
@@ -40,7 +48,7 @@ longest:
 - ![The cover of the essay](/essays/covers/scrum-vs-xp.jpg "card") [Scrum vs Extreme Programming: Was XP Right All Along?](https://drpicox.medium.com/scrum-vs-extreme-programming-was-xp-right-all-along-1bb1061e9e6b)  
   Could the most popular methodology be the thing holding teams back?
 
-[All of them, by subject.](/essays/)
+[More of them, by subject.](/essays/)
 
 ## More to run
 
