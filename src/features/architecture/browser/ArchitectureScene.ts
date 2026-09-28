@@ -1,5 +1,6 @@
 import type { Body } from "../Body";
 import type { Layout } from "../Layout";
+import { reachOf } from "../reachOf";
 import type { Snapshot } from "../Snapshot";
 import { springTowards } from "../springTowards";
 import { tangleStep } from "../tangleStep";
@@ -16,6 +17,8 @@ export interface Colours {
   readonly warn: string;
   /** The colour a test is drawn in: green, as a test that passes is. */
   readonly test: string;
+  /** The arrows of what needs a file: warm, never to be taken for the blue of what it needs. */
+  readonly arrowIn: string;
 }
 
 interface Ball {
@@ -81,6 +84,8 @@ export class ArchitectureScene {
   /** The file-level arrows, drawn in the tangle, where there are no boxes to gather them. */
   private fileLinks: [number, number][] = [];
   hovered: { path?: string; box?: string } = {};
+  /** How far a file's arrows reach when it is pointed at: one is what it names itself; more is its blast radius. */
+  reach = 1;
 
   /** How tall the picture is now: it follows the snapshot, and the tangle, as they grow and shrink. */
   height = TANGLE_HEIGHT;
@@ -103,7 +108,12 @@ export class ArchitectureScene {
   show(
     snapshot: Snapshot,
     layout: Layout,
-    { untangling = false, reached = null, coverage = null }: { untangling?: boolean; reached?: ReadonlySet<number> | null; coverage?: ReadonlyMap<string, number> | null } = {},
+    {
+      untangling = false,
+      reached = null,
+      coverage = null,
+      sizes = null,
+    }: { untangling?: boolean; reached?: ReadonlySet<number> | null; coverage?: ReadonlyMap<string, number> | null; sizes?: ReadonlyMap<number, number> | null } = {},
   ): void {
     this.reached = reached;
     this.coverage = coverage;
@@ -116,16 +126,17 @@ export class ArchitectureScene {
       visible.add(place.id);
       const ball = this.balls.get(place.id);
       const wait = untangling ? (topRank - (rankOf.get(place.box) ?? 0)) * 0.07 + Math.random() * 0.12 : 0;
+      const radius = sizes?.get(place.id) ?? place.radius;
       if (ball) {
-        Object.assign(ball, { leaving: false, box: place.box, path: place.path, test: place.test, typesOnly: place.typesOnly, radius: place.radius, wait });
+        Object.assign(ball, { leaving: false, box: place.box, path: place.path, test: place.test, typesOnly: place.typesOnly, radius, wait });
       } else {
         // A new file is born where it will stand, from nothing, unless the tangle is showing: then anywhere near the middle.
         const [x, y] = this.mode === "tangle" ? [this.width / 2 + (Math.random() - 0.5) * 80, this.height / 2 + (Math.random() - 0.5) * 80] : [place.x, place.y];
         this.balls.set(place.id, {
           id: place.id,
           body: { x, y, vx: 0, vy: 0 },
-          size: { x: this.still ? place.radius : 0, y: 0, vx: 0, vy: 0 },
-          radius: place.radius,
+          size: { x: this.still ? radius : 0, y: 0, vx: 0, vy: 0 },
+          radius,
           alpha: this.still ? 1 : 0,
           leaving: false,
           box: place.box,
@@ -252,11 +263,11 @@ export class ArchitectureScene {
       context.fillText(box.label, box.x + 6, box.y + 10);
     }
 
-    // A file under the pointer brings its own arrows, and everything it is not tied to steps back.
+    // A file under the pointer brings its own arrows, as far as they are asked to reach, and everything it is not tied to steps back.
     const focus = this.hovered.path ? [...this.balls.values()].find((ball) => ball.path === this.hovered.path) : undefined;
-    const needs = focus ? this.fileLinks.filter(([from]) => from === focus.id).map(([, to]) => to) : [];
-    const neededBy = focus ? this.fileLinks.filter(([, to]) => to === focus.id).map(([from]) => from) : [];
-    const tied = new Set([...(focus ? [focus.id] : []), ...needs, ...neededBy]);
+    const needs = focus ? reachOf(this.fileLinks, focus.id, this.reach, "needs") : new Map<number, number>();
+    const neededBy = focus ? reachOf(this.fileLinks, focus.id, this.reach, "neededBy") : new Map<number, number>();
+    const tied = new Set([...(focus ? [focus.id] : []), ...needs.keys(), ...neededBy.keys()]);
 
     this.drawLinks(context, colours, focus !== undefined);
     if (focus) this.drawFileArrows(context, colours, focus, needs, neededBy);
@@ -328,13 +339,28 @@ export class ArchitectureScene {
     if (focus) {
       const share = this.coverage?.get(focus.path);
       const run = share !== undefined && !focus.test && !focus.typesOnly ? ` · tests run ${Math.round(share)}% of it` : "";
-      this.label(context, colours, `${focus.path}   needs ${needs.length} · needed by ${neededBy.length}${run}`, focus.body.x, focus.body.y - 10);
+      // Those it names itself, and, when the arrows reach further, how many are within that reach.
+      const count = (found: ReadonlyMap<number, number>) => {
+        const near = [...found.values()].filter((distance) => distance === 1).length;
+        return this.reach > 1 && found.size > near ? `${near} (${found.size} within ${Number.isFinite(this.reach) ? this.reach : "any"})` : `${near}`;
+      };
+      this.label(context, colours, [
+        { text: `${focus.path}   ` },
+        { text: `needs ${count(needs)}`, key: colours.accent },
+        { text: " · " },
+        { text: `needed by ${count(neededBy)}`, key: colours.arrowIn },
+        { text: `${run}   click: its source` },
+      ], focus.body.x, focus.body.y - 10);
     }
     context.globalAlpha = 1;
   }
 
-  /** One file's own arrows: out to what it needs, in from what needs it, each with its head at the ball it points to. */
-  private drawFileArrows(context: CanvasRenderingContext2D, colours: Colours, focus: Ball, needs: readonly number[], neededBy: readonly number[]): void {
+  /**
+   * One file's arrows: out to what it needs, in from what needs it, each with
+   * its head at the ball it points to — and, further than one, the arrows that
+   * carry it on, fainter the further they are from it.
+   */
+  private drawFileArrows(context: CanvasRenderingContext2D, colours: Colours, focus: Ball & { id: number }, needs: ReadonlyMap<number, number>, neededBy: ReadonlyMap<number, number>): void {
     const arrow = (from: Ball, to: Ball, colour: string, alpha: number) => {
       const [dx, dy] = [to.body.x - from.body.x, to.body.y - from.body.y];
       const length = Math.hypot(dx, dy) || 1;
@@ -359,13 +385,16 @@ export class ArchitectureScene {
       context.closePath();
       context.fill();
     };
-    for (const id of needs) {
-      const to = this.balls.get(id);
-      if (to) arrow(focus, to, colours.accent, 0.9);
-    }
-    for (const id of neededBy) {
-      const from = this.balls.get(id);
-      if (from) arrow(from, focus, colours.soft, 0.75);
+    const distanceOf = (found: ReadonlyMap<number, number>, id: number) => (id === focus.id ? 0 : found.get(id));
+    const fade = (distance: number) => Math.max(0.25, 0.95 - (distance - 1) * 0.25);
+    for (const [from, to] of this.fileLinks) {
+      const [a, b] = [this.balls.get(from), this.balls.get(to)];
+      if (!a || !b) continue;
+      // One step further out, and only along the way the reach was found.
+      const out = distanceOf(needs, from);
+      if (out !== undefined && needs.get(to) === out + 1) arrow(a, b, colours.accent, fade(out + 1));
+      const into = distanceOf(neededBy, to);
+      if (into !== undefined && neededBy.get(from) === into + 1) arrow(a, b, colours.arrowIn, fade(into + 1));
     }
   }
 
@@ -419,16 +448,28 @@ export class ArchitectureScene {
     }
   }
 
-  private label(context: CanvasRenderingContext2D, colours: Colours, text: string, x: number, y: number): void {
+  /** A label over the picture, in pieces: a piece with a key has a square of that colour before it, as a legend has. */
+  private label(context: CanvasRenderingContext2D, colours: Colours, pieces: readonly { text: string; key?: string }[], x: number, y: number): void {
     context.font = `11px ui-monospace, Menlo, monospace`;
-    const width = context.measureText(text).width + 12;
+    const KEY = 11;
+    const widths = pieces.map((piece) => context.measureText(piece.text).width + (piece.key ? KEY : 0));
+    const width = widths.reduce((sum, one) => sum + one, 0) + 12;
     const left = Math.min(this.width - width - 4, Math.max(4, x - width / 2));
     context.globalAlpha = 0.95;
     context.fillStyle = colours.ink;
     context.beginPath();
     context.roundRect(left, y - 18, width, 18, 4);
     context.fill();
-    context.fillStyle = colours.sunken;
-    context.fillText(text, left + 6, y - 5);
+    let at = left + 6;
+    pieces.forEach((piece, index) => {
+      if (piece.key) {
+        context.fillStyle = piece.key;
+        context.fillRect(at, y - 13, 8, 8);
+        at += KEY;
+      }
+      context.fillStyle = colours.sunken;
+      context.fillText(piece.text, at, y - 5);
+      at += widths[index]! - (piece.key ? KEY : 0);
+    });
   }
 }

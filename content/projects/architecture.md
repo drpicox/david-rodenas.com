@@ -16,8 +16,15 @@ the source by the TypeScript compiler, at every commit that changed it. Play
 it and watch it grow; tangle it to see the same files with nobody saying
 where anything goes, and untangle it again. Put the tests in, and every file
 with something in it to run that no test imports directly is drawn as a
-ring. Point at a file, and its own arrows come out: what it needs, and what
-needs it.
+ring.
+
+A ball is as big as the number of files that need it, so the hotspots — the
+files a change reaches first — stand out; it can be as big as what it needs,
+or as its lines, instead. Point at a file, and its own arrows come out: in
+blue what it needs, in orange what needs it. Give them a reach of two, three
+or all, and they go on from there: the blast radius of a change, in both
+directions. Click a file, a box or a commit, and it opens on
+[GitHub](https://github.com/drpicox/david-rodenas.com) as it stood then.
 
 ::architecture
 

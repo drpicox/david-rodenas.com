@@ -6,9 +6,11 @@ import type { History } from "../History";
 import type { Layout } from "../Layout";
 import { layoutArchitecture } from "../layoutArchitecture";
 import { metricsOf } from "../metricsOf";
+import { radiiBy, type Sizing } from "../radiiBy";
 import { reachedByTests } from "../reachedByTests";
 import { renderArchitectureCaption } from "../renderArchitectureCaption";
 import { renderMetricsSparks } from "../renderMetricsSparks";
+import { sourceUrlOf } from "../sourceUrlOf";
 import { ArchitectureScene, type Colours, type Mode } from "./ArchitectureScene";
 
 const WIDTH = 1100;
@@ -27,6 +29,7 @@ function coloursOf(element: Element): Colours {
     soft: read("--accent-soft", "#6b83b8"),
     warn: read("--warn", "#b4443c"),
     test: read("--hl-string", "#2f6f4e"),
+    arrowIn: read("--arrow-in", "#c96a24"),
   };
 }
 
@@ -81,6 +84,8 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
 
   let at = last;
   let tests = false;
+  // A ball is as big as the files that need it: the ones a change in it reaches first.
+  let sizing: Sizing = "neededBy";
   let mode: Mode = "boxes";
   let playing = false;
   let beat = 0;
@@ -92,7 +97,19 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   const playButton = el("button", { type: "button" }, "▶ play the history");
   const tangleButton = el("button", { type: "button" }, "tangle it");
   const testsBox = el("input", { type: "checkbox" });
-  const controls = el("div", { class: "architecture-controls" }, playButton, tangleButton, el("label", {}, testsBox, " the tests"), slider);
+  const option = (value: string, words: string, chosen = false) => el("option", { value, selected: chosen }, words);
+  const sizeBox = el("select", { "aria-label": "What a ball's size says" }, option("neededBy", "needed by", true), option("needs", "needs"), option("lines", "lines"));
+  const reachBox = el("select", { "aria-label": "How far a file's arrows reach" }, option("1", "1", true), option("2", "2"), option("3", "3"), option("Infinity", "all"));
+  const controls = el(
+    "div",
+    { class: "architecture-controls" },
+    playButton,
+    tangleButton,
+    el("label", {}, testsBox, " the tests"),
+    el("label", {}, "size: ", sizeBox),
+    el("label", {}, "reach: ", reachBox),
+    slider,
+  );
   // What the shapes mean, shown only while the tests are, since it is only then there is more than one.
   const legend = el(
     "p",
@@ -111,7 +128,12 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
     const snapshot = snapshots[at];
     const commit = history.commits[at];
     if (!snapshot || !commit) return;
-    scene.show(snapshot, layoutAt(at, tests), { untangling, reached: tests ? reachedByTests(snapshot) : null, coverage: tests && at === coverageAt ? coverage : null });
+    scene.show(snapshot, layoutAt(at, tests), {
+      untangling,
+      reached: tests ? reachedByTests(snapshot) : null,
+      coverage: tests && at === coverageAt ? coverage : null,
+      sizes: radiiBy(snapshot, sizing),
+    });
     caption.innerHTML = renderArchitectureCaption(commit, metrics[at] ?? metricsOf(snapshot));
     sparks.innerHTML = renderMetricsSparks(metrics, at);
   };
@@ -135,14 +157,39 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
     legend.hidden = !tests;
     showCommit(at);
   });
+  sizeBox.addEventListener("change", () => {
+    sizing = sizeBox.value as Sizing;
+    showCommit(at);
+  });
+  reachBox.addEventListener("change", () => {
+    scene.reach = Number(reachBox.value);
+  });
   slider.addEventListener("input", () => {
     setPlaying(false);
     showCommit(Number(slider.value));
   });
-  sparks.addEventListener("click", (event) => {
-    const box = sparks.getBoundingClientRect();
+  // The lines below are a drawing scaled to fit: a point on them is read in the drawing's own units, and it can be dragged along.
+  const commitUnder = (event: PointerEvent) => {
+    const drawing = sparks.querySelector("svg");
+    const matrix = drawing?.getScreenCTM();
+    if (!drawing || !matrix) return null;
+    const x = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()).x;
+    const { x: left, width } = drawing.viewBox.baseVal;
+    const PAD = 4;
+    return Math.round(((x - left - PAD) / (width - PAD * 2)) * last);
+  };
+  const scrub = (event: PointerEvent) => {
+    const commit = commitUnder(event);
+    if (commit === null) return;
     setPlaying(false);
-    showCommit(Math.round(((event.clientX - box.left) / box.width) * last));
+    if (Math.max(0, Math.min(last, commit)) !== at) showCommit(commit);
+  };
+  sparks.addEventListener("pointerdown", (event) => {
+    sparks.setPointerCapture(event.pointerId);
+    scrub(event);
+  });
+  sparks.addEventListener("pointermove", (event) => {
+    if (sparks.hasPointerCapture(event.pointerId)) scrub(event);
   });
 
   const toScene = (event: MouseEvent) => {
@@ -158,6 +205,15 @@ function play(host: HTMLElement, history: History, counted: Coverage | null): ()
   });
   canvas.addEventListener("mouseleave", () => {
     scene.hovered = {};
+  });
+  // A file, or a box, opens where its source is, as it stood at the commit shown.
+  canvas.addEventListener("click", (event) => {
+    const [x, y] = toScene(event);
+    const hit = scene.hit(x, y);
+    const sha = history.commits[at]?.sha;
+    if (!sha) return;
+    const url = hit.path ? sourceUrlOf(sha, hit.path) : hit.box ? sourceUrlOf(sha, hit.box, "box") : null;
+    if (url) window.open(url, "_blank", "noopener");
   });
 
   host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, canvas, legend, caption, sparks));

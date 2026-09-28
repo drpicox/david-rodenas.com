@@ -23,6 +23,8 @@
   --heat-top: #0c2250;
   --heat-warm: #e08a5b;
   --heat-warm-top: #5c1609;
+  /* What needs a file: warm, so it is never taken for the blue of what it needs. */
+  --arrow-in: #c96a24;
 
   /*
    * Two voices. The machine speaks in the monospace, and it speaks first: the
@@ -54,6 +56,7 @@
     --heat-top: #e3ecff;
     --heat-warm: #a8492c;
     --heat-warm-top: #ffe6d8;
+    --arrow-in: #eea765;
     color-scheme: dark;
   }
 }
@@ -73,6 +76,7 @@
   --heat-top: #e3ecff;
   --heat-warm: #a8492c;
   --heat-warm-top: #ffe6d8;
+  --arrow-in: #eea765;
   color-scheme: dark;
 }
 
@@ -3383,6 +3387,27 @@ main li > img.card {
 .app .architecture-controls input[type="range"] {
   flex: 1 1 12rem;
   accent-color: var(--accent);
+}
+
+.app .architecture-controls label {
+  font-size: 0.8rem;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.app .architecture-controls select {
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  padding: 0.15em 0.3em;
+}
+
+/* The lines below can be dragged along, like the slider above them. */
+.app .sparks-host {
+  cursor: ew-resize;
+  touch-action: pan-y;
 }
 
 .app .architecture-canvas,
