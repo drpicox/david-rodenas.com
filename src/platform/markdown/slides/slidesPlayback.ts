@@ -13,7 +13,7 @@ const TYPE = 32;
 const RUB = 14;
 const RUN = 450;
 const SAID = 1900;
-const PAUSE = 1300;
+const PAUSE = 900;
 /** A first frame longer than this is shown whole: typing it would only make the reader wait. */
 const TYPED = 160;
 

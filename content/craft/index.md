@@ -101,7 +101,41 @@ of passing a test in the fewest keystrokes](https://david-rodenas.com/test-putte
 Given I have 12 cucumbers
 ---
 Given I have 12 cucumbers
+Given I have 12 cucumbers
+---
+Given I have 12 cucumbers
+Given I have 12 cucumbers()
+---
+Given I have 12 cucumbers
+given I have 12 cucumbers()
+---
+Given I have 12 cucumbers
+given I Have 12 cucumbers()
+---
+Given I have 12 cucumbers
+given I Have 12 cucumbers(12)
+---
+Given I have 12 cucumbers
+given I Have N cucumbers(12)
+---
+Given I have 12 cucumbers
+given I Have N cucumbers(number1)
+---
+Given I have 12 cucumbers
+given I Have N Cucumbers(number1)
+---
+Given I have 12 cucumbers
+givenI Have N Cucumbers(number1)
+---
+Given I have 12 cucumbers
+givenIHave N Cucumbers(number1)
+---
+Given I have 12 cucumbers
+givenIHaveN Cucumbers(number1)
+---
+Given I have 12 cucumbers
 givenIHaveNCucumbers(number1)
+--- The method Gherkin Genie asks for: the sentence is the name.
 ```
 
 ## With others
