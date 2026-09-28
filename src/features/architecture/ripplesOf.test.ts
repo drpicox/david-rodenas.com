@@ -38,4 +38,19 @@ describe("what each kind of arrow carries", () => {
   it("leaves out a sweep", () => {
     expect(ripplesOf(history, decodeHistory(history), 2).map(({ changes }) => changes)).toEqual([1, 1, 1, 1]);
   });
+
+  it("reads the arrows as the commit found them: one the commit itself draws has carried nothing yet", () => {
+    const paths = ["f/g/a.ts", "f/g/b.ts"];
+    const source = (arrows: [string, string][]) => ({ modules: paths.map((path) => ({ path, lines: 10, test: false, typesOnly: false })), dependencies: arrows.map(([from, to]) => ({ from, to, typeOnly: false })) });
+    const step = (sha: string, arrows: [string, string][], touched: string[]) => ({ commit: { sha, date: "2026-09-07", subject: sha }, graph: source(arrows), renamed: [], touched });
+    const drawn = encodeHistory([step("apart", [], []), step("a comes to need b", [["f/g/a.ts", "f/g/b.ts"]], ["f/g/a.ts", "f/g/b.ts"]), step("b alone", [["f/g/a.ts", "f/g/b.ts"]], ["f/g/b.ts"])]);
+    expect(ripplesOf(drawn, decodeHistory(drawn))[0]).toEqual({ across: false, typeOnly: false, changes: 1, carried: 0 });
+  });
+
+  it("does not count an arrow from a file the commit took away", () => {
+    const source = (paths: string[]) => ({ modules: paths.map((path) => ({ path, lines: 10, test: false, typesOnly: false })), dependencies: paths.includes("f/g/a.ts") ? [{ from: "f/g/a.ts", to: "f/g/b.ts", typeOnly: false }] : [] });
+    const step = (sha: string, paths: string[], touched: string[]) => ({ commit: { sha, date: "2026-09-07", subject: sha }, graph: source(paths), renamed: [], touched });
+    const taken = encodeHistory([step("both", ["f/g/a.ts", "f/g/b.ts"], []), step("a goes as b changes", ["f/g/b.ts"], ["f/g/b.ts"])]);
+    expect(ripplesOf(taken, decodeHistory(taken)).every(({ changes }) => changes === 0)).toBe(true);
+  });
 });

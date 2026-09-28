@@ -20,19 +20,21 @@ export interface Ripple {
  * and onto a value or only onto a type. If depending on an interface rather
  * than on what implements it is what keeps a change where it happened, the
  * arrows onto a type carry fewer — and here that is counted, not assumed.
- * Only arrows between files that ship; not a file the commit brought, nor a sweep.
+ * Only the arrows the commit found, between files that ship: one it draws has
+ * carried nothing yet, and one from a file it takes away carries nothing more.
+ * A sweep is left out.
  */
 export function ripplesOf(history: History, snapshots: readonly Snapshot[], sweep = SWEEP): Ripple[] {
   const kinds: { -readonly [Key in keyof Ripple]: Ripple[Key] }[] = [false, true].flatMap((across) => [false, true].map((typeOnly) => ({ across, typeOnly, changes: 0, carried: 0 })));
   history.changes.forEach((change, at) => {
-    const snapshot = snapshots[at];
+    const snapshot = snapshots[at - 1];
     if (!snapshot || change.changed.length === 0 || change.changed.length > sweep) return;
     const shipped = new Map(snapshot.modules.filter((module) => !module.test).map((module) => [module.id, module.path]));
-    const brought = new Set(change.added.map(([id]) => id));
     const changed = new Set(change.changed);
+    const gone = new Set(change.removed);
     for (const { from, to, typeOnly } of snapshot.dependencies) {
       const [tail, head] = [shipped.get(from), shipped.get(to)];
-      if (tail === undefined || head === undefined || brought.has(from) || !changed.has(to)) continue;
+      if (tail === undefined || head === undefined || gone.has(from) || !changed.has(to)) continue;
       const across = boxOf(tail) !== boxOf(head);
       const kind = kinds.find((one) => one.across === across && one.typeOnly === typeOnly);
       if (!kind) continue;

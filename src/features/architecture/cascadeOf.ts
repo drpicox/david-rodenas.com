@@ -35,21 +35,23 @@ function nearest(start: number, needs: ReadonlyMap<number, readonly number[]>, t
  * file that ships is counted by how far below it — in what it needs, or what
  * that needs — the nearest other change was, and by whether it changed too.
  * The share that changed at one arrow, at two, and with nothing changed below
- * at all, is how much a file is moved by what it stands on. A file the commit
- * brought is not counted: it was written, not moved. Nor is a sweep.
+ * at all, is how much a file is moved by what it stands on. The arrows are
+ * the ones the commit found, not the ones it left: what the design offered a
+ * change as it was made, which is the fair test of it. A file the commit
+ * brought or took away is not counted, nor is a sweep.
  */
 export function cascadeOf(history: History, snapshots: readonly Snapshot[], sweep = SWEEP): Cascade[] {
   const tally = new Map<number | null, { seen: number; changed: number }>();
   history.changes.forEach((change, at) => {
-    const snapshot = snapshots[at];
+    const snapshot = snapshots[at - 1];
     if (!snapshot || change.changed.length === 0 || change.changed.length > sweep) return;
     const shipped = new Set(snapshot.modules.filter((module) => !module.test).map((module) => module.id));
-    const brought = new Set(change.added.map(([id]) => id));
+    const gone = new Set(change.removed);
     const changed = new Set(change.changed.filter((id) => shipped.has(id)));
     const needs = new Map<number, number[]>();
     for (const { from, to } of snapshot.dependencies) if (shipped.has(from) && shipped.has(to)) needs.set(from, [...(needs.get(from) ?? []), to]);
     for (const id of shipped) {
-      if (brought.has(id)) continue;
+      if (gone.has(id)) continue;
       const distance = nearest(id, needs, changed);
       const counted = tally.get(distance) ?? { seen: 0, changed: 0 };
       tally.set(distance, { seen: counted.seen + 1, changed: counted.changed + (changed.has(id) ? 1 : 0) });

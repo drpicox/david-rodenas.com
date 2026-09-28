@@ -29,16 +29,16 @@ commit that changed more than thirty files at once.
 ## Written, then left alone
 
 The first thing the history says is how little changes. Most files are
-written once and not touched again, and the ones that are touched are
-touched in the commits right after the one that wrote them.
+written once and not touched again, and a file is likeliest to change in
+the commits right after the one that wrote it.
 
 ::change-settling
 
 A file is hottest just after it is written, while what it has to do is
-still being settled. Then it cools, and stays cool: what changes it later is
-no longer itself, but a feature arriving that needs something of it, or a
-rule applied to every file at once, like the commit that made each one
-export a single value.
+still being settled. Then it cools, and stays cool; and most of what
+changes it after that comes with something else, a commit that brings new
+files or one that sweeps through every file at once, like the one that
+made each of them export a single value.
 
 ## The files that never settle
 
@@ -60,8 +60,8 @@ nobody sees.
 Robert C. Martin measures how stable a component is by its place, not by
 its history. Its instability is the share of its arrows that go out, what
 it needs over what it needs and what needs it: 0 for a box that is needed
-and needs nothing, which cannot change without everything that needs it
-changing too; 1 for a box nothing needs, which is free to. Its abstractness
+and needs nothing, which is hard to change, because whatever needs it may
+have to change with it; 1 for a box nothing needs, which is free to. Its abstractness
 is how much of it can be depended on without depending on what it does:
 here, the share of its files that hold nothing but types.
 

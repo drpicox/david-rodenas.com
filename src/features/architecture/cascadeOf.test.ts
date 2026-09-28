@@ -30,4 +30,12 @@ describe("how far a change travels, against the arrows", () => {
       { distance: null, seen: 6, changed: 3 },
     ]);
   });
+
+  it("reads the arrows as the commit found them: a file that comes to need a changed one in the same commit stood on nothing that changed", () => {
+    const paths = ["a.ts", "b.ts"];
+    const source = (arrows: [string, string][]) => ({ modules: paths.map((path) => ({ path, lines: 10, test: false, typesOnly: false })), dependencies: arrows.map(([from, to]) => ({ from, to, typeOnly: false })) });
+    const step = (sha: string, arrows: [string, string][], touched: string[]) => ({ commit: { sha, date: "2026-09-07", subject: sha }, graph: source(arrows), renamed: [], touched });
+    const drawn = encodeHistory([step("apart", [], []), step("a comes to need b", [["a.ts", "b.ts"]], ["a.ts", "b.ts"])]);
+    expect(cascadeOf(drawn, decodeHistory(drawn))).toEqual([{ distance: null, seen: 2, changed: 2 }]);
+  });
 });
