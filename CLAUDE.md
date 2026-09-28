@@ -36,8 +36,9 @@ traced, write the weaker sentence.
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
 - `node tools/architecture-history.mjs` — read the source at every commit
-  that changed it into `public/data/architecture.json`, the history the
-  architecture page plays. The deploy runs it, with `npm run coverage`, on
+  of the main line that changed it, and what each one changed, into
+  `public/data/architecture.json`: the history the architecture page plays
+  and the changes page reads. The deploy runs it, with `npm run coverage`, on
   every push, with the whole history checked out; run it here only to see the
   page in dev. Its output is not committed back by the deploy
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs

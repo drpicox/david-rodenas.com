@@ -1,6 +1,7 @@
 import type { Feature } from "../../platform/plugin/Feature";
 import { architectureStill } from "./architectureStill";
 import { mountArchitecture } from "./browser/mountArchitecture";
+import { changeStills } from "./changeStills";
 
 /**
  * The site's own architecture: its source read as a graph of boxes and the
@@ -11,5 +12,5 @@ import { mountArchitecture } from "./browser/mountArchitecture";
 export const architectureFeature: Feature = {
   name: "architecture",
   apps: { architecture: mountArchitecture },
-  stills: { architecture: architectureStill },
+  stills: { architecture: architectureStill, ...changeStills },
 };

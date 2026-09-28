@@ -60,7 +60,7 @@ graph LR
     smallsteps["<b>small-steps</b><br/>a row that fills at random: a red<br/>put right at once, clean steps between"]
     guesstherule["<b>guess-the-rule</b><br/>sequences marked by a hidden rule,<br/>and the rule to find, from 2020"]
     stepnames["<b>step-names</b><br/>a sentence read as a method,<br/>and the tests a post becomes"]
-    architecture["<b>architecture</b><br/>the source read as a graph:<br/>boxes, arrows, and the rules on them"]
+    architecture["<b>architecture</b><br/>the source read as a graph:<br/>boxes, arrows, the rules on them,<br/>and its history: what changes, and with what"]
     portfolio["<b>portfolio</b><br/>a flag: the lists with pictures<br/>as cards the width of a program"]
     fibergochi["<b>fibergochi</b><br/>the student pet of 1999, its rules<br/>and its drawings, kept in the browser"]
     adventure["<b>adventure</b><br/>the text adventure of a first-year lab,<br/>sixty-four rooms, playable"]

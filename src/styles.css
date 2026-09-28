@@ -4313,3 +4313,384 @@ main p:has(> strong:first-child):not(h2 + p) {
   font-size: 0.78rem;
   color: var(--dim);
 }
+
+/* ---- how the source changes: the history read for what changed, how often, and with what ---- */
+
+.app .changes-figure {
+  margin: 0;
+}
+
+.app svg.change-matrix {
+  border: 1px solid var(--rule);
+  border-radius: 0.25em;
+  background: var(--paper);
+}
+
+.app svg.change-matrix text.row {
+  font: 9px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.change-matrix text.band {
+  font: bold 9px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.change-matrix text.day {
+  font: 8px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.change-matrix line.day {
+  stroke: var(--rule);
+}
+
+/* One hue in two steps, as the heat maps have it: from the paper through --heat-warm to --heat-warm-top. */
+.app svg.change-matrix rect.changed,
+.app .changes-legend .key.shade {
+  fill: color-mix(in oklab, var(--heat-warm-top) calc(max(0, var(--v) - 0.5) * 200%), color-mix(in oklab, var(--heat-warm) calc(min(1, var(--v) * 2) * 100%), var(--paper)));
+  background: color-mix(in oklab, var(--heat-warm-top) calc(max(0, var(--v) - 0.5) * 200%), color-mix(in oklab, var(--heat-warm) calc(min(1, var(--v) * 2) * 100%), var(--paper)));
+}
+
+.app svg.change-matrix circle.written {
+  fill: var(--ink);
+  opacity: 0.5;
+}
+
+.app svg.change-matrix rect.sweep,
+.app .changes-legend .key.sweep {
+  fill: var(--sunken);
+  background: var(--sunken);
+}
+
+.app .changes-legend {
+  margin: 0.5em 0 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+}
+
+.app .changes-legend .key {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin: 0 0.25em 0 0.7em;
+  vertical-align: -0.05em;
+  border-radius: 1px;
+}
+
+.app .changes-legend .key:first-child {
+  margin-left: 0;
+}
+
+.app .changes-legend .key.written {
+  width: 0.35em;
+  height: 0.35em;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.5;
+  vertical-align: 0.1em;
+}
+
+.app .changes-legend .key.sweep {
+  border: 1px solid var(--rule);
+}
+
+.app .changes-figure figcaption {
+  margin: 0.4em 0 0;
+  font-size: 0.8rem;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A change is warm on every figure of the page: a bar, a mark on a file's life, a box's dot. */
+.app svg.settling,
+.app svg.cascade {
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.app svg.settling text,
+.app svg.cascade text {
+  font-size: 12px;
+}
+
+.app svg.stability text {
+  font-size: 11px;
+}
+
+.app svg.settling .bar,
+.app svg.cascade .bar {
+  fill: var(--heat-warm);
+}
+
+/* What changes when nothing below changed: the ground the others stand out from. */
+.app svg.cascade .bar.none {
+  fill: var(--rule);
+}
+
+.app svg.settling .value,
+.app svg.cascade .value {
+  fill: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.app svg.settling .base {
+  stroke: var(--rule);
+}
+
+.app svg.cascade .label {
+  fill: var(--dim);
+}
+
+.app .changes-figure > figcaption,
+.app .changes-figure details {
+  max-width: 44rem;
+}
+
+.app table.hotspots,
+.app table.together,
+.app table.ripples,
+.app .changes-figure details table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.app table.hotspots th,
+.app table.hotspots td,
+.app table.together th,
+.app table.together td,
+.app table.ripples th,
+.app table.ripples td,
+.app .changes-figure details th,
+.app .changes-figure details td {
+  padding: 0.3em 0.5em;
+  text-align: left;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.app table.hotspots thead th,
+.app table.together thead th,
+.app table.ripples thead th,
+.app .changes-figure details thead th {
+  font-weight: normal;
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app table.hotspots code,
+.app table.together code,
+.app .changes-figure details code {
+  font-size: 0.78rem;
+}
+
+.app table.hotspots td:nth-child(2),
+.app table.hotspots td:nth-child(3),
+.app table.hotspots td:nth-child(4),
+.app table.hotspots th:nth-child(2),
+.app table.hotspots th:nth-child(3),
+.app table.hotspots th:nth-child(4) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.app table.hotspots td:last-child {
+  width: 40%;
+}
+
+.app svg.life {
+  display: block;
+  width: 100%;
+  height: 0.9rem;
+}
+
+.app svg.life .lived {
+  stroke: var(--rule);
+  stroke-width: 1.5;
+}
+
+.app svg.life .change {
+  stroke: var(--heat-warm);
+  stroke-width: 1.6;
+}
+
+.app svg.life .written {
+  fill: var(--ink);
+}
+
+.app table.ripples {
+  max-width: 34rem;
+}
+
+.app table.ripples tbody th {
+  font-weight: normal;
+  color: var(--dim);
+}
+
+.app table.together td:first-child,
+.app table.together th:first-child {
+  text-align: right;
+  width: 4em;
+}
+
+/* No arrow between them, and they changed together anyway: the rows the section is about. */
+.app table.together tr.hidden td {
+  background: color-mix(in oklab, var(--heat-warm) 12%, transparent);
+}
+
+.app table.together tr.hidden td:last-child {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.app svg.stability {
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.app svg.stability .frame {
+  fill: none;
+  stroke: var(--rule);
+}
+
+.app svg.stability .zone.pain {
+  fill: color-mix(in oklab, var(--warn) 14%, transparent);
+}
+
+.app svg.stability .zone.useless {
+  fill: color-mix(in oklab, var(--dim) 12%, transparent);
+}
+
+.app svg.stability .sequence {
+  stroke: var(--dim);
+  stroke-width: 1;
+}
+
+.app svg.stability .zone-name {
+  font-style: italic;
+  fill: var(--dim);
+}
+
+/* A box as warm as its files changed, one for one; a ring of paper keeps the crowded ones apart. */
+.app svg.stability .box {
+  fill: color-mix(in oklab, var(--heat-warm-top) calc(max(0, var(--v) - 0.5) * 200%), color-mix(in oklab, var(--heat-warm) calc(min(1, var(--v) * 2) * 100%), var(--sunken)));
+  stroke: var(--paper);
+  stroke-width: 1.5;
+}
+
+.app svg.stability .box:hover {
+  stroke: var(--ink);
+}
+
+.app svg.stability .leader {
+  stroke: var(--dim);
+  stroke-width: 0.8;
+}
+
+.app svg.stability .name {
+  fill: var(--ink);
+}
+
+.app .changes-figure details {
+  margin: 0.6em 0 0;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .changes-figure details summary {
+  cursor: pointer;
+}
+
+.app .changes-figure.tested {
+  text-align: left;
+}
+
+.app .changes-figure.tested .figure-number {
+  margin: 0;
+  color: var(--dim);
+}
+
+/* One number that is the whole figure: as big as a figure, in the page's own letters. */
+.app .changes-figure.tested .figure-number strong {
+  display: block;
+  font-size: 2.6rem;
+  line-height: 1.1;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/*
+ * On a phone the tables of files have no room for a path beside four columns:
+ * each row becomes a small block — the path on its own line, what is counted
+ * of it under it, named since the heading is gone, and the life last, as wide
+ * as the row.
+ */
+@media (max-width: 640px) {
+  .app table.hotspots thead,
+  .app table.together thead {
+    display: none;
+  }
+
+  .app table.hotspots tr,
+  .app table.together tr {
+    display: grid;
+    column-gap: 0.8em;
+    padding: 0.45em 0.2em;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .app table.hotspots td,
+  .app table.together td {
+    padding: 0;
+    border: none;
+    text-align: left;
+  }
+
+  .app table.hotspots tr {
+    grid-template-columns: auto auto auto 1fr;
+  }
+
+  .app table.hotspots td:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .app table.hotspots td:nth-child(2)::after {
+    content: " changes";
+    color: var(--dim);
+  }
+
+  .app table.hotspots td:nth-child(3)::after {
+    content: " lines";
+    color: var(--dim);
+  }
+
+  .app table.hotspots td:nth-child(4)::after {
+    content: " run by tests";
+    color: var(--dim);
+  }
+
+  .app table.hotspots td:last-child {
+    grid-column: 1 / -1;
+    width: auto;
+    padding-top: 0.3em;
+  }
+
+  .app table.together tr {
+    grid-template-columns: 1.6em 1fr;
+  }
+
+  .app table.together td:first-child {
+    grid-row: 1 / span 3;
+    width: auto;
+  }
+
+  .app table.together td:nth-child(n + 2) {
+    grid-column: 2;
+  }
+
+  .app table.together td:last-child {
+    color: var(--dim);
+  }
+}

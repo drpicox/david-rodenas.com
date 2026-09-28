@@ -1,3 +1,4 @@
+import { bandOf } from "./bandOf";
 import { boxCycles } from "./boxCycles";
 import { boxOf } from "./boxOf";
 import type { BallPlace, BandPlace, BoxLink, BoxPlace, Layout, LinkPlace } from "./Layout";
@@ -25,8 +26,6 @@ const BAND_LABEL = 16;
 
 const radiusOf = (lines: number) => Math.min(6, 2.2 + Math.sqrt(lines) / 4);
 const labelOf = (box: string) => box.split("/").pop()?.replace(/\.ts$/, "") ?? box;
-/** The level a box stands at: the frame, the features, or the files at the top of the source, the composition root among them. */
-const bandOf = (box: string) => (box.includes("/") ? (box.split("/")[0] ?? box) : "src");
 
 /** How high each node stands: one above the highest thing it needs, and nothing it needs at the bottom. A node met again on its own path counts as the bottom, so a circle cannot loop. */
 function ranksOf(nodes: readonly string[], needs: ReadonlyMap<string, ReadonlySet<string>>): Map<string, number> {

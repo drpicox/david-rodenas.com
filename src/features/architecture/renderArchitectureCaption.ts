@@ -1,9 +1,9 @@
 import { escapeHtml } from "../../platform/markdown/escapeHtml";
 import type { Commit } from "./History";
 import type { Metrics } from "./Metrics";
+import { plural } from "./plural";
 
 const day = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Madrid" });
-const plural = (count: number, one: string, many = `${one}s`) => `${count} ${count === 1 ? one : many}`;
 
 /** Under the picture: which commit it is — a way to its changes on GitHub — when, what it said it did, and what the source measured then. */
 export function renderArchitectureCaption(commit: Commit, metrics: Metrics): string {
