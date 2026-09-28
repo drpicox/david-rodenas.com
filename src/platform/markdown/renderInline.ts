@@ -19,9 +19,16 @@ const SIZES = ["large", "wide", "card"];
  * The title of an image is where its size goes: `"large"` or `"wide"`, or
  * `"card"` for the picture a layout of cards shows beside an entry and the
  * plain one does not. A card waits to be fetched until it is shown, so a
- * reader who never sees it never downloads it. Any other title is left alone.
+ * reader who never sees it never downloads it. `"card dark"` is a card with a
+ * picture for the dark theme beside it, named `-dark`: both are written, and
+ * the stylesheet shows the one the theme wants — the other, never shown, is
+ * never fetched. Any other title is left alone.
  */
 function image(alt: string, src: string, title?: string): string {
+  if (title === "card dark") {
+    const dark = src.replace(/(\.[a-z]+)$/, "-dark$1");
+    return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" class="card shot-light" loading="lazy"><img src="${escapeHtml(dark)}" alt="${escapeHtml(alt)}" class="card shot-dark" loading="lazy">`;
+  }
   const size = title && SIZES.includes(title) ? ` class="${title}"` : "";
   const lazy = title === "card" ? ' loading="lazy"' : "";
   return `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"${size}${lazy}>`;

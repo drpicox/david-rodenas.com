@@ -65,6 +65,15 @@ describe("renderInline", () => {
   });
 });
 
+describe("renderInline images, light and dark", () => {
+  it("gives a card with a dark picture both pictures, for the stylesheet to show the one the page's theme wants", () => {
+    expect(renderInline('![The fish market](/projects/shots/fish-market.jpg "card dark")')).toBe(
+      '<img src="/projects/shots/fish-market.jpg" alt="The fish market" class="card shot-light" loading="lazy">' +
+        '<img src="/projects/shots/fish-market-dark.jpg" alt="The fish market" class="card shot-dark" loading="lazy">',
+    );
+  });
+});
+
 describe("renderInline images", () => {
   it("places an image, with its words for whoever cannot see it", () => {
     expect(renderInline("![The cover](/book/cover.jpeg)")).toBe('<img src="/book/cover.jpeg" alt="The cover">');

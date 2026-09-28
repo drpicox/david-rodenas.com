@@ -11,6 +11,8 @@ import { join } from "node:path";
  *   npm run dev                          in one terminal, then
  *   node tools/shoot-projects.mjs        every shot
  *   node tools/shoot-projects.mjs rocket the ones you name
+ *   THEME=dark node tools/…              the same, as a reader with a dark
+ *                                        screen sees them, into name-dark.jpg
  *
  * Chrome is driven over its DevTools protocol with the WebSocket node already
  * has, so this tool needs nothing installed.
@@ -20,6 +22,8 @@ const CHROME = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/M
 const OUT = "public/projects/shots";
 const PORT = 9333;
 const WIDTH = 1200;
+/** A dark screen is asked for as the reader's system would ask: the site follows it, as it does for them. */
+const DARK = process.env.THEME === "dark";
 
 /** What to photograph: the program's place on its page, from its top, at a card's proportions. */
 const SHOTS = [
@@ -87,6 +91,7 @@ const chrome = await browser();
 try {
   const page = await session(chrome.url);
   await page.send("Emulation.setDeviceMetricsOverride", { width: WIDTH, height: 900, deviceScaleFactor: 1, mobile: false });
+  if (DARK) await page.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: "dark" }] });
   for (const shot of shots) {
     await page.send("Page.navigate", { url: SITE + shot.route });
     // Long enough for the script to mount the program and for anything that moves to have moved a little.
@@ -109,8 +114,9 @@ try {
     await wait(500);
     const height = Math.min(box.height, Math.round(box.width * 0.6));
     const { data } = await page.send("Page.captureScreenshot", { format: "jpeg", quality: 80, captureBeyondViewport: true, clip: { x: box.x, y: box.y, width: box.width, height, scale: 800 / box.width } });
-    writeFileSync(join(OUT, `${shot.name}.jpg`), Buffer.from(data, "base64"));
-    console.log(`${shot.name}: ${OUT}/${shot.name}.jpg`);
+    const file = `${shot.name}${DARK ? "-dark" : ""}.jpg`;
+    writeFileSync(join(OUT, file), Buffer.from(data, "base64"));
+    console.log(`${shot.name}: ${OUT}/${file}`);
   }
   page.close();
 } finally {

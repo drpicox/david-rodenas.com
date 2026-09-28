@@ -3314,6 +3314,26 @@ main math[display="block"] {
   margin-bottom: 0.4em;
 }
 
+/* ---- a picture with a dark one beside it: the theme picks, and only the one shown is fetched ---- */
+
+:root[data-theme="light"] img.shot-dark,
+:root[data-theme="pink"] img.shot-dark,
+:root[data-theme="dark"] img.shot-light {
+  display: none;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) img.shot-dark {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="pink"]) img.shot-light {
+    display: none;
+  }
+}
+
 /* ---- portfolio: a trial, off unless asked for ---- */
 
 /* A card's picture belongs to the card layout; the plain one is words. */

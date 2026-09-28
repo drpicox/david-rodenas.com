@@ -55,19 +55,19 @@ longest:
 - ![The Rocinante Simulator: the inner solar system in three dimensions, and the ship's dials](/rocinante-simulator.jpg "card") [A relativistic rocket](/projects/rocinante/)  
   Both clocks, the ship's and home's, and the fuel.
 
-- ![The auction floor: five buyers and a box of prawns](/projects/shots/fish-market.jpg "card") [The agent that won the fish auction](/projects/fish-market/)  
+- ![The auction floor: five buyers and a box of prawns](/projects/shots/fish-market.jpg "card dark") [The agent that won the fish auction](/projects/fish-market/)  
   A Dutch auction, December 2000. Seat your own agent.
 
-- ![The Fibergochi, a stick figure in a yellow egg](/projects/shots/fibergochi.jpg "card") [The Fibergochi](/projects/fibergochi/)  
+- ![The Fibergochi, a stick figure in a yellow egg](/projects/shots/fibergochi.jpg "card dark") [The Fibergochi](/projects/fibergochi/)  
   A student kept like a Tamagotchi, 1999. Playable.
 
-- ![A letter A drawn on a grid, and the network reading it](/projects/shots/letters.jpg "card") [My first neural network](/projects/first-network/)  
+- ![A letter A drawn on a grid, and the network reading it](/projects/shots/letters.jpg "card dark") [My first neural network](/projects/first-network/)  
   Letters told apart by backpropagation, first written in C in 1994. Draw your own.
 
-- ![The source of this site as boxes and arrows, the features above the frame they stand on](/projects/shots/architecture.jpg "card") [How this site is built](/projects/architecture/)  
+- ![The source of this site as boxes and arrows, the features above the frame they stand on](/projects/shots/architecture.jpg "card dark") [How this site is built](/projects/architecture/)  
   Its source as boxes and arrows, commit by commit: the program an AI wrote, and the rules it is held to.
 
-- ![A fractal planet of seas, land and snow](/projects/shots/worlds.jpg "card") [The planet in the header](/projects/worlds/)  
+- ![A fractal planet of seas, land and snow](/projects/shots/worlds.jpg "card dark") [The planet in the header](/projects/worlds/)  
   Grown as this page opened, by a program I wrote in 2000. Reload for another.
 
 [All of them.](/projects/)

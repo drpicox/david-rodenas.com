@@ -41,7 +41,8 @@ traced, write the weaker sentence.
   one commit and cannot see the others
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs
   running on their pages into `public/projects/shots/`, for the cards; needs
-  `npm run dev` running (`SITE=` if it is not on 5173)
+  `npm run dev` running (`SITE=` if it is not on 5173); `THEME=dark` takes
+  the dark ones, `name-dark.jpg`, which a card titled `"card dark"` shows
 - `node tools/write-favicon.mjs [seed]` — grow one still world into
   `public/favicon.png`, the icon a browser has before the script runs
 
