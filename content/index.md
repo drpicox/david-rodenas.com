@@ -26,8 +26,8 @@ one of them saves time on each and pays interest on it after.
 ## The craft
 
 Small, safe steps, always: a test that fails is put right before the next step
-is taken, and the code is never more than a step away from working. [How I
-work, and why.](/craft/)
+is taken, and the code is never more than a step away from working. [What I
+hold to, whoever writes the code.](/craft/)
 
 ::small-steps
 
