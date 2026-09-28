@@ -58,6 +58,7 @@ graph LR
     testsasexamples["<b>tests-as-examples</b><br/>the same tests against a dispatcher<br/>refactored, and one with a bug"]
     gherkingenie["<b>gherkin-genie</b><br/>a scenario, the steps it wishes for,<br/>and the scenario run once they exist"]
     smallsteps["<b>small-steps</b><br/>a row that fills at random: a red<br/>put right at once, clean steps between"]
+    guesstherule["<b>guess-the-rule</b><br/>sequences marked by a hidden rule,<br/>and the rule to find, from 2020"]
     stepnames["<b>step-names</b><br/>a sentence read as a method,<br/>and the tests a post becomes"]
     architecture["<b>architecture</b><br/>the source read as a graph:<br/>boxes, arrows, and the rules on them"]
     portfolio["<b>portfolio</b><br/>a flag: the lists with pictures<br/>as cards the width of a program"]

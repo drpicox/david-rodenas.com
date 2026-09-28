@@ -19,6 +19,7 @@ import { bowlingKataFeature } from "./bowling-kata/bowlingKataFeature";
 import { testsAsExamplesFeature } from "./tests-as-examples/testsAsExamplesFeature";
 import { gherkinGenieFeature } from "./gherkin-genie/gherkinGenieFeature";
 import { smallStepsFeature } from "./small-steps/smallStepsFeature";
+import { guessTheRuleFeature } from "./guess-the-rule/guessTheRuleFeature";
 import { skyFeature } from "./sky/skyFeature";
 import { technicalDebtFeature } from "./technical-debt/technicalDebtFeature";
 import { themeFeature } from "./theme/themeFeature";
@@ -59,4 +60,5 @@ export const allFeatures: readonly Feature[] = [
   testsAsExamplesFeature,
   gherkinGenieFeature,
   smallStepsFeature,
+  guessTheRuleFeature,
 ];

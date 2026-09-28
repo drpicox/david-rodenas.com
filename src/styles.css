@@ -4232,3 +4232,64 @@ main p:has(> strong:first-child):not(h2 + p) {
   outline-offset: 2px;
   border-radius: 0.25rem;
 }
+
+/* ---- guess the rule: sequences marked by a rule you cannot see ---- */
+
+.app .guess-the-rule h4 {
+  margin: 1em 0 0.4em;
+  font-size: 0.85rem;
+}
+
+.app .guess-table {
+  border-collapse: collapse;
+  font: var(--mono-size) var(--mono);
+  text-align: right;
+}
+
+.app .guess-table th {
+  color: var(--dim);
+  font-weight: normal;
+  border-bottom: 1px solid var(--rule);
+}
+
+.app .guess-table th,
+.app .guess-table td {
+  padding: 0.15em 0.5em;
+}
+
+/* The sequence just tried stands out, as the old page's did, in yellow — here in the page's own warm tint. */
+.app .guess-table tr.last td {
+  background: color-mix(in srgb, var(--arrow-in) 22%, transparent);
+}
+
+.app .guess-sequence input[type="number"] {
+  width: 4.5em;
+  font: var(--mono-size) var(--mono);
+}
+
+.app .guess-rule {
+  display: flex;
+  gap: 0.5em;
+}
+
+.app .guess-rule input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  font: var(--mono-size) var(--mono);
+}
+
+.app .guess-said {
+  margin: 0.4em 0;
+  font: 0.85rem var(--mono);
+  color: var(--warn);
+}
+
+.app .guess-said.good {
+  color: var(--hl-string);
+  font-weight: 600;
+}
+
+.app .guess-note {
+  font-size: 0.78rem;
+  color: var(--dim);
+}

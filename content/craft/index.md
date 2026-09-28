@@ -221,7 +221,9 @@ have the Hippocratic oath, and we have testing.
 > Why test code that I know works?
 
 **Assume I got it wrong.** That, for me, is the essence of agile: leave room to
-find the mistake and fix it, in the design and in the requirement alike.
+find the mistake and fix it, in the design and in the requirement alike. It
+takes the cases that fail to tell one rule from another: [guess
+one](/craft/guess-the-rule/).
 [[1](https://medium.com/p/aa012cd24186), [2](https://medium.com/p/9e94fba6beb3), [3](https://medium.com/p/b5d0b6faca9e)]
 
 ```slides
