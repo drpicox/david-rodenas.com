@@ -18,6 +18,12 @@ export function decodeHistory(history: History): Snapshot[] {
       const module = modules.get(id);
       if (module) modules.set(id, { ...module, lines });
     }
+    for (const [id, typesOnly] of change.retyped) {
+      const module = modules.get(id);
+      if (!module) continue;
+      const { typesOnly: _was, ...rest } = module;
+      modules.set(id, typesOnly ? { ...rest, typesOnly } : rest);
+    }
     for (const [from, to] of change.unlinked) arrows.delete(`${from}>${to}`);
     for (const [from, to, typeOnly] of change.linked) arrows.set(`${from}>${to}`, typeOnly);
     return {

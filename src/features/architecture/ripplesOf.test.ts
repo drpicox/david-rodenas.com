@@ -23,7 +23,7 @@ const history = encodeHistory([
 
 describe("what each kind of arrow carries", () => {
   it("counts, for the arrows of each kind, the changes at their heads, and how many the file at the tail changed with", () => {
-    expect(ripplesOf(history, decodeHistory(history))).toEqual([
+    expect(ripplesOf(history, decodeHistory(history)).map(({ across, typeOnly, changes, carried }) => ({ across, typeOnly, changes, carried }))).toEqual([
       // h needs f, and f changed twice without it.
       { across: false, typeOnly: false, changes: 2, carried: 0 },
       // The drawing changed with its shape.
@@ -44,7 +44,7 @@ describe("what each kind of arrow carries", () => {
     const source = (arrows: [string, string][]) => ({ modules: paths.map((path) => ({ path, lines: 10, test: false, typesOnly: false })), dependencies: arrows.map(([from, to]) => ({ from, to, typeOnly: false })) });
     const step = (sha: string, arrows: [string, string][], touched: string[]) => ({ commit: { sha, date: "2026-09-07", subject: sha }, graph: source(arrows), renamed: [], touched });
     const drawn = encodeHistory([step("apart", [], []), step("a comes to need b", [["f/g/a.ts", "f/g/b.ts"]], ["f/g/a.ts", "f/g/b.ts"]), step("b alone", [["f/g/a.ts", "f/g/b.ts"]], ["f/g/b.ts"])]);
-    expect(ripplesOf(drawn, decodeHistory(drawn))[0]).toEqual({ across: false, typeOnly: false, changes: 1, carried: 0 });
+    expect(ripplesOf(drawn, decodeHistory(drawn))[0]).toMatchObject({ across: false, typeOnly: false, changes: 1, carried: 0 });
   });
 
   it("does not count an arrow from a file the commit took away", () => {
@@ -52,5 +52,11 @@ describe("what each kind of arrow carries", () => {
     const step = (sha: string, paths: string[], touched: string[]) => ({ commit: { sha, date: "2026-09-07", subject: sha }, graph: source(paths), renamed: [], touched });
     const taken = encodeHistory([step("both", ["f/g/a.ts", "f/g/b.ts"], []), step("a goes as b changes", ["f/g/b.ts"], ["f/g/b.ts"])]);
     expect(ripplesOf(taken, decodeHistory(taken)).every(({ changes }) => changes === 0)).toBe(true);
+  });
+
+  it("names, for each kind, the file most of its changes were to, and what those carried: one file can be most of a kind", () => {
+    const [inside, , across] = ripplesOf(history, decodeHistory(history));
+    expect(inside?.most).toEqual({ path: "f/g/f.ts", changes: 2, carried: 0 });
+    expect(across?.most).toEqual({ path: "p/q/draw.ts", changes: 2, carried: 1 });
   });
 });

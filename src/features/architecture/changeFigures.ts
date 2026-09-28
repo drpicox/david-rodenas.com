@@ -15,6 +15,7 @@ import { renderTestedChangesFigure } from "./renderTestedChangesFigure";
 import { ripplesOf } from "./ripplesOf";
 import type { Snapshot } from "./Snapshot";
 import { stabilityOf } from "./stabilityOf";
+import { sweepsOf } from "./sweepsOf";
 import { testedChangesOf } from "./testedChangesOf";
 
 /** One figure of the page, drawn from the whole history as it stood at one of its commits, with the lines the tests run if they were counted. */
@@ -47,8 +48,8 @@ export const changeFigures: Readonly<Record<string, ChangeFigure>> = {
     return renderHotspotsFigure(lives, history.commits.length, counted, 12, read.history.commits.length);
   },
   "change-stability": (read, commit) => {
-    const { source, lives } = at(read, commit);
-    return renderStabilityFigure(stabilityOf(source, lives));
+    const { history, source, lives } = at(read, commit);
+    return renderStabilityFigure(stabilityOf(source, lives, sweepsOf(history)));
   },
   "change-cascade": (read, commit) => {
     const { history, snapshots, source } = at(read, commit);

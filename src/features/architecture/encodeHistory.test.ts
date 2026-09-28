@@ -54,6 +54,16 @@ describe("the history of the source, kept as what changed", () => {
 
   it("is small: an unchanged commit costs nothing but its line", () => {
     const again = encodeHistory([...played, { commit: commit("three"), graph: second, renamed: [], touched: [] }]);
-    expect(again.changes[2]).toEqual({ added: [], removed: [], moved: [], resized: [], changed: [], linked: [], unlinked: [] });
+    expect(again.changes[2]).toEqual({ added: [], removed: [], moved: [], resized: [], retyped: [], changed: [], linked: [], unlinked: [] });
+  });
+
+  it("says when a module comes to hold nothing but types, or stops, and gives it back so", () => {
+    const typed = (typesOnly: boolean) => ({ modules: [{ path: "a.ts", lines: 10, test: false, typesOnly }], dependencies: [] });
+    const retyped = encodeHistory([
+      { commit: commit("with a value"), graph: typed(false), renamed: [], touched: [] },
+      { commit: commit("the value moved out"), graph: typed(true), renamed: [], touched: ["a.ts"] },
+    ]);
+    expect(retyped.changes[1]?.retyped).toEqual([[0, true]]);
+    expect(decodeHistory(retyped)[1]?.modules[0]?.typesOnly).toBe(true);
   });
 });

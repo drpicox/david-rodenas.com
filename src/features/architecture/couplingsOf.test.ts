@@ -3,7 +3,7 @@ import { couplingsOf } from "./couplingsOf";
 import type { Change, History } from "./History";
 
 const commit = (sha: string) => ({ sha, date: "2026-09-07", subject: sha });
-const change = (changed: number[], added: Change["added"] = []): Change => ({ added, removed: [], moved: [], resized: [], changed, linked: [], unlinked: [] });
+const change = (changed: number[], added: Change["added"] = []): Change => ({ added, removed: [], moved: [], resized: [], retyped: [], changed, linked: [], unlinked: [] });
 
 // Three files written together; then a and b changed together, all three, a and c, and b alone.
 const history: History = {

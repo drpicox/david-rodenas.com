@@ -6,6 +6,7 @@ import { plural } from "./plural";
 import type { HistoryRead } from "./readHistory";
 import { renderChangeMatrix } from "./renderChangeMatrix";
 import { SWEEP } from "./SWEEP";
+import { sweepsOf } from "./sweepsOf";
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -30,7 +31,7 @@ export function renderChangeMatrixFigure(read: HistoryRead, at = read.history.co
   const { history, snapshots, lives } = read;
   const last = snapshots.at(-1) ?? { modules: [], dependencies: [] };
   const bands = layoutArchitecture(last).bands.map((band) => band.name);
-  const sweeps = new Set(history.changes.flatMap((change, commit) => (change.changed.length > SWEEP ? [commit] : [])));
+  const sweeps = sweepsOf(history);
   const then = historyUpTo(read, at);
   const shipped = then.lives.filter((life) => !life.test);
   const changes = shipped.reduce((sum, life) => sum + life.changed.length, 0);

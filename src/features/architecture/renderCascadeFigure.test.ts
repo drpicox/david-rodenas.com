@@ -26,6 +26,6 @@ describe("the figure of how far a change travels", () => {
 
   it("puts what the arrows allow beside what the history did", () => {
     expect(figure).toContain("a change to one file can reach 2.2% of the source");
-    expect(figure).toContain("when a file it needs changed, a file changed with it in 25% of the commits; two arrows down, in 6%; with nothing it needs changed, in 0.8%");
+    expect(figure).toContain("of the times something a file needs changed, the file changed too in 25%; when the nearest change was two arrows down, in 6%; when nothing it needs changed, in 0.8%");
   });
 });

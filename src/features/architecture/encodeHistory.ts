@@ -13,6 +13,7 @@ export interface Played {
 interface Kept {
   readonly path: string;
   readonly lines: number;
+  readonly typesOnly: boolean;
 }
 
 /**
@@ -44,7 +45,7 @@ export function encodeHistory(played: readonly Played[]): History {
         next += 1;
         idOf.set(module.path, id);
       }
-      now.set(id, { path: module.path, lines: module.lines });
+      now.set(id, { path: module.path, lines: module.lines, typesOnly: module.typesOnly });
       if (!before.has(id)) added.push(module.typesOnly ? [id, module.path, module.lines, module.test, true] : [id, module.path, module.lines, module.test]);
     }
     for (const [path, id] of idOf) if (!now.has(id) || now.get(id)?.path !== path) idOf.delete(path);
@@ -52,11 +53,13 @@ export function encodeHistory(played: readonly Played[]): History {
     const removed = [...before.keys()].filter((id) => !now.has(id)).sort((a, b) => a - b);
     const moved: [number, string][] = [];
     const resized: [number, number][] = [];
+    const retyped: [number, boolean][] = [];
     for (const [id, kept] of now) {
       const was = before.get(id);
       if (!was) continue;
       if (was.path !== kept.path) moved.push([id, kept.path]);
       if (was.lines !== kept.lines) resized.push([id, kept.lines]);
+      if (was.typesOnly !== kept.typesOnly) retyped.push([id, kept.typesOnly]);
     }
 
     const changed = [...new Set(touched.map((path) => idOf.get(path)))].filter((id): id is number => id !== undefined && before.has(id)).sort((a, b) => a - b);
@@ -72,7 +75,7 @@ export function encodeHistory(played: readonly Played[]): History {
     }
     const unlinked = [...arrowsBefore.keys()].filter((key) => !arrows.has(key)).map((key) => key.split(">").map(Number) as [number, number]);
 
-    changes.push({ added, removed, moved, resized, changed, linked, unlinked });
+    changes.push({ added, removed, moved, resized, retyped, changed, linked, unlinked });
     before = now;
     arrowsBefore = arrows;
   }

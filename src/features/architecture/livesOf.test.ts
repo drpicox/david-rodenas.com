@@ -3,7 +3,7 @@ import type { Change, History } from "./History";
 import { livesOf } from "./livesOf";
 
 const commit = (sha: string) => ({ sha, date: "2026-09-07", subject: sha });
-const change = (parts: Partial<Change>): Change => ({ added: [], removed: [], moved: [], resized: [], changed: [], linked: [], unlinked: [], ...parts });
+const change = (parts: Partial<Change>): Change => ({ added: [], removed: [], moved: [], resized: [], retyped: [], changed: [], linked: [], unlinked: [], ...parts });
 
 const history: History = {
   commits: [commit("one"), commit("two"), commit("three")],
@@ -39,5 +39,10 @@ describe("the life of every file", () => {
       [2, false, true],
       [3, false, false],
     ]);
+  });
+
+  it("knows a file of nothing but types as it is at the end, not as it was written", () => {
+    const retyped: History = { commits: [commit("one"), commit("two")], changes: [change({ added: [[0, "a.ts", 10, false]] }), change({ changed: [0], retyped: [[0, true]] })] };
+    expect(livesOf(retyped)[0]?.typesOnly).toBe(true);
   });
 });

@@ -19,6 +19,8 @@ export interface Change {
   readonly moved: readonly (readonly [number, string])[];
   /** `[id, lines]` for each module that grew or shrank. */
   readonly resized: readonly (readonly [number, number])[];
+  /** `[id, typesOnly]` for each module that came to hold nothing but types, or stopped: a value moved out of it, or into it. */
+  readonly retyped: readonly (readonly [number, boolean])[];
   /**
    * Every module the commit edited or moved, as git saw it against the commit
    * before: what the page counts as a change. A module it brought is not in

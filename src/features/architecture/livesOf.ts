@@ -18,6 +18,7 @@ export function livesOf(history: History): Life[] {
     for (const [id, path, lines, test, typesOnly = false] of change.added) lives.set(id, { id, path, lines, test, typesOnly, born: at, changed: [] });
     for (const [id, path] of change.moved) update(id, { path });
     for (const [id, lines] of change.resized) update(id, { lines });
+    for (const [id, typesOnly] of change.retyped) update(id, { typesOnly });
     for (const id of change.changed) lives.get(id)?.changed.push(at);
     for (const id of change.removed) update(id, { went: at });
   });

@@ -47,6 +47,6 @@ export function renderCascadeFigure(cascade: readonly Cascade[], propagationCost
   const [one, two, , , none] = rows.map(([, counted]) => percent(counted.changed, counted.seen));
   const said =
     `In theory, a change to one file can reach ${percent(propagationCost, 1)} of the source, on average: itself, what needs it, and what needs that, as far as the arrows go. ` +
-    `In the history, when a file it needs changed, a file changed with it in ${one} of the commits; two arrows down, in ${two}; with nothing it needs changed, in ${none}.`;
+    `In the history, of the times something a file needs changed, the file changed too in ${one}; when the nearest change was two arrows down, in ${two}; when nothing it needs changed, in ${none}.`;
   return `<figure class="changes-figure">${svg}<figcaption>${said}</figcaption></figure>`;
 }

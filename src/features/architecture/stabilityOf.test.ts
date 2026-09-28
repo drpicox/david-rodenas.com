@@ -61,4 +61,10 @@ describe("each box, measured as Robert C. Martin measures a component", () => {
     const alone = stabilityOf({ modules: [{ id: 0, path: "features/lone/lone.ts", lines: 1, test: false }], dependencies: [] }, []);
     expect(alone[0]?.instability).toBeNull();
   });
+
+  it("leaves out what a sweep changed, which says nothing of the box: a rename across the source, a rule applied everywhere", () => {
+    const swept = new Map(stabilityOf(snapshot, lives, new Set([2, 4])).map((box) => [box.box, box]));
+    expect(swept.get("platform/p")?.changes).toBe(2);
+    expect(swept.get("main.ts")?.changes).toBe(1);
+  });
 });

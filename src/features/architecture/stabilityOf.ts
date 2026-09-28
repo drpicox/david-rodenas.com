@@ -14,7 +14,7 @@ export interface BoxStability {
   readonly instability: number | null;
   /** The share of its files that are nothing but types: what can be depended on without depending on what it does. */
   readonly abstractness: number;
-  /** Every commit that changed one of its files, over their whole lives. */
+  /** Every commit that changed one of its files, over their whole lives, sweeps left out. */
   readonly changes: number;
 }
 
@@ -25,11 +25,13 @@ export interface BoxStability {
  * have to change with it. How often it did is beside it, from the history,
  * because the two disagreeing is what hurts: a box everything needs that
  * keeps changing. Only what ships is counted; the tests are not the design.
+ * Nor are the `sweeps`: a commit that renames the whole source changes a box
+ * without anything about the box having changed.
  */
-export function stabilityOf(snapshot: Snapshot, lives: readonly Life[]): BoxStability[] {
+export function stabilityOf(snapshot: Snapshot, lives: readonly Life[], sweeps: ReadonlySet<number> = new Set()): BoxStability[] {
   const shipped = snapshot.modules.filter((module) => !module.test);
   const boxOfId = new Map(shipped.map((module) => [module.id, boxOf(module.path)]));
-  const changesOf = new Map(lives.map((life) => [life.id, life.changed.length]));
+  const changesOf = new Map(lives.map((life) => [life.id, life.changed.filter((at) => !sweeps.has(at)).length]));
   const neededBy = new Map<string, Set<number>>();
   const needs = new Map<string, Set<number>>();
   for (const { from, to } of snapshot.dependencies) {
