@@ -3,6 +3,7 @@ import type { Site } from "../content/Site";
 import { escapeHtml } from "../markdown/escapeHtml";
 import { renderMarkdown } from "../markdown/renderMarkdown";
 import { promptPath } from "../shell/promptPath";
+import { renderListing } from "../shell/renderListing";
 
 /** A line as it would stand in the session: the prompt it was typed at, and the command. */
 function ran(prompt: string, command: string): string {
@@ -18,16 +19,7 @@ function ran(prompt: string, command: string): string {
 function listing(site: Site, page: Page): string {
   const children = site.childrenOf(page.route);
   if (children.length === 0) return "";
-  const items = children
-    .map(
-      (child) =>
-        `<li><a class="entry" href="${child.route}"><code>${escapeHtml(child.name)}${child.link ? "@" : "/"}</code>` +
-        `<span class="title">${escapeHtml(child.title)}</span>` +
-        (child.summary ? `<span class="summary">${escapeHtml(child.summary)}</span>` : "") +
-        `</a></li>`,
-    )
-    .join("");
-  return `${ran(promptPath(page.route), "ls")}\n<ul class="listing">${items}</ul>`;
+  return `${ran(promptPath(page.route), "ls")}\n${renderListing(children)}`;
 }
 
 /**

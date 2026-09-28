@@ -2,6 +2,7 @@ import type { Page } from "../../content/Page";
 import { escapeHtml } from "../../markdown/escapeHtml";
 import type { Command } from "../Command";
 import type { Outcome } from "../Outcome";
+import { renderListing } from "../renderListing";
 import { resolvePath } from "../resolvePath";
 
 /** Flags come off wherever they are; what is left is the path. */
@@ -66,12 +67,12 @@ function listing(entries: readonly Entry[], long: boolean): Outcome {
 
 export const ls: Command = {
   name: "ls",
-  usage: "ls [-lnr] [path]",
-  description: "what a directory holds, in the site's own order; -l says more, -n sorts by name, -r reverses",
+  usage: "ls [-lnrt] [path]",
+  description: "what a directory holds, in the site's own order; -l says more, -n sorts by name, -r reverses, -t as the table at the end of a page",
   run({ site, cwd }, args) {
     const { flags, path } = split(args);
-    const unknown = flags.find((flag) => !["l", "n", "r"].includes(flag));
-    if (unknown) return { text: `ls: -${unknown}: no such option. Try ls -l, -n by name, -r reversed`, error: true };
+    const unknown = flags.find((flag) => !["l", "n", "r", "t"].includes(flag));
+    if (unknown) return { text: `ls: -${unknown}: no such option. Try ls -l, -n by name, -r reversed, -t as a table`, error: true };
 
     const route = resolvePath(cwd, path);
     const page = site.at(route);
@@ -82,6 +83,11 @@ export const ls: Command = {
     const children = [...site.childrenOf(route)];
     if (flags.includes("n")) children.sort((a, b) => a.name.localeCompare(b.name));
     if (flags.includes("r")) children.reverse();
+    if (flags.includes("t")) {
+      const width = Math.max(0, ...children.map((child) => child.name.length + 1));
+      const name = (child: Page) => `${child.name}${child.link ? "@" : "/"}`.padEnd(width);
+      return { text: children.map((child) => `${name(child)}  ${child.title}${child.summary ? ` — ${child.summary}` : ""}`).join("\n"), html: renderListing(children) };
+    }
     return listing(entriesOf(page, parent, children, path), flags.includes("l"));
   },
 };

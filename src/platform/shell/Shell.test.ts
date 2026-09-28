@@ -33,6 +33,12 @@ describe("Shell", () => {
     expect(out?.html).toContain('<span class="hint">  # The Book</span>');
   });
 
+  it("lists a directory as the table at the end of its page, with -t: each name, its title and what it is", () => {
+    const [out] = new Shell(site, "/simulators/").run("ls -t");
+    expect(out?.html).toContain('<ul class="listing"><li><a class="entry" href="/simulators/technical-debt/"><code>technical-debt/</code><span class="title">Debt</span>');
+    expect(out?.text).toBe("technical-debt/  Debt");
+  });
+
   it("lists somewhere else, and complains about nowhere", () => {
     expect((new Shell(site, "/").run("ls simulators")[0]?.text ?? "").split("\n").map((line) => line.split(/\s+/)[0])).toEqual(["..", "README.md", "technical-debt/"]);
     expect(new Shell(site, "/").run("ls nowhere")[0]?.text).toBe("ls: nowhere: no such directory");
@@ -101,6 +107,15 @@ describe("Shell", () => {
     expect(new Shell(site, "/").run("find")[0]?.html).toContain('<a href="/book/">/book/</a>');
   });
 
+  it("finds a page by what it says, too: after the ones with the word in the name or title, and saying so", () => {
+    expect(new Shell(site, "/").run("find interest")[0]?.text).toBe("/simulators/technical-debt/  # Debt — in the text");
+    const craft = new Site([
+      { file: "index.md", markdown: "---\ntitle: Home\n---\nSmall steps, always." },
+      { file: "craft.md", markdown: "---\ntitle: Steps, small ones\n---\nA test first." },
+    ]);
+    expect((new Shell(craft, "/").run("find small")[0]?.text ?? "").split("\n")).toEqual(["/craft/  # Steps, small ones", "/        # Home — in the text"]);
+  });
+
   it("greps the pages for a word, whatever its case, and says where each line is", () => {
     const out = new Shell(site, "/").run("grep interest")[0];
     expect(out?.text).toBe("/simulators/technical-debt/:1: Interest.");
@@ -120,7 +135,7 @@ describe("Shell", () => {
     for (const name of ["ls", "cd", "cat", "find", "grep", "pwd", "help", "clear"]) expect(help).toContain(name);
     expect(new Shell(site, "/").run("help cd")[0]?.text).toContain("cd [dir]");
     // As markup it is a list of terms, which folds on a narrow screen instead of wrapping mid-column.
-    expect(new Shell(site, "/").run("help")[0]?.html).toContain('<dt><a href="#" data-run="help ls">ls [-lnr] [path]</a></dt>');
+    expect(new Shell(site, "/").run("help")[0]?.html).toContain('<dt><a href="#" data-run="help ls">ls [-lnrt] [path]</a></dt>');
     expect(new Shell(site, "/").run("help nope")[0]?.error).toBe(true);
   });
 
