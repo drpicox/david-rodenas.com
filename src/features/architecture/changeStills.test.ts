@@ -14,10 +14,10 @@ const read = (path: string) => {
 
 describe("the page on how the site changes, in the HTML before any script", () => {
   it("says which commit it stands at: the last one", () => {
-    expect(changeStills["change-player"]?.(read)).toContain("the last of 2 commits");
+    expect(changeStills["change-player"]?.(read, [])).toContain("the last of 2 commits");
   });
 
   it("draws every place the page names from the history, with or without the lines the tests ran", () => {
-    for (const [name, still] of Object.entries(changeStills)) expect(still(read), name).toMatch(/^<(figure|p) /);
+    for (const [name, still] of Object.entries(changeStills)) expect(still(read, []), name).toMatch(/^<(figure|p) /);
   });
 });
