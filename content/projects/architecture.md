@@ -145,14 +145,22 @@ fails when
 - a feature is missing from the diagrams in `ARCHITECTURE.md`.
 
 Some of what the pages here measure can only be held, not forbidden. A
-ratchet turns one way: a file in the source keeps where it stands today —
-how many box arrows go against stability, the composition's aside, which has
-to point at every feature, how deep the knot of files goes,
-how tall the stack of what needs what, how many files with something to run
-no test imports — and a test fails if any of them gets worse. When one gets
-better, the test asks for the new value to be written in, so the gain cannot
-be lost again. It starts where the source is, and it asks nobody, person or
-AI, to remember anything.
+ratchet turns one way. A file in the source,
+[`architecture.ratchet.json`](https://github.com/drpicox/david-rodenas.com/blob/main/src/architecture.ratchet.json),
+keeps where four measures of the source stand, and a test fails if any of
+them gets worse. When one gets better, the test fails too, until the new
+value is written into the file, in the same commit, so that the gain cannot
+be lost again. A limit drawn by taste would either fail on the first day or
+be too loose to catch anything; a ratchet starts where the source is, and
+only lets it go forward. It asks nobody, person or AI, to remember anything:
+whatever makes the shape worse is told so, by name.
+
+Here each measure is taken at every commit of the history, as the ratchet
+takes it now, the commits before the ratchet began as well. The test holds
+the file to the source, so at every commit the page is published from, the
+last value of each is the one the file keeps.
+
+::ratchet
 
 And what [how this site changes](/projects/changes/) finds, files that keep
 changing together with no arrow between them, is held too: two files that

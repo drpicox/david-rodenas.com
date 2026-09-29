@@ -5163,6 +5163,74 @@ main p:has(> strong:first-child):not(h2 + p) {
   opacity: 0.55;
 }
 
+/* ---- the ratchet: each measure it holds, over the history, and where it stands ---- */
+
+.app table.ratchet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.app table.ratchet th,
+.app table.ratchet td {
+  padding: 0.45em 0.6em;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+
+.app table.ratchet thead th {
+  font-weight: normal;
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app table.ratchet .ratchet-counts {
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app table.ratchet td:nth-child(2) {
+  width: 40%;
+}
+
+.app table.ratchet td.now {
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.app svg.ratchet-line {
+  display: block;
+  width: 100%;
+  min-width: 6rem;
+}
+
+.app svg.ratchet-line polyline {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.app svg.ratchet-line .held {
+  stroke: var(--accent);
+}
+
+.app svg.ratchet-line .after {
+  stroke: var(--dim);
+  opacity: 0.35;
+}
+
+.app svg.ratchet-line .began {
+  stroke: var(--dim);
+  stroke-dasharray: 3 2;
+}
+
+.app svg.ratchet-line .now {
+  fill: var(--accent);
+}
+
 /* ---- the network: how its degrees are spread, in the colours of the arrows, and it against a random one ---- */
 
 /* Two drawings: side by side where there is room, the second under the first where there is not, each then as big as it can be. */
