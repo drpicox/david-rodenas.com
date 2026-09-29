@@ -8,6 +8,14 @@ import { createServer } from "vite";
  * architecture page plays: `public/data/architecture.json`.
  *
  *   npm run coverage && node tools/architecture-history.mjs
+ *   node tools/architecture-history.mjs --out <file> [--with-working-tree]
+ *
+ * With --out, the history alone goes to that file and public/data is left as
+ * it is: for a check that wants the history as it now is without touching
+ * what is committed. With --with-working-tree, what is not committed yet comes
+ * after the last commit, as one more: the files as they are, the moves git
+ * sees against the last commit. A check before a commit then reads the
+ * history as the deploy will, once the commit is made.
  *
  * With the coverage counted first, it also writes `public/data/coverage.json`:
  * how many of each file's lines the tests run, at the last commit.
@@ -23,7 +31,9 @@ import { createServer } from "vite";
  * in the order of their dates instead, a branch's commits and the main line's
  * took turns, and each looked as if it had deleted the files of the other.
  */
-const OUT = "public/data/architecture.json";
+const asked = process.argv.indexOf("--out");
+const OUT = asked >= 0 ? process.argv[asked + 1] : "public/data/architecture.json";
+const WORKING = process.argv.includes("--with-working-tree");
 /** What the ratchet holds, read at every commit too, so the page can show how it went. */
 const RATCHET = "src/architecture.ratchet.json";
 const COVERAGE = "public/data/coverage.json";
@@ -120,12 +130,38 @@ try {
     ratchet: ratchetAt(index),
   }));
 
+  if (WORKING) {
+    const renamed = [];
+    const touched = [];
+    for (const line of git("diff", "HEAD", "-M", "--name-status", "--", "src").split("\n")) {
+      const [status = "", from, to = from] = line.split("\t");
+      if (!to?.startsWith("src/")) continue;
+      if (status.startsWith("R") && from.startsWith("src/")) renamed.push([from.slice(4), to.slice(4)]);
+      if (/^[MRT]/.test(status)) touched.push(to.slice(4));
+    }
+    const files = git("ls-files", "--cached", "--others", "--exclude-standard", "--", "src")
+      .split("\n")
+      .filter((path) => path.endsWith(".ts") && !path.endsWith(".d.ts") && existsSync(path));
+    let ratchet;
+    try {
+      ratchet = JSON.parse(readFileSync(RATCHET, "utf8"));
+    } catch {}
+    played.push({
+      commit: { sha: "working", date: new Date().toISOString(), subject: "not committed yet" },
+      graph: readGraph(files.map((path) => ({ path: path.slice(4), text: readFileSync(path, "utf8") }))),
+      renamed,
+      touched,
+      ...(ratchet ? { ratchet } : {}),
+    });
+  }
+
   const history = encodeHistory(played);
   writeFileSync(OUT, `${JSON.stringify(history)}\n`);
 
   // The lines the tests run, if `npm run coverage` has counted them: only for the last commit, which is the one they ran on.
   const { coverageOf } = await vite.ssrLoadModule("/src/features/architecture/coverageOf.ts");
-  if (existsSync(SUMMARY)) {
+  if (asked >= 0) console.log("the history only, written where asked");
+  else if (existsSync(SUMMARY)) {
     const coverage = coverageOf(JSON.parse(readFileSync(SUMMARY, "utf8")), resolve("src"), played.at(-1).commit.sha);
     writeFileSync(COVERAGE, `${JSON.stringify(coverage)}\n`);
     console.log(`${COVERAGE}: ${Object.keys(coverage.lines).length} files`);

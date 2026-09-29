@@ -181,8 +181,9 @@ Two more things watch the AI as it works, and they are in the repository
 too. After every edit to a file of the source, it is told what the history
 knows of that file: how often it has changed, what it changes with, and
 whether a test holds what they agree on — the panel beside the picture, said
-at the moment it matters. And it cannot end its turn while the type check or
-the tests are red. Then, after every push, the deploy breaks the lines that
+at the moment it matters. It cannot commit, nor end its turn, while the type
+check or the tests are red, and the checks that read the history read it as
+the deploy will write it, with what is being committed in it. Then, after every push, the deploy breaks the lines that
 push changed on purpose, one small change at a time, `===` into `!==`, `&&`
 into `||`, and lists the ones no test noticed. Code coverage says a line was
 run; this says whether running it was checked, which is the difference

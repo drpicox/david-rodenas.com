@@ -185,7 +185,8 @@ describe("the ratchet on the shape of the source", () => {
  * `node tools/architecture-history.mjs` wrote last.
  */
 describe("the contracts no import states", () => {
-  const history = readHistory(readFileSync(join(ROOT, "public/data/architecture.json"), "utf8"));
+  // The history the deploy writes; or, asked by name, one written just now, which a check before a commit wants.
+  const history = readHistory(readFileSync(process.env["ARCHITECTURE_HISTORY"] ?? join(ROOT, "public/data/architecture.json"), "utf8"));
   /** Pairs whose agreement the compiler already holds, each with why: two implementations of one interface change together when it grows. */
   const HELD_BY_THE_COMPILER = [
     // Both are a Program; they gained each thing a Program can do together, and the type says what a Program is.

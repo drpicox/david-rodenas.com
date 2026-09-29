@@ -135,10 +135,13 @@ talk to each other.
   hooks. After every edit to a file of the source, the agent is told what the
   history knows of it — how often it changed, what it changes with and
   whether a test holds what they agree on, what needs it, the tests that
-  import it (`.claude/hooks/after-edit.mjs`). And a turn cannot end while what
-  is not committed leaves the type check or the tests red
-  (`.claude/hooks/stop-when-green.mjs`; a state found green is remembered in
-  `.git/`, and the same red is held at most twice).
+  import it (`.claude/hooks/after-edit.mjs`). A commit is not let through,
+  and a turn cannot end, while the type check or the tests are red — the
+  history's checks read against the history as the deploy will write it, the
+  work not committed yet as one more commit (`before-commit.mjs`,
+  `stop-when-green.mjs`, both asking `green.mjs`; a state found green is
+  remembered in `.git/`, and the same red is held at the end of a turn at
+  most twice).
 - **A contract no import states is held by a test.** Two files of different
   boxes that changed together twice with no arrow joining them need a test
   that imports both (`platform/page/browser/pageContract.test.ts` is the
