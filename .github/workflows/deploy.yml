@@ -48,6 +48,10 @@ jobs:
       - name: Report how the shape moved
         continue-on-error: true
         run: node tools/shape-report.mjs "${{ github.event.before }}" >> "$GITHUB_STEP_SUMMARY"
+      # What no test runs, and what each file of it asks: whether it is hard to test, has no purpose, or has one no test states.
+      - name: Report what no test runs
+        continue-on-error: true
+        run: node tools/unrun.mjs >> "$GITHUB_STEP_SUMMARY"
       # The lines this push changed, broken on purpose one small change at a time: what no test caught, in the run's summary.
       - name: Break the changed lines on purpose
         continue-on-error: true

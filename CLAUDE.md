@@ -45,6 +45,14 @@ traced, write the weaker sentence.
   from a commit (or the one before the last) to the last, as markdown: the
   deploy writes it into the summary of its run. To be read; the ratchet is
   the test
+- `node tools/unrun.mjs` — after `npm run coverage`, what no test runs,
+  function by function and line by line, under the question each file asks:
+  nothing uses it (it has no purpose: remove it, or move it into the test that
+  needs it), only a browser runs it (it is hard to test here: test it in a
+  page, or move what it decides out of the browser), or the site uses it and
+  no test runs it (a behaviour no test states: write it, or remove the code).
+  Coverage is not a target; a line no test runs is a question. The deploy
+  writes it into the summary of its run
 - `node tools/mutate.mjs [sha]` — breaks the lines changed since a commit (or
   not committed yet, or in the last commit) one small change at a time —
   `===` into `!==`, `&&` into `||`, `true` into `false` — runs the tests that

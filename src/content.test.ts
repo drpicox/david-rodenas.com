@@ -1,7 +1,10 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
+import { allFeatures } from "./features/allFeatures";
 import { Site } from "./platform/content/Site";
+import { renderMain } from "./platform/page/renderMain";
+import { stillsOf } from "./platform/plugin/stillsOf";
 
 const CONTENT = new URL("../content", import.meta.url).pathname;
 
@@ -43,3 +46,38 @@ describe("the content", () => {
     expect(unnamed).toEqual([]);
   });
 });
+
+/**
+ * The founding rule: the content is in the HTML. A figure made of data is
+ * content, and a page names the place where one stands; the build fills each
+ * place with its still, reading the data from where the browser will fetch it,
+ * and a still that fails leaves its place empty without failing the build.
+ * So it is said here, of every page as written.
+ */
+describe("the content, in the HTML", () => {
+  const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?><\/div>/g;
+  const PUBLIC = new URL("../public", import.meta.url).pathname;
+  const read = (path: string) => readFileSync(join(PUBLIC, path), "utf8");
+  const stills = stillsOf(allFeatures);
+  const apps = new Set(allFeatures.flatMap((feature) => Object.keys(feature.apps ?? {})));
+  const places = site.pages.flatMap((page) => [...renderMain(site, page).matchAll(PLACE)].map(([, name = "", dials]) => ({ route: page.route, name, dials: dials ? dials.split(" ") : [] })));
+
+  it("gives every place a page names a program that runs there, or a still that stands there", () => {
+    expect(places.filter(({ name }) => !apps.has(name) && !stills[name]).map(({ route, name }) => `${route} ::${name}`)).toEqual([]);
+  });
+
+  it("fills, on every page, every place that has a still, as the build does, and no still fails or draws nothing", () => {
+    const failed = places.flatMap(({ route, name, dials }) => {
+      const still = stills[name];
+      if (!still) return [];
+      try {
+        return still(read, dials).trim() ? [] : [`${route} ::${name}: nothing drawn`];
+      } catch (error) {
+        return [`${route} ::${name}: ${error instanceof Error ? error.message : String(error)}`];
+      }
+    });
+    expect(failed).toEqual([]);
+    expect(places.length).toBeGreaterThan(10);
+  });
+});
+

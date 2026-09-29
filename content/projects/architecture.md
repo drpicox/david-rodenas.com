@@ -188,6 +188,13 @@ push changed on purpose, one small change at a time, `===` into `!==`, `&&`
 into `||`, and lists the ones no test noticed. Code coverage says a line was
 run; this says whether running it was checked, which is the difference
 [a program that tests nothing](/research/coverage-generated/) makes plain.
+And it lists what no test runs, not as a number to raise but as a question
+each file asks. If nothing in the site uses it, it has no purpose, and goes.
+If only a browser runs it, it is hard to test where it is, and what it
+decides can move out of the browser. And if the site uses it and no test
+runs it, it has a behaviour no test states yet, and the test is what is
+missing: the first such test said, of every page, that every figure it names
+stands in its HTML, which the build had never been made to prove.
 
 The dashed arrows need only a type: a box that depends on an interface, not
 on what implements it. That is dependency inversion, and it is what lets a
