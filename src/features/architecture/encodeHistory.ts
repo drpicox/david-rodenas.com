@@ -8,6 +8,8 @@ export interface Played {
   readonly renamed: readonly (readonly [string, string])[];
   /** Every file git saw this commit edit or move, by its path after it. */
   readonly touched: readonly string[];
+  /** What `architecture.ratchet.json` held at this commit, if there was one. */
+  readonly ratchet?: Readonly<Record<string, number>>;
 }
 
 interface Kept {
@@ -80,5 +82,10 @@ export function encodeHistory(played: readonly Played[]): History {
     arrowsBefore = arrows;
   }
 
-  return { commits: played.map(({ commit }) => commit), changes };
+  // What the ratchet held, only where it changed: most commits leave it as it was.
+  const ratchets: [number, Readonly<Record<string, number>>][] = [];
+  played.forEach(({ ratchet }, at) => {
+    if (ratchet && JSON.stringify(ratchet) !== JSON.stringify(ratchets.at(-1)?.[1])) ratchets.push([at, ratchet]);
+  });
+  return { commits: played.map(({ commit }) => commit), changes, ...(ratchets.length > 0 ? { ratchets } : {}) };
 }

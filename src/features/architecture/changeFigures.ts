@@ -8,6 +8,7 @@ import { groundOf } from "./groundOf";
 import { historyUpTo } from "./historyUpTo";
 import { measuresOf } from "./measuresOf";
 import { propagationCostOf } from "./propagationCostOf";
+import { ratchetHeldOf } from "./ratchetHeldOf";
 import type { HistoryRead } from "./readHistory";
 import { renderBridgesFigure } from "./renderBridgesFigure";
 import { renderCascadeFigure } from "./renderCascadeFigure";
@@ -35,8 +36,6 @@ import { testedChangesOf } from "./testedChangesOf";
 export type ChangeFigure = (read: HistoryRead, at: number, coverage: Coverage | null) => string;
 
 const NOTHING: Snapshot = { modules: [], dependencies: [] };
-/** The commit that brought the ratchet in: from it on, a test holds the shape of the source. */
-const RATCHET_BEGAN = "88300e5";
 
 /** The history at a commit, and the source as it stood there. */
 const at = (read: HistoryRead, commit: number) => {
@@ -98,8 +97,11 @@ export const changeFigures: Readonly<Record<string, ChangeFigure>> = {
     return renderBridgesFigure(source, measuresOf.bridges(source));
   },
   "tangle-reach": (read, commit) => renderReachFigure(read.snapshots, commit),
-  ratchet: (read, commit) => {
-    const began = read.history.commits.findIndex((one) => one.sha.startsWith(RATCHET_BEGAN));
-    return renderRatchetFigure(shapesOf(read), commit, began < 0 ? null : { at: began, date: read.history.commits[began]?.date ?? "" });
-  },
+  ratchet: (read, commit) =>
+    renderRatchetFigure(
+      shapesOf(read),
+      commit,
+      ratchetHeldOf(read.history),
+      read.history.commits.map((one) => one.date),
+    ),
 };

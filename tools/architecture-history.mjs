@@ -24,6 +24,8 @@ import { createServer } from "vite";
  * took turns, and each looked as if it had deleted the files of the other.
  */
 const OUT = "public/data/architecture.json";
+/** What the ratchet holds, read at every commit too, so the page can show how it went. */
+const RATCHET = "src/architecture.ratchet.json";
 const COVERAGE = "public/data/coverage.json";
 const SUMMARY = "coverage/coverage-summary.json";
 const git = (...args) => execFileSync("git", args, { encoding: "utf8", maxBuffer: 1 << 28 });
@@ -89,23 +91,33 @@ try {
     });
   const touches = touchesByCommit();
 
-  const trees = commits.map(({ sha }) =>
+  const listed = commits.map(({ sha }) =>
     git("ls-tree", "-r", sha, "--", "src")
       .trim()
       .split("\n")
       .map((line) => {
         const [meta, path] = line.split("\t");
         return { blob: meta.split(" ")[2], path };
-      })
-      .filter(({ path }) => path.endsWith(".ts") && !path.endsWith(".d.ts")),
+      }),
   );
-  const texts = await readBlobs([...new Set(trees.flatMap((tree) => tree.map(({ blob }) => blob)))]);
+  const trees = listed.map((tree) => tree.filter(({ path }) => path.endsWith(".ts") && !path.endsWith(".d.ts")));
+  const ratchets = listed.map((tree) => tree.find(({ path }) => path === RATCHET)?.blob);
+  const texts = await readBlobs([...new Set([...trees.flatMap((tree) => tree.map(({ blob }) => blob)), ...ratchets.filter(Boolean)])]);
+  // A ratchet that cannot be read at some commit is as if there were none there.
+  const ratchetAt = (index) => {
+    try {
+      return ratchets[index] ? JSON.parse(texts.get(ratchets[index]) ?? "") : undefined;
+    } catch {
+      return undefined;
+    }
+  };
 
   const played = commits.map((commit, index) => ({
     commit: { sha: commit.sha.slice(0, 7), date: commit.date, subject: commit.subject },
     graph: readGraph(trees[index].map(({ blob, path }) => ({ path: path.slice(4), text: texts.get(blob) ?? "" }))),
     renamed: touches.get(commit.sha)?.renamed ?? [],
     touched: touches.get(commit.sha)?.touched ?? [],
+    ratchet: ratchetAt(index),
   }));
 
   const history = encodeHistory(played);

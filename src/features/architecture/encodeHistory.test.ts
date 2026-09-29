@@ -57,6 +57,16 @@ describe("the history of the source, kept as what changed", () => {
     expect(again.changes[2]).toEqual({ added: [], removed: [], moved: [], resized: [], retyped: [], changed: [], linked: [], unlinked: [] });
   });
 
+  it("keeps what the ratchet held, only at the commits that changed it", () => {
+    const held = (ratchet?: Record<string, number>) => ({ commit: commit("any"), graph: first, renamed: [], touched: [], ...(ratchet ? { ratchet } : {}) });
+    const ratcheted = encodeHistory([held(), held({ untested: 9 }), held({ untested: 9 }), held({ untested: 7 })]);
+    expect(ratcheted.ratchets).toEqual([
+      [1, { untested: 9 }],
+      [3, { untested: 7 }],
+    ]);
+    expect(history.ratchets).toBeUndefined();
+  });
+
   it("says when a module comes to hold nothing but types, or stops, and gives it back so", () => {
     const typed = (typesOnly: boolean) => ({ modules: [{ path: "a.ts", lines: 10, test: false, typesOnly }], dependencies: [] });
     const retyped = encodeHistory([

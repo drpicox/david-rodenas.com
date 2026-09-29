@@ -33,10 +33,11 @@ describe("the figures of the page on how the source changes", () => {
     expect(changeFigures["change-settling"]?.(read, 2, null)).toContain("of the 3 files that ship");
   });
 
-  it("mark where the ratchet began, at the commit that brought it in", () => {
+  it("show what the ratchet held, from the commit that brought it in, as the history says", () => {
     const paths = ["platform/p/draw.ts", "platform/p/draw.test.ts", "platform/p/Shape.ts"];
-    const ratcheted = readHistory(JSON.stringify(encodeHistory([step("written", "2026-09-07T10:00:00+02:00", paths, []), step("88300e5", "2026-09-29T11:00:00+02:00", paths, ["platform/p/draw.ts"])])));
-    expect(changeFigures["ratchet"]?.(ratcheted, 1, null)).toContain("The ratchet holds them from 29 September 2026");
+    const ratchet = { againstStability: 0, deepestCore: 0, tallestStack: 0, untested: 0 };
+    const ratcheted = readHistory(JSON.stringify(encodeHistory([step("written", "2026-09-07T10:00:00+02:00", paths, []), { ...step("ratchet", "2026-09-29T11:00:00+02:00", paths, ["platform/p/draw.ts"]), ratchet }])));
+    expect(changeFigures["ratchet"]?.(ratcheted, 1, null)).toContain("29 September 2026: began, holding");
     expect(changeFigures["ratchet"]?.(ratcheted, 0, null)).toContain("The ratchet began on 29 September 2026, after this commit.");
   });
 

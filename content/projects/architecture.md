@@ -155,10 +155,13 @@ be too loose to catch anything; a ratchet starts where the source is, and
 only lets it go forward. It asks nobody, person or AI, to remember anything:
 whatever makes the shape worse is told so, by name.
 
-Here each measure is taken at every commit of the history, as the ratchet
-takes it now, the commits before the ratchet began as well. The test holds
-the file to the source, so at every commit the page is published from, the
-last value of each is the one the file keeps.
+For each measure, the figure sets what the ratchet holds beside what the
+source measures. What it holds is read from the file at every commit since
+it came in, a band that steps wherever the file was changed. What the source
+measures is taken at every commit of the history, as the ratchet takes it
+now, the commits before it began as well, a line inside the band. Under
+them, how the ratchet went: when it began, what it held, and every time it
+was tightened since, or loosened.
 
 ::ratchet
 

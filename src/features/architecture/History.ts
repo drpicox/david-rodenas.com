@@ -38,4 +38,6 @@ export interface History {
   readonly commits: readonly Commit[];
   /** One for each commit: the first against nothing, each other against the one before. */
   readonly changes: readonly Change[];
+  /** `[commit, held]` at each commit that changed what the ratchet holds, from the one that brought it in; none before there was one. */
+  readonly ratchets?: readonly (readonly [number, Readonly<Record<string, number>>])[];
 }
