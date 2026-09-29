@@ -113,6 +113,20 @@ function definitions(lines: string[]): string | null {
   return `<dl>${rows}</dl>`;
 }
 
+/**
+ * A table: every line a row between pipes, and the second nothing but
+ * dashes, which is what makes the first a head. What a column aligns to is
+ * the stylesheet's business, so the colons are read past. It is wrapped, so
+ * that a table wider than a phone scrolls on its own and not the page.
+ */
+function table(lines: string[]): string | null {
+  const cells = (line: string) => line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+  if (lines.length < 2 || !lines.every((line) => line.trim().startsWith("|"))) return null;
+  if (!cells(lines[1] ?? "").every((cell) => /^:?-+:?$/.test(cell))) return null;
+  const row = (line: string, tag: "th" | "td") => `<tr>${cells(line).map((cell) => `<${tag}>${renderInline(cell)}</${tag}>`).join("")}</tr>`;
+  return `<div class="table"><table><thead>${row(lines[0] ?? "", "th")}</thead><tbody>${lines.slice(2).map((line) => row(line, "td")).join("")}</tbody></table></div>`;
+}
+
 function quote(lines: string[]): string | null {
   if (!lines.every((line) => line.startsWith(">"))) return null;
   const body = lines.map((line) => line.replace(/^>\s?/, "")).join(" ");
@@ -151,7 +165,7 @@ function paragraph(lines: string[]): string {
   return `<p>${renderInline(lines.join("\n"))}</p>`;
 }
 
-const RULES = [rule, space, heading, code, quote, app, figure, definitions, list];
+const RULES = [rule, space, heading, code, table, quote, app, figure, definitions, list];
 
 /**
  * Markdown, reduced to what this site actually writes in. Anything wider than

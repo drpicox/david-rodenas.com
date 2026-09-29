@@ -474,6 +474,35 @@ li {
   margin: 0.5em 0;
 }
 
+/* A table in the words: wrapped, so that one wider than a phone scrolls by itself and the page does not. */
+.table {
+  overflow-x: auto;
+  margin: 0 0 1.8em;
+}
+
+.table table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.table th,
+.table td {
+  padding: 0.4em 0.7em;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table thead th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table tbody td:first-child {
+  color: var(--dim);
+}
+
 /* A list item with a second line: the link is the title, the line under it is the hook. */
 li a:has(+ br) {
   font-weight: 600;

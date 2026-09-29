@@ -21,6 +21,16 @@ describe("renderMarkdown", () => {
     expect(renderMarkdown("one\ntwo")).toBe("<p>one two</p>");
   });
 
+  it("draws a table where every line is a row between pipes and the second is only dashes: a head, then the body", () => {
+    expect(renderMarkdown("| Aspect | Catalan | English |\n| --- | :-- | --- |\n| Priorities | Local residents | General balance |")).toBe(
+      '<div class="table"><table><thead><tr><th>Aspect</th><th>Catalan</th><th>English</th></tr></thead><tbody><tr><td>Priorities</td><td>Local residents</td><td>General balance</td></tr></tbody></table></div>',
+    );
+  });
+
+  it("leaves lines that only begin with a pipe, with no line of dashes under the first, as words", () => {
+    expect(renderMarkdown("| not a table |\n| nor this |")).toBe("<p>| not a table | | nor this |</p>");
+  });
+
   it("gives every heading an id", () => {
     expect(renderMarkdown("## Five times")).toBe('<h2 id="five-times">Five times</h2>');
   });
