@@ -1,7 +1,7 @@
 import type { Site } from "../content/Site";
-import type { Command, ShellContext } from "./Command";
+import type { Command, ShellContext } from "../command/Command";
 import { siteCommands } from "./commands/siteCommands";
-import type { Outcome } from "./Outcome";
+import type { Outcome } from "../command/Outcome";
 import { parseCommandLine } from "./parseCommandLine";
 import { promptPath } from "./promptPath";
 import { resolvePath } from "./resolvePath";

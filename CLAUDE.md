@@ -68,10 +68,18 @@ The top level says what this is: a frame, and the features standing in it.
     directory holds
   - `markdown/` — the small subset of markdown this site writes in, with
     ```flow, ```bars and ```math blocks drawn at build time
+  - `command/` — what a command is, what running one asks of the page
+    (`Outcome`), and that said as plain text: the contract the shell, the
+    features, the programs and the flags agree on, kept apart from the shell
+    so that the boxes everything needs need nothing that changes as often
   - `shell/` — the shell over a `Site`, and the commands that are about the
-    site itself: `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear`
-  - `page/` — the whole HTML document, and the `<main>` inside it
-  - `browser/` — the terminal, the navigation between pages, and `el`
+    site itself: `ls`, `cd`, `cat`, `find`, `grep`, `pwd`, `help`, `clear`;
+    in `browser/`, the terminal: the prompt on the page, wired to it
+  - `page/` — the whole HTML document, and the `<main>` inside it; in
+    `browser/`, the move between pages, which writes a new `<main>` without a
+    load
+  - `browser/` — what everything in the browser shares: `el`, the programs on
+    a page and the tools offered to an agent, and what moves
   - `data/` — open data kept a finished year at a time: `YearlySource`, and
     the refresh that cannot lose what is already held
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser

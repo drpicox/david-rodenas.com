@@ -1,6 +1,6 @@
 import type { Page } from "../../content/Page";
 import { escapeHtml } from "../../markdown/escapeHtml";
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 import { resolvePath } from "../resolvePath";
 
 /**

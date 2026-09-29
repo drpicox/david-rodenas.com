@@ -1,6 +1,6 @@
 import { escapeHtml } from "../markdown/escapeHtml";
-import type { Command } from "../shell/Command";
-import type { Outcome } from "../shell/Outcome";
+import type { Command } from "../command/Command";
+import type { Outcome } from "../command/Outcome";
 import type { Flag } from "./Flag";
 import type { FlagStore } from "./FlagStore";
 

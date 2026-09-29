@@ -1,4 +1,4 @@
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 import { promptPath } from "../promptPath";
 
 export const pwd: Command = {

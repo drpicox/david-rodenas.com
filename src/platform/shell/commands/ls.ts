@@ -1,7 +1,7 @@
 import type { Page } from "../../content/Page";
 import { escapeHtml } from "../../markdown/escapeHtml";
-import type { Command } from "../Command";
-import type { Outcome } from "../Outcome";
+import type { Command } from "../../command/Command";
+import type { Outcome } from "../../command/Outcome";
 import { renderListing } from "../renderListing";
 import { resolvePath } from "../resolvePath";
 

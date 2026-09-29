@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../../platform/content/Site";
-import type { ShellContext } from "../../platform/shell/Command";
+import type { ShellContext } from "../../platform/command/Command";
 import { siteCommands } from "../../platform/shell/commands/siteCommands";
 import type { Theme } from "./Theme";
 import type { ThemeChoice } from "./ThemeChoice";

@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../content/Site";
 import { aProgram } from "../program/aProgram";
-import type { Outcome } from "../shell/Outcome";
+import type { Outcome } from "../command/Outcome";
 import { mountProgram } from "./mountProgram";
 import type { ModelContext, Tool } from "./ModelContext";
 import { offerTools } from "./offerTools";

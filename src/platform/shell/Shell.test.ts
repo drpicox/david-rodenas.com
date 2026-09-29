@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../content/Site";
-import type { Command } from "./Command";
+import type { Command } from "../command/Command";
 import { siteCommands } from "./commands/siteCommands";
 import { Shell } from "./Shell";
 

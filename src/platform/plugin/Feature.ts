@@ -3,7 +3,7 @@ import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
 import type { Flag } from "../flags/Flag";
 import type { Program } from "../program/Program";
-import type { Command } from "../shell/Command";
+import type { Command } from "../command/Command";
 
 /** What a program is handed besides its place: the site it stands in, for the few that read it. */
 export interface Surroundings {

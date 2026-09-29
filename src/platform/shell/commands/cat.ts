@@ -1,5 +1,5 @@
 import { renderMarkdown } from "../../markdown/renderMarkdown";
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 import { resolvePath } from "../resolvePath";
 
 /** Every directory holds one file, README.md, which is the page. `*` is that file too. */

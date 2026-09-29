@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Site } from "../content/Site";
-import { APPEARANCE } from "../page/APPEARANCE";
-import { renderDocument } from "../page/renderDocument";
+import { Site } from "../../content/Site";
+import { APPEARANCE } from "../APPEARANCE";
+import { renderDocument } from "../renderDocument";
 import { mountNavigation } from "./mountNavigation";
-import { mountTerminal } from "./mountTerminal";
+import { mountTerminal } from "../../shell/browser/mountTerminal";
 
 /**
  * The page the build writes in node, and the scripts that take it over in the

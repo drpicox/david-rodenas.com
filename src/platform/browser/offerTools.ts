@@ -4,8 +4,8 @@ import { inputSchemaOf } from "../program/inputSchemaOf";
 import type { Program } from "../program/Program";
 import { settleValues } from "../program/settleValues";
 import type { Values } from "../program/Values";
-import type { Outcome } from "../shell/Outcome";
-import { plainTextOf } from "../shell/plainTextOf";
+import type { Outcome } from "../command/Outcome";
+import { plainTextOf } from "../command/plainTextOf";
 import { askProgram } from "./askProgram";
 import type { ModelContext, Tool } from "./ModelContext";
 

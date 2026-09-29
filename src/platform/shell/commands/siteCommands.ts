@@ -1,4 +1,4 @@
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 import { cat } from "./cat";
 import { cd } from "./cd";
 import { clear } from "./clear";

@@ -1,14 +1,14 @@
-import type { Site } from "../content/Site";
-import { CommandHistory } from "../shell/CommandHistory";
-import { editLine } from "../shell/editLine";
-import type { Outcome } from "../shell/Outcome";
-import { parseCommandLine } from "../shell/parseCommandLine";
-import type { Command } from "../shell/Command";
-import { Shell } from "../shell/Shell";
-import { suggest } from "../shell/suggest";
-import { typedLines } from "../shell/typedLines";
-import { carriedLine } from "./carriedLine";
-import { el } from "./el";
+import type { Site } from "../../content/Site";
+import { CommandHistory } from "../CommandHistory";
+import { editLine } from "../editLine";
+import type { Outcome } from "../../command/Outcome";
+import { parseCommandLine } from "../parseCommandLine";
+import type { Command } from "../../command/Command";
+import { Shell } from "../Shell";
+import { suggest } from "../suggest";
+import { typedLines } from "../typedLines";
+import { carriedLine } from "../../browser/carriedLine";
+import { el } from "../../browser/el";
 
 export interface Terminal {
   /** Runs a line as if it had been typed, echo and all, and says what was answered. */

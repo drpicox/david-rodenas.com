@@ -1,5 +1,5 @@
 import { escapeHtml } from "../../markdown/escapeHtml";
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 
 export const help: Command = {
   name: "help",

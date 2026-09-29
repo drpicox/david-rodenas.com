@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../../content/Site";
-import type { ShellContext } from "../Command";
+import type { ShellContext } from "../../command/Command";
 import { find } from "./find";
 import { ls } from "./ls";
 

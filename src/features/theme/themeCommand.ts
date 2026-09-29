@@ -1,5 +1,5 @@
-import type { Command } from "../../platform/shell/Command";
-import type { Outcome } from "../../platform/shell/Outcome";
+import type { Command } from "../../platform/command/Command";
+import type { Outcome } from "../../platform/command/Outcome";
 import type { Theme } from "./Theme";
 import type { ThemeChoice } from "./ThemeChoice";
 

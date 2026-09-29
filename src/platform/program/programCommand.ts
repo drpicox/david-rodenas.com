@@ -1,4 +1,4 @@
-import type { Command } from "../shell/Command";
+import type { Command } from "../command/Command";
 import type { Parameter } from "./Parameter";
 import type { Program } from "./Program";
 import { readOptions } from "./readOptions";

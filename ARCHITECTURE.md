@@ -175,7 +175,12 @@ calendar — are a state and a step, not a function of their dials, and stay app
 
 The shell returns an `Outcome`: text, html, an error, and the two effects that
 are the shell's own business — `navigate`, because a shell over a site moves
-around it, and `clear`, because a shell has a screen.
+around it, and `clear`, because a shell has a screen. `Command` and `Outcome`
+live in `platform/command/`, apart from the shell: they are what the features,
+the programs and the flags agree on with it, and the boxes everything needs
+should need nothing that changes as often as the shell does. The terminal, the
+shell's face in the browser, is in `platform/shell/browser/`; the move between
+pages, which writes the page's `<main>` again, in `platform/page/browser/`.
 
 A feature's effects are **not** on that list. `Outcome` used to carry a `theme`
 field, and that was the frame carrying a feature's vocabulary. Instead:

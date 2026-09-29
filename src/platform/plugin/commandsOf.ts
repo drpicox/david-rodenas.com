@@ -1,5 +1,5 @@
 import { programCommand } from "../program/programCommand";
-import type { Command } from "../shell/Command";
+import type { Command } from "../command/Command";
 import type { Feature } from "./Feature";
 
 /** Every command the features bring, their programs' among them. */

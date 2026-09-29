@@ -1,5 +1,5 @@
 import { escapeHtml } from "../../markdown/escapeHtml";
-import type { Command } from "../Command";
+import type { Command } from "../../command/Command";
 import { resolvePath } from "../resolvePath";
 
 /** Enough lines to find what was looked for, and not so many that the paper is buried. */

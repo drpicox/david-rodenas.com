@@ -1,9 +1,9 @@
-import type { Page } from "../content/Page";
-import type { Site } from "../content/Site";
-import { declaredAppearance } from "../page/declaredAppearance";
-import { APPEARANCE } from "../page/APPEARANCE";
-import { isHere } from "../page/isHere";
-import { renderMain } from "../page/renderMain";
+import type { Page } from "../../content/Page";
+import type { Site } from "../../content/Site";
+import { declaredAppearance } from "../declaredAppearance";
+import { APPEARANCE } from "../APPEARANCE";
+import { isHere } from "../isHere";
+import { renderMain } from "../renderMain";
 
 export interface Move {
   /** Whether the address goes into the history; false when the history is what brought us here. */
