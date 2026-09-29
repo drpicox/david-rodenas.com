@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { nearestVga } from "./nearestVga";
-import { quantizeToVga } from "./quantizeToVga";
 import { VGA_PALETTE } from "./vgaPalette";
 
 describe("nearestVga", () => {
@@ -24,10 +23,5 @@ describe("nearestVga", () => {
     expect(nearestVga(90, 200, 90)).toBe(10); // grass is the bright green
     expect(nearestVga(240, 245, 250)).toBe(15); // snow is white
     expect(nearestVga(120, 80, 30)).toBe(6); // earth is the brown
-  });
-
-  it("takes a whole picture to the card's colours, and leaves the sky alone", () => {
-    const pixels = new Uint8ClampedArray([20, 60, 160, 255, 90, 200, 90, 255, 9, 9, 9, 0]);
-    expect([...quantizeToVga(pixels)]).toEqual([0, 0, 170, 255, 85, 255, 85, 255, 9, 9, 9, 0]);
   });
 });

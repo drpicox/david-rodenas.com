@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { icosahedron } from "./icosahedron";
 import type { Mesh } from "./Mesh";
-import { positionOf } from "./positionOf";
 import { subdivide } from "./subdivide";
+
+/** Where a vertex actually sits in space: its direction, out to its radius — what the pipeline never needs, and these claims do. */
+const positionOf = (mesh: Mesh, vertex: number): [number, number, number] => {
+  const radius = mesh.radii[vertex] ?? 1;
+  return [0, 1, 2].map((axis) => (mesh.directions[vertex * 3 + axis] ?? 0) * radius) as [number, number, number];
+};
 
 const flat = () => 0;
 
