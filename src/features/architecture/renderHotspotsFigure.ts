@@ -1,22 +1,7 @@
-import { fixed } from "../../platform/charts/fixed";
 import { breakablePath } from "./breakablePath";
 import type { Coverage } from "./Coverage";
 import type { Life } from "./Life";
-
-const W = 300;
-const H = 12;
-const PAD = 3;
-
-/** A file's life on a line as long as the whole history, to the commit shown: a dot where it was written, a mark for every commit that changed it. */
-function lifeOf(life: Life, commits: number, span: number): string {
-  const x = (at: number) => fixed(PAD + (at / Math.max(1, span - 1)) * (W - PAD * 2));
-  const end = life.went ?? commits - 1;
-  const changes = life.changed.map((at) => `<line class="change" x1="${x(at)}" x2="${x(at)}" y1="1.5" y2="${H - 1.5}"/>`).join("");
-  return (
-    `<svg class="life" viewBox="0 0 ${W} ${H}" role="img" aria-label="written at commit ${life.born + 1}, changed at ${life.changed.length} commits after">` +
-    `<line class="lived" x1="${x(life.born)}" x2="${x(end)}" y1="${H / 2}" y2="${H / 2}"/>${changes}<circle class="written" cx="${x(life.born)}" cy="${H / 2}" r="2.4"/></svg>`
-  );
-}
+import { renderLifeStrip } from "./renderLifeStrip";
 
 /**
  * The files that change most, which Adam Tornhill calls a code base's
@@ -37,7 +22,7 @@ export function renderHotspotsFigure(lives: readonly Life[], commits: number, co
   const rows = hottest
     .map((life) => {
       const share = tested(life);
-      return `<tr><td><code>${breakablePath(life.path)}</code></td><td>${life.changed.length}</td><td>${life.lines}</td><td>${share === undefined ? "–" : `${Math.round(share)}%`}</td><td>${lifeOf(life, commits, span)}</td></tr>`;
+      return `<tr><td><code>${breakablePath(life.path)}</code></td><td>${life.changed.length}</td><td>${life.lines}</td><td>${share === undefined ? "–" : `${Math.round(share)}%`}</td><td>${renderLifeStrip(life, commits, span)}</td></tr>`;
     })
     .join("");
   const untested = hottest.filter((life) => tested(life) === 0).length;

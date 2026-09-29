@@ -1,5 +1,10 @@
 import { betweennessOf } from "./betweennessOf";
+import { clusteringOf } from "./clusteringOf";
 import { communitiesOf } from "./communitiesOf";
+import { coresOf } from "./coresOf";
+import { heightsOf } from "./heightsOf";
+import { pageRankOf } from "./pageRankOf";
+import { pathsOf } from "./pathsOf";
 import { reachedByOf } from "./reachedByOf";
 import type { HistoryRead } from "./readHistory";
 import type { Snapshot } from "./Snapshot";
@@ -30,4 +35,14 @@ export const measuresOf = {
   reach: once((snapshot: Snapshot) => reachedByOf(snapshot)),
   /** The group the arrows put each file in. */
   groups: once((snapshot: Snapshot) => communitiesOf(snapshot)),
+  /** How much each file is needed by files that are themselves needed. */
+  pageRank: once((snapshot: Snapshot) => pageRankOf(snapshot)),
+  /** How deep in the knot each file sits. */
+  cores: once((snapshot: Snapshot) => coresOf(snapshot)),
+  /** How tall the stack under each file is. */
+  heights: once((snapshot: Snapshot) => heightsOf(snapshot)),
+  /** How far apart the files are, and how near each is to the rest. */
+  paths: once((snapshot: Snapshot) => pathsOf(snapshot)),
+  /** How clustered the network is, file by file. */
+  clustering: once((snapshot: Snapshot) => clusteringOf(snapshot)),
 };
