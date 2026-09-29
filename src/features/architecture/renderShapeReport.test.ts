@@ -29,6 +29,18 @@ describe("the report of how the shape of the source moved", () => {
     expect(report).toContain("| tallest stack | 1 | 1 | 0 |");
   });
 
+  it("says nothing of a commit the history does not have", () => {
+    expect(renderShapeReport(read, 0, 5)).toBe("");
+    expect(renderShapeReport(read, 5, 1)).toBe("");
+  });
+
+  it("marks better or worse every measure the ratchet holds, and only those", () => {
+    const lines = renderShapeReport(read, 0, 1).split("\n");
+    const verdict = (name: string) => lines.find((line) => line.startsWith(`| ${name} |`));
+    for (const name of ["arrows against stability", "deepest core", "tallest stack", "files with something to run that no test imports"]) expect(verdict(name), name).toMatch(/\| (0|[+−]\d+, (better|worse)) \|$/);
+    expect(verdict("files that ship")).not.toMatch(/better|worse/);
+  });
+
   it("says, of what the ratchet holds, whether it went the ratchet's way or against it", () => {
     expect(report).toContain("| files with something to run that no test imports | 2 | 3 | +1, worse |");
     expect(renderShapeReport(read, 1, 0)).toContain("| files with something to run that no test imports | 3 | 2 | −1, better |");

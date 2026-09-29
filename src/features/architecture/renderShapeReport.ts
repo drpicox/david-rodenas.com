@@ -1,6 +1,7 @@
 import { networkOf } from "./networkOf";
 import { propagationCostOf } from "./propagationCostOf";
 import type { HistoryRead } from "./readHistory";
+import type { Shape } from "./shapeOf";
 import { shapesOf } from "./shapesOf";
 
 /** One measure, before and after; `held` when it is one the ratchet holds, so that lower is better. */
@@ -14,6 +15,14 @@ interface Measured {
 }
 
 /** A move as it is written: signed, and nought when it rounds to nothing as written. */
+/** What the ratchet holds, by the names the report gives them: for every one of them, lower is better. */
+const HELD: readonly (readonly [keyof Shape, string])[] = [
+  ["againstStability", "arrows against stability"],
+  ["deepestCore", "deepest core"],
+  ["tallestStack", "tallest stack"],
+  ["untested", "files with something to run that no test imports"],
+];
+
 const signed = (value: number, said: (value: number) => string) => (said(Math.abs(value)) === said(0) ? "0" : value > 0 ? `+${said(value)}` : `−${said(-value)}`);
 
 /**
@@ -35,10 +44,7 @@ export function renderShapeReport(read: HistoryRead, from: number, to: number): 
   const measures: Measured[] = [
     { name: "files that ship", before: networkBefore.files, after: networkAfter.files },
     { name: "arrows", before: networkBefore.arrows, after: networkAfter.arrows },
-    { name: "arrows against stability", before: shapeBefore.againstStability, after: shapeAfter.againstStability, held: true },
-    { name: "deepest core", before: shapeBefore.deepestCore, after: shapeAfter.deepestCore, held: true },
-    { name: "tallest stack", before: shapeBefore.tallestStack, after: shapeAfter.tallestStack, held: true },
-    { name: "files with something to run that no test imports", before: shapeBefore.untested, after: shapeAfter.untested, held: true },
+    ...HELD.map(([key, name]) => ({ name, before: shapeBefore[key], after: shapeAfter[key], held: true })),
     { name: "propagation cost", before: propagationCostOf(before), after: propagationCostOf(after), said: percent },
     { name: "mean way between two files, in arrows", before: networkBefore.meanPath, after: networkAfter.meanPath, said: hundredth },
     { name: "clustering", before: networkBefore.clustering, after: networkAfter.clustering, said: hundredth },

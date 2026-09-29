@@ -45,6 +45,12 @@ traced, write the weaker sentence.
   from a commit (or the one before the last) to the last, as markdown: the
   deploy writes it into the summary of its run. To be read; the ratchet is
   the test
+- `node tools/mutate.mjs [sha]` — breaks the lines changed since a commit (or
+  not committed yet, or in the last commit) one small change at a time —
+  `===` into `!==`, `&&` into `||`, `true` into `false` — runs the tests that
+  import each file, and prints what no test caught. Coverage says a line was
+  run; this says whether running it was checked. The deploy writes it into
+  the summary of its run
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs
   running on their pages into `public/projects/shots/`, for the cards; needs
   `npm run dev` running (`SITE=` if it is not on 5173); `THEME=dark` takes
