@@ -72,11 +72,13 @@ graph LR
     air["<b>air-quality</b><br/>NO2 by the hour and the month,<br/>and the open data it keeps"]
   end
 
-  sky -. "follows whatever turns" .-> world
+  world -. "turning, handed over by allFeatures.ts" .-> sky
 ```
 
-Only one dotted line crosses between features, and §6 is about it. Everything
-else here is an island: cut it out and nothing else notices.
+No feature imports another — a test says so — and the one dotted line here
+is not an import: the composition hands what the world announces to the sky,
+and §6 is about it. Every feature is an island: cut it out and nothing else
+notices.
 
 ---
 
@@ -218,11 +220,14 @@ sequenceDiagram
   sky->>sky: take the wheel from the CSS drift,<br/>then slide the stars
 ```
 
-The world announces to nobody in particular. The sky is the one that decides to
-be somebody, so the import points **from the sky to the world** — a sky that
-follows a world is a detail of the sky; a world that turns is a detail of
-nothing. Delete `features/sky/` and the world still turns and still says so, to
-an empty room, which costs nothing.
+The world announces to nobody in particular. The sky says what it can follow —
+`Turns`, in its own words — and does not know what that will be. The one line
+that joins them is in `allFeatures.ts`, where the features are put together:
+`skyFeature(turning)`, and the compiler checks there that what the world
+announces is what the sky can follow. Neither imports the other. Delete
+`features/sky/` and the world still turns and still says so, to an empty room,
+which costs nothing; delete `features/world/` and the sky still drifts, and the
+line goes with the world's.
 
 ---
 

@@ -14,6 +14,7 @@ export interface Turning {
  * Announced by any world on the page, every frame it is being drawn.
  *
  * The world does not know that anything is listening, and does not care. The
- * sky is; that is the sky's business, and it is the only reason this exists.
+ * composition hands it to the sky, which follows it; that is the only reason
+ * this exists, and neither of the two knows the other.
  */
 export const turning = new Signal<Turning>();

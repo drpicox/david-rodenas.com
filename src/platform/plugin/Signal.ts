@@ -4,8 +4,9 @@
  *
  * It is here so that a feature can react to a thing that happens somewhere
  * else without importing the code that does it. The world announces that it
- * turned; the sky follows. Take the sky away and the world still turns, and
- * says so to nobody, which costs nothing.
+ * turned; the composition hands the announcement to the sky, which follows.
+ * Take the sky away and the world still turns, and says so to nobody, which
+ * costs nothing; take the world away and the sky still drifts.
  */
 export class Signal<T> {
   private readonly listeners = new Set<(value: T) => void>();

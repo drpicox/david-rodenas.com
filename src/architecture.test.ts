@@ -2,8 +2,14 @@ import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { boxCycles } from "./features/architecture/boxCycles";
+import { COMPOSITION } from "./features/architecture/COMPOSITION";
 import { readGraph } from "./features/architecture/readGraph";
+import { readHistory } from "./features/architecture/readHistory";
 import { readSources } from "./features/architecture/readSources";
+import { type Shape, shapeOf } from "./features/architecture/shapeOf";
+import { snapshotOf } from "./features/architecture/snapshotOf";
+import { stronglyConnectedOf } from "./features/architecture/stronglyConnectedOf";
+import { unheldCouplingsOf } from "./features/architecture/unheldCouplingsOf";
 import { valueExportsOf } from "./features/architecture/valueExportsOf";
 
 const SRC = new URL(".", import.meta.url).pathname.replace(/\/$/, "");
@@ -98,6 +104,25 @@ describe("the shape of the source", () => {
     expect(boxCycles(shipped)).toEqual([]);
   });
 
+  // Nor files: none of a circle of files can be tested, or taken out, without the rest.
+  it("has no files that need each other round in a circle", () => {
+    const needs = new Map<string, string[]>();
+    for (const { from, to } of shipped.dependencies) needs.set(from, [...(needs.get(from) ?? []), to]);
+    const circles = stronglyConnectedOf(shipped.modules.map((module) => module.path), (file) => needs.get(file) ?? []).filter((circle) => circle.length > 1);
+    expect(circles).toEqual([]);
+  });
+
+  // Deleting a feature's folder deletes the feature only if no other feature needs anything in it: what joins two features is for the composition to say.
+  it("never lets a feature import another: only the composition knows more than one", () => {
+    const featureOf = (file: string) => /^features\/([^/]+)\//.exec(file)?.[1];
+    const crossing = sources.filter((file) => !COMPOSITION.includes(file)).flatMap((file) =>
+      importsOf(file)
+        .filter((target) => featureOf(file) !== undefined && featureOf(target) !== undefined && featureOf(target) !== featureOf(file))
+        .map((target) => `${file} -> ${target}`),
+    );
+    expect(crossing).toEqual([]);
+  });
+
   // Its types may travel with it: an interface beside the function it describes is one thing, not two.
   it("exports one value a file, and names the file after it", () => {
     const crowded = sources.map((file) => ({ file, values: valueExportsOf(textOf.get(file) ?? "") })).filter(({ values }) => values.length > 1);
@@ -119,5 +144,51 @@ describe("the shape of the source", () => {
       .map((entry) => entry.name);
     const drawn = readFileSync(join(ROOT, "ARCHITECTURE.md"), "utf8");
     expect(folders.filter((folder) => !drawn.includes(folder))).toEqual([]);
+  });
+});
+
+/**
+ * A ratchet turns one way. The measures in `architecture.ratchet.json` are
+ * where the source stands, and none may get worse; one that gets better is
+ * written in, in the same commit, so that it cannot be lost again. It starts
+ * where the source is, not at a line drawn by taste, and it asks nobody to
+ * remember anything: whatever makes the shape worse is told so, by name.
+ */
+describe("the ratchet on the shape of the source", () => {
+  const RATCHET = join(SRC, "architecture.ratchet.json");
+  const held = JSON.parse(readFileSync(RATCHET, "utf8")) as Record<string, number>;
+  const now = shapeOf(snapshotOf(graph));
+  const measures = Object.keys(now) as (keyof Shape)[];
+
+  it("holds every measure of the shape, and nothing else", () => {
+    expect(Object.keys(held).sort()).toEqual([...measures].sort());
+  });
+
+  it("lets no measure get worse than it holds", () => {
+    const worse = measures.filter((name) => now[name] > (held[name] ?? 0)).map((name) => `${name}: ${held[name]} held, ${now[name]} now`);
+    expect(worse, "the shape of the source got worse").toEqual([]);
+  });
+
+  it("keeps every gain: a measure that got better is written into the ratchet", () => {
+    const better = measures.filter((name) => now[name] < (held[name] ?? 0)).map((name) => `${name}: ${held[name]} held, ${now[name]} now — write ${now[name]} into src/architecture.ratchet.json`);
+    expect(better, "a gain is kept by writing it into the ratchet").toEqual([]);
+  });
+});
+
+/**
+ * Two files that keep changing together with no arrow between them share
+ * something the compiler cannot see: the page the build writes and the script
+ * that reads it agree on its markup, and no import says so. Such a contract
+ * is held when a test imports both sides, so that breaking it fails. What
+ * changed together is read from the history the deploy writes at every push,
+ * and reads again here once it is written; on a desk, from whatever
+ * `node tools/architecture-history.mjs` wrote last.
+ */
+describe("the contracts no import states", () => {
+  const history = readHistory(readFileSync(join(ROOT, "public/data/architecture.json"), "utf8"));
+
+  it("are held by a test that imports both sides, wherever two files changed together three times with nothing joining them", () => {
+    const unheld = unheldCouplingsOf(history, graph, 3).map(({ a, b, together }) => `${a} ~ ${b}, ${together} times`);
+    expect(unheld, "write a test that imports both, and says what they agree on").toEqual([]);
   });
 });

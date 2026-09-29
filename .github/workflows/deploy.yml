@@ -42,6 +42,8 @@ jobs:
       - run: npm run coverage
       # Every commit that changed the source, read into the history the architecture page plays, so it is always the commit being published.
       - run: node tools/architecture-history.mjs
+      # With the history as it now is, what keeps changing together with nothing joining it must be held by a test.
+      - run: npx vitest run src/architecture.test.ts
       - run: npm run build
 
       # The build fetched whatever finished year was missing into public/data.

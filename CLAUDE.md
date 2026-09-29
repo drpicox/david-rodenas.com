@@ -105,7 +105,19 @@ talk to each other.
 - **No two boxes need each other round in a circle.** A box is a folder of
   `src/platform/` or a feature; a circle between boxes cannot be drawn with its
   arrows pointing one way. The graph is read by the compiler, in
-  `features/architecture/`, and the same test checks it.
+  `features/architecture/`, and the same test checks it. Nor do two files.
+- **No feature imports another.** Where two go together, the composition
+  (`main.ts`, `features/allFeatures.ts`) hands one what the other offers, as
+  `skyFeature(turning)` does; the feature says what it needs in its own words.
+- **The ratchet.** `src/architecture.ratchet.json` holds where the shape of the
+  source stands — box arrows against stability, the deepest core, the tallest
+  stack, the files with something to run that no test imports. None may get
+  worse; one that gets better is written in, in the same commit.
+- **A contract no import states is held by a test.** Two files that changed
+  together three times with no arrow joining them need a test that imports
+  both (`platform/browser/pageContract.test.ts` is the page's). The history is
+  `public/data/architecture.json`: the deploy checks it again once it has
+  written it; here, `node tools/architecture-history.mjs` refreshes it.
 - **A folder named `browser/` is the only place the DOM exists.** Everywhere
   else is plain node, and is tested there. This is what lets the same code
   render pages at build time and answer commands in the browser, and it is the

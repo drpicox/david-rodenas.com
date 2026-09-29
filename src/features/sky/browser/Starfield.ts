@@ -1,4 +1,4 @@
-import type { Turning } from "../../world/turning";
+import type { Turn } from "../Turns";
 
 /** How far the stars slide for one full turn of a world, or one full turn of tilt. */
 const PIXELS_PER_TURN = 900;
@@ -26,7 +26,7 @@ export class Starfield {
   private driving = false;
 
   /** A world turned. Slide the stars with it, and drift them a little besides. */
-  follow({ byRadians, tiltedBy, seconds }: Turning): void {
+  follow({ byRadians, tiltedBy, seconds }: Turn): void {
     const root = document.documentElement;
     if (root.dataset["sky"] !== "stars") return;
     if (!this.driving) this.takeOver(root);

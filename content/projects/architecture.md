@@ -138,9 +138,28 @@ fails when
 
 - a file outside a folder named `browser/` touches the page,
 - the frame imports a feature,
-- two boxes need each other round in a circle,
+- a feature imports another: where two go together, it is the composition
+  that says so, as it hands the stars whatever world turns,
+- two boxes, or two files, need each other round in a circle,
 - a file exports more than one value,
 - a feature is missing from the diagrams in `ARCHITECTURE.md`.
+
+Some of what the pages here measure can only be held, not forbidden. A
+ratchet turns one way: a file in the source keeps where it stands today —
+how many box arrows go against stability, the composition's aside, which has
+to point at every feature, how deep the knot of files goes,
+how tall the stack of what needs what, how many files with something to run
+no test imports — and a test fails if any of them gets worse. When one gets
+better, the test asks for the new value to be written in, so the gain cannot
+be lost again. It starts where the source is, and it asks nobody, person or
+AI, to remember anything.
+
+And what [how this site changes](/projects/changes/) finds, files that keep
+changing together with no arrow between them, is held too: two files that
+changed together three times with nothing joining them need a test that
+imports both, so that what they agree on, which no import states, is written
+down where breaking it fails. The files that put the features together are
+left out, since they change with everything they put together.
 
 The dashed arrows need only a type: a box that depends on an interface, not
 on what implements it. That is dependency inversion, and it is what lets a

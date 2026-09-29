@@ -1,13 +1,12 @@
-import { turning } from "../../world/turning";
-import { Starfield } from "./Starfield";
+import type { Turns } from "../Turns";
+import type { Starfield } from "./Starfield";
 
 /**
- * The connector: the stars follow whatever turns.
- *
- * This is the whole of the coupling between the two features, it is one line
- * long, and it points one way. The world announces to nobody in particular;
- * this is what makes the sky somebody.
+ * The connector: the stars follow whatever turns they are handed. Which
+ * thing that is, the sky does not say: the composition does, where the
+ * features are put together, so the sky needs nothing of any other feature
+ * and nothing else needs the sky.
  */
-export function followTurning(starfield: Starfield): () => void {
-  return turning.on((moved) => starfield.follow(moved));
+export function followTurning(starfield: Pick<Starfield, "follow">, turns: Turns): () => void {
+  return turns.on((turn) => starfield.follow(turn));
 }
