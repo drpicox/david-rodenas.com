@@ -2,7 +2,7 @@ import { el } from "../../../platform/browser/el";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
 import { escapeHtml } from "../../../platform/markdown/escapeHtml";
 import type { App } from "../../../platform/plugin/Feature";
-import { type Chosen, detailsOf } from "../detailsOf";
+import type { Chosen } from "../detailsOf";
 import type { Layout } from "../Layout";
 import { layoutArchitecture } from "../layoutArchitecture";
 import { type ColourLens, type LensChoice, lensesOf, type Pointing } from "../lensesOf";
@@ -15,13 +15,12 @@ import { renderArchitectureCaption } from "../renderArchitectureCaption";
 import { renderMetricsSparks } from "../renderMetricsSparks";
 import { ArchitectureScene, type Colours, type Mode } from "./ArchitectureScene";
 import { changesInBrowser } from "./changesInBrowser";
+import { detailsPanel } from "./detailsPanel";
 import type { shownCommit } from "./shownCommit";
 
 const WIDTH = 1100;
 /** How long each commit is shown while the history plays. */
 const BEAT = 0.45;
-/** How long the details wait for the commit to stop moving: a slider dragged asks for many, and only the last is read. */
-const SETTLE = 60;
 const HINT = "Point at a file for what it brings out; click a file or a box for its details.";
 
 /** A commit a whole page shows, which the picture follows when it is one of the page's figures. */
@@ -150,7 +149,8 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   // What the lenses show, in words; and what the shapes mean, while the tests are in, since it is only then there is more than one.
   const said = el("p", { class: "architecture-legend lenses-said" });
   const status = el("p", { class: "architecture-status" }, HINT);
-  const details = el("aside", { class: "architecture-details", "aria-label": "Details" });
+  // Every name in the panel is a way to its own details, as a click on the picture is.
+  const panel = detailsPanel(read, counted, (next) => pick(next));
   const legend = el(
     "p",
     { class: "architecture-legend", hidden: true },
@@ -179,28 +179,11 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
     });
     shown = at;
     options.lead?.set(at >= last ? null : at);
-    tellDetails();
+    panel.tell(at, chosen);
     sayStatus();
     said.textContent = lenses.said;
     caption.innerHTML = renderArchitectureCaption(commit, metrics[at] ?? metricsOf(snapshot));
     sparks.innerHTML = renderMetricsSparks(metrics, at);
-  };
-  // The panel is drawn again only when what it would say has changed, keeping open what the reader opened.
-  let detailsFor = "";
-  let settling = 0;
-  const tellDetails = (now = false) => {
-    window.clearTimeout(settling);
-    const draw = () => {
-      const key = `${at}|${JSON.stringify(chosen)}`;
-      if (key === detailsFor) return;
-      const open = details.querySelector("details")?.open ?? false;
-      details.innerHTML = detailsOf(read, at, chosen, counted);
-      const list = details.querySelector("details");
-      if (list && open && detailsFor.endsWith(JSON.stringify(chosen))) list.open = true;
-      detailsFor = key;
-    };
-    if (now) draw();
-    else settling = window.setTimeout(draw, SETTLE);
   };
   const pathsAt = () => new Map((snapshots[at]?.modules ?? []).map((module) => [module.id, module.path]));
   const nameOfChosen = (one: NonNullable<Chosen>) => ("file" in one ? one.file : one.box);
@@ -219,10 +202,10 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   const pick = (next: Chosen, fromPicture = false) => {
     chosen = next;
     scene.selected = next === null ? {} : "file" in next ? { path: next.file } : { box: next.box };
-    tellDetails(true);
+    panel.tell(at, chosen, true);
     sayStatus();
     // Where the details stand under the picture, not beside it, a choice made on the picture brings them into view.
-    if (fromPicture && next && !besideIt()) details.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" });
+    if (fromPicture && next && !besideIt()) panel.element.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" });
   };
 
   const choose = (parts: Partial<LensChoice>) => {
@@ -314,27 +297,18 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
     const next: Chosen = hit.path ? { file: hit.path } : hit.box ? { box: hit.box } : null;
     pick(next && chosen && nameOfChosen(next) === nameOfChosen(chosen) ? null : next, true);
   });
-  // Every name in the panel is a way to its own details.
-  details.addEventListener("click", (event) => {
-    const button = event.target instanceof Element ? event.target.closest("button") : null;
-    if (!button) return;
-    const { file, box } = button.dataset;
-    if (button.hasAttribute("data-back")) pick(null);
-    else if (file) pick({ file });
-    else if (box) pick({ box });
-  });
   const letGo = (event: KeyboardEvent) => {
     if (event.key === "Escape" && chosen) pick(null);
   };
   document.addEventListener("keydown", letGo);
 
-  const stage = el("div", { class: "architecture-stage" }, el("div", { class: "architecture-view" }, status, canvas, said, legend), details);
+  const stage = el("div", { class: "architecture-stage" }, el("div", { class: "architecture-view" }, status, canvas, said, legend), panel.element);
   host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, lensControls, stage, caption, sparks));
   showCommit(at);
-  tellDetails(true);
+  panel.tell(at, chosen, true);
   const stopAll = () => {
     stopFollowing();
-    window.clearTimeout(settling);
+    panel.stop();
     document.removeEventListener("keydown", letGo);
   };
 

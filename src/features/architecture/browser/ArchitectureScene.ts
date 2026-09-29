@@ -1,6 +1,7 @@
 import type { Body } from "../Body";
 import type { Layout } from "../Layout";
 import type { Lenses, Pointing } from "../lensesOf";
+import { pointedArrowsOf } from "../pointedArrowsOf";
 import { type Pointed, pointedAt } from "../pointedAt";
 import { rampColour } from "../rampColour";
 import type { Snapshot } from "../Snapshot";
@@ -471,16 +472,10 @@ export class ArchitectureScene {
       context.closePath();
       context.fill();
     };
-    const distanceOf = (found: ReadonlyMap<number, number>, id: number) => (id === focus.id ? 0 : found.get(id));
     const fade = (distance: number) => Math.max(0.25, 0.95 - (distance - 1) * 0.25);
-    for (const [from, to] of this.fileLinks) {
+    for (const { from, to, kind, distance } of pointedArrowsOf(this.fileLinks, focus.id, needs, neededBy)) {
       const [a, b] = [this.balls.get(from), this.balls.get(to)];
-      if (!a || !b) continue;
-      // One step further out, and only along the way the reach was found.
-      const out = distanceOf(needs, from);
-      if (out !== undefined && needs.get(to) === out + 1) arrow(a, b, colours.accent, fade(out + 1));
-      const into = distanceOf(neededBy, to);
-      if (into !== undefined && neededBy.get(from) === into + 1) arrow(a, b, colours.arrowIn, fade(into + 1));
+      if (a && b) arrow(a, b, kind === "needs" ? colours.accent : colours.arrowIn, fade(distance));
     }
   }
 
