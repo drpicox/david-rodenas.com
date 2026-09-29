@@ -44,6 +44,10 @@ jobs:
       - run: node tools/architecture-history.mjs
       # With the history as it now is, what keeps changing together with nothing joining it must be held by a test.
       - run: npx vitest run src/architecture.test.ts
+      # How the shape of the source moved with this push, in the run's summary: to be read, not to pass.
+      - name: Report how the shape moved
+        continue-on-error: true
+        run: node tools/shape-report.mjs "${{ github.event.before }}" >> "$GITHUB_STEP_SUMMARY"
       - run: npm run build
 
       # The build fetched whatever finished year was missing into public/data.

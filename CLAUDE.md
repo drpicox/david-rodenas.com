@@ -41,6 +41,10 @@ traced, write the weaker sentence.
   and the changes page reads. The deploy runs it, with `npm run coverage`, on
   every push, with the whole history checked out; run it here only to see the
   page in dev. Its output is not committed back by the deploy
+- `node tools/shape-report.mjs [sha]` — how the shape of the source moved
+  from a commit (or the one before the last) to the last, as markdown: the
+  deploy writes it into the summary of its run. To be read; the ratchet is
+  the test
 - `node tools/shoot-projects.mjs [names...]` — photograph the programs
   running on their pages into `public/projects/shots/`, for the cards; needs
   `npm run dev` running (`SITE=` if it is not on 5173); `THEME=dark` takes
