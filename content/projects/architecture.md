@@ -166,11 +166,16 @@ was tightened since, or loosened.
 ::ratchet
 
 And what [how this site changes](/projects/changes/) finds, files that keep
-changing together with no arrow between them, is held too: two files that
-changed together three times with nothing joining them need a test that
-imports both, so that what they agree on, which no import states, is written
-down where breaking it fails. The files that put the features together are
-left out, since they change with everything they put together.
+changing together with no arrow between them, is held too: two files of
+different boxes that changed together twice with nothing joining them need a
+test that imports both, so that what they agree on, which no import states,
+is written down where breaking it fails. Two files of one box changing
+together is what makes the box one, and the files that put the features
+together change with everything they put together: both are left out. So
+the page the build writes and the scripts that take it over agree in a test;
+so do the theme the head paints before anything shows and the one the
+theme's script settles, and the list at the end of a directory's page and
+what `ls` prints there.
 
 Two more things watch the AI as it works, and they are in the repository
 too. After every edit to a file of the source, it is told what the history

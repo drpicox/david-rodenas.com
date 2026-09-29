@@ -21,11 +21,8 @@ const now = (tests: SourceGraph = { modules: [], dependencies: [] }): SourceGrap
 });
 
 describe("the files that keep changing together with nothing to hold them", () => {
-  it("are every two files that ship that changed together as often as asked, with no arrow joining them, near or far, and no test importing both", () => {
-    expect(unheldCouplingsOf(read, now(), 3)).toEqual([
-      { a: "platform/browser/nav.ts", b: "platform/browser/term.ts", together: 3 },
-      { a: "platform/browser/term.ts", b: "platform/page/page.ts", together: 3 },
-    ]);
+  it("are every two files of different boxes that changed together as often as asked, with no arrow joining them, near or far, and no test importing both", () => {
+    expect(unheldCouplingsOf(read, now(), 3)).toEqual([{ a: "platform/browser/term.ts", b: "platform/page/page.ts", together: 3 }]);
   });
 
   it("leave out the composition, which changes with everything it puts together, and the files that are gone", () => {
@@ -37,6 +34,13 @@ describe("the files that keep changing together with nothing to hold them", () =
   it("are held by a test that imports both: the contract is written down where it can fail", () => {
     const contract = { modules: [file("platform/browser/contract.test.ts")], dependencies: ["platform/page/page.ts", "platform/browser/term.ts", "platform/browser/nav.ts"].map((to) => arrow("platform/browser/contract.test.ts", to)) };
     expect(unheldCouplingsOf(read, now(contract), 3)).toEqual([]);
+  });
+
+  it("leave out two files of one box, since changing together is what makes a box one", () => {
+    const within = { modules: [file("platform/browser/pair.test.ts")], dependencies: [] };
+    const found = unheldCouplingsOf(read, now(within), 3);
+    // term.ts and nav.ts are both of platform/browser.
+    expect(found.some(({ a, b }) => a === "platform/browser/nav.ts" && b === "platform/browser/term.ts")).toBe(false);
   });
 
   it("count only what changed together as often as asked", () => {

@@ -186,9 +186,16 @@ describe("the ratchet on the shape of the source", () => {
  */
 describe("the contracts no import states", () => {
   const history = readHistory(readFileSync(join(ROOT, "public/data/architecture.json"), "utf8"));
+  /** Pairs whose agreement the compiler already holds, each with why: two implementations of one interface change together when it grows. */
+  const HELD_BY_THE_COMPILER = [
+    // Both are a Program; they gained each thing a Program can do together, and the type says what a Program is.
+    "features/technical-debt/technicalDebtProgram.ts ~ platform/program/aProgram.ts",
+  ];
 
-  it("are held by a test that imports both sides, wherever two files changed together three times with nothing joining them", () => {
-    const unheld = unheldCouplingsOf(history, graph, 3).map(({ a, b, together }) => `${a} ~ ${b}, ${together} times`);
+  it("are held by a test that imports both sides, wherever two files of different boxes changed together twice with nothing joining them", () => {
+    const unheld = unheldCouplingsOf(history, graph, 2)
+      .map(({ a, b }) => `${a} ~ ${b}`)
+      .filter((pair) => !HELD_BY_THE_COMPILER.includes(pair));
     expect(unheld, "write a test that imports both, and says what they agree on").toEqual([]);
   });
 });

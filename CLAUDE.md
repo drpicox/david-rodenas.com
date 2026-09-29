@@ -139,9 +139,12 @@ talk to each other.
   is not committed leaves the type check or the tests red
   (`.claude/hooks/stop-when-green.mjs`; a state found green is remembered in
   `.git/`, and the same red is held at most twice).
-- **A contract no import states is held by a test.** Two files that changed
-  together three times with no arrow joining them need a test that imports
-  both (`platform/browser/pageContract.test.ts` is the page's). The history is
+- **A contract no import states is held by a test.** Two files of different
+  boxes that changed together twice with no arrow joining them need a test
+  that imports both (`platform/page/browser/pageContract.test.ts` is the
+  page's, `features/theme/browser/themeContract.test.ts` the theme's). Within
+  a box, changing together is what makes it one; a pair whose agreement the
+  compiler holds is listed in the test, with why. The history is
   `public/data/architecture.json`: the deploy checks it again once it has
   written it; here, `node tools/architecture-history.mjs` refreshes it.
 - **A folder named `browser/` is the only place the DOM exists.** Everywhere
