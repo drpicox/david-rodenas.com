@@ -63,7 +63,8 @@ const COLOURS: Readonly<Record<ColourLens, string>> = {
   stability: "as deep as its box is stable, by Robert C. Martin's measure, with the box arrows that go against it in red",
 };
 const POINTING: Readonly<Record<Pointing, string>> = {
-  "1": "point at a file for what it needs, in blue, and what needs it, in orange",
+  // Its colours are keyed on the line over the picture, not named: a theme can make the blue another colour.
+  "1": "point at a file for what it needs and what needs it, keyed on the line over the picture",
   "2": "point at a file for what it needs and what needs it, two arrows out",
   "3": "point at a file for what it needs and what needs it, three arrows out",
   all: "point at a file for everything it needs and everything that needs it",

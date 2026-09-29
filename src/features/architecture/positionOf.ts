@@ -13,8 +13,10 @@ export interface Position {
   readonly dependsOn: number;
   /** Its share of the shortest ways between two other files, the arrows read either way. */
   readonly bridge: number;
-  /** Its place by PageRank among the files that ship, first being the most needed by the most needed. */
-  readonly rank: { readonly place: number; readonly of: number; readonly share: number };
+  /** Its place by PageRank among the files that ship, first being the most needed by the most needed; files ranked alike share a place, and `tied` counts the others in it. */
+  readonly rank: { readonly place: number; readonly of: number; readonly share: number; readonly tied: number };
+  /** Files joined to it by an arrow either way. */
+  readonly links: number;
   readonly closeness: number;
   readonly core: number;
   /** The arrows of the longest chain of what it needs. */
@@ -40,8 +42,10 @@ export function positionOf(snapshot: Snapshot, id: number): Position {
   const count = (direction: "needs" | "neededBy", depth: number) => reachOf(links, id, depth, direction).size;
   const others = shipped.size - 1;
   const pairs = (others * (others - 1)) / 2;
-  const ranks = [...measuresOf.pageRank(snapshot)].sort((a, b) => b[1] - a[1]);
-  const place = ranks.findIndex(([other]) => other === id) + 1;
+  const ranks = [...measuresOf.pageRank(snapshot).values()];
+  const mine = measuresOf.pageRank(snapshot).get(id) ?? 0;
+  // Files that stand alike rank alike, to the last digits or nearly: which of them came first would only be the order they were read in.
+  const alike = (other: number) => Math.abs(other - mine) <= 1e-9 * Math.max(other, mine);
   const groups = measuresOf.groups(snapshot);
   const group = groups.get(id);
   const boxes = new Map<string, number>();
@@ -56,7 +60,8 @@ export function positionOf(snapshot: Snapshot, id: number): Position {
     reaches: count("neededBy", Infinity),
     dependsOn: count("needs", Infinity),
     bridge: pairs > 0 ? (measuresOf.bridges(snapshot).get(id) ?? 0) / pairs : 0,
-    rank: { place, of: ranks.length, share: measuresOf.pageRank(snapshot).get(id) ?? 0 },
+    rank: { place: 1 + ranks.filter((other) => other > mine && !alike(other)).length, of: ranks.length, share: mine, tied: ranks.filter(alike).length - 1 },
+    links: new Set(links.flatMap(([from, to]) => (from === to ? [] : from === id ? [to] : to === id ? [from] : []))).size,
     closeness: measuresOf.paths(snapshot).closeness.get(id) ?? 0,
     core: measuresOf.cores(snapshot).get(id) ?? 0,
     height: measuresOf.heights(snapshot).get(id) ?? 0,

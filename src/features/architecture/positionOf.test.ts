@@ -28,6 +28,17 @@ describe("where a file stands in the network, its position", () => {
     expect(core.bridge).toBeGreaterThan(0.5);
   });
 
+  it("places files of the same PageRank together, and says how many share the place", () => {
+    // a, b and d are needed by nothing: they rank alike, and none of them stands above the others.
+    for (const id of [1, 2, 4]) expect(positionOf(snapshot, id).rank).toMatchObject({ place: 3, of: 5, tied: 2 });
+    expect(core.rank).toMatchObject({ place: 1, tied: 0 });
+  });
+
+  it("counts the files joined to it by an arrow either way", () => {
+    expect(core.links).toBe(3);
+    expect(positionOf(snapshot, 3).links).toBe(2);
+  });
+
   it("gives how tall the stack under it is, how deep in the knot, and the tests that import it", () => {
     expect(positionOf(snapshot, 4)).toMatchObject({ height: 2, core: 1 });
     expect(core.tests).toBe(1);

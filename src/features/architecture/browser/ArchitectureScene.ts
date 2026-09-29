@@ -95,6 +95,8 @@ export class ArchitectureScene {
   /** The file-level arrows, drawn in the tangle, where there are no boxes to gather them. */
   private fileLinks: [number, number][] = [];
   hovered: { path?: string; box?: string } = {};
+  /** What a click chose: it stays brought out while the pointer is elsewhere, and is ringed while it is not. */
+  selected: { path?: string; box?: string } = {};
   /** What pointing at a file brings out: its arrows, as far as asked; its group; or what changed with it. */
   pointing: Pointing = "1";
   /** What the lenses asked for: nothing, until they ask. */
@@ -283,8 +285,9 @@ export class ArchitectureScene {
       context.fillText(band.label, band.x + 8, band.y + 12);
     }
     context.font = `9px ui-monospace, Menlo, monospace`;
+    const pointer = this.pointer;
     for (const [name, box] of this.boxes) {
-      const lit = this.hovered.box === name;
+      const lit = pointer.box === name || this.selected.box === name;
       context.globalAlpha = box.alpha * this.boxAlpha;
       context.fillStyle = colours.sunken;
       context.strokeStyle = box.cyclic ? colours.warn : lit ? colours.accent : colours.rule;
@@ -302,12 +305,11 @@ export class ArchitectureScene {
       context.fillText(box.label, box.x + 6, box.y + 10);
     }
 
-    // A file under the pointer brings out what it is asked to — its arrows, its group, or what changed with it — and everything else steps back.
-    const focus = this.hovered.path ? [...this.balls.values()].find((ball) => ball.path === this.hovered.path) : undefined;
-    const pointed = focus ? pointedAt(focus.id, this.pointing, this.fileLinks, this.seen.groups, this.seen.threads) : null;
+    // A file under the pointer, or else the one chosen, brings out what it is asked to — its arrows, its group, or what changed with it — and everything else steps back.
+    const { focus, pointed } = this.focusOf(pointer.path);
     const tied = pointed?.tied ?? new Set<number>();
 
-    this.drawLinks(context, colours, focus !== undefined);
+    this.drawLinks(context, colours, focus !== undefined, pointer.box);
     this.drawThreads(context, colours, focus?.id, pointed);
     if (focus && pointed) this.drawFileArrows(context, colours, focus, pointed.needs, pointed.neededBy);
     const stops = this.seen.ramp === "warm" ? [colours.dim, colours.heat, colours.heatTop] : [colours.rule, colours.soft, colours.accent];
@@ -385,40 +387,33 @@ export class ArchitectureScene {
         context.lineWidth = 1.5;
         context.stroke();
       }
+      if (this.selected.path === ball.path) {
+        // Chosen: a ring round it, apart from it, so that it is found again among the rest.
+        context.globalAlpha = ball.alpha;
+        context.strokeStyle = colours.ink;
+        context.lineWidth = 1.5;
+        context.beginPath();
+        context.arc(ball.body.x, ball.body.y, radius + 4.5, 0, Math.PI * 2);
+        context.stroke();
+      }
     }
-
-    if (focus && pointed) this.label(context, colours, [{ text: `${focus.path}   ` }, ...this.saidOf(focus, pointed, colours), { text: "   click: its source" }], focus.body.x, focus.body.y - 10);
     context.globalAlpha = 1;
   }
 
-  /** What pointing at a file brought out, in words for its label: its arrows and how far, its group and the boxes in it, or what changed with it. */
-  private saidOf(focus: Ball & { id: number }, pointed: Pointed, colours: Colours): { text: string; key?: string }[] {
-    const share = this.coverage?.get(focus.path);
-    const run = share !== undefined && !focus.test && !focus.typesOnly ? [{ text: ` · tests run ${Math.round(share)}% of it` }] : [];
-    const nameOf = (id: number) => this.balls.get(id)?.path.split("/").pop() ?? "";
-    if (this.pointing === "group") {
-      const boxes = new Map<string, number>();
-      for (const id of pointed.tied) {
-        const box = this.balls.get(id)?.box;
-        if (box) boxes.set(box, (boxes.get(box) ?? 0) + 1);
-      }
-      const most = [...boxes].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-      const named = most.slice(0, 3).map(([box, count]) => `${box.split("/").pop()} ${count}`).join(", ");
-      const rest = most.length > 3 ? ` and ${most.length - 3} more` : "";
-      return [{ text: `its group: ${pointed.tied.size} files in ${most.length} ${most.length === 1 ? "box" : "boxes"}: ${named}${rest}`, key: colours.accent }, ...run];
-    }
-    if (this.pointing === "together") {
-      const named = pointed.partners.slice(0, 3).map(([id, together]) => `${nameOf(id)} ${together}×`).join(", ");
-      const rest = pointed.partners.length > 3 ? ` and ${pointed.partners.length - 3} more` : "";
-      return [{ text: pointed.partners.length > 0 ? `changed with ${named}${rest}` : "changed with no file twice", key: colours.heat }, ...run];
-    }
-    // Those it names itself, and, when the arrows reach further, how many are within that reach.
-    const depth = { "1": 1, "2": 2, "3": 3, all: Infinity }[this.pointing] ?? 1;
-    const count = (found: ReadonlyMap<number, number>) => {
-      const near = [...found.values()].filter((distance) => distance === 1).length;
-      return depth > 1 && found.size > near ? `${near} (${found.size} within ${Number.isFinite(depth) ? depth : "any"})` : `${near}`;
-    };
-    return [{ text: `needs ${count(pointed.needs)}`, key: colours.accent }, { text: " · " }, { text: `needed by ${count(pointed.neededBy)}`, key: colours.arrowIn }, ...run];
+  /** What is pointed at, or, with nothing under the pointer, what was chosen. */
+  private get pointer(): { path?: string; box?: string } {
+    return this.hovered.path || this.hovered.box ? this.hovered : this.selected;
+  }
+
+  private focusOf(path: string | undefined): { focus?: Ball & { id: number }; pointed: Pointed | null } {
+    const focus = path ? [...this.balls.values()].find((ball) => ball.path === path) : undefined;
+    return { focus, pointed: focus ? pointedAt(focus.id, this.pointing, this.fileLinks, this.seen.groups, this.seen.threads) : null };
+  }
+
+  /** The file pointed at, or chosen, and what it brings out: for the words beside the picture, which cover none of it. */
+  focused(): { path: string; test: boolean; typesOnly: boolean; pointed: Pointed } | null {
+    const { focus, pointed } = this.focusOf(this.pointer.path);
+    return focus && pointed ? { path: focus.path, test: focus.test, typesOnly: focus.typesOnly, pointed } : null;
   }
 
   /**
@@ -489,7 +484,7 @@ export class ArchitectureScene {
     }
   }
 
-  private drawLinks(context: CanvasRenderingContext2D, colours: Colours, stepBack: boolean): void {
+  private drawLinks(context: CanvasRenderingContext2D, colours: Colours, stepBack: boolean, hovered: string | undefined): void {
     // In the tangle every file needs every file it needs, one thread each: the spaghetti.
     if (this.boxAlpha < 0.98) {
       context.globalAlpha = (1 - this.boxAlpha) * 0.22;
@@ -507,7 +502,6 @@ export class ArchitectureScene {
     if (!this.layout || this.boxAlpha < 0.02) return;
 
     // With boxes, one arrow a pair of boxes, riding on the boxes as they move.
-    const hovered = this.hovered.box;
     for (const link of this.layout.links) {
       const [from, to] = [this.boxes.get(link.from), this.boxes.get(link.to)];
       const [target, source] = [this.layout.boxes.find((box) => box.name === link.to), this.layout.boxes.find((box) => box.name === link.from)];
@@ -541,30 +535,5 @@ export class ArchitectureScene {
       context.closePath();
       context.fill();
     }
-  }
-
-  /** A label over the picture, in pieces: a piece with a key has a square of that colour before it, as a legend has. */
-  private label(context: CanvasRenderingContext2D, colours: Colours, pieces: readonly { text: string; key?: string }[], x: number, y: number): void {
-    context.font = `11px ui-monospace, Menlo, monospace`;
-    const KEY = 11;
-    const widths = pieces.map((piece) => context.measureText(piece.text).width + (piece.key ? KEY : 0));
-    const width = widths.reduce((sum, one) => sum + one, 0) + 12;
-    const left = Math.min(this.width - width - 4, Math.max(4, x - width / 2));
-    context.globalAlpha = 0.95;
-    context.fillStyle = colours.ink;
-    context.beginPath();
-    context.roundRect(left, y - 18, width, 18, 4);
-    context.fill();
-    let at = left + 6;
-    pieces.forEach((piece, index) => {
-      if (piece.key) {
-        context.fillStyle = piece.key;
-        context.fillRect(at, y - 13, 8, 8);
-        at += KEY;
-      }
-      context.fillStyle = colours.sunken;
-      context.fillText(piece.text, at, y - 5);
-      at += widths[index]! - (piece.key ? KEY : 0);
-    });
   }
 }

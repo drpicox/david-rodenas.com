@@ -17,6 +17,7 @@ import { renderCouplingsFigure } from "./renderCouplingsFigure";
 import { renderGroundFigure } from "./renderGroundFigure";
 import { renderGroupsFigure } from "./renderGroupsFigure";
 import { renderHotspotsFigure } from "./renderHotspotsFigure";
+import { renderNetworkFigure } from "./renderNetworkFigure";
 import { renderReachFigure } from "./renderReachFigure";
 import { renderRipplesFigure } from "./renderRipplesFigure";
 import { renderSettlingFigure } from "./renderSettlingFigure";
@@ -83,6 +84,7 @@ export const changeFigures: Readonly<Record<string, ChangeFigure>> = {
     return renderGroundFigure(groundOf(standings, cascadeFrom(standings, commit), commit), at(read, commit).lives);
   },
   "change-coupling": (read, commit) => renderCouplingFigure(at(read, commit).source),
+  "tangle-network": (read, commit) => renderNetworkFigure(at(read, commit).source),
   "tangle-groups": (read, commit) => {
     const { source } = at(read, commit);
     return renderGroupsFigure(source, measuresOf.groups(source));

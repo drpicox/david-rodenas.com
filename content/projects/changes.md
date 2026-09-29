@@ -30,7 +30,10 @@ the history and the heat moves: a feature being written glows and cools,
 while the frame under the features warms again each time a new one is
 written. Tangle it, and what changed together pulls together too. Point at a
 file for what changed with it, or change the lenses for anything else the
-picture of how it is built can show.
+picture of how it is built can show. Click a file, and the panel by the
+picture tells its history: when it was written, every commit that changed it
+up to the one shown, what it changed with, what its ground would lead one to
+expect, and a link to its code.
 
 ::change-graph
 

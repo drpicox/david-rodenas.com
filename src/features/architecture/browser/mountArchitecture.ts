@@ -1,16 +1,18 @@
 import { el } from "../../../platform/browser/el";
 import { watchOnScreen } from "../../../platform/browser/watchOnScreen";
+import { escapeHtml } from "../../../platform/markdown/escapeHtml";
 import type { App } from "../../../platform/plugin/Feature";
+import { type Chosen, detailsOf } from "../detailsOf";
 import type { Layout } from "../Layout";
 import { layoutArchitecture } from "../layoutArchitecture";
 import { type ColourLens, type LensChoice, lensesOf, type Pointing } from "../lensesOf";
 import { metricsOf } from "../metricsOf";
+import { pointedSaid } from "../pointedSaid";
 import type { Sizing } from "../radiiBy";
 import type { HistoryRead } from "../readHistory";
 import { reachedByTests } from "../reachedByTests";
 import { renderArchitectureCaption } from "../renderArchitectureCaption";
 import { renderMetricsSparks } from "../renderMetricsSparks";
-import { sourceUrlOf } from "../sourceUrlOf";
 import { ArchitectureScene, type Colours, type Mode } from "./ArchitectureScene";
 import { changesInBrowser } from "./changesInBrowser";
 import type { shownCommit } from "./shownCommit";
@@ -18,6 +20,9 @@ import type { shownCommit } from "./shownCommit";
 const WIDTH = 1100;
 /** How long each commit is shown while the history plays. */
 const BEAT = 0.45;
+/** How long the details wait for the commit to stop moving: a slider dragged asks for many, and only the last is read. */
+const SETTLE = 60;
+const HINT = "Point at a file for what it brings out; click a file or a box for its details.";
 
 /** A commit a whole page shows, which the picture follows when it is one of the page's figures. */
 type SharedCommit = Pick<typeof shownCommit, "get" | "set" | "on">;
@@ -57,8 +62,11 @@ function coloursOf(element: Element): Colours {
  * puts it; the same source tangled, with no boxes, only the pull of what
  * needs what; the tests put in; and lenses — a ball as big as what is asked,
  * coloured by what is asked, the threads of what changed together over the
- * arrows, and what pointing at a file brings out. The still the build wrote
- * is the last commit, and it stands until the history has arrived.
+ * arrows, and what pointing at a file brings out, said on a line above it
+ * where the words cover none of it. A click chooses a file or a box, and the
+ * panel beside the picture tells all about it, with a way to its code; with
+ * nothing chosen, it tells the network. The still the build wrote is the last
+ * commit, and it stands until the history has arrived.
  */
 export function mountArchitecture(options: ArchitectureOptions = {}): App {
   return (host) => {
@@ -107,6 +115,7 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   let mode: Mode = "boxes";
   let playing = false;
   let beat = 0;
+  let chosen: Chosen = null;
   /** The commit last shown, so that what a commit changed rings when it comes, and not again when the picture is only redrawn. */
   let shown = -1;
   scene.pointing = choice.pointing;
@@ -140,6 +149,8 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   const lensControls = el("div", { class: "architecture-controls lenses" }, el("label", {}, "size: ", sizeBox), el("label", {}, "colour: ", colourBox), el("label", {}, "pointing shows: ", pointingBox));
   // What the lenses show, in words; and what the shapes mean, while the tests are in, since it is only then there is more than one.
   const said = el("p", { class: "architecture-legend lenses-said" });
+  const status = el("p", { class: "architecture-status" }, HINT);
+  const details = el("aside", { class: "architecture-details", "aria-label": "Details" });
   const legend = el(
     "p",
     { class: "architecture-legend", hidden: true },
@@ -168,10 +179,52 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
     });
     shown = at;
     options.lead?.set(at >= last ? null : at);
+    tellDetails();
+    sayStatus();
     said.textContent = lenses.said;
     caption.innerHTML = renderArchitectureCaption(commit, metrics[at] ?? metricsOf(snapshot));
     sparks.innerHTML = renderMetricsSparks(metrics, at);
   };
+  // The panel is drawn again only when what it would say has changed, keeping open what the reader opened.
+  let detailsFor = "";
+  let settling = 0;
+  const tellDetails = (now = false) => {
+    window.clearTimeout(settling);
+    const draw = () => {
+      const key = `${at}|${JSON.stringify(chosen)}`;
+      if (key === detailsFor) return;
+      const open = details.querySelector("details")?.open ?? false;
+      details.innerHTML = detailsOf(read, at, chosen, counted);
+      const list = details.querySelector("details");
+      if (list && open && detailsFor.endsWith(JSON.stringify(chosen))) list.open = true;
+      detailsFor = key;
+    };
+    if (now) draw();
+    else settling = window.setTimeout(draw, SETTLE);
+  };
+  const pathsAt = () => new Map((snapshots[at]?.modules ?? []).map((module) => [module.id, module.path]));
+  const nameOfChosen = (one: NonNullable<Chosen>) => ("file" in one ? one.file : one.box);
+  // The line above the picture: what is pointed at, and what it brings out; or what is chosen; or how to choose.
+  const sayStatus = () => {
+    const focused = scene.focused();
+    const box = scene.hovered.path ? undefined : scene.hovered.box;
+    const share = focused && !focused.test && !focused.typesOnly && at === coverageAt ? coverage?.get(focused.path) : undefined;
+    const kept = chosen ? ` · <span class="architecture-chosen">chosen: click it again, or press Esc, to let it go</span>` : "";
+    if (focused && (scene.hovered.path || (chosen && "file" in chosen))) status.innerHTML = pointedSaid(focused.path, choice.pointing, focused.pointed, pathsAt(), share) + (scene.hovered.path ? "" : kept);
+    else if (box) status.innerHTML = `<code>${escapeHtml(box)}</code> · click for its details`;
+    else if (chosen) status.innerHTML = `<code>${escapeHtml(nameOfChosen(chosen))}</code>${kept}`;
+    else status.textContent = HINT;
+  };
+  const besideIt = () => getComputedStyle(stage).gridTemplateColumns.trim().split(/\s+/).length > 1;
+  const pick = (next: Chosen, fromPicture = false) => {
+    chosen = next;
+    scene.selected = next === null ? {} : "file" in next ? { path: next.file } : { box: next.box };
+    tellDetails(true);
+    sayStatus();
+    // Where the details stand under the picture, not beside it, a choice made on the picture brings them into view.
+    if (fromPicture && next && !besideIt()) details.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" });
+  };
+
   const choose = (parts: Partial<LensChoice>) => {
     choice = { ...choice, ...parts };
     scene.pointing = choice.pointing;
@@ -242,29 +295,51 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   };
   canvas.addEventListener("mousemove", (event) => {
     const [x, y] = toScene(event);
+    const was = canvas.dataset["hovered"];
     scene.hovered = scene.hit(x, y);
     canvas.style.cursor = scene.hovered.path || scene.hovered.box ? "pointer" : "";
     // What is under the pointer, said on the element too, for whoever reads the page without looking at it.
     canvas.dataset["hovered"] = scene.hovered.path ?? scene.hovered.box ?? "";
+    if (canvas.dataset["hovered"] !== was) sayStatus();
   });
   canvas.addEventListener("mouseleave", () => {
     scene.hovered = {};
+    canvas.dataset["hovered"] = "";
+    sayStatus();
   });
-  // A file, or a box, opens where its source is, as it stood at the commit shown.
+  // A file, or a box, is chosen, and its details come beside the picture; chosen again, or nothing, and the network does.
   canvas.addEventListener("click", (event) => {
     const [x, y] = toScene(event);
     const hit = scene.hit(x, y);
-    const sha = history.commits[at]?.sha;
-    if (!sha) return;
-    const url = hit.path ? sourceUrlOf(sha, hit.path) : hit.box ? sourceUrlOf(sha, hit.box, "box") : null;
-    if (url) window.open(url, "_blank", "noopener");
+    const next: Chosen = hit.path ? { file: hit.path } : hit.box ? { box: hit.box } : null;
+    pick(next && chosen && nameOfChosen(next) === nameOfChosen(chosen) ? null : next, true);
   });
+  // Every name in the panel is a way to its own details.
+  details.addEventListener("click", (event) => {
+    const button = event.target instanceof Element ? event.target.closest("button") : null;
+    if (!button) return;
+    const { file, box } = button.dataset;
+    if (button.hasAttribute("data-back")) pick(null);
+    else if (file) pick({ file });
+    else if (box) pick({ box });
+  });
+  const letGo = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && chosen) pick(null);
+  };
+  document.addEventListener("keydown", letGo);
 
-  host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, lensControls, canvas, said, legend, caption, sparks));
+  const stage = el("div", { class: "architecture-stage" }, el("div", { class: "architecture-view" }, status, canvas, said, legend), details);
+  host.replaceChildren(el("figure", { class: "architecture-figure" }, controls, lensControls, stage, caption, sparks));
   showCommit(at);
+  tellDetails(true);
+  const stopAll = () => {
+    stopFollowing();
+    window.clearTimeout(settling);
+    document.removeEventListener("keydown", letGo);
+  };
 
   const context = canvas.getContext("2d");
-  if (!context) return stopFollowing;
+  if (!context) return stopAll;
   const watch = watchOnScreen(canvas);
   let colours = coloursOf(host);
   let frames = 0;
@@ -312,7 +387,7 @@ function play(host: HTMLElement, read: HistoryRead, counted: { sha: string; line
   return () => {
     cancelAnimationFrame(frame);
     watch.stop();
-    stopFollowing();
+    stopAll();
     window.removeEventListener("resize", size);
   };
 }
