@@ -172,6 +172,17 @@ imports both, so that what they agree on, which no import states, is written
 down where breaking it fails. The files that put the features together are
 left out, since they change with everything they put together.
 
+Two more things watch the AI as it works, and they are in the repository
+too. After every edit to a file of the source, it is told what the history
+knows of that file: how often it has changed, what it changes with, and
+whether a test holds what they agree on — the panel beside the picture, said
+at the moment it matters. And it cannot end its turn while the type check or
+the tests are red. Then, after every push, the deploy breaks the lines that
+push changed on purpose, one small change at a time, `===` into `!==`, `&&`
+into `||`, and lists the ones no test noticed. Code coverage says a line was
+run; this says whether running it was checked, which is the difference
+[a program that tests nothing](/research/coverage-generated/) makes plain.
+
 The dashed arrows need only a type: a box that depends on an interface, not
 on what implements it. That is dependency inversion, and it is what lets a
 feature be removed by removing its folder.

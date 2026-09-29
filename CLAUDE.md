@@ -123,6 +123,14 @@ talk to each other.
   source stands — box arrows against stability, the deepest core, the tallest
   stack, the files with something to run that no test imports. None may get
   worse; one that gets better is written in, in the same commit.
+- **The agent's harness.** `.claude/settings.json` holds two Claude Code
+  hooks. After every edit to a file of the source, the agent is told what the
+  history knows of it — how often it changed, what it changes with and
+  whether a test holds what they agree on, what needs it, the tests that
+  import it (`.claude/hooks/after-edit.mjs`). And a turn cannot end while what
+  is not committed leaves the type check or the tests red
+  (`.claude/hooks/stop-when-green.mjs`; a state found green is remembered in
+  `.git/`, and the same red is held at most twice).
 - **A contract no import states is held by a test.** Two files that changed
   together three times with no arrow joining them need a test that imports
   both (`platform/browser/pageContract.test.ts` is the page's). The history is
