@@ -1,4 +1,5 @@
 import type { Page } from "../content/Page";
+import type { AgentTool } from "./AgentTool";
 import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
 import type { Flag } from "../flags/Flag";
@@ -51,6 +52,8 @@ export interface Feature {
    * command, a program in a page, its still, and a tool an agent can call.
    */
   readonly programs?: readonly Program[];
+  /** Tools it offers an agent in the reader's browser, besides its programs, which are tools already. */
+  readonly tools?: readonly AgentTool[];
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
   /** What stands in a program's place in the HTML, by the program's name. Runs in node: no DOM. */

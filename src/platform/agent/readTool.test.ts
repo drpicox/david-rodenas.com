@@ -10,7 +10,7 @@ const site = new Site([
 
 describe("reading a page, as an agent does", () => {
   it("gives its words as the markdown they are written in, links and all, and the address of the page", async () => {
-    expect(await readTool.answer({ path: "/" }, { site })).toMatchObject({
+    expect(await readTool.answer({ path: "/" }, { site, origin: "https://david-rodenas.com" })).toMatchObject({
       summary: "Home: Where it starts.",
       data: { title: "Home", summary: "Where it starts.", markdown: "# Home\n\nSee [the projects](/projects/)." },
       route: "/",
@@ -18,17 +18,17 @@ describe("reading a page, as an agent does", () => {
   });
 
   it("lists the pages under it, by the path that reads each of them", async () => {
-    expect(await readTool.answer({ path: "/projects/" }, { site })).toMatchObject({
+    expect(await readTool.answer({ path: "/projects/" }, { site, origin: "https://david-rodenas.com" })).toMatchObject({
       data: { pages: [{ path: "/projects/rocket/", title: "Rocket", summary: "A relativistic rocket." }] },
     });
   });
 
   it("finds the page by its whole URL as well as by its path", async () => {
-    expect(await readTool.answer({ path: "https://david-rodenas.com/projects/rocket/" }, { site })).toMatchObject({ route: "/projects/rocket/" });
+    expect(await readTool.answer({ path: "https://david-rodenas.com/projects/rocket/" }, { site, origin: "https://david-rodenas.com" })).toMatchObject({ route: "/projects/rocket/" });
   });
 
   it("refuses a path with no page, and says what finds one", async () => {
-    expect(await readTool.answer({ path: "/nowhere/" }, { site })).toEqual({ refused: "no page at /nowhere/: search finds pages by what they say" });
+    expect(await readTool.answer({ path: "/nowhere/" }, { site, origin: "https://david-rodenas.com" })).toEqual({ refused: "no page at /nowhere/: search finds pages by what they say" });
   });
 
   it("shows the reader nothing and changes nothing", () => {

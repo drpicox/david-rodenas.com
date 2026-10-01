@@ -70,6 +70,7 @@ graph LR
     nextword["<b>next-word</b><br/>a language model reduced to<br/>counting which word follows which"]
     weather["<b>weather</b><br/>days over a threshold, year by year,<br/>and the open data it keeps"]
     air["<b>air-quality</b><br/>NO2 by the hour and the month,<br/>and the open data it keeps"]
+    writings["<b>writings</b><br/>the essays and talks the pages list,<br/>as a tool for an agent"]
   end
 
   world -. "turning, handed over by allFeatures.ts" .-> sky
@@ -91,6 +92,7 @@ graph LR
   feature["a Feature"]
 
   feature -- "programs" --> programs["a Program<br/><i>an input and an output:<br/>§4 makes it all four below</i>"]
+  feature -- "tools" --> tools["offerTools<br/><i>a tool for an agent in the<br/>reader's browser, written in node</i>"]
   feature -- "flags" --> flags["the flags command<br/><i>a trial a reader switches on,<br/>kept, read off ?name=on,<br/>marked as data-flags on the root</i>"]
   feature -- "commands" --> shell["the Shell<br/><i>alongside the site's own</i>"]
   feature -- "apps" --> apps["mountApps<br/><i>a ::name in the markdown</i>"]

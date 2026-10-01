@@ -1,9 +1,10 @@
 import type { Site } from "../content/Site";
 import type { Values } from "../program/Values";
 
-/** What a tool is handed besides what it was asked: the site it answers about. */
+/** What a tool is handed besides what it was asked: the site it answers about, and where it is served from. */
 export interface ToolSurroundings {
   readonly site: Site;
+  readonly origin: string;
 }
 
 /** A tool's answer before it is said: in words, in figures, and where it can be seen. */

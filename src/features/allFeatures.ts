@@ -27,6 +27,7 @@ import { thesisResultsFeature } from "./thesis-results/thesisResultsFeature";
 import { weatherFeature } from "./weather/weatherFeature";
 import { turning } from "./world/turning";
 import { worldFeature } from "./world/worldFeature";
+import { writingsFeature } from "./writings/writingsFeature";
 
 /**
  * Everything standing in the frame, and the order it is installed in.
@@ -63,4 +64,5 @@ export const allFeatures: readonly Feature[] = [
   gherkinGenieFeature,
   smallStepsFeature,
   guessTheRuleFeature,
+  writingsFeature,
 ];

@@ -18,20 +18,20 @@ describe("a program, as a tool an agent can call", () => {
   });
 
   it("answers with the program's words and figures, and the page it stands on", async () => {
-    expect(await tool.answer({ years: 0 }, { site })).toMatchObject({ summary: "100 €", data: { grown: 100 }, route: "/money/" });
+    expect(await tool.answer({ years: 0 }, { site, origin: "https://david-rodenas.com" })).toMatchObject({ summary: "100 €", data: { grown: 100 }, route: "/money/" });
   });
 
   it("has the program to show the reader, asked what the agent asked, every value settled", async () => {
-    expect(await tool.answer({ rate: 0 }, { site })).toMatchObject({ show: { app: "savings", values: { sum: 100, rate: 0, years: 2, paid: "once a year" } } });
+    expect(await tool.answer({ rate: 0 }, { site, origin: "https://david-rodenas.com" })).toMatchObject({ show: { app: "savings", values: { sum: 100, rate: 0, years: 2, paid: "once a year" } } });
     expect(tool.shows).toBe(true);
   });
 
   it("refuses what the program would refuse, and says why", async () => {
-    expect(await tool.answer({ rate: 99 }, { site })).toEqual({ refused: "rate: 99 is outside 0 to 20" });
+    expect(await tool.answer({ rate: 99 }, { site, origin: "https://david-rodenas.com" })).toEqual({ refused: "rate: 99 is outside 0 to 20" });
   });
 
   it("answers just the same where no page makes room for the program, with no page to give", async () => {
-    const answer = await tool.answer({}, { site: new Site([{ file: "index.md", markdown: "# Home\n" }]) });
+    const answer = await tool.answer({}, { site: new Site([{ file: "index.md", markdown: "# Home\n" }]), origin: "https://david-rodenas.com" });
     expect(answer).toMatchObject({ summary: "121 €" });
     expect(answer).not.toHaveProperty("route");
   });
