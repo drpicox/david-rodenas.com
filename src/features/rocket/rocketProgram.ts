@@ -9,6 +9,7 @@ import { shipOf } from "./shipOf";
 import { voyage } from "./voyage";
 
 const YEAR = 365.25 * 86400;
+const LIGHT_YEAR = 9.4607e15;
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumSignificantDigits: 2 });
 
 /**
@@ -29,25 +30,26 @@ export const rocketProgram: Program = {
   run(values) {
     const ship = shipOf(values);
     const chosen = String(values["to"]);
-    const trips = destinations.map((destination) => ({ destination, trip: voyage(destination.metres, ship) }));
-    const picked = trips.find(({ destination }) => destination.name === chosen) ?? trips[0]!;
-    const { destination, trip } = picked;
+    const destination = destinations.find(({ name }) => name === chosen) ?? destinations[0]!;
+    const trip = voyage(destination.metres, ship);
     const fuel = trip.coasts ? `all ${saidTonnes(ship.fuel)} of fuel, then coasts` : `${saidTonnes(trip.fuelBurnt)} of fuel`;
 
     return {
       text: `to ${destination.name}, ${destination.said}: ${saidTime(trip.shipTime)} on board, ${saidTime(trip.homeTime)} at home, top speed ${saidSpeed(trip.topSpeed)}, ${fuel}`,
       html: renderVoyages(ship, chosen),
+      // The trip asked for, and not the other ten the page's table shows: an agent asks again for another.
       data: {
-        ship: { dryMassTonnes: ship.dryMass, fuelTonnes: ship.fuel, exhaust: ship.exhaust, accelerationG: ship.acceleration },
-        trips: trips.map(({ destination, trip }) => ({
+        ship: { dryMassTonnes: ship.dryMass, fuelTonnes: ship.fuel, exhaustFractionOfC: ship.exhaust, accelerationG: ship.acceleration },
+        trip: {
           to: destination.name,
           distance: destination.said,
+          distanceLightYears: destination.metres / LIGHT_YEAR,
           onBoardYears: trip.shipTime / YEAR,
           atHomeYears: trip.homeTime / YEAR,
-          topSpeed: trip.topSpeed,
+          topSpeedFractionOfC: trip.topSpeed,
           fuelBurntTonnes: trip.fuelBurnt,
           coasts: trip.coasts,
-        })),
+        },
       },
     };
   },

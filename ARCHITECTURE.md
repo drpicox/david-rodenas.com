@@ -121,7 +121,7 @@ graph LR
   program -- "programStill<br/><i>node, at build time</i>" --> still["the still<br/><i>$ name, and the figure it answers</i>"]
   program -- "programCommand" --> command["a command<br/><i>name --option value</i>"]
   program -- "browser/mountProgram" --> dials["the dials on its page<br/><i>run again on every move,<br/>the line that would ask the same under them</i>"]
-  program -- "browser/offerTools" --> tool["a WebMCP tool<br/><i>its JSON schema is the parameters;<br/>the answer is text and data</i>"]
+  program -- "plugin/programTool" --> tool["a tool for an agent<br/><i>its JSON schema is the parameters, and show;<br/>the answer is summary, data, url, shown</i>"]
 ```
 
 A page can show a program small: `::technical-debt --shortcuts` in the
@@ -150,19 +150,30 @@ sequenceDiagram
 
   agent->>tools: rocket { to: "Tau Ceti" }
   tools->>tools: settleValues, run
-  alt the program is not on this page
-    tools->>nav: goTo(the page with ::rocket)
+  opt show is not false
+    alt the program is not on this page
+      tools->>nav: goTo(the page with ::rocket)
+    end
+    tools->>host: PROGRAM_ASKED { to: "Tau Ceti" }
+    host->>dials: the dials move, it runs again
+    dials-->>host: PROGRAM_RAN, for the star map
   end
-  tools->>host: PROGRAM_ASKED { to: "Tau Ceti" }
-  host->>dials: the dials move, it runs again
-  dials-->>host: PROGRAM_RAN, for the star map
-  tools-->>agent: the trip in words, every trip as JSON
+  tools-->>agent: { summary, data: the trip, url, shown }
 ```
 
-The prompt is offered too, as one more tool, `shell`: a line is run as if
-typed, echoed where the reader sees it, and answered in plain words. A
-browser without a model context — most of them, while WebMCP is a draft — is
-offered nothing and loses nothing.
+A tool is written in node, as an `AgentTool` (`plugin/`): what it takes, and
+an answer — words, figures, the page it is about, and what to show the reader.
+The browser only registers it and decides whether to show. Every answer has
+the same shape, and one that can show says whether it did, because an agent
+that cannot tell what the reader has in front of them cannot talk to them
+about it. Showing is what a tool does unless the agent asks otherwise.
+
+Besides the programs, the site offers what is about itself (`agent/`): `read`,
+a page as its markdown, and `search`, the pages that say some words — neither
+moves anything on the reader's screen. The prompt is offered too, as one more
+tool, `shell`: a line is run as if typed, echoed where the reader sees it, and
+answered with what it printed. A browser without a model context — most of
+them, while WebMCP is a draft — is offered nothing and loses nothing.
 
 Not every demonstration is a program. The ones that keep a session —
 the Fibergochi, the adventure, the lagoon, the fish market, the letters drawn

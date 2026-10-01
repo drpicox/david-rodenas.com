@@ -10,11 +10,13 @@ import { mountNavigation } from "./platform/page/browser/mountNavigation";
 import { mountSlides } from "./platform/browser/mountSlides";
 import { mountTerminal, type Terminal } from "./platform/shell/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
+import { siteTools } from "./platform/agent/siteTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
 import { flagsCommand } from "./platform/flags/flagsCommand";
 import { enterTrials } from "./platform/flags/enterTrials";
 import { flagsInAddress } from "./platform/flags/flagsInAddress";
 import { commandsOf } from "./platform/plugin/commandsOf";
+import { toolsOf } from "./platform/plugin/toolsOf";
 import { siteCommands } from "./platform/shell/commands/siteCommands";
 
 /**
@@ -82,9 +84,9 @@ function mount(): void {
   const prompt = { run: (line: string) => void terminal?.run(line) };
   for (const feature of allFeatures) feature.install?.(prompt);
 
-  // An agent in the reader's browser is offered what the reader is: the programs, and the prompt.
-  const programs = allFeatures.flatMap((feature) => feature.programs ?? []);
-  offerTools(modelContextHere(), { programs, site: siteInBrowser, goTo: (route) => goTo(route), run: (line) => terminal?.run(line) ?? [] });
+  // An agent in the reader's browser is offered what the reader is: the site to read, the programs, and the prompt.
+  const tools = [...siteTools, ...toolsOf(allFeatures)];
+  offerTools(modelContextHere(), { tools, site: siteInBrowser, origin: window.location.origin, goTo: (route) => goTo(route), run: (line) => terminal?.run(line) ?? [] });
 }
 
 if (document.readyState === "loading") {

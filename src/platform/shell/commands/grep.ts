@@ -1,12 +1,10 @@
 import { escapeHtml } from "../../markdown/escapeHtml";
+import { plainLineOf } from "../../markdown/plainLineOf";
 import type { Command } from "../../command/Command";
 import { resolvePath } from "../resolvePath";
 
 /** Enough lines to find what was looked for, and not so many that the paper is buried. */
 const MOST = 40;
-
-/** The markup a line is written in, taken out, so that a hit reads as the sentence it is in. */
-const plain = (line: string) => line.replace(/\]\([^)]*\)/g, "]").replace(/[#*_`>\[\]]/g, "").trim();
 
 /**
  * The lines of every page that say a word: `grep word [path]`. Case does not
@@ -29,7 +27,7 @@ export const grep: Command = {
       .flatMap((page) =>
         page.body
           .split("\n")
-          .map((line, index) => ({ page, number: index + 1, line: plain(line) }))
+          .map((line, index) => ({ page, number: index + 1, line: plainLineOf(line) }))
           .filter(({ line }) => line.toLowerCase().includes(wanted)),
       );
     if (hits.length === 0) return { text: `grep: no page under ${path} says "${word}"` };

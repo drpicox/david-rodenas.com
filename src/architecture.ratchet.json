@@ -1,6 +1,6 @@
 {
-  "againstStability": 5,
+  "againstStability": 4,
   "deepestCore": 5,
   "tallestStack": 12,
-  "untested": 147
+  "untested": 146
 }

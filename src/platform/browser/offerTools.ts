@@ -1,90 +1,87 @@
-import { pageShowing } from "../content/pageShowing";
+import type { AgentTool, ToolReply } from "../plugin/AgentTool";
+import { answerOf } from "../plugin/answerOf";
+import { describeTool } from "../plugin/describeTool";
 import type { Site } from "../content/Site";
-import { inputSchemaOf } from "../program/inputSchemaOf";
-import type { Program } from "../program/Program";
-import { settleValues } from "../program/settleValues";
-import type { Values } from "../program/Values";
 import type { Outcome } from "../command/Outcome";
 import { plainTextOf } from "../command/plainTextOf";
 import { askProgram } from "./askProgram";
 import type { ModelContext, Tool } from "./ModelContext";
 
 export interface Surface {
-  readonly programs: readonly Program[];
+  readonly tools: readonly AgentTool[];
   readonly site: Site;
+  /** Where the site is served from, so that an answer gives a page as an address the agent can quote. */
+  readonly origin: string;
   /** Moves the page to a route without a reload, the way a link does. */
   readonly goTo: (route: string) => boolean;
   /** Runs a line at the prompt, echo and all. */
   readonly run: (line: string) => Outcome[];
 }
 
-/**
- * A refusal, said in words. Not thrown: Chrome answers a tool that throws with
- * a message of its own that the invocation failed, and the reason — the one
- * thing an agent needs to ask again better — is lost on the way.
- */
-const refused = (reason: string) => `Refused, nothing was run: ${reason}`;
-
 /** The program's place on the page, going to the page that has it when this one does not. */
-function placeOf(name: string, { site, goTo }: Surface): HTMLElement | null {
-  const selector = `.app[data-app="${name}"]`;
+function placeOf(app: string, route: string | undefined, goTo: Surface["goTo"]): HTMLElement | null {
+  const selector = `.app[data-app="${app}"]`;
   const here = document.querySelector<HTMLElement>(selector);
   if (here) return here;
-  const page = pageShowing(site, name);
-  if (!page || !goTo(page.route)) return null;
+  if (route === undefined || !goTo(route)) return null;
   return document.querySelector<HTMLElement>(selector);
 }
 
-function programTool(program: Program, surface: Surface): Tool {
+/** Puts a reply in front of the reader, the program asked what the agent asked; says whether it could. */
+function shownTo({ show, route }: ToolReply, { goTo }: Surface): boolean {
+  if (!show) return false;
+  const place = placeOf(show.app, route, goTo);
+  if (!place) return false;
+  askProgram(place, show.values);
+  place.scrollIntoView?.({ behavior: "smooth", block: "start" });
+  return true;
+}
+
+function offered(tool: AgentTool, surface: Surface): Tool {
+  const said = (answer: object) => JSON.stringify(answer);
   return {
-    name: program.name,
-    description: `${program.summary}. The reader sees it too: the site goes to the program's page and its dials move to what was asked. Answers in words, then the figures as JSON.`,
-    inputSchema: inputSchemaOf(program),
-    annotations: { readOnlyHint: true },
+    ...describeTool(tool),
     async execute(input) {
-      const settled = settleValues(program, input);
-      if ("error" in settled) return refused(settled.error);
-      const answer = program.run(settled.values);
-      show(program.name, settled.values, surface);
-      return `${answer.text}\n\n${JSON.stringify(answer.data)}`;
+      if (!tool.shows) return said(answerOf(await tool.answer(input, surface), surface.origin));
+      const { show = true, ...asked } = input;
+      if (typeof show !== "boolean") return said(answerOf({ refused: `show: ${String(show)} is not true or false` }, surface.origin));
+      const reply = await tool.answer(asked, surface);
+      return said(answerOf(reply, surface.origin, !("refused" in reply) && show && shownTo(reply, surface)));
     },
   };
 }
 
-function show(name: string, values: Values, surface: Surface): void {
-  const place = placeOf(name, surface);
-  if (!place) return;
-  askProgram(place, values);
-  place.scrollIntoView?.({ behavior: "smooth", block: "start" });
-}
-
-function shellTool({ run, programs }: Surface): Tool {
+function shellTool({ run, origin }: Surface): Tool {
   return {
     name: "shell",
     description:
       "Runs a line at this site's prompt, as if the reader had typed it, and they see it echoed and answered. " +
       "The site is laid out as directories of pages: ls, cd, cat README.md, find, grep and help work over it, " +
-      `and so does every program: ${programs.map((program) => program.name).join(", ")}. Commands chain with &&.`,
+      "and every program is a command too. Commands chain with &&. To read or search without the reader seeing it, read and search do. " +
+      "Answers as JSON: summary, what the line printed.",
     inputSchema: { type: "object", properties: { line: { type: "string", description: "the line to run, e.g. `cd projects && ls`" } }, required: ["line"], additionalProperties: false },
     async execute(input) {
       const outcomes = run(String(input["line"] ?? ""));
-      const said = outcomes.map(plainTextOf).filter(Boolean).join("\n\n");
-      return outcomes.some((outcome) => outcome.error) ? refused(said) : said;
+      const printed = outcomes.map(plainTextOf).filter(Boolean).join("\n\n");
+      return JSON.stringify(answerOf(outcomes.some((outcome) => outcome.error) ? { refused: printed } : { summary: printed }, origin, true));
     },
   };
 }
 
 /**
  * Offers the site to the agent in the reader's browser, if the browser has
- * one: every program as a tool, and the prompt as one more. Both act where the
- * reader can see — the dials move, the line is echoed — because an agent
- * working a page nobody can watch would be a different site from the one the
- * reader is on. Returns how to take the tools back.
+ * one: the tools it is handed, and the prompt as one more. What has something
+ * to show shows it unless the agent asks otherwise — the dials move, the line
+ * is echoed — because an agent working a page nobody can watch is a different
+ * site from the one the reader is on; and every answer says whether the
+ * reader saw it, so the agent never has to guess what they have in front of
+ * them. Reading and searching change nothing, and move nothing. Returns how to
+ * take the tools back.
  */
 export function offerTools(context: ModelContext | undefined, surface: Surface): () => void {
   if (!context) return () => {};
   const controller = new AbortController();
-  const tools = [...surface.programs.map((program) => programTool(program, surface)), shellTool(surface)];
+  const tools = [...surface.tools.map((tool) => offered(tool, surface)), shellTool(surface)];
   for (const tool of tools) context.registerTool(tool, { signal: controller.signal });
   return () => {
     controller.abort();

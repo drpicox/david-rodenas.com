@@ -11,9 +11,10 @@ const run = (given: Record<string, unknown> = {}) => {
 
 interface Trip {
   readonly to: string;
+  readonly distanceLightYears: number;
   readonly onBoardYears: number;
   readonly atHomeYears: number;
-  readonly topSpeed: number;
+  readonly topSpeedFractionOfC: number;
   readonly coasts: boolean;
 }
 
@@ -30,13 +31,18 @@ describe("the rocket, as a program", () => {
     expect(run({ to: "tau-ceti" }).text).toMatch(/^to Tau Ceti, 11\.91 light-years/);
   });
 
-  it("gives an agent every trip in figures: years on each clock, and the top speed as a share of light", () => {
-    const { trips } = run({ acceleration: 1, fuel: 1e12, exhaust: 100 }).data as { trips: Trip[] };
-    const proxima = trips.find((trip) => trip.to === "Proxima Centauri");
-    expect(trips).toHaveLength(11);
-    expect(proxima?.onBoardYears).toBeCloseTo(3.5, 1);
-    expect(proxima?.atHomeYears).toBeGreaterThan(5.5);
-    expect(proxima?.coasts).toBe(false);
+  it("gives an agent the trip it asked for in figures, each named with its unit: years on each clock, the top speed as a share of light", () => {
+    const { trip } = run({ acceleration: 1, fuel: 1e12, exhaust: 100 }).data as { trip: Trip };
+    expect(trip.to).toBe("Proxima Centauri");
+    expect(trip.distanceLightYears).toBeCloseTo(4.24, 2);
+    expect(trip.onBoardYears).toBeCloseTo(3.5, 1);
+    expect(trip.atHomeYears).toBeGreaterThan(5.5);
+    expect(trip.topSpeedFractionOfC).toBeLessThan(1);
+    expect(trip.coasts).toBe(false);
+  });
+
+  it("gives an agent the ship in figures, each named with its unit", () => {
+    expect(run().data).toMatchObject({ ship: { fuelTonnes: 5000, exhaustFractionOfC: 0.72, accelerationG: 0.3 } });
   });
 
   it("draws the table of trips the page always drew, with the chosen one marked", () => {

@@ -88,6 +88,9 @@ The top level says what this is: a frame, and the features standing in it.
     load
   - `browser/` — what everything in the browser shares: `el`, the programs on
     a page and the tools offered to an agent, and what moves
+  - `agent/` — the tools that are about the site itself, `read` and `search`,
+    as the shell's own commands are; what a tool is (`AgentTool`) and how
+    every one answers is in `plugin/`, because a feature brings tools too
   - `data/` — open data kept a finished year at a time: `YearlySource`, and
     the refresh that cannot lose what is already held
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
