@@ -3,12 +3,15 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { defineConfig, type Plugin } from "vite";
 import { allFeatures } from "./src/features/allFeatures";
+import { llmsTxtOf } from "./src/platform/agent/llmsTxtOf";
+import { siteTools } from "./src/platform/agent/siteTools";
 import { Site } from "./src/platform/content/Site";
 import { fillStills } from "./src/platform/page/fillStills";
 import { formerAddresses } from "./src/platform/page/formerAddresses";
 import { renderDocument } from "./src/platform/page/renderDocument";
 import { renderRedirect } from "./src/platform/page/renderRedirect";
 import { stillsOf } from "./src/platform/plugin/stillsOf";
+import { toolsOf } from "./src/platform/plugin/toolsOf";
 
 const CONTENT = "content";
 const ORIGIN = "https://david-rodenas.com";
@@ -74,6 +77,10 @@ function site(): Plugin {
       });
       server.middlewares.use((request, response, next) => {
         const route = (request.url ?? "/").split("?")[0] ?? "/";
+        if (route === "/llms.txt") {
+          response.setHeader("Content-Type", "text/plain; charset=utf-8");
+          return response.end(llmsTxtOf(readSite(), [...siteTools, ...toolsOf(allFeatures)], ORIGIN));
+        }
         const withSlash = route.endsWith("/") ? route : `${route}/`;
         const page = readSite().at(withSlash);
         const moved = formerAddresses(readSite()).find(({ from }) => from === withSlash);
@@ -131,6 +138,12 @@ function site(): Plugin {
         type: "asset",
         fileName: "sitemap.xml",
         source: sitemapOf(built.pages.map((page) => page.route)),
+      });
+      // For an agent with no browser: every page, and the tools one in a browser would be offered.
+      this.emitFile({
+        type: "asset",
+        fileName: "llms.txt",
+        source: llmsTxtOf(built, [...siteTools, ...toolsOf(allFeatures)], ORIGIN),
       });
       this.emitFile({
         type: "asset",
