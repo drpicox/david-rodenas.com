@@ -55,7 +55,7 @@ function oneInWords(counted: ReturnType<typeof countedAt>, said: string, soFar?:
 }
 
 /**
- * The hot nights page as a tool: days of a kind — tropical or torrid nights,
+ * The hot nights page as a tool: days of a kind — torrid or tropical nights,
  * hot days, frost, rain — counted year by year from the same histograms the
  * page draws, at one station or at every one side by side, with the year
  * still running marked as such. What an agent asks is the page's question,
@@ -64,7 +64,7 @@ function oneInWords(counted: ReturnType<typeof countedAt>, said: string, soFar?:
 export const hotNightsTool: AgentTool = {
   name: "hot-nights",
   description:
-    "Days of a kind counted year by year at nine weather stations of the Meteocat in Catalonia, from 1988: tropical nights (the daily minimum at 20 °C or more), torrid nights (25 °C or more), hot and torrid days, frost, rain. " +
+    "Days of a kind counted year by year at nine weather stations of the Meteocat in Catalonia, from 1988: torrid nights (the daily minimum at 25 °C or more), tropical nights (20 °C or more), hot and torrid days, frost, rain. " +
     "For a station: every year's count, whether it was measured whole, the year still running so far, the two halves of the record compared, and its most extreme day; for all: the stations side by side.",
   inputSchema: {
     type: "object",

@@ -20,10 +20,11 @@ describe("the weather figure, once the script is there", () => {
     return host;
   }
 
-  it("opens on tropical nights over the whole year", async () => {
+  it("opens on torrid nights over the whole year, and says so in its list", async () => {
     const host = await mounted();
-    expect(host.querySelector("figcaption")?.textContent).toContain("daily minimum of 20 °C or more, whole year");
-    expect(host.querySelector(".figures strong")?.textContent).toBe("365");
+    expect(host.querySelector("figcaption")?.textContent).toContain("daily minimum of 25 °C or more, whole year");
+    expect([...host.querySelectorAll(".figures strong")].map((figure) => figure.textContent)).toEqual(["0", "365.5", "+365.5"]);
+    expect((host.querySelectorAll("select")[1] as HTMLSelectElement).value).toBe("torrid-nights");
   });
 
   it("counts again, without asking anyone anything, when the threshold slides", async () => {
@@ -31,10 +32,10 @@ describe("the weather figure, once the script is there", () => {
     const fetches = vi.fn();
     vi.stubGlobal("fetch", fetches);
     const slider = host.querySelector('input[type="range"]') as HTMLInputElement;
-    slider.value = "25";
+    slider.value = "20";
     slider.dispatchEvent(new Event("input"));
-    expect(host.querySelector("figcaption")?.textContent).toContain("25 °C or more");
-    expect(host.querySelector(".figures strong")?.textContent).toBe("0");
+    expect(host.querySelector("figcaption")?.textContent).toContain("20 °C or more");
+    expect(host.querySelector(".figures strong")?.textContent).toBe("365");
     expect(fetches).not.toHaveBeenCalled();
   });
 
@@ -77,6 +78,6 @@ describe("the weather figure, once the script is there", () => {
     months.value = "1";
     months.dispatchEvent(new Event("change"));
     expect(host.querySelector("figcaption")?.textContent).toContain("June to August");
-    expect(host.querySelector(".figures strong")?.textContent).toBe("92");
+    expect(host.querySelectorAll(".figures strong")[1]?.textContent).toBe("92");
   });
 });

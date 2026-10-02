@@ -70,7 +70,7 @@ describe("counting days at the Meteocat's stations, for an agent", () => {
 
   it("refuses what it cannot count, and says why", async () => {
     expect(await ask({ station: "Mars" })).toEqual({ refused: "station: Mars is not one of WU, X4, X8, D5, UP, XF, XJ, XE, VK or all" });
-    expect(await ask({ kind: "snow" })).toEqual({ refused: "kind: snow is not one of tropical-nights, torrid-nights, hot-days, torrid-days, frost-days, rainy-days, heavy-rain or downpours" });
+    expect(await ask({ kind: "snow" })).toEqual({ refused: "kind: snow is not one of torrid-nights, tropical-nights, hot-days, torrid-days, frost-days, rainy-days, heavy-rain or downpours" });
     expect(await ask({ months: [0] })).toEqual({ refused: "months: 0 is not a month from 1 to 12" });
     expect(await ask({ threshold: "hot" })).toEqual({ refused: "threshold: hot is not a number" });
   });

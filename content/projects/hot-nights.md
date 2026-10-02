@@ -1,31 +1,32 @@
 ---
 title: Hot nights, counted
-summary: How many nights a year never cool below 20 °C, at nine weather stations, and whether the second half of each record differs from the first.
+summary: How many nights a year never cool below 25 °C, at nine weather stations, and whether the second half of each record differs from the first.
 order: 32
 was: /open-data/hot-nights/
 ---
 
 # Hot nights, counted
 
-A night whose lowest temperature stays at 20 °C or above is called a tropical
-night: the house does not cool down and nobody sleeps well. The Meteocat
-publishes the daily minimum of every automatic station it runs. This counts
-them, year by year, and cuts each record in two to see whether it has moved:
+A night whose lowest temperature stays at 25 °C or above is called a torrid
+night, and at 20 °C a tropical one: the house does not cool down and nobody
+sleeps well. The Meteocat publishes the daily minimum of every automatic
+station it runs. This counts the torrid ones, year by year, and cuts each
+record in two to see whether it has moved:
 
 ::weather
 
 The threshold slides, because what the site keeps is not the count but a
-histogram of each month's days. Move it to 25 °C and the nights are torrid;
-choose another kind of day and the same page counts hot afternoons, frost, or
-rain.
+histogram of each month's days. Move it down to 20 °C and the nights are
+tropical; choose another kind of day and the same page counts hot afternoons,
+frost, or rain.
 
 ## What is in it
 
+- **The nights at 25 °C or more are where the Raval changes most**: 6.1 a
+  year before 2016, 19.8 since.
 - **Every one of the nine stations has more tropical nights in the second
   half of its record than in the first.** At Badalona, 75.1 a year became
   86.1. At the Raval, in the middle of Barcelona, 93.2 became 103.0.
-- **The nights at 25 °C or more are where the Raval changes most**: 6.1 a
-  year before 2016, 19.8 since.
 - **2022 is the year with most tropical nights at four of the nine, and with
   most days at 30 °C or more at eight of them.**
 - **The exception is worth as much as the rule.** The Observatori Fabra, on
