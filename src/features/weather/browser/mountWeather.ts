@@ -1,5 +1,7 @@
 import { el } from "../../../platform/browser/el";
+import { PROGRAM_ASKED } from "../../../platform/browser/PROGRAM_ASKED";
 import { runningAt } from "../../../platform/browser/runningAt";
+import type { Values } from "../../../platform/program/Values";
 import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
 import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
 import { firstQuestion } from "../firstQuestion";
@@ -80,6 +82,20 @@ export function mountWeather(host: HTMLElement): () => void {
       figure.replaceChildren(el("p", {}, "The measurements for this station did not arrive. The rest of the page does not depend on them."));
     }
   }
+
+  // An agent's question, put to the page the way a reader would put it: every list and the slider show what was asked.
+  host.addEventListener(PROGRAM_ASKED, (event) => {
+    const { station: code, kind, threshold, months } = (event as CustomEvent<Values>).detail;
+    const preset = weatherPresets.find(({ id }) => id === kind);
+    if (!preset) return;
+    const asked = String(months).split(",").map(Number);
+    presetSelect.value = preset.id;
+    const season = SEASONS.findIndex(([, of]) => of.join(",") === asked.join(","));
+    if (season >= 0) seasonSelect.value = String(season);
+    question = { variable: preset.variable, atLeast: preset.atLeast, threshold: Number(threshold), months: asked };
+    stationSelect.value = String(code);
+    void choose(stationSelect.value);
+  });
 
   const controls = el(
     "div",

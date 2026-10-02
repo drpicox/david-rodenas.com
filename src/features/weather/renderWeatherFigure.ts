@@ -4,6 +4,7 @@ import { dayAndMonthOf } from "../../platform/data/dayAndMonthOf";
 import type { WithSoFar } from "../../platform/data/withSoFar";
 import { daysPerYear } from "./daysPerYear";
 import { questionInWords } from "./questionInWords";
+import { recordOf } from "./recordOf";
 import { renderDaysCalendar } from "./renderDaysCalendar";
 import { twoHalves } from "./twoHalves";
 import type { WeatherQuestion } from "./WeatherQuestion";
@@ -19,10 +20,7 @@ const dayInWords = (date: string) => `${dayAndMonthOf(date)} ${date.slice(0, 4)}
 /** The most extreme day the station has, on the side the question looks at. */
 function record(station: WeatherStation, question: WeatherQuestion): string {
   const { unit, name } = weatherVariables[question.variable];
-  const records = Object.values(station.years).flatMap((year) => (year[question.variable] ? [year[question.variable]!.record] : []));
-  const [value, date] = question.atLeast
-    ? records.map(([high, on]) => [high, on] as const).reduce((a, b) => (b[0] > a[0] ? b : a))
-    : records.map(([, , low, on]) => [low, on] as const).reduce((a, b) => (b[0] < a[0] ? b : a));
+  const { value, date } = recordOf(station, question)!;
   return `<p class="record">The ${question.atLeast ? "highest" : "lowest"} ${name} on record here: ${value} ${unit} on ${dayInWords(date)}, whatever months are chosen.</p>`;
 }
 

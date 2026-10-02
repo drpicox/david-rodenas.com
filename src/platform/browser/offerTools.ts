@@ -1,17 +1,13 @@
-import type { AgentTool, ToolReply } from "../plugin/AgentTool";
+import type { AgentTool, ToolReply, ToolSurroundings } from "../plugin/AgentTool";
 import { answerOf } from "../plugin/answerOf";
 import { describeTool } from "../plugin/describeTool";
-import type { Site } from "../content/Site";
 import type { Outcome } from "../command/Outcome";
 import { plainTextOf } from "../command/plainTextOf";
 import { askProgram } from "./askProgram";
 import type { ModelContext, Tool } from "./ModelContext";
 
-export interface Surface {
+export interface Surface extends ToolSurroundings {
   readonly tools: readonly AgentTool[];
-  readonly site: Site;
-  /** Where the site is served from, so that an answer gives a page as an address the agent can quote. */
-  readonly origin: string;
   /** Moves the page to a route without a reload, the way a link does. */
   readonly goTo: (route: string) => boolean;
   /** Runs a line at the prompt, echo and all. */

@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { Site } from "../content/Site";
 import { searchTool } from "./searchTool";
 
+const nothingServed = () => Promise.reject(new Error("no files here"));
+
 const site = new Site([
   { file: "index.md", markdown: "---\ntitle: Home\n---\n# Home\n\nA site about tests and rockets.\n" },
   { file: "essays.md", markdown: "---\ntitle: Essays\nsummary: Written every Saturday.\n---\n# Essays\n\n- [The Unit Test Trap](https://medium.com/p/4a83e4012b17)\n- **Coverage** is not a target.\n" },
@@ -9,7 +11,7 @@ const site = new Site([
   { file: "projects/rocket.md", markdown: "---\ntitle: Rocket\nsummary: A relativistic rocket.\n---\n# Rocket\n\nHow long a trip takes.\n" },
 ]);
 
-const found = async (input: Record<string, unknown>) => (await searchTool.answer(input, { site, origin: "https://david-rodenas.com" })) as { summary: string; data: { pages: { path: string; title: string; lines: string[] }[] } };
+const found = async (input: Record<string, unknown>) => (await searchTool.answer(input, { site, origin: "https://david-rodenas.com", read: nothingServed })) as { summary: string; data: { pages: { path: string; title: string; lines: string[] }[] } };
 
 describe("searching the site, as an agent does", () => {
   it("finds the pages that say every word asked, whatever their case, the ones named for it first", async () => {
@@ -34,7 +36,7 @@ describe("searching the site, as an agent does", () => {
   });
 
   it("refuses to look for nothing", async () => {
-    expect(await searchTool.answer({ query: "  " }, { site, origin: "https://david-rodenas.com" })).toEqual({ refused: "query: say what to look for" });
+    expect(await searchTool.answer({ query: "  " }, { site, origin: "https://david-rodenas.com", read: nothingServed })).toEqual({ refused: "query: say what to look for" });
   });
 
   it("shows the reader nothing and changes nothing", () => {

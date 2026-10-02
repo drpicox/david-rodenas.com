@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { Site } from "../../platform/content/Site";
 import { writingsTool } from "./writingsTool";
 
+const nothingServed = () => Promise.reject(new Error("no files here"));
+
 const ORIGIN = "https://david-rodenas.com";
 const site = new Site([
   { file: "index.md", markdown: "# Home\n" },
@@ -43,7 +45,7 @@ summary: Twenty-one years of them.
 ]);
 
 type Listed = { summary: string; route?: string; data: { essays: { title: string }[]; talks: { title: string }[]; more: Record<string, { said: string; url: string }> } };
-const ask = async (input: Record<string, unknown>) => (await writingsTool.answer(input, { site, origin: ORIGIN })) as Listed;
+const ask = async (input: Record<string, unknown>) => (await writingsTool.answer(input, { site, origin: ORIGIN, read: nothingServed })) as Listed;
 const titles = (listed: Listed) => [...listed.data.essays, ...listed.data.talks].map(({ title }) => title);
 
 describe("what David has written and said, for an agent", () => {
@@ -78,8 +80,8 @@ describe("what David has written and said, for an agent", () => {
   });
 
   it("refuses what it cannot ask the pages", async () => {
-    expect(await writingsTool.answer({ kind: "poems" }, { site, origin: ORIGIN })).toEqual({ refused: "kind: poems is not one of essays, talks or both" });
-    expect(await writingsTool.answer({ from: "last year" }, { site, origin: ORIGIN })).toEqual({ refused: "from: last year is not a year" });
-    expect(await writingsTool.answer({ kind: "essays", from: 2024 }, { site, origin: ORIGIN })).toEqual({ refused: "from: the essays are not dated here; years are for talks" });
+    expect(await writingsTool.answer({ kind: "poems" }, { site, origin: ORIGIN, read: nothingServed })).toEqual({ refused: "kind: poems is not one of essays, talks or both" });
+    expect(await writingsTool.answer({ from: "last year" }, { site, origin: ORIGIN, read: nothingServed })).toEqual({ refused: "from: last year is not a year" });
+    expect(await writingsTool.answer({ kind: "essays", from: 2024 }, { site, origin: ORIGIN, read: nothingServed })).toEqual({ refused: "from: the essays are not dated here; years are for talks" });
   });
 });

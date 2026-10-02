@@ -1,10 +1,16 @@
 import type { Site } from "../content/Site";
 import type { Values } from "../program/Values";
 
-/** What a tool is handed besides what it was asked: the site it answers about, and where it is served from. */
+/** What a tool is handed besides what it was asked: the site it answers about, where it is served from, and the files it serves. */
 export interface ToolSurroundings {
   readonly site: Site;
   readonly origin: string;
+  /**
+   * The text of a file the site serves, by the path the browser asks for it
+   * at — the same files a still reads at build time, so a tool and the page
+   * answer from the same data. Rejects when there is none.
+   */
+  read(path: string): Promise<string>;
 }
 
 /** A tool's answer before it is said: in words, in figures, and where it can be seen. */

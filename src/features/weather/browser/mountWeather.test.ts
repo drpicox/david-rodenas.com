@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { aWeatherStation } from "../aWeatherStation";
 import { steadyYear } from "../steadyYear";
+import { askProgram } from "../../../platform/browser/askProgram";
 import { mountWeather } from "./mountWeather";
 
 const station = aWeatherStation({ "2022": steadyYear(2022, 21), "2023": steadyYear(2023, 21), "2024": steadyYear(2024, 26), "2025": steadyYear(2025, 26) });
@@ -58,6 +59,16 @@ describe("the weather figure, once the script is there", () => {
     await settled();
     expect(host.querySelector('.bar.running[data-year="2026"]')).not.toBeNull();
     expect(host.querySelector("p.source")?.textContent).toContain("2026 so far, to 28 September");
+  });
+
+  it("answers an agent's question where the reader sees it: the station, the kind of day, the threshold and the months", async () => {
+    const host = await mounted();
+    askProgram(host, { station: "WU", kind: "torrid-nights", threshold: 25.5, months: "5,6,7" });
+    await settled();
+    expect(host.querySelector("figcaption")?.textContent).toContain("daily minimum of 25.5 °C or more, June to August");
+    expect((host.querySelectorAll("select")[1] as HTMLSelectElement).value).toBe("torrid-nights");
+    expect((host.querySelectorAll("select")[2] as HTMLSelectElement).value).toBe("1");
+    expect(host.querySelector("output")?.textContent).toBe("25.5 °C or more");
   });
 
   it("looks at a season when asked", async () => {

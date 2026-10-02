@@ -39,7 +39,7 @@ function aBrowser() {
     return [{ html: "<p>README.md  money/</p>" }];
   };
   document.body.innerHTML = "";
-  offerTools(context, { tools: [...siteTools, programTool(aProgram)], site, origin: ORIGIN, goTo, run });
+  offerTools(context, { tools: [...siteTools, programTool(aProgram)], site, origin: ORIGIN, read: () => Promise.reject(new Error("no files here")), goTo, run });
   const call = async (name: string, input: Record<string, unknown>) => JSON.parse(await tools.get(name)!.execute(input)) as Record<string, unknown>;
   return { tools, visited, typed, call };
 }
@@ -107,6 +107,6 @@ describe("the tools this site offers an agent in the reader's browser", () => {
 
 describe("a browser with no model context", () => {
   it("is offered nothing, and nothing breaks", () => {
-    expect(() => offerTools(undefined, { tools: siteTools, site, origin: ORIGIN, goTo: () => true, run: () => [] })()).not.toThrow();
+    expect(() => offerTools(undefined, { tools: siteTools, site, origin: ORIGIN, read: () => Promise.reject(new Error("no files here")), goTo: () => true, run: () => [] })()).not.toThrow();
   });
 });

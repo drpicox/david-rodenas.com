@@ -86,7 +86,8 @@ function mount(): void {
 
   // An agent in the reader's browser is offered what the reader is: the site to read, the programs, and the prompt.
   const tools = [...siteTools, ...toolsOf(allFeatures)];
-  offerTools(modelContextHere(), { tools, site: siteInBrowser, origin: window.location.origin, goTo: (route) => goTo(route), run: (line) => terminal?.run(line) ?? [] });
+  const read = (path: string) => fetch(path).then((response) => (response.ok ? response.text() : Promise.reject(new Error(`${path}: ${response.status}`))));
+  offerTools(modelContextHere(), { tools, site: siteInBrowser, origin: window.location.origin, read, goTo: (route) => goTo(route), run: (line) => terminal?.run(line) ?? [] });
 }
 
 if (document.readyState === "loading") {
