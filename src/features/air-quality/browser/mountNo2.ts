@@ -1,7 +1,9 @@
 import { el } from "../../../platform/browser/el";
+import { PROGRAM_ASKED } from "../../../platform/browser/PROGRAM_ASKED";
 import { runningAt } from "../../../platform/browser/runningAt";
 import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
 import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
+import type { Values } from "../../../platform/program/Values";
 import type { No2Selection } from "../No2Selection";
 import type { No2Station } from "../No2Station";
 import { no2Stations } from "../no2Stations";
@@ -28,6 +30,8 @@ export function mountNo2(host: HTMLElement): () => void {
 
   let station: WithSoFar<No2Station> | null = null;
   let selection: No2Selection = { from: 0, to: 9999, days: "all" };
+  /** The years an agent asked for, kept until the station they were asked of has arrived. */
+  let wanted: No2Selection | null = null;
   let stopped = false;
 
   const option = (value: string | number, label: string = String(value)) => el("option", { value }, label);
@@ -60,7 +64,9 @@ export function mountNo2(host: HTMLElement): () => void {
       // Years the reader chose are kept across stations, to compare the same years in two places; a
       // station that has none of them, or a reader who had chosen none, gets the whole record.
       const whole = wholeRecord(arrived);
-      const chosen = station !== null && (selection.from !== wholeRecord(station).from || selection.to !== wholeRecord(station).to);
+      const chosen = wanted !== null || (station !== null && (selection.from !== wholeRecord(station).from || selection.to !== wholeRecord(station).to));
+      if (wanted) selection = wanted;
+      wanted = null;
       // Snapped to years this station has: a record can have a hole in it, and the lists only offer what is held.
       const within = Object.keys(arrived.years).map(Number).filter((year) => year >= selection.from && year <= selection.to);
       const kept = chosen && within.length > 0 ? { from: Math.min(...within), to: Math.max(...within) } : whole;
@@ -75,6 +81,15 @@ export function mountNo2(host: HTMLElement): () => void {
       figure.replaceChildren(el("p", {}, "The measurements for this station did not arrive. The rest of the page does not depend on them."));
     }
   }
+
+  // An agent's question, put to the page the way a reader would put it: the station, the days, the years.
+  host.addEventListener(PROGRAM_ASKED, (event) => {
+    const { station: code, from, to, days } = (event as CustomEvent<Values>).detail;
+    wanted = { from: Number(from), to: Number(to), days: days as No2Selection["days"] };
+    stationSelect.value = String(code);
+    daysSelect.value = wanted.days;
+    void choose(stationSelect.value);
+  });
 
   // A bar is a year: pressing one looks at that year alone.
   figure.addEventListener("click", (event) => {

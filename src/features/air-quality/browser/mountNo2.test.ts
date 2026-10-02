@@ -2,6 +2,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { aStation } from "../aStation";
 import { flatSums } from "../flatSums";
+import { askProgram } from "../../../platform/browser/askProgram";
 import { mountNo2 } from "./mountNo2";
 
 const station = aStation({
@@ -36,6 +37,18 @@ describe("the NO2 figure, once the script is there", () => {
     expect(host.querySelector("figcaption")?.textContent).toContain("2019–2021, 2021 to 28 September");
     expect(host.querySelector('.bar.running[data-year="2021"]')).not.toBeNull();
     expect(host.querySelector("p.source")?.textContent).toContain("2021 so far, to 28 September");
+  });
+
+  it("answers an agent's question where the reader sees it: the station, the days and the years", async () => {
+    served();
+    const host = document.createElement("div");
+    mountNo2(host);
+    await settled();
+    askProgram(host, { station: "08019004", from: 2020, to: 2020, days: "weekends" });
+    await settled();
+    expect(host.querySelector("figcaption")?.textContent).toContain("Saturdays and Sundays, 2020");
+    expect((host.querySelectorAll("select")[1] as HTMLSelectElement).value).toBe("weekends");
+    expect((host.querySelectorAll("select")[2] as HTMLSelectElement).value).toBe("2020");
   });
 
   it("keeps the still's own source line rather than asking for it again", async () => {
