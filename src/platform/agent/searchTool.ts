@@ -5,7 +5,9 @@ import { routeAsked } from "./routeAsked";
 
 /** Enough pages to choose from; an agent that wants more can narrow where it looks. */
 const MOST_PAGES = 20;
+/** Enough lines to tell why a page was found, not to read it: read does that. */
 const MOST_LINES = 3;
+/** The summary names a few; the data lists more. */
 const MOST_NAMED = 5;
 
 const says = (text: string, words: readonly string[]) => words.every((word) => text.toLowerCase().includes(word));

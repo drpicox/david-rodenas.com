@@ -27,7 +27,7 @@ function placeOf(app: string, route: string | undefined, goTo: Surface["goTo"]):
   return document.querySelector<HTMLElement>(selector);
 }
 
-/** Puts a reply in front of the reader, the program asked what the agent asked; says whether it could. */
+/** Puts a reply in front of the reader, the program asked what the agent asked; says whether it could, for the answer to say so. */
 function shownTo({ show, route }: ToolReply, { goTo }: Surface): boolean {
   if (!show) return false;
   const place = placeOf(show.app, route, goTo);
@@ -70,13 +70,12 @@ function shellTool({ run, origin }: Surface): Tool {
 
 /**
  * Offers the site to the agent in the reader's browser, if the browser has
- * one: the tools it is handed, and the prompt as one more. What has something
- * to show shows it unless the agent asks otherwise — the dials move, the line
- * is echoed — because an agent working a page nobody can watch is a different
- * site from the one the reader is on; and every answer says whether the
- * reader saw it, so the agent never has to guess what they have in front of
- * them. Reading and searching change nothing, and move nothing. Returns how to
- * take the tools back.
+ * one: the tools it is handed, and the prompt as one more. Showing is the
+ * default — the dials move, the line is echoed — because work the reader
+ * cannot watch is done on a different site from the one they are on. An agent
+ * may still ask not to, to compare ten trips without taking the reader through
+ * ten pages; so every answer says whether the reader saw it, and the agent
+ * never has to guess what is in front of them. Returns how to take the tools back.
  */
 export function offerTools(context: ModelContext | undefined, surface: Surface): () => void {
   if (!context) return () => {};

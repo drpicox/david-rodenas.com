@@ -44,7 +44,7 @@ export interface AgentTool {
   readonly name: string;
   readonly description: string;
   readonly inputSchema: ToolSchema;
-  /** Changes nothing the reader has: what they see may move, nothing they made does. */
+  /** Changes nothing the site holds: showing may take the reader to another page, as a link would, and no more. */
   readonly readOnly: boolean;
   /** Has something to put in front of the reader, and takes a `show` to say whether it should. */
   readonly shows: boolean;
