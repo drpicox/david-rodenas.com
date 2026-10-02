@@ -12,8 +12,11 @@ on:
   # The open data is a finished year at a time, and the build asks for a year
   # it does not hold. Mid-January, so that a year still gets fetched when
   # nobody happens to push: by then the portals have the whole of December.
+  # And every Monday, so that the year still running, which is never
+  # committed and is asked for at every deploy, is never more than a week old.
   schedule:
     - cron: "10 5 15 1 *"
+    - cron: "10 5 * * 1"
 
 # Write, because a year fetched by the build is committed back (see below).
 permissions:

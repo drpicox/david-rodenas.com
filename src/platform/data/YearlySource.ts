@@ -17,4 +17,10 @@ export interface YearlySource<Held> {
   requestsFor(year: number): readonly string[];
   /** The files as they are once that year is in them. Throws when the answers are not a whole year. */
   withYear(files: Readonly<Record<string, Held | undefined>>, year: number, answers: readonly unknown[]): Record<string, Held>;
+  /**
+   * The year still running, as files holding only it, and the last day it
+   * reaches. Throws when the answers are not a clean run of days. Without it,
+   * a source shows finished years alone.
+   */
+  soFar?(year: number, answers: readonly unknown[]): { files: Record<string, Held>; through: string };
 }

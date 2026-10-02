@@ -31,8 +31,10 @@ traced, write the weaker sentence.
 - `npm run dev` — dev server
 - `npm run build` — `npm run data`, typecheck, then a static build into `dist/`
 - `npm run data` — fetch any finished year of open data that `public/data/`
-  does not hold yet; runs before every build, asks nothing unless the year has
-  changed, and never fails (`--year 2024` asks again, `--only no2` picks one)
+  does not hold yet, and the year still running into an uncommitted
+  `running.json`; runs before every build, asks for a finished year only when
+  the year has changed and for the running one once a day, and never fails
+  (`--year 2024` asks again, `--only no2` picks one)
 - `node tools/preview-planets.mjs [seeds...]` — grow worlds and write them to
   `tools/planets.png`, so a person can look at them
 - `node tools/architecture-history.mjs` — read the source at every commit
@@ -91,8 +93,9 @@ The top level says what this is: a frame, and the features standing in it.
   - `agent/` — the tools that are about the site itself, `read` and `search`,
     as the shell's own commands are; what a tool is (`AgentTool`) and how
     every one answers is in `plugin/`, because a feature brings tools too
-  - `data/` — open data kept a finished year at a time: `YearlySource`, and
-    the refresh that cannot lose what is already held
+  - `data/` — open data kept a finished year at a time, and the year still
+    running beside it: `YearlySource`, and the refresh that cannot lose what
+    is already held
   - `charts/` — charts as plain SVG strings, drawn the same in node and the browser
   - `flags/` — trials a reader can switch on: `flags`, `?name=on`, and
     `data-flags` on the root (set before paint) for a stylesheet to look at.

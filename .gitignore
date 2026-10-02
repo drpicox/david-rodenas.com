@@ -9,3 +9,6 @@ tools/planets.png
 # Personal: where the material comes from. Never committed, never pushed.
 *.local.md
 coverage/
+
+# The year still running: asked for again every day, so never committed (see DECISIONS.md).
+public/data/*/running.json

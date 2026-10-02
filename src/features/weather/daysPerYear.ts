@@ -1,3 +1,4 @@
+import type { WithSoFar } from "../../platform/data/withSoFar";
 import { countDays } from "./countDays";
 import type { WeatherQuestion } from "./WeatherQuestion";
 import type { WeatherStation } from "./WeatherStation";
@@ -17,6 +18,8 @@ export interface YearOfDays {
   readonly summary: number | null;
   /** January to December, whatever months were asked for. */
   readonly months: readonly { readonly days: number; readonly measured: number }[];
+  /** For the year still running, the last day it reaches, as YYYY-MM-DD. */
+  readonly through?: string;
 }
 
 /** A year with more than one day in twenty missing is drawn, marked, and kept out of every mean. */
@@ -37,7 +40,7 @@ function together(figures: readonly { figure: number; weight: number }[], how: "
 }
 
 /** The count behind every chart on the page, recomputed from the histograms each time the question changes. */
-export function daysPerYear(station: WeatherStation, question: WeatherQuestion): YearOfDays[] {
+export function daysPerYear(station: WithSoFar<WeatherStation>, question: WeatherQuestion): YearOfDays[] {
   const info = weatherVariables[question.variable];
   return Object.entries(station.years)
     .flatMap(([label, measuredYear]) => {
@@ -56,7 +59,10 @@ export function daysPerYear(station: WeatherStation, question: WeatherQuestion):
       const figures = variable.summaries.flatMap((figure, month) => (asked(month) && figure !== null ? [{ figure, weight: months[month]?.measured ?? 0 }] : []));
       const summary = together(figures, info.summary);
 
-      return [{ year, days, elsewhere: total(months.map((month) => month.days)) - days, measured, expected, whole: measured / expected >= WHOLE, summary, months }];
+      // The year still running is never whole, however much of the months asked for it has: its days can still be corrected.
+      const running = station.soFar?.year === year;
+      const whole = !running && measured / expected >= WHOLE;
+      return [{ year, days, elsewhere: total(months.map((month) => month.days)) - days, measured, expected, whole, summary, months, ...(running && { through: station.soFar!.through }) }];
     })
     .sort((a, b) => a.year - b.year);
 }

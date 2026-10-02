@@ -46,7 +46,9 @@ The series are not homogenised. A sensor replaced, a screen moved, a car park
 built next door: each can make a step that has nothing to do with the climate,
 and nothing here corrects for it. A station is never joined to another, even
 in the same town. A year missing more than one day in twenty is drawn as an
-outline and kept out of every mean. The year still running is not shown.
+outline and kept out of every mean. The year still running is drawn in grey,
+up to the last day the Meteocat has, and is kept out of every mean and out of
+both halves: it is not over, and its days can still be corrected.
 
 The names — tropical night, torrid night — are common usage, not official
 definitions. Frost is "below 0 °C" rather than "0 °C or below" because only
@@ -60,4 +62,5 @@ This is the small version of an explorer I built in the summer of 2026, which
 has every station of the network that is still reporting, humidity and a map:
 [Nits de calor a Catalunya](https://david-rodenas.com/heatwave/). Here there
 are nine stations and four variables, the daily series stays at its source,
-and the site keeps only what it derives from it, a finished year at a time.
+and the site keeps only what it derives from it, a finished year at a time,
+with the year still running asked for again every day.

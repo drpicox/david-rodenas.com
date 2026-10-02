@@ -1,4 +1,5 @@
 import { escapeHtml } from "../markdown/escapeHtml";
+import type { RunningYear } from "./RunningYear";
 
 /** What a yearly source's index says about itself. */
 export interface SourceIndex {
@@ -16,9 +17,13 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
  * is, and say how old your copy is. Written from the index the refresh keeps,
  * so the line is never older than the data.
  */
-export function renderSourceLine(index: SourceIndex): string {
-  const [year, month, day] = index.refreshed.split("-").map(Number);
+export function renderSourceLine(index: SourceIndex, running: Omit<RunningYear<unknown>, "files"> | null = null): string {
+  const shown = running && !index.years.includes(running.year) ? running : null;
+  const refreshed = shown && shown.refreshed > index.refreshed ? shown.refreshed : index.refreshed;
+  const [year, month, day] = refreshed.split("-").map(Number);
   const copied = `${day} ${MONTHS[(month ?? 1) - 1]} ${year}`;
   const span = `${Math.min(...index.years)} to ${Math.max(...index.years)}`;
-  return `<p class="source">Source: ${escapeHtml(index.attribution)} <a href="${escapeHtml(index.dataset)}">The dataset, at its source.</a> This site keeps sums of the finished years ${span}, last added to on ${copied}.</p>`;
+  const [, upToMonth, upToDay] = shown?.through.split("-").map(Number) ?? [];
+  const soFar = shown ? `, and ${shown.year} so far, to ${upToDay} ${MONTHS[(upToMonth ?? 1) - 1]}` : "";
+  return `<p class="source">Source: ${escapeHtml(index.attribution)} <a href="${escapeHtml(index.dataset)}">The dataset, at its source.</a> This site keeps sums of the finished years ${span}${soFar}, last added to on ${copied}.</p>`;
 }

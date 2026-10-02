@@ -12,6 +12,11 @@ describe("the line under a figure that says whose data it is", () => {
     expect(html).toContain("20 September 2026");
   });
 
+  it("says, apart from the finished years, how far the year still running reaches", () => {
+    expect(renderSourceLine(index, { year: 2026, through: "2026-09-28", refreshed: "2026-09-30" })).toContain("the finished years 1988 to 2025, and 2026 so far, to 28 September, last added to on 30 September 2026");
+    expect(renderSourceLine(index, null)).toContain("the finished years 1988 to 2025, last added to");
+  });
+
   it("does not let a name break the page", () => {
     expect(renderSourceLine({ ...index, attribution: "A <b> & co" })).toContain("A &lt;b&gt; &amp; co");
   });

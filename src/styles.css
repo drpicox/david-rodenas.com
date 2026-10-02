@@ -1885,6 +1885,15 @@ main,
   stroke-width: 1.5;
 }
 
+/* The year still running: grey, because more of it is to come — not an outline, which is a year with holes in it. */
+.app svg.years .bar.running,
+.app figure.weather svg.years .bar.running,
+.app figure.no2 svg.years .bar.running {
+  fill: color-mix(in oklab, var(--ink) 28%, transparent);
+  stroke: none;
+  opacity: 1;
+}
+
 .app figure.no2 svg.years line.reference {
   stroke: var(--ink);
 }

@@ -46,6 +46,20 @@ describe("the weather figure, once the script is there", () => {
     expect(host.querySelector("output")?.textContent).toBe("below 0 °C");
   });
 
+  it("draws the year still running apart, and says how far it reaches, when the site has it", async () => {
+    const running = { year: 2026, through: "2026-09-28", refreshed: "2026-09-30", files: { "WU.json": aWeatherStation({ "2026": steadyYear(2026, 21, [9, 10, 11]) }) } };
+    vi.stubGlobal("fetch", async (url: string) => ({
+      ok: true,
+      text: async () => JSON.stringify(running),
+      json: async () => (url.endsWith("index.json") ? index : station),
+    }));
+    const host = document.createElement("div");
+    mountWeather(host);
+    await settled();
+    expect(host.querySelector('.bar.running[data-year="2026"]')).not.toBeNull();
+    expect(host.querySelector("p.source")?.textContent).toContain("2026 so far, to 28 September");
+  });
+
   it("looks at a season when asked", async () => {
     const host = await mounted();
     const months = host.querySelectorAll("select")[2] as HTMLSelectElement;

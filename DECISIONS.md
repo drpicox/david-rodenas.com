@@ -220,8 +220,18 @@ Python and half a gigabyte of cache. Here:
 - **The portal is asked only when the year has changed.** `npm run build`
   runs `tools/refresh-data.mjs` first, which asks for the finished years a
   source does not hold. That is nothing at all, with no network, on every
-  build but the first of a year. The running year is never shown: half a bar
-  at the end of a chart is misinformation made of correct numbers.
+  build but the first of a year.
+- **The running year is shown, and shown to be unfinished.** It was left out
+  at first — half a bar at the end of a chart is misinformation made of
+  correct numbers — and David wanted it: what this summer did is the question
+  a reader comes with. So it is drawn in grey, not as the outline a year with
+  holes gets, with the last day it reaches said beside it, and kept out of
+  every mean and every comparison of halves. It lives in a file of its own,
+  `running.json`, which is never committed: it changes every day, and a commit
+  back from every deploy would leave the main line behind wherever it was
+  pushed from. The build asks for it once a day at most; in CI, where there is
+  no copy, at every deploy, and a weekly run keeps it fresh when nobody
+  pushes. In January it is last year's, until the portal has its December.
 - **It fails safe, because it will fail.** A year is written only when all of
   it arrived and made sense — not cut short at a limit, no day twice, reaching
   December, no quality mark nobody has decided how to read. Anything else is

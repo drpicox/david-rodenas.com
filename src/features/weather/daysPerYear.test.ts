@@ -37,6 +37,13 @@ describe("the days of each year that answer the question", () => {
     expect(daysPerYear(gappy, { ...tropical, months: SUMMER })[0]?.whole).toBe(true);
   });
 
+  it("never calls the year still running whole, even when the months asked for are all in it: it can still be corrected", () => {
+    const running = { ...aWeatherStation({ "2025": steadyYear(2025, 21), "2026": steadyYear(2026, 21, [9, 10, 11]) }), soFar: { year: 2026, through: "2026-09-30" } };
+    const [, summer] = daysPerYear(running, { ...tropical, months: SUMMER });
+    expect(summer).toMatchObject({ year: 2026, days: 92, whole: false, through: "2026-09-30" });
+    expect(daysPerYear(running, { ...tropical, months: SUMMER })[0]).not.toHaveProperty("through");
+  });
+
   it("sums the year up the way the variable is summed up", () => {
     const [year] = daysPerYear(station, { ...tropical, months: SUMMER });
     expect(year?.summary).toBeCloseTo(21);

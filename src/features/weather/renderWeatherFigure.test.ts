@@ -36,6 +36,14 @@ describe("the whole weather figure", () => {
     expect(html).toContain("2023: 334 days, with only 334 of 365 days measured");
   });
 
+  it("draws the year still running apart, saying the last day it reaches, and keeps it out of the halves", () => {
+    const running = { ...aWeatherStation({ ...station.years, "2026": steadyYear(2026, 21, [9, 10, 11]) }), soFar: { year: 2026, through: "2026-09-28" } };
+    const drawn = renderWeatherFigure(running, tropical);
+    expect(drawn).toMatch(/class="bar running" data-year="2026"/);
+    expect(drawn).toContain("2026 so far, to 28 September: 273 days");
+    expect(drawn).toContain("2022–2025");
+  });
+
   it("holds the days a year, the calendar, and the year in one figure", () => {
     expect(html.match(/<svg class="years"/g)).toHaveLength(2);
     expect(html).toContain('<table class="heat calendar warm">');

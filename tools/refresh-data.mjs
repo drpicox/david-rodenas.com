@@ -3,9 +3,11 @@ import { dirname } from "node:path";
 import { createServer } from "vite";
 
 /**
- * Brings the open data the features keep up to the last finished year. It
- * runs before every build and nearly always does nothing: a source that holds
- * every finished year is not asked anything until the year changes.
+ * Brings the open data the features keep up to the last finished year, and
+ * the year still running up to the last day the portal has. It runs before
+ * every build: a source that holds every finished year is not asked for one
+ * until the year changes, and the running year is asked for once a day at
+ * most, into a file that is never committed.
  *
  * It never fails. The portal being down, slow or wrong is reported and the
  * build goes on with what the repository already holds.
@@ -49,8 +51,12 @@ const vite = await createServer({ server: { middlewareMode: true }, appType: "cu
 try {
   const { allFeatures } = await vite.ssrLoadModule("/src/features/allFeatures.ts");
   const { refreshSource } = await vite.ssrLoadModule("/src/platform/data/refreshSource.ts");
+  const { refreshRunning } = await vite.ssrLoadModule("/src/platform/data/refreshRunning.ts");
   const sources = allFeatures.flatMap((feature) => feature.sources ?? []).filter((source) => only.length === 0 || only.includes(source.name));
-  for (const source of sources) await refreshSource(source, ports, again);
+  for (const source of sources) {
+    await refreshSource(source, ports, again);
+    await refreshRunning(source, ports);
+  }
 } catch (error) {
   console.log(`refresh-data: gave up (${error?.message ?? error}); the build uses what is held`);
 } finally {

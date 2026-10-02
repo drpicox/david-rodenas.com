@@ -27,6 +27,10 @@ describe("a bar for each year", () => {
     expect(svg).toMatch(/class="bar partial" data-year="2021"/);
   });
 
+  it("draws the year still running apart from one with a hole in it: there is more of it to come", () => {
+    expect(yearBars([{ year: 2026, value: 40, title: "2026 so far", running: true }], { label: "" })).toMatch(/class="bar running" data-year="2026"/);
+  });
+
   it("is twice as high when the value is twice as much, because it starts at zero", () => {
     const svg = yearBars([{ year: 2000, value: 20, title: "" }, { year: 2001, value: 40, title: "" }], { label: "" });
     const heights = [...svg.matchAll(/class="bar[^"]*"[^>]* height="([\d.]+)"/g)].map((match) => Number(match[1]));

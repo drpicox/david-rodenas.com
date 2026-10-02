@@ -99,8 +99,9 @@ the built directory is complete on its own.
 `public/data/` holds the sums the two open-data pages are drawn from, one file
 a station, one line a year. `npm run build` first runs `npm run data`, which
 asks the Generalitat's portal for any finished year that is missing — nothing,
-on every build but the first of a new year — and never fails the build: if the
-portal does, the files stay as they are. `node tools/refresh-data.mjs --year
+on every build but the first of a new year — and for the year still running,
+once a day, into a `running.json` that is never committed; and it never fails
+the build: if the portal does, the files stay as they are. `node tools/refresh-data.mjs --year
 2024` asks again for a year already held. In CI the workflow commits a newly
 fetched year back to `main`.
 

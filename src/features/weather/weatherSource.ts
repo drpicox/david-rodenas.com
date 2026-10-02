@@ -44,12 +44,17 @@ function variableYear(days: readonly Day[], info: WeatherVariableInfo): WeatherV
   };
 }
 
-/** The rows of one year, sorted into station, variable and day; throws at anything that is not a whole, clean year. */
-function daysOf(answer: unknown): Map<string, Day[]> {
+/**
+ * The rows of one year, sorted into station, variable and day; throws at
+ * anything that is not a clean run of days — and, for a year asked for whole,
+ * at one that does not reach December.
+ */
+function daysOf(answer: unknown, whole: boolean): Map<string, Day[]> {
   if (!Array.isArray(answer)) throw new Error("the portal did not answer with rows");
   if (answer.length >= LIMIT) throw new Error("the answer was cut short at the limit");
   const rows = answer as Row[];
-  if (!rows.some((row) => row["data_lectura"]?.slice(5, 7) === "12")) throw new Error("the year does not reach December yet");
+  if (rows.length === 0) throw new Error("the portal has no days of it yet");
+  if (whole && !rows.some((row) => row["data_lectura"]?.slice(5, 7) === "12")) throw new Error("the year does not reach December yet");
 
   const days = new Map<string, Day[]>();
   const seen = new Set<string>();
@@ -65,6 +70,22 @@ function daysOf(answer: unknown): Map<string, Day[]> {
     if (Number.isFinite(value)) days.set(key, [...(days.get(key) ?? []), { date, value }]);
   }
   return days;
+}
+
+/** Each station's file with the year in it, from the days sorted out of the portal's rows. */
+function filesWith(files: Readonly<Record<string, WeatherStation | undefined>>, year: number, days: Map<string, Day[]>): Record<string, WeatherStation> {
+  return Object.fromEntries(
+    weatherStations.map((station) => {
+      const file = `${station.code}.json`;
+      const measured = VARIABLES.flatMap(([variable, info]) => {
+        const ofIt = days.get(`${station.code}/${info.code}`);
+        return ofIt ? [[variable, variableYear(ofIt, info)] as const] : [];
+      });
+      const thisYear: WeatherYear = Object.fromEntries(measured);
+      const years = { ...files[file]?.years, ...(measured.length ? { [year]: thisYear } : {}) };
+      return [file, { ...station, years }];
+    }),
+  );
 }
 
 /**
@@ -98,18 +119,12 @@ export const weatherSource: YearlySource<WeatherStation> = {
   },
 
   withYear(files, year, answers) {
-    const days = daysOf(answers[0]);
-    return Object.fromEntries(
-      weatherStations.map((station) => {
-        const file = `${station.code}.json`;
-        const measured = VARIABLES.flatMap(([variable, info]) => {
-          const ofIt = days.get(`${station.code}/${info.code}`);
-          return ofIt ? [[variable, variableYear(ofIt, info)] as const] : [];
-        });
-        const thisYear: WeatherYear = Object.fromEntries(measured);
-        const years = { ...files[file]?.years, ...(measured.length ? { [year]: thisYear } : {}) };
-        return [file, { ...station, years }];
-      }),
-    );
+    return filesWith(files, year, daysOf(answers[0], true));
+  },
+
+  soFar(year, answers) {
+    const days = daysOf(answers[0], false);
+    const through = [...days.values()].flat().reduce((last, { date }) => (date > last ? date : last), "");
+    return { files: filesWith({}, year, days), through };
   },
 };

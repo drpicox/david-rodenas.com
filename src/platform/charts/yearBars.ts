@@ -9,6 +9,8 @@ export interface YearBar {
   readonly chosen?: boolean;
   /** Drawn as an outline: there is a figure, and it is of less than a year. */
   readonly partial?: boolean;
+  /** Drawn apart from a partial one: it is of less than a year because the year is not over. */
+  readonly running?: boolean;
   /** A colour of its own, when the colour says something the height does not: good or bad, not just how much. */
   readonly colour?: string;
 }
@@ -35,8 +37,8 @@ export function yearBars(bars: readonly YearBar[], options: YearBarsOptions): st
   const { x, y, slot } = frame;
 
   const marks = bars
-    .map(({ year, value, title, chosen, partial, colour }) => {
-      const classes = ["bar", chosen ? "chosen" : "", partial ? "partial" : ""].filter(Boolean).join(" ");
+    .map(({ year, value, title, chosen, partial, running, colour }) => {
+      const classes = ["bar", chosen ? "chosen" : "", running ? "running" : partial ? "partial" : ""].filter(Boolean).join(" ");
       return (
         `<rect class="${classes}" data-year="${year}"${colour ? ` style="--bar:${colour}"` : ""} x="${fixed(x(year) + slot * 0.15)}" y="${fixed(y(value))}" width="${fixed(slot * 0.7)}" height="${fixed(y(0) - y(value))}"/>` +
         `<rect class="hit" data-year="${year}" x="${fixed(x(year))}" y="${frame.top}" width="${fixed(slot)}" height="${frame.height}"><title>${title}</title></rect>`

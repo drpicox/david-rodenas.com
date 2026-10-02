@@ -1,5 +1,7 @@
 import { el } from "../../../platform/browser/el";
+import { runningAt } from "../../../platform/browser/runningAt";
 import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
+import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
 import { firstQuestion } from "../firstQuestion";
 import { renderWeatherFigure } from "../renderWeatherFigure";
 import { weatherPresets } from "../weatherPresets";
@@ -26,11 +28,12 @@ const SLIDE = { tn: [-10, 30], tx: [0, 45], pp: [0.5, 100], pi: [0.5, 60] } as c
  */
 export function mountWeather(host: HTMLElement): () => void {
   const held = new Map<string, Promise<WeatherStation>>();
-  const source = sourceLineOf(host, "/data/weather/index.json");
+  const running = runningAt<WeatherStation>("/data/weather/running.json");
+  const source = sourceLineOf(host, "/data/weather/index.json", "/data/weather/running.json");
   const figure = el("div");
   figure.append(...host.querySelectorAll("figure"));
 
-  let station: WeatherStation | null = null;
+  let station: WithSoFar<WeatherStation> | null = null;
   let question: WeatherQuestion = firstQuestion;
   let stopped = false;
 
@@ -68,9 +71,9 @@ export function mountWeather(host: HTMLElement): () => void {
     const asked = held.get(code) ?? fetch(`/data/weather/${code}.json`).then((response) => response.json() as Promise<WeatherStation>);
     held.set(code, asked);
     try {
-      const arrived = await asked;
+      const [arrived, soFar] = await Promise.all([asked, running]);
       if (stopped || stationSelect.value !== code) return;
-      station = arrived;
+      station = withSoFar(arrived, soFar, `${code}.json`);
       draw();
     } catch {
       held.delete(code);

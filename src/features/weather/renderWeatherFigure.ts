@@ -1,5 +1,6 @@
 import { yearBars } from "../../platform/charts/yearBars";
 import { yearLine } from "../../platform/charts/yearLine";
+import type { WithSoFar } from "../../platform/data/withSoFar";
 import { daysPerYear } from "./daysPerYear";
 import { questionInWords } from "./questionInWords";
 import { renderDaysCalendar } from "./renderDaysCalendar";
@@ -13,7 +14,8 @@ const SUMMARY_TITLES = { mean: "The mean", sum: "The total", max: "The highest" 
 
 const oneDecimal = (value: number) => String(Math.round(value * 10) / 10);
 const signed = (value: number) => `${value > 0 ? "+" : value < 0 ? "−" : ""}${oneDecimal(Math.abs(value))}`;
-const dayInWords = (date: string) => `${Number(date.slice(8, 10))} ${MONTHS[Number(date.slice(5, 7)) - 1]} ${date.slice(0, 4)}`;
+const dayAndMonth = (date: string) => `${Number(date.slice(8, 10))} ${MONTHS[Number(date.slice(5, 7)) - 1]}`;
+const dayInWords = (date: string) => `${dayAndMonth(date)} ${date.slice(0, 4)}`;
 
 /** The most extreme day the station has, on the side the question looks at. */
 function record(station: WeatherStation, question: WeatherQuestion): string {
@@ -30,7 +32,7 @@ function record(station: WeatherStation, question: WeatherQuestion): string {
  * into the page and the browser draws it again from this same function on
  * every change.
  */
-export function renderWeatherFigure(station: WeatherStation, question: WeatherQuestion): string {
+export function renderWeatherFigure(station: WithSoFar<WeatherStation>, question: WeatherQuestion): string {
   const info = weatherVariables[question.variable];
   const caption = `<figcaption><strong>${station.name}</strong> · ${station.altitude} m, ${station.setting} · ${questionInWords(question)}</figcaption>`;
   const years = daysPerYear(station, question);
@@ -45,8 +47,9 @@ export function renderWeatherFigure(station: WeatherStation, question: WeatherQu
       `</div>`
     : "";
 
-  const bars = years.map(({ year, days, elsewhere, measured, expected, whole }) => {
+  const bars = years.map(({ year, days, elsewhere, measured, expected, whole, through }) => {
     const beyond = elsewhere > 0 ? `, and ${elsewhere} more outside the months chosen` : "";
+    if (through) return { year, value: days, running: true, title: `${year} so far, to ${dayAndMonth(through)}: ${days} days${beyond}` };
     const holes = whole ? "" : `, with only ${measured} of ${expected} days measured`;
     return { year, value: days, partial: !whole, title: `${year}: ${days} days${holes}${beyond}` };
   });

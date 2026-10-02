@@ -73,4 +73,16 @@ describe("a year of weather, from the portal to the files", () => {
     expect(Object.keys(second["D5.json"]?.years ?? {})).toEqual(["2023"]);
     expect(second["WU.json"]).toMatchObject({ code: "WU", name: "Badalona - Museu", altitude: 42 });
   });
+
+  it("keeps the year still running, up to the last day the network has, as only that year of each station", () => {
+    const soFar = weatherSource.soFar!(2026, [[day("WU", TN, "2026-09-27", 21), day("WU", TN, "2026-09-28", 20.5), day("D5", TN, "2026-09-26", 17)]]);
+    expect(soFar.through).toBe("2026-09-28");
+    expect(Object.keys(soFar.files["WU.json"]?.years ?? {})).toEqual(["2026"]);
+    expect(soFar.files["WU.json"]?.years["2026"]?.tn?.months[8]).toEqual([20.5, 1, 1]);
+  });
+
+  it("refuses a year still running that is not a clean run of days, as it refuses a whole one", () => {
+    expect(() => weatherSource.soFar!(2026, [[]])).toThrow(/no days/);
+    expect(() => weatherSource.soFar!(2026, [[day("WU", TN, "2026-02-01", 5), day("WU", TN, "2026-02-01", 5)]])).toThrow(/twice/);
+  });
 });
