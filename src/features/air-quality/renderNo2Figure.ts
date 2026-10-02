@@ -1,3 +1,5 @@
+import { dayAndMonthOf } from "../../platform/data/dayAndMonthOf";
+import type { WithSoFar } from "../../platform/data/withSoFar";
 import { no2AnnualMeans } from "./no2AnnualMeans";
 import { no2Grid } from "./no2Grid";
 import { no2Colour } from "./no2Colour";
@@ -21,11 +23,13 @@ function key(): string {
  * it into the page and the browser draws it again on every change, from this
  * same function — which is what keeps the two from ever disagreeing.
  */
-export function renderNo2Figure(station: No2Station, selection: No2Selection): string {
+export function renderNo2Figure(station: WithSoFar<No2Station>, selection: No2Selection): string {
   const held = Object.keys(station.years).map(Number);
   const from = Math.max(selection.from, Math.min(...held));
   const to = Math.min(selection.to, Math.max(...held));
-  const years = from === to ? String(from) : `${from}–${to}`;
+  const { soFar } = station;
+  const unfinished = soFar && soFar.year >= from && soFar.year <= to ? `, ${soFar.year} to ${dayAndMonthOf(soFar.through)}` : "";
+  const years = `${from === to ? String(from) : `${from}–${to}`}${unfinished}`;
 
   return (
     `<figure class="no2">` +
@@ -33,7 +37,7 @@ export function renderNo2Figure(station: No2Station, selection: No2Selection): s
     renderNo2Heatmap(no2Grid(station, selection)) +
     key() +
     `<h4>The mean of each year, ${DAYS[selection.days]}</h4>` +
-    renderNo2Years(no2AnnualMeans(station, selection.days), { from, to }) +
+    renderNo2Years(no2AnnualMeans(station, selection.days), { from, to }, soFar) +
     `</figure>`
   );
 }

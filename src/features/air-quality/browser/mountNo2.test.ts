@@ -27,6 +27,17 @@ describe("the NO2 figure, once the script is there", () => {
     expect(host.querySelector("p.source")?.textContent).toContain("Whoever measured");
   });
 
+  it("draws the year still running among the others, in grey, when the site has it", async () => {
+    const running = { year: 2021, through: "2021-09-28", refreshed: "2021-09-30", files: { "08019004.json": aStation({ "2021": { workdays: flatSums(25, 20), weekends: flatSums(12, 8) } }) } };
+    vi.stubGlobal("fetch", async (url: string) => ({ ok: true, text: async () => JSON.stringify(running), json: async () => (url.endsWith("index.json") ? index : station) }));
+    const host = document.createElement("div");
+    mountNo2(host);
+    await settled();
+    expect(host.querySelector("figcaption")?.textContent).toContain("2019–2021, 2021 to 28 September");
+    expect(host.querySelector('.bar.running[data-year="2021"]')).not.toBeNull();
+    expect(host.querySelector("p.source")?.textContent).toContain("2021 so far, to 28 September");
+  });
+
   it("keeps the still's own source line rather than asking for it again", async () => {
     served();
     const host = document.createElement("div");

@@ -71,4 +71,6 @@ matters, go to the source.
 I first drew this table in 2021, for myself, in a small app that asked the
 portal for everything on every visit. This page is that analysis again, with
 the asking moved out of the reader's way: the site keeps the sums, a finished
-year at a time, and asks the portal only when a year has ended.
+year at a time, and asks the portal for a year once it has ended — and for the
+year still running once a day, which is drawn in grey: a mean of part of a
+year, with the winter still to come.

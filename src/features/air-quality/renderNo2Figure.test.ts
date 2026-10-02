@@ -21,6 +21,13 @@ describe("the whole figure", () => {
     expect(renderNo2Figure(station, { from: 2020, to: 2020, days: "all" })).toContain(", 2020");
   });
 
+  it("says how far the year still running reaches, when it is among the years looked at", () => {
+    const running = { ...aStation({ ...station.years, "2021": { workdays: flatSums(25, 20), weekends: flatSums(12, 8) } }), soFar: { year: 2021, through: "2021-09-28" } };
+    const caption = (to: number) => /<figcaption>.*?<\/figcaption>/.exec(renderNo2Figure(running, { from: 2019, to, days: "all" }))?.[0];
+    expect(caption(2021)).toContain("2019–2021, 2021 to 28 September");
+    expect(caption(2020)).not.toContain("to 28 September");
+  });
+
   it("holds the table, the key to its colours, and the years", () => {
     const html = renderNo2Figure(station, { from: 2019, to: 2020, days: "all" });
     expect(html).toContain('<table class="heat graded">');

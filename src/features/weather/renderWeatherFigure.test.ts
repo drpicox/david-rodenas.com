@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { renderSourceLine } from "../../platform/data/renderSourceLine";
 import { aWeatherStation } from "./aWeatherStation";
 import { steadyYear } from "./steadyYear";
 import { renderWeatherFigure } from "./renderWeatherFigure";
@@ -42,6 +43,15 @@ describe("the whole weather figure", () => {
     expect(drawn).toMatch(/class="bar running" data-year="2026"/);
     expect(drawn).toContain("2026 so far, to 28 September: 273 days");
     expect(drawn).toContain("2022–2025");
+  });
+
+  it("says how far the year still running reaches in the words the line under it says it", () => {
+    const soFar = { year: 2026, through: "2026-09-28" };
+    const running = { ...aWeatherStation({ ...station.years, "2026": steadyYear(2026, 21, [9, 10, 11]) }), soFar };
+    const line = renderSourceLine({ attribution: "Whoever", dataset: "https://example.test", years: [2020, 2025], refreshed: "2026-09-30" }, { ...soFar, refreshed: "2026-09-30" });
+    const said = "2026 so far, to 28 September";
+    expect(renderWeatherFigure(running, tropical)).toContain(said);
+    expect(line).toContain(said);
   });
 
   it("holds the days a year, the calendar, and the year in one figure", () => {

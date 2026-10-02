@@ -27,6 +27,12 @@ describe("the years, one bar each", () => {
     expect(svg).toContain("<title>2020: 33.1 µg/m³, from only 60% of the year's hours</title>");
   });
 
+  it("draws the year still running in grey, however much of it was measured, and says the day it reaches", () => {
+    const svg = renderNo2Years([...years, { year: 2026, mean: 30.1, measured: 0.8 }], { from: 2018, to: 2026 }, { year: 2026, through: "2026-09-28" });
+    expect(svg).toMatch(/class="bar chosen running" data-year="2026"/);
+    expect(svg).toContain("<title>2026 so far, to 28 September: 30.1 µg/m³</title>");
+  });
+
   it("rules the two lines an annual mean is held against", () => {
     const svg = renderNo2Years(years, { from: 2018, to: 2020 });
     expect(svg).toContain("EU limit, 40");

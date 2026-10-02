@@ -36,6 +36,29 @@ function add(into: Tally, row: Row): void {
   });
 }
 
+/** Each station's file with the year in it, from the portal's rows; throws at days counted twice. */
+function filesWith(files: Readonly<Record<string, No2Station | undefined>>, year: number, rows: readonly Row[]): Record<string, No2Station> {
+  // A day of the week comes round five times a month at most; more is the same days twice.
+  if (rows.some((row) => Number(row["days"]) > 5)) throw new Error("some days are in the portal twice");
+  const measured = new Map<string, { workdays: Tally; weekends: Tally }>();
+  for (const row of rows) {
+    const code = row["codi_eoi"] ?? "";
+    const station = measured.get(code) ?? emptyYear();
+    measured.set(code, station);
+    const dow = Number(row["dow"]);
+    add(dow === SUNDAY || dow === SATURDAY ? station.weekends : station.workdays, row);
+  }
+
+  return Object.fromEntries(
+    no2Stations.map((station) => {
+      const file = `${station.code}.json`;
+      const thisYear: No2Year | undefined = measured.get(station.code);
+      const years = { ...files[file]?.years, ...(thisYear ? { [year]: thisYear } : {}) };
+      return [file, { ...station, years }];
+    }),
+  );
+}
+
 /**
  * Hourly NO2 from the Generalitat's air-quality network. The portal does the
  * adding up: one question a year comes back as a few hundred rows instead of
@@ -59,7 +82,7 @@ export const no2Source: YearlySource<No2Station> = {
     const sums = HOURS.map((hour) => `sum(h${hour}) as s${hour}, count(h${hour}) as n${hour}`).join(", ");
     return [
       socrataUrl(DATASET, {
-        select: `codi_eoi, date_extract_m(data) as month, date_extract_dow(data) as dow, count(*) as days, ${sums}`,
+        select: `codi_eoi, date_extract_m(data) as month, date_extract_dow(data) as dow, count(*) as days, max(data) as last, ${sums}`,
         where: `contaminant='NO2' and codi_eoi in (${codes}) and data between '${year}-01-01T00:00:00' and '${year}-12-31T23:59:59'`,
         group: "codi_eoi,month,dow",
         limit: 5000,
@@ -69,26 +92,13 @@ export const no2Source: YearlySource<No2Station> = {
 
   withYear(files, year, answers) {
     const rows = rowsOf(answers[0]);
-    // A day of the week comes round five times a month at most; more is the same days twice.
-    if (rows.some((row) => Number(row["days"]) > 5)) throw new Error("some days are in the portal twice");
     if (!rows.some((row) => row["month"] === "12")) throw new Error("the year does not reach December yet");
+    return filesWith(files, year, rows);
+  },
 
-    const measured = new Map<string, { workdays: Tally; weekends: Tally }>();
-    for (const row of rows) {
-      const code = row["codi_eoi"] ?? "";
-      const station = measured.get(code) ?? emptyYear();
-      measured.set(code, station);
-      const dow = Number(row["dow"]);
-      add(dow === SUNDAY || dow === SATURDAY ? station.weekends : station.workdays, row);
-    }
-
-    return Object.fromEntries(
-      no2Stations.map((station) => {
-        const file = `${station.code}.json`;
-        const thisYear: No2Year | undefined = measured.get(station.code);
-        const years = { ...files[file]?.years, ...(thisYear ? { [year]: thisYear } : {}) };
-        return [file, { ...station, years }];
-      }),
-    );
+  soFar(year, answers) {
+    const rows = rowsOf(answers[0]);
+    const through = rows.reduce((last, row) => ((row["last"] ?? "") > last ? (row["last"] ?? "") : last), "").slice(0, 10);
+    return { files: filesWith({}, year, rows), through };
   },
 };

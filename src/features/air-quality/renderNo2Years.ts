@@ -1,4 +1,5 @@
 import { yearBars } from "../../platform/charts/yearBars";
+import { dayAndMonthOf } from "../../platform/data/dayAndMonthOf";
 import type { No2AnnualMean } from "./no2AnnualMeans";
 import { no2Colour } from "./no2Colour";
 import { NO2_SCALE_TOP } from "./no2ScaleTop";
@@ -16,11 +17,14 @@ const REFERENCES = [
  * The mean of each year as a bar, on the same fixed scale as the colours, so
  * two stations can be compared by eye. A bar is also the way to choose a year.
  */
-export function renderNo2Years(years: readonly No2AnnualMean[], chosen: { readonly from: number; readonly to: number }): string {
+export function renderNo2Years(years: readonly No2AnnualMean[], chosen: { readonly from: number; readonly to: number }, soFar?: { readonly year: number; readonly through: string }): string {
   const bars = years.map(({ year, mean, measured }) => {
+    const isChosen = year >= chosen.from && year <= chosen.to;
+    // However much of it was measured, the year still running is a mean of part of a year, and the winter is still to come.
+    if (year === soFar?.year) return { year, value: mean, running: true, chosen: isChosen, title: `${year} so far, to ${dayAndMonthOf(soFar.through)}: ${mean.toFixed(1)} µg/m³` };
     const partial = measured < ENOUGH;
     const why = partial ? `, from only ${Math.round(measured * 100)}% of the year's hours` : "";
-    return { year, value: mean, partial, colour: no2Colour(mean).background, chosen: year >= chosen.from && year <= chosen.to, title: `${year}: ${mean.toFixed(1)} µg/m³${why}` };
+    return { year, value: mean, partial, colour: no2Colour(mean).background, chosen: isChosen, title: `${year}: ${mean.toFixed(1)} µg/m³${why}` };
   });
   return yearBars(bars, { label: "Mean NO2 of each year, µg/m³", top: NO2_SCALE_TOP, references: REFERENCES });
 }

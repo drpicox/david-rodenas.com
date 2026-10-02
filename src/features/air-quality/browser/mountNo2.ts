@@ -1,5 +1,7 @@
 import { el } from "../../../platform/browser/el";
+import { runningAt } from "../../../platform/browser/runningAt";
 import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
+import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
 import type { No2Selection } from "../No2Selection";
 import type { No2Station } from "../No2Station";
 import { no2Stations } from "../no2Stations";
@@ -19,11 +21,12 @@ const DAYS: readonly (readonly [No2Selection["days"], string])[] = [
  */
 export function mountNo2(host: HTMLElement): () => void {
   const held = new Map<string, Promise<No2Station>>();
-  const source = sourceLineOf(host, "/data/no2/index.json");
+  const running = runningAt<No2Station>("/data/no2/running.json");
+  const source = sourceLineOf(host, "/data/no2/index.json", "/data/no2/running.json");
   const figure = el("div");
   figure.append(...host.querySelectorAll("figure"));
 
-  let station: No2Station | null = null;
+  let station: WithSoFar<No2Station> | null = null;
   let selection: No2Selection = { from: 0, to: 9999, days: "all" };
   let stopped = false;
 
@@ -51,8 +54,9 @@ export function mountNo2(host: HTMLElement): () => void {
     const asked = held.get(code) ?? fetch(`/data/no2/${code}.json`).then((response) => response.json() as Promise<No2Station>);
     held.set(code, asked);
     try {
-      const arrived = await asked;
+      const [measured, soFar] = await Promise.all([asked, running]);
       if (stopped || stationSelect.value !== code) return;
+      const arrived = withSoFar(measured, soFar, `${code}.json`);
       // Years the reader chose are kept across stations, to compare the same years in two places; a
       // station that has none of them, or a reader who had chosen none, gets the whole record.
       const whole = wholeRecord(arrived);

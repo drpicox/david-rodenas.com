@@ -66,4 +66,20 @@ describe("a year of NO2, from the portal to the files", () => {
     // More than five Mondays in a month means days counted twice.
     expect(() => no2Source.withYear({}, 2019, [[row(EIXAMPLE, 1, 1, 9, 40), december]])).toThrow(/twice/);
   });
+
+  it("asks for the last day each row reaches, so that a year still running can say how far it goes", () => {
+    expect(new URL(no2Source.requestsFor(2026)[0] ?? "").searchParams.get("$select")).toContain("max(data) as last");
+  });
+
+  it("keeps the year still running, up to the last day the portal has, as only that year of each station", () => {
+    const soFar = no2Source.soFar!(2026, [[{ ...row(EIXAMPLE, 9, 1, 4, 30), last: "2026-09-28T00:00:00.000" }, { ...row(EIXAMPLE, 8, 1, 4, 20), last: "2026-08-31T00:00:00.000" }]]);
+    expect(soFar.through).toBe("2026-09-28");
+    expect(soFar.files[`${EIXAMPLE}.json`]?.years["2026"]?.workdays.counts[8]?.[0]).toBe(4);
+    expect(Object.keys(soFar.files[`${EIXAMPLE}.json`]?.years ?? {})).toEqual(["2026"]);
+  });
+
+  it("refuses a year still running that is not a clean run of days, as it refuses a whole one", () => {
+    expect(() => no2Source.soFar!(2026, [[]])).toThrow(/no rows/);
+    expect(() => no2Source.soFar!(2026, [[{ ...row(EIXAMPLE, 1, 1, 9, 40), last: "2026-01-31T00:00:00.000" }]])).toThrow(/twice/);
+  });
 });
