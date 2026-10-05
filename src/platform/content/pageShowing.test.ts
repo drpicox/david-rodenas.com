@@ -12,6 +12,11 @@ describe("the page a program stands on", () => {
     expect(pageShowing(site, "savings")?.route).toBe("/money/");
   });
 
+  it("is, as well, one that makes a place for it as a fenced block, dials and all", () => {
+    const fenced = new Site([{ file: "wired.md", markdown: "---\ntitle: Wired\n---\n```::blueprint --open\nbars\n```\n" }]);
+    expect(pageShowing(fenced, "blueprint")?.route).toBe("/wired/");
+  });
+
   it("is none, for a program no page makes room for", () => {
     expect(pageShowing(site, "rocket")).toBeUndefined();
   });

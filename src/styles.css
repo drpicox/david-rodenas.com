@@ -6505,3 +6505,43 @@ body.wb-full-open {
 .app .wb-role-dial .wb-in .wb-pin {
   display: none;
 }
+
+.app .wb-slider .wb-play {
+  flex: none;
+  width: 1.9em;
+  height: 1.9em;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.app .wb-help {
+  position: absolute;
+  z-index: 7;
+  top: 2.4rem;
+  right: 0.5rem;
+  max-width: 26rem;
+  padding: 0.8em 1em 0.6em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+  font-size: 0.8rem;
+}
+
+.app .wb-help ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.app .wb-help li {
+  margin: 0 0 0.35em;
+}
+
+.app .wb-help .wb-help-close {
+  float: right;
+  margin: -0.3em -0.4em 0 0.5em;
+  border: none;
+  padding: 0 0.3em;
+}

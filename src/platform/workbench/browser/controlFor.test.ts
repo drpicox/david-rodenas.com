@@ -39,6 +39,21 @@ describe("the control that sets one input", () => {
     expect(told.splice(0)).toEqual([[7, false]]);
   });
 
+  it("plays a dial with a range from where it stands to its end, step by step, and pauses when asked", async () => {
+    const control = controlFor({ kind: "number", min: 0, max: 3, step: 1 }, 1, { style: "dial", label: "commit", changed });
+    document.body.append(control.element);
+    const play = control.element.querySelector("button.wb-play") as HTMLButtonElement;
+    play.click();
+    expect(play.textContent).toBe("❚❚");
+    await new Promise((resolve) => setTimeout(resolve, 1300));
+    expect(told.splice(0)).toEqual([[2, false], [3, true]]);
+    expect(play.textContent).toBe("▶");
+    play.click();
+    play.click();
+    expect(told.splice(0)).toEqual([[0, false]]);
+    control.element.remove();
+  });
+
   it("is a field for a number elsewhere, empty meaning the node chooses", () => {
     const control = controlFor({ kind: "number", step: 0.5 }, undefined, { style: "inline", optional: true, settled: "25", label: "threshold", changed });
     const field = control.element as HTMLInputElement;

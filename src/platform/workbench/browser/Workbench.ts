@@ -136,6 +136,7 @@ export class Workbench {
       button("Text", "The blueprint as text, to read, copy or write", () => this.openText()),
       button("Link", "Copy a link to the blueprint as it is now", () => void this.share()),
       this.buttons.reset,
+      button("?", "How to use it", () => this.toggleHelp(), "wb-help-button"),
       this.buttons.full,
     );
     this.element = el("div", { class: "workbench" }, bar, el("div", { class: "wb-main" }, el("div", { class: "wb-stage" }, this.canvas, this.status), this.board.element));
@@ -146,6 +147,15 @@ export class Workbench {
     this.stopListening = setting.files.listen(() => this.schedule());
     if (setting.stillBoard) this.board.showStill(setting.stillBoard);
     this.render();
+  }
+
+  /** A blueprint written by someone else — an agent — put on the canvas as an edit, so that Undo and Reset still work. */
+  ask(text: string): void {
+    this.edit(this.laidOut(text));
+    this.notice = "Written by an agent. Undo, or Reset, goes back.";
+    this.wake();
+    this.fit();
+    this.say();
   }
 
   /** Near the screen: run the blueprint, and from now on whenever it changes. */
@@ -463,6 +473,35 @@ export class Workbench {
     } catch {
       this.say(link);
     }
+  }
+
+  /** What the hands do, said where the hands are: on a page full screen, the page's own words are out of sight. */
+  private toggleHelp(): void {
+    const open = this.element.querySelector(".wb-help");
+    if (open) {
+      open.remove();
+      return;
+    }
+    const line = (keys: string, what: string) => el("li", {}, el("strong", {}, keys), ` ${what}`);
+    const close = el("button", { type: "button", class: "wb-help-close", "aria-label": "Close" }, "✕");
+    const help = el(
+      "div",
+      { class: "wb-help", role: "dialog", "aria-label": "How to use it" },
+      close,
+      el(
+        "ul",
+        {},
+        line("Drag from a pin", "to wire it: let go on another pin, or in empty space to choose what comes next."),
+        line("Double-click, or the space bar,", "to add any node."),
+        line("Drag a node by its title", "to move it, and the canvas to move about; Ctrl and the wheel zoom; F fits it all."),
+        line("Shift and drag", "chooses several; Delete takes them away, Ctrl+D copies them, Ctrl+Z undoes."),
+        line("Alt and a click on a pin", "lets go of its wires; so does dragging a wire off its input into empty space."),
+        line("◉ beside a value", "puts it on the board as a dial; ▶ on a dial plays it."),
+        line("Double-click a title", "to rename the node; a picture's title on the board finds its node."),
+      ),
+    );
+    close.addEventListener("click", () => help.remove());
+    this.element.append(help);
   }
 
   private full(): boolean {

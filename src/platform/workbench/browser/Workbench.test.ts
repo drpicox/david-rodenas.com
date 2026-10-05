@@ -200,6 +200,14 @@ describe("a blueprint worked on in the page", () => {
     expect(workbench.element.querySelector(".wb-cards .bp-painting svg")).not.toBeNull();
   });
 
+  it("says how to use it, where the hands are, and closes", () => {
+    const { element } = bench("n = nights @ 0 0");
+    (element.querySelector(".wb-help-button") as HTMLButtonElement).click();
+    expect(element.querySelector(".wb-help")?.textContent).toContain("Drag from a pin");
+    (element.querySelector(".wb-help-close") as HTMLButtonElement).click();
+    expect(element.querySelector(".wb-help")).toBeNull();
+  });
+
   it("goes full screen, and back on Escape", () => {
     const { element } = bench("n = nights @ 0 0");
     (element.querySelector(".wb-full-button") as HTMLButtonElement).click();

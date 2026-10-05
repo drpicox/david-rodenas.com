@@ -1,4 +1,5 @@
 import type { Kit } from "../../blueprint/kitOf";
+import { PROGRAM_ASKED } from "../../browser/PROGRAM_ASKED";
 import { hashOf } from "../hashOf";
 import { linkCodeOf } from "../linkCodeOf";
 import { textOfLinkCode } from "../textOfLinkCode";
@@ -60,7 +61,14 @@ export function mountWorkbench(kit: Kit): (host: HTMLElement) => () => void {
     host.replaceChildren(workbench.element);
     workbench.placed();
     const stopWatching = wakeWhenNear(host, () => workbench.wake());
+    // An agent's blueprint, shown to the reader: the tool asks the place the way it asks a program's.
+    const asked = (event: Event) => {
+      const text = (event as CustomEvent<Record<string, unknown>>).detail?.["text"];
+      if (typeof text === "string") workbench.ask(text);
+    };
+    host.addEventListener(PROGRAM_ASKED, asked);
     return () => {
+      host.removeEventListener(PROGRAM_ASKED, asked);
       stopWatching();
       workbench.stop();
     };

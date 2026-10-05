@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { aKit } from "../../blueprint/aKit";
+import { askProgram } from "../../browser/askProgram";
 import { linkCodeOf } from "../linkCodeOf";
 import { mountWorkbench } from "./mountWorkbench";
 
@@ -40,6 +41,14 @@ describe("a blueprint written in a page, once the script is there", () => {
     mountWorkbench(aKit)(again);
     expect(again.querySelectorAll(".wb-node").length).toBe(2);
     expect(again.querySelector(".wb-status")?.textContent).toContain("As you left it");
+  });
+
+  it("puts an agent's blueprint on its canvas when asked, as an edit that can be undone", () => {
+    const host = place("n = nights @ 0 0");
+    mountWorkbench(aKit)(host);
+    askProgram(host, { text: "x = nights @ 0 0\nbars table: x @ 400 0" });
+    expect([...host.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["x", "bars"]);
+    expect(host.querySelector(".wb-status")?.textContent).toBe("Written by an agent. Undo, or Reset, goes back.");
   });
 
   it("starts as a link to it carried it", () => {

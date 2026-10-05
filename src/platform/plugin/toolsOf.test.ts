@@ -15,10 +15,10 @@ const writings: AgentTool = {
 describe("the tools the features bring", () => {
   it("are their programs, each one a tool that shows the reader what it was asked", () => {
     const tools = toolsOf([{ name: "money", programs: [aProgram] }, { name: "nothing" }]);
-    expect(tools.map((tool) => [tool.name, tool.shows])).toEqual([["savings", true]]);
+    expect(tools.map((tool) => [tool.name, tool.shows])).toEqual([["savings", true], ["blueprint", true]]);
   });
 
   it("are, besides, the tools a feature brings as such", () => {
-    expect(toolsOf([{ name: "money", programs: [aProgram] }, { name: "words", tools: [writings] }]).map((tool) => tool.name)).toEqual(["savings", "writings"]);
+    expect(toolsOf([{ name: "money", programs: [aProgram] }, { name: "words", tools: [writings] }]).map((tool) => tool.name)).toEqual(["savings", "writings", "blueprint"]);
   });
 });

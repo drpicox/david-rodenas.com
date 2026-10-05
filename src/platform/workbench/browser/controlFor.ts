@@ -48,23 +48,55 @@ export function controlFor(editor: Resolved, value: Literal | undefined, options
     return { element: box, show };
   }
   if (editor.kind === "number" && options.style === "dial" && editor.min !== undefined && editor.max !== undefined) {
-    const slider = el("input", { type: "range", min: editor.min, max: editor.max, step: editor.step ?? "any", "aria-label": label });
+    const [min, max] = [editor.min, editor.max];
+    const slider = el("input", { type: "range", min, max, step: editor.step ?? "any", "aria-label": label });
     const said = el("output");
+    const play = el("button", { type: "button", class: "wb-play", title: `Play ${label} from where it is to its end`, "aria-label": `Play ${label}` }, "▶");
     const say = (shown: number) => {
       said.textContent = editor.show ? editor.show(shown) : String(shown);
     };
+    const set = (next: number, done: boolean) => {
+      slider.value = String(next);
+      say(next);
+      changed(next, done);
+    };
+    let playing: ReturnType<typeof setInterval> | null = null;
+    const stop = () => {
+      if (playing !== null) clearInterval(playing);
+      playing = null;
+      play.textContent = "▶";
+      play.setAttribute("aria-label", `Play ${label}`);
+    };
+    // Played from where it stands to its end, or from its start when it is at the end, in about ten seconds however long the range.
+    play.addEventListener("click", () => {
+      if (playing !== null) return stop();
+      const step = editor.step ?? (max - min) / 100;
+      const steps = Math.max(1, Math.round((max - min) / step));
+      if (Number(slider.value) >= max) set(min, false);
+      play.textContent = "❚❚";
+      play.setAttribute("aria-label", `Pause ${label}`);
+      playing = setInterval(() => {
+        const next = Math.min(max, Number(slider.value) + step);
+        if (!slider.isConnected || next >= max) {
+          stop();
+          if (slider.isConnected) set(max, true);
+          return;
+        }
+        set(next, false);
+      }, Math.min(600, Math.max(80, 10000 / steps)));
+    });
     slider.addEventListener("input", () => {
-      say(Number(slider.value));
-      changed(Number(slider.value), false);
+      stop();
+      set(Number(slider.value), false);
     });
     slider.addEventListener("change", () => changed(Number(slider.value), true));
     const show = (shown: Literal | undefined) => {
-      if (shown === undefined) return;
+      if (shown === undefined || playing !== null) return;
       slider.value = String(shown);
       say(Number(shown));
     };
     show(value);
-    return { element: el("span", { class: "wb-slider" }, slider, said), show };
+    return { element: el("span", { class: "wb-slider" }, play, slider, said), show };
   }
   if (editor.kind === "number") {
     const field = el("input", { type: "number", step: editor.step ?? "any", min: editor.min, max: editor.max, placeholder: options.settled ?? "", "aria-label": label });
