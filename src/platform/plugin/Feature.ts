@@ -1,3 +1,5 @@
+import type { NodeKind } from "../blueprint/NodeKind";
+import type { PinType } from "../blueprint/PinType";
 import type { Page } from "../content/Page";
 import type { AgentTool } from "./AgentTool";
 import type { Site } from "../content/Site";
@@ -23,9 +25,10 @@ export type App = (host: HTMLElement, surroundings: Surroundings) => (() => void
  * What a program's place holds before any script runs, written into the HTML
  * at build time. `read` gives the text of a file the site serves, by the path
  * the browser would ask for it at — so a still and its program read the same data.
- * `dials` are the ones its place named, when a page shows it small.
+ * `dials` are the ones its place named, when a page shows it small; `source`,
+ * the lines it was handed, when its place was written as a fenced block.
  */
-export type Still = (read: (path: string) => string, dials: readonly string[]) => string;
+export type Still = (read: (path: string) => string, dials: readonly string[], source?: string) => string;
 
 /** What a feature is handed when it is installed: the site's one control surface. */
 export interface Prompt {
@@ -54,6 +57,10 @@ export interface Feature {
   readonly programs?: readonly Program[];
   /** Tools it offers an agent in the reader's browser, besides its programs, which are tools already. */
   readonly tools?: readonly AgentTool[];
+  /** Kinds of node it brings a blueprint: its data as sources, and the steps and pictures that only make sense of it. */
+  readonly nodes?: readonly NodeKind[];
+  /** What flows along wires of its own, besides the numbers, words and tables every blueprint has. */
+  readonly pinTypes?: readonly PinType[];
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
   /** What stands in a program's place in the HTML, by the program's name. Runs in node: no DOM. */

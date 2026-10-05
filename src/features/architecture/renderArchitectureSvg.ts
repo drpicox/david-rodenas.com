@@ -9,13 +9,21 @@ function curve({ x1, y1, x2, y2 }: LinkPlace): string {
   return `M${round(x1)} ${round(y1)} C${round(x1)} ${round(y1 + bend)} ${round(x2)} ${round(y2 - bend)} ${round(x2)} ${round(y2)}`;
 }
 
+/** How each ball is to look when not as the layout has it: as big as a measure, coloured by another, in a class of its own. */
+export interface BallLook {
+  readonly radii?: ReadonlyMap<number, number>;
+  readonly fills?: ReadonlyMap<number, string>;
+  readonly classes?: ReadonlyMap<number, string>;
+}
+
 /**
  * One snapshot drawn: the boxes, the files as balls inside them, and an arrow
  * for each box that needs another — thicker the more files it needs there,
  * dashed when all it needs is a type. Plain SVG, so the page carries it in
- * its HTML before any script, and the script only makes it move.
+ * its HTML before any script, and the script only makes it move. A ball can
+ * be made to look as something else says: a blueprint sizes and colours them.
  */
-export function renderArchitectureSvg(layout: Layout): string {
+export function renderArchitectureSvg(layout: Layout, look: BallLook = {}): string {
   const bands = layout.bands
     .map((band) => `<g class="band" data-band="${escapeHtml(band.name)}"><rect x="${round(band.x)}" y="${round(band.y)}" width="${round(band.width)}" height="${round(band.height)}" rx="6"/><text x="${round(band.x + 8)}" y="${round(band.y + 12)}">${escapeHtml(band.name)}</text></g>`)
     .join("");
@@ -33,7 +41,11 @@ export function renderArchitectureSvg(layout: Layout): string {
     )
     .join("");
   const balls = layout.balls
-    .map((ball) => `<circle class="ball${ball.test ? " test" : ""}" cx="${round(ball.x)}" cy="${round(ball.y)}" r="${round(ball.radius)}"><title>${escapeHtml(ball.path)}</title></circle>`)
+    .map((ball) => {
+      const extra = look.classes?.get(ball.id);
+      const fill = look.fills?.get(ball.id);
+      return `<circle class="ball${ball.test ? " test" : ""}${extra ? ` ${escapeHtml(extra)}` : ""}" cx="${round(ball.x)}" cy="${round(ball.y)}" r="${round(look.radii?.get(ball.id) ?? ball.radius)}"${fill ? ` style="fill: ${escapeHtml(fill)}"` : ""}><title>${escapeHtml(ball.path)}</title></circle>`;
+    })
     .join("");
   const said = `${layout.boxes.length} boxes, ${layout.balls.length} files, ${layout.links.length} arrows between boxes`;
   return (

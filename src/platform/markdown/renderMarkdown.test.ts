@@ -81,6 +81,12 @@ describe("an app block", () => {
   it("is only a line that is nothing but the name", () => {
     expect(renderMarkdown("::not an app")).toBe("<p>::not an app</p>");
   });
+
+  it("can be a fenced block, named after the program, handing it the block's lines as its source", () => {
+    expect(renderMarkdown('```::blueprint --open\nheat = weather-months station: D5\nbars "Heat" table: heat\n```')).toBe(
+      '<div class="app" data-app="blueprint" data-dials="open" data-source="heat = weather-months station: D5\nbars &quot;Heat&quot; table: heat"></div>',
+    );
+  });
 });
 
 describe("an image on its own", () => {

@@ -16,6 +16,11 @@ describe("what a program's place holds before any script runs", () => {
     expect(fillStills(page, (name, dials) => (name === "no2" ? `${dials.length}` : undefined))).toContain('data-app="no2">0</div>');
   });
 
+  it("hands the still the lines its place was written with, as they were written", () => {
+    const written = renderMarkdown('```::blueprint\nbars "Heat & cold"\n```');
+    expect(fillStills(written, (_name, _dials, source) => `${source?.length}`)).toBe(written.replace("></div>", `>${'bars "Heat & cold"'.length}</div>`));
+  });
+
   it("leaves a program that has no still exactly as it was", () => {
     const html = fillStills(page, () => undefined);
     expect(html).toBe(page);

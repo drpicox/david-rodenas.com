@@ -1,4 +1,6 @@
-const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?><\/div>/g;
+import { unescapeHtml } from "../markdown/unescapeHtml";
+
+const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?(?: data-source="([^"]*)")?><\/div>/g;
 
 /**
  * A program draws when the script runs; a still is what stands in its place
@@ -8,10 +10,10 @@ const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 
  * renderer, because the renderer also runs in the browser, where the program
  * itself is about to draw and the data is not at hand.
  */
-export function fillStills(html: string, stillOf: (name: string, dials: readonly string[]) => string | undefined): string {
-  return html.replace(PLACE, (place, name: string, dials: string | undefined) => {
+export function fillStills(html: string, stillOf: (name: string, dials: readonly string[], source?: string) => string | undefined): string {
+  return html.replace(PLACE, (place, name: string, dials: string | undefined, source: string | undefined) => {
     try {
-      const still = stillOf(name, dials ? dials.split(" ") : []);
+      const still = stillOf(name, dials ? dials.split(" ") : [], source === undefined ? undefined : unescapeHtml(source));
       return still === undefined ? place : place.replace("></div>", `>${still}</div>`);
     } catch {
       return place;

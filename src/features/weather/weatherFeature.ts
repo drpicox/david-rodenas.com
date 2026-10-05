@@ -1,14 +1,16 @@
 import type { Feature } from "../../platform/plugin/Feature";
 import { mountWeather } from "./browser/mountWeather";
 import { hotNightsTool } from "./hotNightsTool";
+import { weatherNodes } from "./nodes/weatherNodes";
 import { weatherSource } from "./weatherSource";
 import { weatherStill } from "./weatherStill";
 
-/** Days over a threshold, year by year, at a few of the Meteocat's stations: hot nights, hot days, rain — a page, and a tool to ask it. */
+/** Days over a threshold, year by year, at a few of the Meteocat's stations: hot nights, hot days, rain — a page, a tool to ask it, and its stations as nodes of a blueprint. */
 export const weatherFeature: Feature = {
   name: "weather",
   apps: { weather: mountWeather },
   stills: { weather: weatherStill },
   sources: [weatherSource],
   tools: [hotNightsTool],
+  nodes: weatherNodes,
 };

@@ -1,6 +1,7 @@
 import { renderFlow } from "./flow/renderFlow";
 import { renderSlides } from "./slides/renderSlides";
 import { renderMath } from "./renderMath";
+import { escapeHtml } from "./escapeHtml";
 import { highlight } from "./highlight";
 import { renderBars } from "./renderBars";
 import { renderInline } from "./renderInline";
@@ -58,17 +59,29 @@ function heading(lines: string[]): string | null {
   return `<h${level} id="${slugOf(text)}">${renderInline(text)}</h${level}>`;
 }
 
+const PLACE = /^::([a-z0-9-]+)((?:\s+--[a-z0-9-]+)*)$/;
+
+/** A place on the page for a program, with the dials it is shown with and, when it was written in a fence, the lines it was handed. */
+function place(name: string, options: string, source?: string): string {
+  const dials = options.split(/\s+/).filter(Boolean).map((option) => option.slice(2));
+  return `<div class="app" data-app="${name}"${dials.length ? ` data-dials="${dials.join(" ")}"` : ""}${source === undefined ? "" : ` data-source="${escapeHtml(source)}"`}></div>`;
+}
+
 /**
  * A fence may name its language — ```js, ```html — and the block is coloured
  * by it, at build time. Three languages are not code at all: ```flow is a
  * flowchart, ```bars a few numbers, and ```math a formula; the first two
  * come out as drawings and the third as MathML. And ```slides js is code in
- * frames, each one what the code became next, for the browser to play.
+ * frames, each one what the code became next, for the browser to play. A
+ * fence named as a program's place, ```::blueprint, is that place, and its
+ * lines are what the program is handed: a blueprint written in the page.
  */
 function code(lines: string[]): string | null {
   if (!lines[0]?.startsWith("```")) return null;
   const language = lines[0].slice(3).trim();
   const body = lines.slice(1, -1).join("\n");
+  const named = PLACE.exec(language);
+  if (named) return place(named[1] ?? "", named[2] ?? "", body);
   if (language === "flow") return renderFlow(body);
   if (language === "bars") return renderBars(body);
   if (language === "math") return renderMath(body);
@@ -139,10 +152,8 @@ function quote(lines: string[]): string | null {
  * the reader's hand, the rest left where they start.
  */
 function app(lines: string[]): string | null {
-  const match = /^::([a-z0-9-]+)((?:\s+--[a-z0-9-]+)*)$/.exec(lines[0] ?? "");
-  if (!match || lines.length !== 1) return null;
-  const dials = (match[2] ?? "").split(/\s+/).filter(Boolean).map((option) => option.slice(2));
-  return `<div class="app" data-app="${match[1]}"${dials.length ? ` data-dials="${dials.join(" ")}"` : ""}></div>`;
+  const match = PLACE.exec(lines[0] ?? "");
+  return match && lines.length === 1 ? place(match[1] ?? "", match[2] ?? "") : null;
 }
 
 function rule(lines: string[]): string | null {

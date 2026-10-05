@@ -2,8 +2,12 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { allFeatures } from "./features/allFeatures";
+import { evaluateBlueprint } from "./platform/blueprint/evaluateBlueprint";
+import { parseBlueprint } from "./platform/blueprint/parseBlueprint";
 import { Site } from "./platform/content/Site";
+import { unescapeHtml } from "./platform/markdown/unescapeHtml";
 import { renderMain } from "./platform/page/renderMain";
+import { blueprintKitOf } from "./platform/plugin/blueprintKitOf";
 import { stillsOf } from "./platform/plugin/stillsOf";
 
 const CONTENT = new URL("../content", import.meta.url).pathname;
@@ -55,23 +59,41 @@ describe("the content", () => {
  * So it is said here, of every page as written.
  */
 describe("the content, in the HTML", () => {
-  const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?><\/div>/g;
+  const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?(?: data-source="([^"]*)")?><\/div>/g;
   const PUBLIC = new URL("../public", import.meta.url).pathname;
   const read = (path: string) => readFileSync(join(PUBLIC, path), "utf8");
   const stills = stillsOf(allFeatures);
   const apps = new Set(allFeatures.flatMap((feature) => Object.keys(feature.apps ?? {})));
-  const places = site.pages.flatMap((page) => [...renderMain(site, page).matchAll(PLACE)].map(([, name = "", dials]) => ({ route: page.route, name, dials: dials ? dials.split(" ") : [] })));
+  const places = site.pages.flatMap((page) =>
+    [...renderMain(site, page).matchAll(PLACE)].map(([, name = "", dials, source]) => ({ route: page.route, name, dials: dials ? dials.split(" ") : [], source: source === undefined ? undefined : unescapeHtml(source) })),
+  );
 
   it("gives every place a page names a program that runs there, or a still that stands there", () => {
     expect(places.filter(({ name }) => !apps.has(name) && !stills[name]).map(({ route, name }) => `${route} ::${name}`)).toEqual([]);
   });
 
+  // A blueprint is written in a page as text, and nothing but this would notice a kind renamed, a column gone, or a step that now fails.
+  it("runs every blueprint a page writes, as the build does, every line read and every node answering", () => {
+    const kit = blueprintKitOf(allFeatures);
+    const troubled = places
+      .filter(({ name }) => name === "blueprint")
+      .flatMap(({ route, source = "" }) => {
+        const { blueprint, problems } = parseBlueprint(source, kit);
+        const results = evaluateBlueprint(blueprint, kit, { read });
+        return [
+          ...problems.map((problem) => `${route} line ${problem.line}: ${problem.message}`),
+          ...[...results].filter(([, result]) => result.state !== "done").map(([id, result]) => `${route} ${id}: ${result.state === "failed" ? result.message : result.state}`),
+        ];
+      });
+    expect(troubled).toEqual([]);
+  });
+
   it("fills, on every page, every place that has a still, as the build does, and no still fails or draws nothing", () => {
-    const failed = places.flatMap(({ route, name, dials }) => {
+    const failed = places.flatMap(({ route, name, dials, source }) => {
       const still = stills[name];
       if (!still) return [];
       try {
-        return still(read, dials).trim() ? [] : [`${route} ::${name}: nothing drawn`];
+        return still(read, dials, source).trim() ? [] : [`${route} ::${name}: nothing drawn`];
       } catch (error) {
         return [`${route} ::${name}: ${error instanceof Error ? error.message : String(error)}`];
       }
