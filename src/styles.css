@@ -5910,7 +5910,8 @@ main p:has(> strong:first-child):not(h2 + p) {
   }
 }
 
-.app .bp-board > .bp-dials {
+.app .bp-board > .bp-dials,
+.app .wb-cards > .bp-dials {
   grid-column: 1 / -1;
   margin: 0;
 }
