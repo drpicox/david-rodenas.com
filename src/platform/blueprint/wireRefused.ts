@@ -23,6 +23,7 @@ function needs(blueprint: Blueprint, node: string, other: string): boolean {
 export function wireRefused(blueprint: Blueprint, kit: Kit, wire: Wire): string | null {
   if (wire.from.node === wire.to.node) return "a node cannot feed itself";
   const kindOf = (id: string) => kit.kinds.get(blueprint.nodes.find((node) => node.id === id)?.kind ?? "");
+  if (kindOf(wire.to.node)?.role === "dial") return "a dial is turned by hand, and takes no wire";
   const out = kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin);
   const into = kindOf(wire.to.node)?.inputs.find((pin) => pin.name === wire.to.pin);
   if (!out || !into) return "there is no such pin";

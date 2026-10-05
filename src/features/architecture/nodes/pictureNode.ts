@@ -53,7 +53,9 @@ export const pictureNode: NodeKind = {
     const numbers = tones ? [...tones.values()].filter((value): value is number => typeof value === "number") : [];
     const [low, high] = [Math.min(...numbers), Math.max(...numbers)];
     const groups = colour?.kind === "text" && tones ? [...new Set([...tones.values()].map(String))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) : [];
-    const fills = colour?.kind === "number" && tones ? new Map([...tones].flatMap(([id, value]) => (typeof value === "number" ? [[id, `color-mix(in srgb, var(--bp-heat) ${Math.round(18 + (82 * (value - low)) / Math.max(1e-9, high - low))}%, var(--paper))`] as const] : []))) : undefined;
+    // Most measures of a network are a few files high and the rest low: the square root spreads the low ones, so they do not all fade into the paper.
+    const depth = (value: number) => Math.round(30 + 70 * Math.sqrt((value - low) / Math.max(1e-9, high - low)));
+    const fills = colour?.kind === "number" && tones ? new Map([...tones].flatMap(([id, value]) => (typeof value === "number" ? [[id, `color-mix(in srgb, var(--bp-heat) ${depth(value)}%, var(--paper))`] as const] : []))) : undefined;
     const classes = groups.length > 0 && tones ? new Map([...tones].map(([id, value]) => [id, `bp-s${groups.indexOf(String(value)) % 8}`])) : undefined;
     const look = { ...(radii && { radii }), ...(fills && { fills }), ...(classes && { classes }) };
 

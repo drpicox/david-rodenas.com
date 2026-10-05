@@ -41,7 +41,6 @@ export const weatherDaysNode: NodeKind = {
     const question = { variable: preset.variable, atLeast: preset.atLeast, threshold, months: monthsOf(String(inputs["months"] ?? "")) };
     const asked = String(inputs["station"]);
     const { stations, credit } = weatherStationsRead(read, asked);
-    const unit = preset.name.includes("nights") ? "nights" : "days";
     const rows = stations.flatMap((station) =>
       daysPerYear(station, question).map((year) => ({ ...(asked === "all" && { station: station.code }), year: year.year, days: year.days, measured: year.measured, whole: year.whole ? "yes" : "no" })),
     );
@@ -49,7 +48,7 @@ export const weatherDaysNode: NodeKind = {
     const columns: Column[] = [
       ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
-      { name: "days", kind: "number", unit, about: `${preset.name}: the ${variable.name} ${preset.atLeast ? "at least" : "below"} ${threshold} ${variable.unit}` },
+      { name: "days", kind: "number", about: `${preset.name}: the ${variable.name} ${preset.atLeast ? "at least" : "below"} ${threshold} ${variable.unit}` },
       { name: "measured", kind: "number", about: "the days measured in the months asked" },
       { name: "whole", kind: "text", about: "yes when nearly every day was measured, and the year is over" },
     ];

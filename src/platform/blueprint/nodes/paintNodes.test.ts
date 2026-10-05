@@ -87,7 +87,10 @@ describe("a table, and a number, on the board", () => {
     expect(painting(showTableNode, { table: years, rows: 2 }).html).toContain("and 3 rows more");
   });
 
-  it("shows one number, large, with its unit", () => {
-    expect(painting(readoutNode, { value: -0.4213, unit: "r" })).toMatchObject({ caption: "−0.421 r" });
+  it("shows one number, large, with its unit, and says it at its node's foot rather than twice on the board", () => {
+    const { painting: shown, said } = painted(readoutNode, { value: -0.4213, unit: "r" });
+    expect(shown?.html).toContain("−0.421");
+    expect(shown?.caption).toBeUndefined();
+    expect(said).toBe("−0.421 r");
   });
 });

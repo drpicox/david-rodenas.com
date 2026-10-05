@@ -108,6 +108,17 @@ The top level says what this is: a frame, and the features standing in it.
     `Program`
   - `testing/` — a test file run in the page the way Jest would run it, with
     its messages, for the examples that are about tests
+  - `blueprint/` — a program drawn as boxes and wires, as Unreal draws them:
+    `NodeKind` (typed inputs and outputs, a pure `run`), `PinType`, the
+    `Blueprint` itself, its run (`evaluateBlueprint`, which keeps what did not
+    change and waits for a file on its way), its text (`parseBlueprint`,
+    `printBlueprint`), its tidying, its still, and the nodes every blueprint
+    has: a dial, steps on tables, statistics, pictures (`paint/`). A feature
+    brings the nodes about its own data, as `nodes` and `pinTypes`. Needs
+    nothing but the escaping of markup, so everything can need it
+  - `workbench/` — where a blueprint written in a page is worked on: in
+    `browser/`, the canvas, the board, the menu, the text; mounted by
+    `main.ts`, the one place that knows every feature's nodes
   - `browser/mountPlayer` — how anything that moves is played: only on screen,
     with a button to pause it, resting on its last frame, never for a reader
     who asked for less motion

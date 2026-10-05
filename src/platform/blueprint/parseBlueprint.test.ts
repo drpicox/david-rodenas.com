@@ -35,6 +35,12 @@ describe("a blueprint read from its text", () => {
     ]);
   });
 
+  it("reads a value that names a node as words, when what that node gives could not go into the input", () => {
+    const { blueprint } = parseBlueprint(["tx = weather-months", "fit = trend table: tx x: tx"].join("\n"), kit);
+    expect(blueprint.wires).toEqual([{ from: { node: "tx", pin: "table" }, to: { node: "fit", pin: "table" } }]);
+    expect(blueprint.nodes[1]?.values).toEqual({ x: "tx" });
+  });
+
   it("names a node it was not told to name after its kind, apart from every other name", () => {
     const { blueprint } = parseBlueprint(["readout value: 1", "readout = weather-months", "readout value: 2"].join("\n"), kit);
     expect(blueprint.nodes.map((node) => node.id)).toEqual(["readout-2", "readout", "readout-3"]);

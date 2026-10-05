@@ -1,4 +1,4 @@
-import type { FlagStore } from "../flags/FlagStore";
+import type { FlagStore } from "../FlagStore";
 
 /** The same key the head script reads before paint, so a flag that is on is on from the first frame. */
 const ON = "flags";

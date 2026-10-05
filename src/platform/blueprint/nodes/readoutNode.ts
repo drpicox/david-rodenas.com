@@ -19,6 +19,7 @@ export const readoutNode: NodeKind = {
     const value = Number(inputs["value"]);
     const unit = inputs["unit"] ? String(inputs["unit"]) : undefined;
     const about = inputs["about"] ? String(inputs["about"]) : undefined;
-    return { painting: { html: readoutMarkup(value, unit, about).html, caption: `${numberSaid(value)}${unit ? ` ${unit}` : ""}` } };
+    // The number is the picture: said again under it, it would say it twice.
+    return { painting: { html: readoutMarkup(value, unit, about).html }, said: `${numberSaid(value)}${unit ? ` ${unit}` : ""}` };
   },
 };

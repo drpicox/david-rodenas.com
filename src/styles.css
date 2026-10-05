@@ -5458,3 +5458,1050 @@ main p:has(> strong:first-child):not(h2 + p) {
   border-radius: 50%;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
+
+/* ---- blueprints: programs drawn as boxes and wires, the way Unreal draws them ---- */
+
+/*
+ * What flows along a wire has a colour, and so does what a node is for. The
+ * wires borrow the site's own colours where it has one that fits — a table
+ * is the accent, a number the green of a string — so a blueprint follows the
+ * theme; the few it has not got are set here, for each paper.
+ */
+:root {
+  --bp-number: var(--hl-string);
+  --bp-text: #b0457a;
+  --bp-flag: var(--warn);
+  --bp-table: var(--accent);
+  --bp-graph: var(--arrow-in);
+  --bp-value: #8a6fb4;
+  --bp-heat: var(--heat-top);
+  --bp-warm: var(--heat-warm-top);
+  --bp-cold: var(--heat-top);
+  --bp-role-source: var(--accent);
+  --bp-role-step: #5f7d8c;
+  --bp-role-statistic: #8a6fb4;
+  --bp-role-paint: var(--arrow-in);
+  --bp-role-dial: var(--warn);
+  --bp-role-note: #c9a227;
+  --bp-c0: var(--accent);
+  --bp-c1: var(--arrow-in);
+  --bp-c2: var(--hl-string);
+  --bp-c3: #b0457a;
+  --bp-c4: #8a6fb4;
+  --bp-c5: var(--warn);
+  --bp-c6: #2a9d9a;
+  --bp-c7: var(--dim);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="pink"]) {
+    --bp-text: #e08ab8;
+    --bp-value: #b9a3e0;
+    --bp-role-step: #86a3b1;
+    --bp-role-statistic: #b9a3e0;
+    --bp-role-note: #d9b84a;
+    --bp-c3: #e08ab8;
+    --bp-c4: #b9a3e0;
+    --bp-c6: #6cc9c5;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bp-text: #e08ab8;
+  --bp-value: #b9a3e0;
+  --bp-role-step: #86a3b1;
+  --bp-role-statistic: #b9a3e0;
+  --bp-role-note: #d9b84a;
+  --bp-c3: #e08ab8;
+  --bp-c4: #b9a3e0;
+  --bp-c6: #6cc9c5;
+}
+
+/* Pink is the accent here, and a magenta beside it would be its twin. */
+:root[data-theme="pink"] {
+  --bp-text: #2a7f9a;
+  --bp-c3: #2a7f9a;
+  --bp-graph: #c96a24;
+}
+
+.bp-s0 { --series: var(--bp-c0); }
+.bp-s1 { --series: var(--bp-c1); }
+.bp-s2 { --series: var(--bp-c2); }
+.bp-s3 { --series: var(--bp-c3); }
+.bp-s4 { --series: var(--bp-c4); }
+.bp-s5 { --series: var(--bp-c5); }
+.bp-s6 { --series: var(--bp-c6); }
+.bp-s7 { --series: var(--bp-c7); }
+
+/* A blueprint needs room: it steps out of the column as far as the architecture's picture does. */
+@media (min-width: 76rem) {
+  .app[data-app="blueprint"] {
+    --wide: min(90rem, 100vw - 3rem);
+  }
+}
+
+/* ---- the pictures a blueprint paints ---- */
+
+.app .bp-plot {
+  overflow: visible;
+}
+
+.app .bp-plot text {
+  font: 10px var(--mono);
+  fill: var(--dim);
+}
+
+.app .bp-plot .axis {
+  stroke: color-mix(in srgb, var(--ink) 35%, transparent);
+}
+
+.app .bp-plot .axis-name {
+  fill: var(--ink);
+  font-size: 10.5px;
+}
+
+.app .bp-plot .bar {
+  fill: var(--accent);
+  transition: y 0.35s ease, height 0.35s ease, x 0.35s ease, width 0.35s ease;
+}
+
+.app .bp-plot .bar.faded {
+  fill: color-mix(in srgb, var(--accent) 28%, var(--paper));
+}
+
+.app .bp-plot .series {
+  --series: var(--bp-c0);
+}
+
+.app .bp-plot .series.bp-s1 { --series: var(--bp-c1); }
+.app .bp-plot .series.bp-s2 { --series: var(--bp-c2); }
+.app .bp-plot .series.bp-s3 { --series: var(--bp-c3); }
+.app .bp-plot .series.bp-s4 { --series: var(--bp-c4); }
+.app .bp-plot .series.bp-s5 { --series: var(--bp-c5); }
+.app .bp-plot .series.bp-s6 { --series: var(--bp-c6); }
+.app .bp-plot .series.bp-s7 { --series: var(--bp-c7); }
+
+.app .bp-plot .line {
+  fill: none;
+  stroke: var(--series);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.app .bp-plot .dot {
+  fill: var(--series, var(--bp-c0));
+  fill-opacity: 0.8;
+  transition: cx 0.35s ease, cy 0.35s ease;
+}
+
+.app .bp-plot .fit {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  opacity: 0.7;
+  transition: x1 0.35s ease, y1 0.35s ease, x2 0.35s ease, y2 0.35s ease;
+}
+
+.app .bp-plot .legend rect {
+  fill: var(--series);
+}
+
+.app .bp-plot .legend text {
+  fill: var(--ink);
+}
+
+.app .bp-plot .cell {
+  transition: fill 0.35s ease;
+}
+
+.app .bp-picture svg.architecture .ball[class*="bp-s"] {
+  fill: var(--series);
+}
+
+.app .bp-picture svg.tangle .thread {
+  fill: none;
+  stroke: var(--accent-soft);
+  stroke-width: 0.7;
+  opacity: 0.4;
+}
+
+.app .bp-picture svg.tangle .ball {
+  fill: var(--accent);
+  stroke: var(--paper);
+  stroke-width: 0.6;
+}
+
+.app .bp-picture svg.tangle .ball.test {
+  fill: var(--hl-string);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app .bp-plot * {
+    transition: none !important;
+  }
+}
+
+.app .bp-table {
+  overflow-x: auto;
+}
+
+.app .bp-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font: 11.5px/1.4 var(--mono);
+}
+
+.app .bp-table th,
+.app .bp-table td {
+  padding: 0.25em 0.7em;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.app .bp-table th {
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.app .bp-table .number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.app .bp-table .unit {
+  font-weight: normal;
+}
+
+.app .bp-table .more {
+  margin: 0.4em 0 0;
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+
+.app .bp-readout {
+  padding: 0.3em 0 0.2em;
+}
+
+.app .bp-readout .value {
+  font: 600 2.3rem/1 var(--text);
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.app .bp-readout .unit {
+  font-size: 1rem;
+  color: var(--dim);
+}
+
+.app .bp-readout .about {
+  margin: 0.35em 0 0;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* ---- the board: dials and pictures, before a script and after ---- */
+
+.app .bp-card {
+  margin: 0 0 1em;
+  padding: 0.7em 0.85em 0.65em;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper);
+}
+
+.app .bp-card figcaption {
+  margin: 0 0 0.35em;
+  font: 600 0.84rem/1.3 var(--text);
+  color: var(--ink);
+}
+
+.app .bp-caption {
+  margin: 0.35em 0 0;
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app .bp-credits {
+  margin: 0.15em 0 0;
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--dim);
+}
+
+.app .bp-problem {
+  margin: 0.3em 0;
+  font-size: 0.8rem;
+  color: var(--warn);
+}
+
+.app .bp-card.waiting .bp-problem {
+  color: var(--dim);
+}
+
+.app .bp-dials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.6em;
+  margin: 0 0 1em;
+  font-size: 0.82rem;
+}
+
+.app .bp-dial dt {
+  color: var(--dim);
+}
+
+.app .bp-dial dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* The blueprint drawn, under its board, before any script: a picture of the canvas, wider than the column if it has to be. */
+.app .bp-drawn {
+  margin: 1.2em 0 0;
+  padding: 0.6em;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--sunken);
+  overflow-x: auto;
+}
+
+.app .bp-drawn figcaption {
+  font-size: 0.75rem;
+  color: var(--dim);
+}
+
+.app svg.bp-diagram {
+  min-width: 36rem;
+}
+
+.app svg.bp-diagram text {
+  font: 11px var(--mono);
+  fill: var(--dim);
+}
+
+.app svg.bp-diagram .bp-wire {
+  fill: none;
+  stroke-width: 2.5;
+}
+
+.app svg.bp-diagram .bp-node { --role: var(--bp-role-step); }
+.app svg.bp-diagram .bp-role-source { --role: var(--bp-role-source); }
+.app svg.bp-diagram .bp-role-statistic { --role: var(--bp-role-statistic); }
+.app svg.bp-diagram .bp-role-paint { --role: var(--bp-role-paint); }
+.app svg.bp-diagram .bp-role-dial { --role: var(--bp-role-dial); }
+.app svg.bp-diagram .bp-role-note { --role: var(--bp-role-note); }
+
+.app svg.bp-diagram .body {
+  fill: var(--paper);
+  stroke: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.app svg.bp-diagram .bp-role-note .body {
+  fill: color-mix(in srgb, var(--role) 12%, var(--paper));
+}
+
+.app svg.bp-diagram .head {
+  fill: color-mix(in srgb, var(--role) 16%, var(--paper));
+}
+
+.app svg.bp-diagram .title {
+  fill: var(--ink);
+  font-weight: 600;
+}
+
+.app svg.bp-diagram .pin {
+  stroke-width: 2;
+}
+
+.app svg.bp-diagram .pin.open {
+  fill: var(--paper);
+}
+
+.app svg.bp-diagram .value.written,
+.app svg.bp-diagram .note-text {
+  fill: var(--ink);
+}
+
+.app svg.bp-diagram .value.initial,
+.app svg.bp-diagram .value.settled {
+  font-style: italic;
+}
+
+.app svg.bp-diagram .value.missing,
+.app svg.bp-diagram .foot.trouble {
+  fill: var(--warn);
+}
+
+.app svg.bp-diagram .bp-node.trouble .body {
+  stroke: var(--warn);
+}
+
+.app .bp-text summary {
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .bp-text pre {
+  overflow-x: auto;
+  font-size: 0.78rem;
+}
+
+/* ---- the workbench: a blueprint worked on, in the page ---- */
+
+.app .workbench {
+  position: relative;
+}
+
+.app .wb-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35em;
+  margin: 0 0 0.5em;
+}
+
+.app .wb-bar button {
+  padding: 0.2em 0.65em;
+  font-size: 0.78rem;
+}
+
+.app .wb-bar button:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: none;
+  color: var(--accent);
+}
+
+.app .wb-bar .wb-full-button {
+  margin-left: auto;
+}
+
+.app .wb-main {
+  display: grid;
+  gap: 1em 1.4em;
+}
+
+.app .wb-stage {
+  min-width: 0;
+}
+
+/* In the page, the board comes first, its pictures side by side where they fit: a reader reads the answer, then how it is wired, on a canvas as wide as the page allows. */
+.app .wb-board {
+  order: -1;
+  min-width: 0;
+}
+
+.app .wb-cards,
+.app .bp-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+  grid-auto-flow: row dense;
+  gap: 1em;
+  align-items: start;
+}
+
+/* A picture takes two columns where there are two, a number one: three numbers stand beside a chart instead of under it. */
+@media (min-width: 40rem) {
+  .app .wb-cards .bp-card:has(.bp-plot, .bp-picture, .bp-table),
+  .app .bp-board .bp-card:has(.bp-plot, .bp-picture, .bp-table) {
+    grid-column: span 2;
+  }
+}
+
+.app .bp-board > .bp-dials {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.app .wb-cards .bp-card,
+.app .bp-board .bp-card {
+  margin: 0;
+}
+
+.app .wb-board .wb-empty {
+  margin: 0 0 1em;
+}
+
+.app .wb-canvas {
+  --wb-cell: calc(24px * var(--wb-zoom, 1));
+  position: relative;
+  height: 28rem;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background-color: var(--sunken);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--rule) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(var(--rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size:
+    var(--wb-cell) var(--wb-cell),
+    var(--wb-cell) var(--wb-cell),
+    calc(var(--wb-cell) * 5) calc(var(--wb-cell) * 5),
+    calc(var(--wb-cell) * 5) calc(var(--wb-cell) * 5);
+  background-position: var(--wb-x, 0) var(--wb-y, 0);
+  cursor: grab;
+  touch-action: pan-y;
+  outline: none;
+}
+
+.app .wb-canvas:active {
+  cursor: grabbing;
+}
+
+.app .wb-canvas:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.app .wb-blank {
+  display: none;
+  position: absolute;
+  inset: 42% 1rem auto;
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--dim);
+  pointer-events: none;
+}
+
+.app .wb-canvas.blank .wb-blank {
+  display: block;
+}
+
+.app .wb-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+}
+
+.app .wb-wires {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.app .wb-wire {
+  fill: none;
+  stroke: var(--pin, var(--dim));
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.app .wb-wire.idle {
+  opacity: 0.45;
+  stroke-dasharray: 6 5;
+}
+
+.app .wb-wire.chosen {
+  stroke-width: 4.5;
+}
+
+.app .wb-wire.dragging {
+  opacity: 0.85;
+  stroke-dasharray: 5 4;
+}
+
+.app .wb-wire-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.app .wb-marquee {
+  position: absolute;
+  border: 1px dashed var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  pointer-events: none;
+}
+
+/* A node's border is a shadow, not a border, so that its rows start where the wires think they do. */
+.app .wb-node {
+  --role: var(--bp-role-step);
+  position: absolute;
+  width: var(--bp-width);
+  box-sizing: border-box;
+  border-radius: 7px;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent), 0 2px 3px rgb(0 0 0 / 0.07), 0 8px 18px rgb(0 0 0 / 0.07);
+  font: 11.5px/1.2 var(--mono);
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.app .wb-node.wb-role-source { --role: var(--bp-role-source); }
+.app .wb-node.wb-role-statistic { --role: var(--bp-role-statistic); }
+.app .wb-node.wb-role-paint { --role: var(--bp-role-paint); }
+.app .wb-node.wb-role-dial { --role: var(--bp-role-dial); }
+.app .wb-node.wb-role-note { --role: var(--bp-role-note); background: color-mix(in srgb, var(--role) 12%, var(--paper)); }
+.app .wb-menu .wb-role-source { --role: var(--bp-role-source); }
+.app .wb-menu .wb-role-step { --role: var(--bp-role-step); }
+.app .wb-menu .wb-role-statistic { --role: var(--bp-role-statistic); }
+.app .wb-menu .wb-role-paint { --role: var(--bp-role-paint); }
+.app .wb-menu .wb-role-dial { --role: var(--bp-role-dial); }
+.app .wb-menu .wb-role-note { --role: var(--bp-role-note); }
+
+.app .wb-node.selected {
+  box-shadow: 0 0 0 2px var(--accent), 0 2px 3px rgb(0 0 0 / 0.07), 0 10px 22px rgb(0 0 0 / 0.12);
+}
+
+.app .wb-node.trouble {
+  box-shadow: 0 0 0 1px var(--warn), 0 2px 3px rgb(0 0 0 / 0.07), 0 8px 18px rgb(0 0 0 / 0.07);
+}
+
+.app .wb-node.trouble.selected {
+  box-shadow: 0 0 0 2px var(--warn), 0 2px 3px rgb(0 0 0 / 0.07), 0 10px 22px rgb(0 0 0 / 0.12);
+}
+
+.app .wb-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: var(--bp-header);
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-top: 3px solid var(--role);
+  border-bottom: 1px solid color-mix(in srgb, var(--role) 30%, var(--rule));
+  border-radius: 7px 7px 0 0;
+  background: color-mix(in srgb, var(--role) 14%, var(--paper));
+  cursor: move;
+}
+
+.app .wb-glyph {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--role);
+}
+
+.app .wb-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  outline: none;
+}
+
+.app .wb-title[contenteditable] {
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  border-bottom: 1px dashed var(--accent);
+}
+
+.app .wb-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--bp-row);
+  box-sizing: border-box;
+  padding: 0 12px;
+}
+
+.app .wb-out {
+  justify-content: flex-end;
+}
+
+.app .wb-label {
+  flex: none;
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--dim);
+}
+
+.app .wb-row.wired .wb-label {
+  color: var(--ink);
+}
+
+.app .wb-edit {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.app .wb-edit select,
+.app .wb-edit input[type="text"],
+.app .wb-edit input[type="number"] {
+  width: auto;
+  max-width: 124px;
+  height: 19px;
+  box-sizing: border-box;
+  padding: 0 4px;
+  font: 11px var(--mono);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app .wb-edit input[type="number"] {
+  width: 72px;
+}
+
+.app .wb-edit input[type="text"] {
+  width: 110px;
+}
+
+.app .wb-edit input::placeholder {
+  color: var(--dim);
+  font-style: italic;
+}
+
+.app .wb-edit input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.app .wb-row:has(textarea) {
+  align-items: stretch;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.app .wb-row:has(textarea) .wb-edit {
+  flex: 1;
+  margin-left: 0;
+}
+
+.app .wb-edit textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  padding: 3px 5px;
+  font: 11px/1.4 var(--mono);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app .wb-role-note .wb-edit textarea {
+  border-color: transparent;
+  background: transparent;
+  font-family: var(--text);
+  font-size: 12px;
+}
+
+.app .wb-node .wb-promote {
+  border: none;
+  padding: 0 2px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--dim);
+  opacity: 0;
+  background: none;
+}
+
+.app .wb-node .wb-promote:hover {
+  color: var(--bp-role-dial);
+  background: none;
+}
+
+.app .wb-row:hover .wb-promote,
+.app .wb-promote:focus-visible {
+  opacity: 1;
+}
+
+.app .wb-pin {
+  position: absolute;
+  top: calc(var(--bp-row) / 2 - 5.5px);
+  width: 11px;
+  height: 11px;
+  box-sizing: border-box;
+  border: 2px solid var(--pin);
+  border-radius: 50%;
+  background: var(--pin);
+  cursor: crosshair;
+  transition: transform 0.1s ease;
+}
+
+.app .wb-pin.open {
+  background: var(--paper);
+}
+
+.app .wb-in .wb-pin {
+  left: -5.5px;
+}
+
+.app .wb-out .wb-pin {
+  right: -5.5px;
+}
+
+.app .wb-pin:hover {
+  transform: scale(1.4);
+}
+
+.app .wb-foot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--bp-foot);
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-top: 1px dashed var(--rule);
+  font-size: 10.5px;
+  line-height: var(--bp-foot);
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app .wb-node.trouble .wb-foot {
+  color: var(--warn);
+}
+
+.app .wb-node.waiting .wb-foot {
+  animation: wb-waiting 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes wb-waiting {
+  to {
+    opacity: 0.4;
+  }
+}
+
+.app .wb-status {
+  min-height: 1.4em;
+  margin: 0.35em 0 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+  text-align: left;
+}
+
+.app .wb-board .wb-find {
+  all: unset;
+  cursor: pointer;
+}
+
+.app .wb-board .wb-find:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.app .wb-dials {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: 0.6em 1.2em;
+  margin: 0 0 1em;
+}
+
+.app .wb-dials:empty {
+  display: none;
+}
+
+.app .wb-dial {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .wb-dial select,
+.app .wb-dial input[type="text"],
+.app .wb-dial input[type="number"] {
+  max-width: 100%;
+}
+
+.app .wb-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.app .wb-slider input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent);
+}
+
+.app .wb-slider output {
+  min-width: 3.5em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.app .wb-empty {
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+/* The menu a node is added from, where it was asked for. */
+.app .wb-menu {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  width: 17rem;
+  max-height: 22rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+  font: 12px var(--mono);
+  cursor: default;
+}
+
+.app .wb-menu input[type="search"] {
+  margin: 0.5em;
+  padding: 0.3em 0.5em;
+  font: 12px var(--mono);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app .wb-menu ul {
+  flex: 1;
+  margin: 0;
+  padding: 0 0.35em 0.35em;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.app .wb-menu .wb-shelf {
+  padding: 0.7em 0.5em 0.2em;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.app .wb-menu [role="option"] {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.3em 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.app .wb-menu [aria-selected="true"] {
+  background: color-mix(in srgb, var(--accent) 14%, var(--paper));
+}
+
+.app .wb-menu-about {
+  min-height: 3.4em;
+  margin: 0;
+  padding: 0.5em 0.75em;
+  border-top: 1px solid var(--rule);
+  font: 11.5px/1.35 var(--text);
+  color: var(--dim);
+}
+
+/* The blueprint as text, over the workbench. */
+.app .wb-text {
+  position: absolute;
+  z-index: 6;
+  inset: 2.6rem 0.5rem auto;
+  padding: 0.8em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+}
+
+.app .wb-text-help {
+  margin: 0 0 0.5em;
+  font-size: 0.8rem;
+  color: var(--dim);
+}
+
+.app .wb-text-area {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em;
+  font: 12px/1.5 var(--mono);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--sunken);
+  color: var(--ink);
+  white-space: pre;
+}
+
+.app .wb-problems {
+  margin: 0.4em 0;
+  padding-left: 1.2em;
+  font-size: 0.78rem;
+  color: var(--warn);
+}
+
+.app .wb-text-buttons {
+  display: flex;
+  gap: 0.4em;
+}
+
+/* Full screen: the workbench over the page, the canvas as big as the window allows and the board beside it. */
+.app .workbench.full {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem;
+  background: var(--paper);
+}
+
+.app .workbench.full .wb-main {
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) min(27rem, 38%);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.app .workbench.full .wb-stage {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.app .workbench.full .wb-canvas {
+  flex: 1;
+  height: auto;
+  touch-action: none;
+}
+
+.app .workbench.full .wb-board {
+  order: 0;
+  overflow-y: auto;
+}
+
+.app .workbench.full .wb-cards {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 40rem) {
+  .app .workbench.full .wb-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+}
+
+body.wb-full-open {
+  overflow: hidden;
+}
+
+/* A dial is turned by hand, or on the board: nothing is wired into it, so it shows no pin to wire. */
+.app .wb-role-dial .wb-in .wb-pin {
+  display: none;
+}

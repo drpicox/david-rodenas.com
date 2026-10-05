@@ -7,13 +7,13 @@ import { type Markup, tag } from "./tag";
 /**
  * A blueprint's board, as the page has it before any script: its dials, each
  * saying what it is set to, then every picture its paint nodes made, in the
- * order they stand on the canvas, each under its node's title and over its
+ * order the blueprint's text has them, each under its node's title and over its
  * caption and whose numbers it shows. A picture that could not be made says
  * why, where it would have been.
  */
 export function renderBoard(blueprint: Blueprint, kit: Kit, evaluation: Evaluation, read: (path: string) => string): string {
   const dials = dialsOf(blueprint, kit, read, evaluation);
-  const painters = blueprint.nodes.filter((node) => kit.kinds.get(node.kind)?.role === "paint").sort((a, b) => a.y - b.y || a.x - b.x);
+  const painters = blueprint.nodes.filter((node) => kit.kinds.get(node.kind)?.role === "paint");
   const cards = painters.map((node): Markup => {
     const result = evaluation.get(node.id);
     const title = node.title ?? kit.kinds.get(node.kind)?.title ?? node.kind;

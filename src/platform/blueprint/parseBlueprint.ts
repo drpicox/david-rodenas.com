@@ -1,4 +1,5 @@
 import type { Blueprint, PlacedNode, Wire } from "./Blueprint";
+import { fits } from "./fits";
 import type { Kit } from "./kitOf";
 import type { InputPin, Literal } from "./NodeKind";
 
@@ -114,9 +115,10 @@ function valueAs(type: string | undefined, text: string): Literal {
 /**
  * A blueprint from its text: one node a line, `name = kind "Title" input:
  * value … @ x y`, where a value that names another node — or one of its
- * outputs, after a dot — is a wire from it. The text is what a page writes a
- * blueprint in, what a link carries and what an agent can read, so a line
- * that cannot be read is said, by its number, and the rest is read anyway.
+ * outputs, after a dot — is a wire from it, wherever what it gives could go
+ * into that input. The text is what a page writes a blueprint in, what a link
+ * carries and what an agent can read, so a line that cannot be read is said,
+ * by its number, and the rest is read anyway.
  */
 export function parseBlueprint(text: string, kit: Kit): BlueprintRead {
   const problems: { line: number; message: string }[] = [];
@@ -160,8 +162,12 @@ export function parseBlueprint(text: string, kit: Kit): BlueprintRead {
       const from = reference?.[1];
       if (from !== undefined && from !== id && kindOf.has(from)) {
         const out = reference?.[2] ?? kindOf.get(from)?.outputs[0]?.name ?? "value";
-        wires.push({ from: { node: from, pin: out }, to: { node: id, pin: name } });
-        continue;
+        // A column called as a node is called is a column: a name is a wire only where what the node gives could go.
+        const given = kindOf.get(from)?.outputs.find((output) => output.name === out)?.type;
+        if (!pin || !given || fits(kit, given, pin.type)) {
+          wires.push({ from: { node: from, pin: out }, to: { node: id, pin: name } });
+          continue;
+        }
       }
       if (!pin) {
         values[name] = value.text;

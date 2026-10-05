@@ -17,8 +17,8 @@ describe("a blueprint's board, before any script", () => {
     expect(html).toContain('<dl class="bp-dials"><div class="bp-dial"><dt>Place</dt><dd>el Raval</dd></div></dl>');
   });
 
-  it("shows every picture under its node's title, over its caption and whose numbers it shows, top to bottom", () => {
-    expect(html.indexOf("Too few")).toBeLessThan(html.indexOf("Nights a year"));
+  it("shows every picture under its node's title, over its caption and whose numbers it shows, in the order the text has them", () => {
+    expect(html.indexOf("Nights a year")).toBeLessThan(html.indexOf("Too few"));
     expect(html).toContain("<figcaption>Nights a year</figcaption>");
     expect(html).toContain('<p class="bp-caption">nights by year, 5 bars</p>');
     expect(html).toContain('<p class="bp-credits">Source: Made up.</p>');

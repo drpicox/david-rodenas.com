@@ -56,4 +56,8 @@ Two labs I set, which are just as much things to play: they live under
 - [How this site is built](/projects/architecture/) -- its source as boxes and arrows, commit by commit: the program an AI wrote, and the rules it is held to. Play it, tangle it, untangle it.
 - [How this site changes](/projects/changes/) -- the same source read through its history: the files that settle and the ones that never do, how far a change travels, and what has to change together with no arrow to say so.
 
+## Take it apart yourself
+
+- [Blueprints](/projects/blueprints/) -- the weather, the air and this site's own source as nodes to wire together, the way Unreal and Unity wire their programs: sources, steps, statistics and pictures, with dials to turn. Nine to start from, the last one yours.
+
 Use `ls` to see them all, or `cat next-word` to read one here.

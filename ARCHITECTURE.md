@@ -98,6 +98,7 @@ graph LR
   feature -- "apps" --> apps["mountApps<br/><i>a ::name in the markdown</i>"]
   feature -- "stills" --> stills["fillStills<br/><i>what a program's place holds<br/>in the HTML, before any script</i>"]
   feature -- "sources" --> sources["refreshSource<br/><i>open data, a finished year<br/>at a time, before a build</i>"]
+  feature -- "nodes, pinTypes" --> nodes["a blueprint's nodes<br/><i>its data as sources, wired<br/>to steps, statistics, pictures:<br/>§9</i>"]
   feature -- "install(prompt)" --> once["once, when the page is set up"]
   feature -- "arrive(page)" --> moved["every time the page changes<br/>without a reload"]
 ```
@@ -294,6 +295,8 @@ features read them back off the root. Nothing else in the frame knows what
 
 ---
 
+---
+
 ## 8. The rules, and where they are enforced
 
 | Claim | Enforced by |
@@ -306,3 +309,38 @@ features read them back off the root. Nothing else in the frame knows what
 
 The last one is why these diagrams should still be right when you read them: a
 feature that is not in them fails the build.
+
+---
+
+## 9. A blueprint: a program drawn as boxes and wires
+
+A program, in §4, is a function with dials; a blueprint is many functions
+wired together by a reader. Each node is a `NodeKind` — typed inputs, typed
+outputs, and a pure `run` — and each wire carries one type, drawn in its
+colour as Unreal draws its pins: a number, some words, yes or no, a table, a
+graph of the source. The frame brings the nodes every blueprint has; a
+feature brings the ones about its own data, and the composition gathers them,
+so a blueprint can wire the weather to the air without either feature
+knowing the other.
+
+```mermaid
+graph LR
+  text["a fenced ```::blueprint<br/>in a page's markdown"]
+  parse["parseBlueprint<br/><i>one node a line; a name<br/>that fits an input is a wire</i>"]
+  run["evaluateBlueprint<br/><i>in the order the wires need;<br/>what did not change is kept;<br/>a file on its way is waited for</i>"]
+  still["blueprintStill<br/><i>node, at build time:<br/>the board, the blueprint drawn,<br/>its text</i>"]
+  bench["workbench/browser<br/><i>the canvas and the board,<br/>run again at every edit</i>"]
+
+  text --> parse --> run
+  run --> still
+  run --> bench
+```
+
+The blueprint is only data, so it has a text, and the text is what a page
+writes, what a link carries and what the content test runs: every blueprint a
+page writes must read without a problem and answer at every node. The
+pictures are markup, the same at build time and in the browser, keyed so
+that the browser can change them in place and a bar that grows is seen to.
+`platform/blueprint` needs nothing but the escaping of markup, so the
+features' nodes, the plugin and the workbench can all need it; the workbench
+is needed by the composition alone.

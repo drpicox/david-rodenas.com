@@ -7,6 +7,30 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### Blueprints: the site's data, wired by hand (5 October 2026)
+David asked for an explorer "estil blueprint" — Unreal's and Unity's — where
+statistics and graphs are configured by wiring nodes, with dials, rather than
+by a fixed set of selects, and one that reaches the weather and the air as
+well as the source, so that data can be crossed: whether the heat goes with
+the NO2. So the engine is the frame's (`platform/blueprint`), and a feature
+brings the nodes about its own data, as it brings tools; the composition
+gathers them, and no feature knows another's.
+
+A blueprint is data, and has a text — one node a line, a name that fits an
+input being a wire — because a page has to write its examples somewhere,
+and the place for them is the page: next to their prose, readable on GitHub,
+run by the content test at every commit, and readable by an agent through
+`read`. The build runs every blueprint a page writes, so its pictures are in
+the HTML like every other figure's. What flows along most wires is a table,
+so the steps, the statistics and the pictures are written once and work on
+every source alike; the source's graph is a type of its own, and becomes the
+table of its files wherever a table is taken. Every table carries who
+measured it, and every picture says so.
+
+Nothing was added to `package.json`: the canvas is a few hundred lines of DOM
+and SVG, the pictures are strings, the formulas are read by recursive descent
+and never by eval.
+
 ### Trials, weighed with GoatCounter events (27 September 2026)
 A flag can be a trial: on for a share of readers, drawn once for each and kept
 in their browser, so the site they see does not change under them on a

@@ -17,8 +17,8 @@ export interface Dial {
 }
 
 /**
- * The dials of a blueprint, as the board shows them, in the order they stand
- * on the canvas, top to bottom. A dial is turned the way the first input it is
+ * The dials of a blueprint, as the board shows them, in the order the
+ * blueprint's text has them. A dial is turned the way the first input it is
  * wired into is written: a slider for a range, a list for a choice; it is
  * called what it is titled, or else what that input is called.
  */
@@ -26,7 +26,6 @@ export function dialsOf(blueprint: Blueprint, kit: Kit, read: (path: string) => 
   const byId = new Map(blueprint.nodes.map((node) => [node.id, node]));
   return blueprint.nodes
     .filter((node) => kit.kinds.get(node.kind)?.role === "dial")
-    .sort((a, b) => a.y - b.y || a.x - b.x)
     .map((node) => {
       const targets = blueprint.wires.filter((wire) => wire.from.node === node.id).map((wire) => wire.to);
       const first = targets[0];

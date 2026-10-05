@@ -185,6 +185,7 @@ describe("the picture of the source", () => {
     expect(painting?.html).toContain('class="bp-picture"');
     expect(painting?.html.match(/<circle class="ball"/g)?.length).toBe(4);
     expect(painting?.html).toContain("color-mix(in srgb, var(--bp-heat) 100%, var(--paper))");
+    expect(painting?.html).toContain("color-mix(in srgb, var(--bp-heat) 30%, var(--paper))");
     expect(painting?.caption).toBe("4 files, as big as needed, coloured by reach");
   });
 
@@ -193,7 +194,7 @@ describe("the picture of the source", () => {
     const html = run(pictureNode, { graph: grouped, colour: "group", layout: "tangle" }).painting?.html ?? "";
     expect(html).toContain('class="architecture tangle"');
     expect(html).toMatch(/class="ball bp-s\d"/);
-    expect(html.match(/class="thread"/g)?.length).toBe(5);
+    expect(html.match(/class="thread" d="([^"]+)"/)?.[1]?.match(/M/g)?.length).toBe(5);
   });
 
   it("tangles the same way every time, so the build and the browser draw the same", () => {

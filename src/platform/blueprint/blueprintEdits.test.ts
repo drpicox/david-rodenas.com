@@ -25,7 +25,7 @@ const kind = (name: string, inputs: [string, string][], outputs: [string, string
   outputs: outputs.map(([pin, type]) => ({ name: pin, label: pin, type })),
   run: () => ({}),
 });
-const kit = kitOf([kind("source", [], [["table", "table"]]), kind("count", [["table", "table"]], [["n", "number"]]), kind("half", [["value", "number"]], [["value", "number"]]), kind("dial", [["value", "value"]], [["value", "value"]])], coreTypes);
+const kit = kitOf([kind("source", [], [["table", "table"]]), kind("count", [["table", "table"]], [["n", "number"]]), kind("half", [["value", "number"]], [["value", "number"]]), { ...kind("dial", [["value", "value"]], [["value", "value"]]), role: "dial" }], coreTypes);
 
 const node = (id: string, kindName: string, x = 0, y = 0): PlacedNode => ({ id, kind: kindName, x, y, values: {} });
 const wire = (from: string, out: string, to: string, into: string): Wire => ({ from: { node: from, pin: out }, to: { node: to, pin: into } });
@@ -91,5 +91,7 @@ describe("whether a wire can be drawn", () => {
     const looped = withNode(blueprint, node("h2", "half"));
     expect(wireRefused(withWire(looped, wire("h", "value", "h2", "value")), kit, wire("h2", "value", "h", "value"))).toBe("that would make a circle: h2 needs h already");
     expect(wireRefused(blueprint, kit, wire("s", "table", "c", "table"))).toBeNull();
+    const dialled = withNode(blueprint, node("k", "dial"));
+    expect(wireRefused(dialled, kit, wire("c", "n", "k", "value"))).toBe("a dial is turned by hand, and takes no wire");
   });
 });

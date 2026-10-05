@@ -2,7 +2,7 @@ import "./styles.css";
 import { allFeatures } from "./features/allFeatures";
 import { appsOf } from "./platform/browser/appsOf";
 import { eventName } from "./platform/analytics/eventName";
-import { BrowserFlags } from "./platform/browser/BrowserFlags";
+import { BrowserFlags } from "./platform/flags/browser/BrowserFlags";
 import { countEvent } from "./platform/browser/countEvent";
 import { modelContextHere } from "./platform/browser/modelContextHere";
 import { mountApps } from "./platform/browser/mountApps";
@@ -10,6 +10,8 @@ import { mountNavigation } from "./platform/page/browser/mountNavigation";
 import { mountSlides } from "./platform/browser/mountSlides";
 import { mountTerminal, type Terminal } from "./platform/shell/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
+import { blueprintKitOf } from "./platform/plugin/blueprintKitOf";
+import { mountWorkbench } from "./platform/workbench/browser/mountWorkbench";
 import { siteTools } from "./platform/agent/siteTools";
 import { siteInBrowser } from "./platform/browser/siteInBrowser";
 import { flagsCommand } from "./platform/flags/flagsCommand";
@@ -47,7 +49,8 @@ function mount(): void {
   );
 
   const commands = [...siteCommands, ...commandsOf(allFeatures), flagsCommand(flags, flagStore)];
-  const apps = appsOf(allFeatures);
+  // A blueprint a page writes can name the nodes of every feature, so it is put together here, where every feature is known.
+  const apps = { ...appsOf(allFeatures), blueprint: mountWorkbench(blueprintKitOf(allFeatures)) };
 
   const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   const route = here(window.location.pathname);
