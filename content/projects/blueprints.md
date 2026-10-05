@@ -1,6 +1,6 @@
 ---
 title: Blueprints
-summary: The data this site keeps — the weather, the air, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, steps, statistics and pictures, with dials to turn. Nine to start from, the last one yours.
+summary: The data this site keeps — the weather, the air, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, steps, statistics and pictures, with dials to turn. Ten to start from, the last one yours.
 order: 92
 ---
 
@@ -175,6 +175,22 @@ then = source commit: when
 picture "The source then" graph: then
 commits = commits
 lines "Files, commit after commit" table: commits x: commit y: files
+```
+
+## The programs, as nodes
+
+Every program on this site is a node as well — the simulation of technical
+debt, the relativistic rocket — its dials its inputs, the figures of its
+answer its outputs, a list of them a table, and its own picture on the board.
+Here a dial turns the interest a shortcut costs, and the months the
+simulation gives back are drawn again as two lines, beside the month in which
+the clean road overtakes the one with shortcuts.
+
+```::blueprint
+interest = dial "Interest a shortcut costs, %" value: 10
+debt = technical-debt interest: interest
+lines "Features delivered, both roads" table: debt.months x: month y: cleanCumulative and: debtCumulative
+readout "The clean road overtakes at month" value: debt.break-even-month
 ```
 
 ## Your own

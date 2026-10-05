@@ -61,6 +61,15 @@ describe("lines", () => {
   });
 });
 
+describe("lines of two columns", () => {
+  it("draw a line for each, named after it", () => {
+    const both: Table = { columns: [{ name: "month", kind: "number" }, { name: "clean", kind: "number" }, { name: "debt", kind: "number" }], rows: [{ month: 1, clean: 1, debt: 2 }, { month: 2, clean: 3, debt: 3 }] };
+    const { html, caption } = painting(linesNode, { table: both, x: "month", y: "clean", and: "debt" });
+    expect(html.match(/data-key="line:[^"]+"/g)).toEqual(['data-key="line:clean"', 'data-key="line:debt"']);
+    expect(caption).toBe("clean and debt along month");
+  });
+});
+
 describe("a scatter", () => {
   it("draws a dot for each row with both, says r in its caption, and fits the line when asked", () => {
     const { html, caption } = painting(scatterNode, { table: years, x: "year", y: "days", fit: true, colour: "station", label: "station" });

@@ -5904,8 +5904,8 @@ main p:has(> strong:first-child):not(h2 + p) {
 
 /* A picture takes two columns where there are two, a number one: three numbers stand beside a chart instead of under it. */
 @media (min-width: 40rem) {
-  .app .wb-cards .bp-card:has(.bp-plot, .bp-picture, .bp-table),
-  .app .bp-board .bp-card:has(.bp-plot, .bp-picture, .bp-table) {
+  .app .wb-cards .bp-card:has(.bp-plot, .bp-picture, .bp-table, .charts),
+  .app .bp-board .bp-card:has(.bp-plot, .bp-picture, .bp-table, .charts) {
     grid-column: span 2;
   }
 }

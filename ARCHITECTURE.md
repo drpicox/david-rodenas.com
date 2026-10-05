@@ -91,7 +91,7 @@ notices.
 graph LR
   feature["a Feature"]
 
-  feature -- "programs" --> programs["a Program<br/><i>an input and an output:<br/>§4 makes it all four below</i>"]
+  feature -- "programs" --> programs["a Program<br/><i>an input and an output:<br/>§4 makes it all five ways</i>"]
   feature -- "tools" --> tools["offerTools<br/><i>a tool for an agent in the<br/>reader's browser, written in node</i>"]
   feature -- "flags" --> flags["the flags command<br/><i>a trial a reader switches on,<br/>kept, read off ?name=on,<br/>marked as data-flags on the root</i>"]
   feature -- "commands" --> shell["the Shell<br/><i>alongside the site's own</i>"]
@@ -109,7 +109,7 @@ sources — the two that happen in node. The frame knows the shape and no featur
 
 ---
 
-## 4. A program, read four ways
+## 4. A program, read five ways
 
 A demonstration used to be an app: a function of a DOM node that drew its own
 dials and ran its own arithmetic. Most of them were a pure function underneath
@@ -125,6 +125,7 @@ graph LR
   program -- "programCommand" --> command["a command<br/><i>name --option value</i>"]
   program -- "browser/mountProgram" --> dials["the dials on its page<br/><i>run again on every move,<br/>the line that would ask the same under them</i>"]
   program -- "plugin/programTool" --> tool["a tool for an agent<br/><i>its JSON schema is the parameters, and show;<br/>the answer is summary, data, url, shown</i>"]
+  program -- "plugin/programNode" --> node["a node of a blueprint<br/><i>its dials its inputs, the figures of its<br/>answer its outputs, its picture on the board: §9</i>"]
 ```
 
 A page can show a program small: `::technical-debt --shortcuts` in the

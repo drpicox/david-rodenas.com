@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { NodeKind } from "../blueprint/NodeKind";
 import type { PinType } from "../blueprint/PinType";
+import { aProgram } from "../program/aProgram";
 import { blueprintKitOf } from "./blueprintKitOf";
 
 const stations: NodeKind = { name: "stations", title: "Stations", role: "source", shelf: "Weather", summary: "the stations", inputs: [], outputs: [{ name: "graph", label: "graph", type: "graph" }], run: () => ({}) };
@@ -12,6 +13,10 @@ describe("everything a blueprint on this site can name", () => {
     expect(kit.kinds.has("stations")).toBe(true);
     expect(kit.kinds.has("scatter")).toBe(true);
     expect(kit.types.get("graph")?.label).toBe("a graph");
+  });
+
+  it("has every program a feature brings, as a node", () => {
+    expect(blueprintKitOf([{ name: "savings", programs: [aProgram] }]).kinds.get("savings")?.shelf).toBe("Programs");
   });
 
   it("refuses two features bringing a node by one name", () => {
