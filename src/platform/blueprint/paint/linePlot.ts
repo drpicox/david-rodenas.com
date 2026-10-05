@@ -33,5 +33,6 @@ export function linePlot({ series, x, y, unit }: Lines): Markup {
     const dots = line.points.length <= DOTTED ? line.points.map(([px, py]) => tag("circle", { class: "dot", cx: round(frame.x(px)), cy: round(frame.y(py)), r: 2.4 }, tag("title", {}, `${line.name ? `${line.name}, ` : ""}${numberSaid(px)}: ${numberSaid(py)}${unit ? ` ${unit}` : ""}`))) : [];
     return tag("g", { class: `series bp-s${index % 8}`, "data-key": `line:${line.name}` }, tag("path", { class: "line", d }), dots);
   });
-  return plotSvg(`${y} by ${x}${series.length > 1 ? `, ${series.length} lines` : ""}`, frame.grid, tag("g", { class: "marks" }, marks), legendOf(series.map((line) => line.name)));
+  const legend = legendOf(series.map((line) => line.name));
+  return plotSvg(`${y} by ${x}${series.length > 1 ? `, ${series.length} lines` : ""}`, legend.height, frame.grid, tag("g", { class: "marks" }, marks), legend.markup);
 }

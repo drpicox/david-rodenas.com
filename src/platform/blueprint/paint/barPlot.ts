@@ -38,7 +38,7 @@ export function barPlot({ categories, values, faded = [], x, y, unit }: Bars): M
       ),
     ];
   });
-  return plotSvg(`${y} by ${x}`, frame.grid, tag("g", { class: "marks" }, bars));
+  return plotSvg(`${y} by ${x}`, 0, frame.grid, tag("g", { class: "marks" }, bars));
 }
 
 const round = (value: number) => Math.round(value * 10) / 10;

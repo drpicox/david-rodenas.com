@@ -33,5 +33,6 @@ export function scatterPlot({ points, groups = [], x, y, fit }: Scatter): Markup
     fit && Number.isFinite(fit.slope) && points.length > 1
       ? tag("line", { class: "fit", "data-key": "fit", x1: round(frame.x(Math.min(...xs))), y1: round(frame.y(fit.intercept + fit.slope * Math.min(...xs))), x2: round(frame.x(Math.max(...xs))), y2: round(frame.y(fit.intercept + fit.slope * Math.max(...xs))) })
       : null;
-  return plotSvg(`${y} against ${x}, ${points.length} points`, frame.grid, tag("g", { class: "marks" }, dots), line ?? tag("g", {}), legendOf(groups));
+  const legend = legendOf(groups);
+  return plotSvg(`${y} against ${x}, ${points.length} points`, legend.height, frame.grid, tag("g", { class: "marks" }, dots), line ?? tag("g", {}), legend.markup);
 }

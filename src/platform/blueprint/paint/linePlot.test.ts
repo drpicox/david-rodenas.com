@@ -23,6 +23,7 @@ describe("lines over a common x", () => {
 
   it("names the lines along the top, and says each point when pointed at", () => {
     expect(html).toMatch(/class="entry bp-s1".*>Montseny</);
+    expect(html).toContain('viewBox="0 0 560 322"');
     expect(html).toContain("<title>Eixample, 2005: 50 µg/m³</title>");
   });
 });

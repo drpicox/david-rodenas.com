@@ -6545,3 +6545,15 @@ body.wb-full-open {
   border: none;
   padding: 0 0.3em;
 }
+
+/* On a phone a picture is drawn a third of its size: its words are drawn bigger to make up for it, and the canvas, there to be opened full screen, takes less of the page. */
+@media (max-width: 40rem) {
+  .app .bp-plot text,
+  .app .bp-plot .axis-name {
+    font-size: 15px;
+  }
+
+  .app .wb-canvas {
+    height: 20rem;
+  }
+}

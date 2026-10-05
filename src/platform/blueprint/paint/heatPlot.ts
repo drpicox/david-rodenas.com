@@ -70,5 +70,5 @@ export function heatPlot({ xs, ys, values, x, y, unit }: Heat): Markup {
     tag("text", { class: "axis-name x", x: left, y: height - 8 }, x),
     tag("text", { class: "axis-name y", transform: `translate(14 ${(top + bottom) / 2}) rotate(-90)`, "text-anchor": "middle" }, y),
   );
-  return plotSvg(`${unit ? `${unit} ` : ""}by ${x} and ${y}`, tag("g", { class: "marks" }, cells), tag("g", { class: "frame" }, across, down, names), key);
+  return plotSvg(`${unit ? `${unit} ` : ""}by ${x} and ${y}`, 0, tag("g", { class: "marks" }, cells), tag("g", { class: "frame" }, across, down, names), key);
 }
