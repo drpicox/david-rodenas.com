@@ -58,6 +58,6 @@ Two labs I set, which are just as much things to play: they live under
 
 ## Take it apart yourself
 
-- [Blueprints](/projects/blueprints/) -- the weather, the air and this site's own source as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Fifteen to start from, the last one yours.
+- [Blueprints](/projects/blueprints/) -- the weather, the air and this site's own source as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Eighteen to start from, the last one yours.
 
 Use `ls` to see them all, or `cat next-word` to read one here.
