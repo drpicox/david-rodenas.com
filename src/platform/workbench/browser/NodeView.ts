@@ -114,7 +114,9 @@ export class NodeView {
       this.rows.set(pin.name, { row, pin: dot, edit, signature: "", control: null });
       return row;
     });
-    const header = el("header", { class: "wb-head", title: kind?.summary ?? `There is no kind of node called ${node.kind}.` }, el("span", { class: "wb-glyph", "aria-hidden": "true" }), this.title, this.kindSaid);
+    const rename = el("button", { type: "button", class: "wb-rename", title: "Give it a name of its own (or double-click its title)", "aria-label": "Rename the node" }, "✎");
+    rename.addEventListener("click", () => this.renaming());
+    const header = el("header", { class: "wb-head", title: kind?.summary ?? `There is no kind of node called ${node.kind}.` }, el("span", { class: "wb-glyph", "aria-hidden": "true" }), this.title, this.kindSaid, rename);
     this.element.replaceChildren(header, ...outputs, ...inputs, this.foot);
   }
 

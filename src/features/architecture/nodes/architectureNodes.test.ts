@@ -15,6 +15,7 @@ import { filesNode } from "./filesNode";
 import { graphTableOf } from "./graphTableOf";
 import { graphType } from "./graphType";
 import { historyIn } from "./historyIn";
+import { keepFilesNode } from "./keepFilesNode";
 import { knotNode } from "./knotNode";
 import { measureNode } from "./measureNode";
 import { networkNode } from "./networkNode";
@@ -134,6 +135,15 @@ describe("steps on a graph", () => {
   it("keeps only the files a path asks for, or all but them", () => {
     expect(pathsIn(run(onlyFilesNode, { graph: graphOf(), path: "features/*", keep: "matching" }).outputs?.["graph"] as CodeGraph)).toEqual(["features/x/X.ts", "features/y/Y.ts"]);
     expect(pathsIn(run(onlyFilesNode, { graph: graphOf(), path: "B.ts", keep: "others" }).outputs?.["graph"] as CodeGraph)).toEqual(["platform/a/A.ts", "features/x/X.ts", "features/y/Y.ts"]);
+  });
+
+  it("keeps the files whose measured column is as asked, as a graph, with the arrows among them", () => {
+    const measured = run(measureNode, { graph: graphOf(), what: "reach" }).outputs?.["graph"] as CodeGraph;
+    const kept = run(keepFilesNode, { graph: measured, column: "reach", is: "at-least", value: "2" });
+    expect(pathsIn(kept.outputs?.["graph"] as CodeGraph)).toEqual(["platform/a/A.ts", "platform/a/B.ts"]);
+    expect((kept.outputs?.["graph"] as CodeGraph).snapshot.dependencies).toEqual([{ from: 2, to: 1, typeOnly: false }]);
+    expect(kept.said).toBe("2 of 4 files");
+    expect(pathsIn(run(keepFilesNode, { graph: graphOf(), column: "box", is: "equals", value: "features/x" }).outputs?.["graph"] as CodeGraph)).toEqual(["features/x/X.ts"]);
   });
 
   it("keeps a file and what is around it, along the arrows asked for", () => {

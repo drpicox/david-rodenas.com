@@ -38,6 +38,29 @@ describe("how an input is written by hand", () => {
   });
 });
 
+describe("the value a filter asks for", () => {
+  const seasons = { id: "s", kind: "your-data", x: 0, y: 0, values: { text: "season, month\nwinter, 1\nsummer, 7\nsummer, 8\n, 9" } };
+  const keepWith = (values: PlacedNode["values"]): PlacedNode => ({ id: "k", kind: "keep", x: 0, y: 0, values });
+  const filtered = (values: PlacedNode["values"]) => {
+    const keep = keepWith(values);
+    const evaluation = evaluateBlueprint({ nodes: [seasons, keep], wires: [{ from: { node: "s", pin: "table" }, to: { node: "k", pin: "table" } }] }, aKit, { read });
+    return resolvedEditor(keep, pinOf("keep", "value"), aKit, read, evaluation);
+  };
+
+  it("is one of the column's own values, where one is asked for", () => {
+    expect(filtered({ column: "season", is: "equals" })).toEqual({ kind: "choice", choices: [{ value: "summer", label: "summer" }, { value: "winter", label: "winter" }] });
+  });
+
+  it("is a number in the column's range, where numbers are compared", () => {
+    expect(filtered({ column: "month", is: "at-least" })).toEqual({ kind: "number", min: 1, max: 9, step: 1 });
+  });
+
+  it("is words where more than one value is asked for, or the column is not known yet", () => {
+    expect(filtered({ column: "month", is: "between" })).toEqual({ kind: "text" });
+    expect(resolvedEditor(keepWith({ column: "season" }), pinOf("keep", "value"), aKit, read)).toEqual({ kind: "text" });
+  });
+});
+
 describe("a value, as the editor that sets it says it", () => {
   it("names a choice, shows a number, and says yes or no", () => {
     expect(saidBy({ kind: "choice", choices: [{ value: "WU", label: "Badalona" }] }, "WU")).toBe("Badalona");

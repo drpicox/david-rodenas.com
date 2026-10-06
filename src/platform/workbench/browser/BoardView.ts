@@ -21,6 +21,8 @@ export interface BoardHands {
   find(node: string): void;
   /** Light, on the canvas, the node a dial or a picture of the board comes from; none, to light none. */
   point(node: string | null): void;
+  /** A dial given a name of its own, written on the board. */
+  rename(node: string, title: string): void;
 }
 
 /**
@@ -75,6 +77,32 @@ export class BoardView {
     this.empty.hidden = cards.length > 0 || dials.length > 0;
   }
 
+  /** A dial's name made writable where it stands: Enter, or leaving it, names the dial; Escape leaves it as it was. */
+  private renaming(node: string, name: HTMLElement): void {
+    const before = name.textContent ?? "";
+    name.setAttribute("contenteditable", "true");
+    name.focus();
+    name.ownerDocument.getSelection()?.selectAllChildren(name);
+    const done = (keep: boolean) => {
+      name.removeAttribute("contenteditable");
+      name.removeEventListener("blur", blurred);
+      name.removeEventListener("keydown", key);
+      const written = (name.textContent ?? "").trim();
+      if (keep && written !== "" && written !== before) this.hands.rename(node, written);
+      else name.textContent = before;
+    };
+    const blurred = () => done(true);
+    const key = (event: KeyboardEvent) => {
+      event.stopPropagation();
+      if (event.key === "Enter") {
+        event.preventDefault();
+        done(true);
+      } else if (event.key === "Escape") done(false);
+    };
+    name.addEventListener("blur", blurred);
+    name.addEventListener("keydown", key);
+  }
+
   /** A control for each dial, built again only when how it is turned changed, and never under a hand. */
   private showDials(dials: readonly Dial[]): void {
     const wanted = new Set(dials.map((dial) => dial.node));
@@ -92,7 +120,13 @@ export class BoardView {
       }
       if (!kept) {
         const control = controlFor(dial.editor, dial.value, { style: "dial", label: dial.label, changed: (value, done) => value !== undefined && this.hands.turn(dial.node, value, done) });
-        kept = { element: el("label", { class: "wb-dial", "data-node": dial.node }, el("span", { class: "wb-dial-name" }, dial.label), control.element), control, signature };
+        const name = el("span", { class: "wb-dial-name" }, dial.label);
+        const rename = el("button", { type: "button", class: "wb-rename", title: "Give the dial a name of its own", "aria-label": `Rename ${dial.label}` }, "✎");
+        rename.addEventListener("click", (event) => {
+          event.preventDefault();
+          this.renaming(dial.node, name);
+        });
+        kept = { element: el("div", { class: "wb-dial", "data-node": dial.node }, el("span", { class: "wb-dial-head" }, name, rename), control.element), control, signature };
         this.controls.set(dial.node, kept);
       } else kept.control.show(dial.value);
       if (this.dials.children[at] !== kept.element) this.dials.insertBefore(kept.element, this.dials.children[at] ?? null);

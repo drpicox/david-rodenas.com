@@ -1,6 +1,6 @@
 ---
 title: Blueprints
-summary: The data this site keeps — the weather, the air, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, steps, statistics and pictures, with dials to turn. Ten to start from, the last one yours.
+summary: The data this site keeps — the weather, the air, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Fifteen to start from, the last one yours.
 order: 92
 ---
 
@@ -38,18 +38,15 @@ Everything runs here, in your browser, on the files this site serves, and
 your changes are kept in this browser until you reset them. **Link** copies a
 link that opens a blueprint as you left it.
 
-Ten to start from, each a working blueprint, most of them a few nodes:
+Fifteen to start from, each a working blueprint:
 
-1. [Nights that do not cool](#nights-that-do-not-cool) — a source, a picture, a trend.
-2. [A working day, in NO2](#a-working-day-in-no2) — the hour against the month.
-3. [Thirty years of NO2](#thirty-years-of-no2-every-measuring-point) — every measuring point, joined to its name.
-4. [Does the heat bring the NO2?](#does-the-heat-bring-the-no2) — two networks crossed, the season and the years taken out.
-5. [The files everything needs](#the-files-everything-needs) — this site's source by PageRank.
-6. [What changes, and what is needed](#what-changes-and-what-is-needed) — its history against its arrows.
-7. [The groups the arrows make](#the-groups-the-arrows-make) — the source tangled, a colour a group.
-8. [The source, grown](#the-source-grown) — a dial along every commit, to play.
-9. [The programs, as nodes](#the-programs-as-nodes) — a simulation turned by a dial.
-10. [Your own](#your-own) — a table you paste.
+- **The weather and the air**: [nights that do not cool](#nights-that-do-not-cool), a source, a picture and a trend; [one season, year by year](#one-season-year-by-year), with filters; [a working day, in NO2](#a-working-day-in-no2), a heat map; [thirty years of NO2](#thirty-years-of-no2-every-measuring-point), every measuring point joined to its name.
+- **The two, crossed**: [does the heat bring the NO2?](#does-the-heat-bring-the-no2), the season and the years taken out; [patterns of heat and NO2](#patterns-of-heat-and-no2), season by season, the rain, the span of a day.
+- **This site's own source**: [the files everything needs](#the-files-everything-needs), by PageRank; [how much the files are needed](#how-much-the-files-are-needed), a histogram; [what changes, and what is needed](#what-changes-and-what-is-needed); [files that keep changing](#files-that-keep-changing), a filter on the graph; [the groups the arrows make](#the-groups-the-arrows-make), tangled; [the source, grown](#the-source-grown), a dial along every commit.
+- **The programs**: [technical debt](#the-programs-as-nodes) and [the rocket](#the-rocket-as-a-node), as nodes.
+- **[Your own](#your-own)**: a table you paste.
+
+Between them they paint every picture a blueprint can — bars, lines, a scatter, a heat map, a histogram, a table, a number, the source in its boxes and tangled, a program's own — and read every kind of data the site keeps.
 
 ## Nights that do not cool
 
@@ -67,6 +64,25 @@ bars "Days a year" table: days x: year y: days faded: whole
 whole = keep "Only the whole years" table: days column: whole is: equals value: yes
 trend = trend table: whole y: days
 readout "Each decade" value: trend.per-ten unit: days about: "the change along the straight line fitted through the whole years"
+```
+
+## One season, year by year
+
+Filters keep some rows and leave the rest. Here, the months of one season —
+turn it on the board — of the years measured whole; then a row a year, the
+season's mean night, its line, and the straight line through it. A filter's
+value is offered from the column's own values, so the dial is a list of the
+seasons.
+
+```::blueprint
+which = dial "Season" value: summer
+months = weather-months station: X4
+only = keep "Only one season" table: months column: season is: equals value: which
+whole = keep "Only the months measured whole" table: only column: whole is: equals value: yes
+years = group "A year a row" table: whole by: year value: tn how: mean
+lines "The season's mean night, year by year" table: years x: year y: tn
+trend = trend table: years y: tn
+readout "Each decade" value: trend.per-ten unit: °C about: "along the straight line fitted through the years"
 ```
 
 ## A working day, in NO2
@@ -134,6 +150,40 @@ readout "The years taken out too" value: yearless.r about: "and less its year's 
 scatter "What is left of each month" table: years x: tx y: no2
 ```
 
+## Patterns of heat and NO2
+
+The same two networks, taken further apart. With the season and the years
+taken out, what is left of each month can be kept to the summers, or to the
+winters; set against the rain; or against the span between a day's highest
+and lowest, which a formula works out. Each correlation is a number on the
+board. The heat map is what is left of the NO2, month by year — less what its
+month and its year usually have — and shows which months stood out, and
+when. It opens on Girona; turn the dials to another town that has both.
+
+```::blueprint
+town = dial "Weather station" value: XJ
+point = dial "Measuring point" value: 17079003
+heat = weather-months station: town
+air = no2-months station: point
+both = join left: heat right: air
+whole = keep "Months measured whole" table: both column: whole is: equals value: yes
+seasonless = season "Less each month's mean" table: whole by: month
+odd = season "Less each year's mean too" table: seasonless by: year
+spanned = formula "The day's span, added" table: odd name: span formula: "tx - tn" unit: °C
+summers = keep table: spanned column: season is: equals value: summer
+winters = keep table: spanned column: season is: equals value: winter
+hot = correlation table: summers x: tx y: no2
+cold = correlation table: winters x: tn y: no2
+wet = correlation table: spanned x: rain y: no2
+wide = correlation table: spanned x: span y: no2
+readout "Summers: the heat of the day" value: hot.r about: "r of the daily maximum and NO2, summers only"
+readout "Winters: the cold of the night" value: cold.r about: "r of the daily minimum and NO2, winters only"
+readout "The rain" value: wet.r about: "r of the month's rain and NO2"
+readout "The day's span" value: wide.r about: "r of the gap between the day's highest and lowest, and NO2"
+scatter "The day's span against NO2, a colour a season" table: spanned x: span y: no2 colour: season
+heatmap "What is left of the NO2, month by year" table: odd x: month y: year value: no2
+```
+
 ## The files everything needs
 
 This site's own source, at its last commit, as a graph: a node a file, an
@@ -150,6 +200,22 @@ show-table "The ten most needed, by PageRank" table: ten rows: 10
 picture "The source, as needed as it is" graph: ranked size: needed colour: pagerank
 ```
 
+## How much the files are needed
+
+A histogram: the files of this site's source by how many others need them,
+cut into bins with round edges, a bar a bin. Most are needed by few, and a
+few by very many: the tail the architecture page draws on its log scales.
+
+```::blueprint
+source = source
+files = files graph: source
+spread = histogram table: files column: needed bins: 20
+bars "Files, by how many need them" table: spread x: from y: count
+summed = summary table: files column: needed
+readout "Half the files are needed by at most" value: summed.median unit: files
+readout "The most needed is needed by" value: summed.highest unit: files
+```
+
 ## What changes, and what is needed
 
 A file many others need is hard to change, which, as Robert C. Martin says,
@@ -163,6 +229,23 @@ changed = measure graph: source what: changes
 scatter "Changes against needed by, a dot a file" table: changed x: needed y: changes label: file
 ranks = correlation table: changed x: needed y: changes of: ranks
 readout "Spearman's r" value: ranks.r about: "of how many files need a file and how many commits changed it"
+```
+
+## Files that keep changing
+
+A filter on a graph: only the files changed at least as many times as the
+dial says — a slider, since the filter compares numbers — drawn where they
+stand, as big and as warm as their changes, and listed, the most changed
+first.
+
+```::blueprint
+often = dial "Changed at least" value: 10
+source = source
+changed = measure graph: source what: changes
+kept = keep-files "Only the files changed that often" graph: changed column: changes is: at-least value: often
+picture "Where they stand" graph: kept size: changes colour: changes
+ranked = sort table: kept by: changes order: falling
+show-table "The files, the most changed first" table: ranked rows: 12
 ```
 
 ## The groups the arrows make
@@ -208,6 +291,23 @@ interest = dial "Interest a shortcut costs, %" value: 10
 debt = technical-debt interest: interest
 lines "Features delivered, both roads" table: debt.months x: month y: cleanCumulative and: debtCumulative
 readout "The clean road overtakes at month" value: debt.break-even-month
+```
+
+## The rocket, as a node
+
+The relativistic rocket is a node too: two of its dials on the board, and two
+of its numbers wired into numbers — the years the crew lives through, and
+the years that pass at home. Its own table, of every destination at that
+acceleration, comes onto the board with it. It gives numbers and takes
+numbers and a destination, so it wires to what takes a number: a Number, a
+Formula's table, not the NO2.
+
+```::blueprint
+pull = dial "Acceleration" value: 1
+where = dial "To" value: "Tau Ceti"
+trip = rocket acceleration: pull to: where
+readout "Years on board" value: trip.trip-on-board-years
+readout "Years at home" value: trip.trip-at-home-years
 ```
 
 ## Your own

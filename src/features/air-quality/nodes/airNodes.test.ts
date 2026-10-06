@@ -66,7 +66,7 @@ describe("a measuring point, month by month", () => {
   it("is the mean of every hour measured on the days asked for, each hour weighing what it measured", () => {
     const table = tableOf(no2MonthsNode, { station: "08019004", days: "workdays" });
     expect(table.rows.length).toBe(24);
-    expect(table.rows[0]).toMatchObject({ year: 2024, month: 1, no2: 30 + 11.5, hours: 20 * 24 });
+    expect(table.rows[0]).toMatchObject({ year: 2024, month: 1, season: "winter", no2: 30 + 11.5, hours: 20 * 24 });
     const every = tableOf(no2MonthsNode, { station: "08019004", days: "all" });
     expect(every.rows[0]?.["no2"]).toBeCloseTo((20 * 41.5 + 8 * 21.5) / 28, 6);
     expect(every.rows[0]?.["measured"]).toBeCloseTo((28 * 24) / (31 * 24), 6);

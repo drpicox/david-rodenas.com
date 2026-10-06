@@ -1,4 +1,5 @@
 import type { NodeKind } from "../../../platform/blueprint/NodeKind";
+import { seasonOf } from "../../../platform/data/seasonOf";
 import type { Column, Row, Table } from "../../../platform/blueprint/Table";
 import type { No2Selection } from "../No2Selection";
 import { no2Stations } from "../no2Stations";
@@ -38,7 +39,7 @@ export const no2MonthsNode: NodeKind = {
           if (count === 0) return null;
           const sum = chosen.reduce((all, tally) => all + total(tally.sums[month]), 0);
           const everything = tallies(year, "all").reduce((all, tally) => all + total(tally.counts[month]), 0);
-          return { ...(asked === "all" && { station: station.code }), year: Number(label), month: month + 1, no2: sum / count, hours: count, measured: everything / hoursIn(Number(label), month) };
+          return { ...(asked === "all" && { station: station.code }), year: Number(label), month: month + 1, season: seasonOf(month + 1), no2: sum / count, hours: count, measured: everything / hoursIn(Number(label), month) };
         }).filter((row): row is Row => row !== null),
       ),
     );
@@ -46,6 +47,7 @@ export const no2MonthsNode: NodeKind = {
       ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
       { name: "month", kind: "number", key: true },
+      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it" },
       { name: "no2", kind: "number", unit: "µg/m³", about: "the mean of the month's hours" },
       { name: "hours", kind: "number", about: "the hours the mean is of" },
       { name: "measured", kind: "number", about: "the share of the month's hours measured, 0 to 1" },

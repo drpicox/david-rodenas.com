@@ -114,7 +114,12 @@ export class Workbench {
     this.marquee = el("div", { class: "wb-marquee", hidden: true });
     this.canvas = el("div", { class: "wb-canvas", tabindex: 0, role: "application", "aria-label": "The blueprint's canvas: its nodes and wires" }, this.world, this.marquee, el("p", { class: "wb-blank" }, "An empty blueprint. Double-click here, or press the space bar, to add a node."));
     this.status = el("p", { class: "wb-status", "aria-live": "polite" });
-    this.board = new BoardView({ turn: (node, value, done) => this.write(node, "value", value, done), find: (node) => this.find(node), point: (node) => this.point(node) });
+    this.board = new BoardView({
+      turn: (node, value, done) => this.write(node, "value", value, done),
+      find: (node) => this.find(node),
+      point: (node) => this.point(node),
+      rename: (node, title) => this.edit(withTitle(this.history.now, node, title)),
+    });
 
     const button = (label: string, title: string, act: () => void, extra = "") => {
       const made = el("button", { type: "button", title, "aria-label": title, class: extra }, label);

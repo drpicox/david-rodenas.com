@@ -57,12 +57,15 @@ export function heatPlot({ xs, ys, values, x, y, unit }: Heat): Markup {
   const named = (count: number) => Math.max(1, Math.ceil(count / MOST_NAMED));
   const across = xs.flatMap((name, index) => (index % named(xs.length) === 0 ? [tag("text", { class: "tick x", x: round(left + (index + 0.5) * cellW), y: bottom + 14, "text-anchor": "middle" }, name)] : []));
   const down = ys.flatMap((name, index) => (index % named(ys.length) === 0 ? [tag("text", { class: "tick y", x: left - 6, y: round(top + (index + 0.5) * cellH + 3.5), "text-anchor": "end" }, name)] : []));
+  // The key ends where the picture does: the highest value, said last, is never cut off by the picture's edge.
+  const highest = `${numberSaid(high)}${unit ? ` ${unit}` : ""}`;
+  const keyRight = right - highest.length * 6.2 - 6;
   const key = tag(
     "g",
     { class: "heat-key" },
-    tag("text", { class: "tick", x: right - LEGEND - 6, y: height - 8, "text-anchor": "end" }, numberSaid(low)),
-    [0, 1, 2, 3, 4, 5, 6, 7].map((step) => tag("rect", { x: round(right - LEGEND + (step * LEGEND) / 8), y: height - 18, width: round(LEGEND / 8 + 0.4), height: 10, style: `fill: ${fillOf(low + ((high - low) * (step + 0.5)) / 8, low, high)}` })),
-    tag("text", { class: "tick", x: right + 4, y: height - 8 }, `${numberSaid(high)}${unit ? ` ${unit}` : ""}`),
+    tag("text", { class: "tick", x: round(keyRight - LEGEND - 6), y: height - 8, "text-anchor": "end" }, numberSaid(low)),
+    [0, 1, 2, 3, 4, 5, 6, 7].map((step) => tag("rect", { x: round(keyRight - LEGEND + (step * LEGEND) / 8), y: height - 18, width: round(LEGEND / 8 + 0.4), height: 10, style: `fill: ${fillOf(low + ((high - low) * (step + 0.5)) / 8, low, high)}` })),
+    tag("text", { class: "tick", x: right, y: height - 8, "text-anchor": "end" }, highest),
   );
   const names = tag(
     "g",

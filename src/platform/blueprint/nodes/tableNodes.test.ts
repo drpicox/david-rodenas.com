@@ -12,6 +12,7 @@ import { sortNode } from "./sortNode";
 import { stackNode } from "./stackNode";
 import { topNode } from "./topNode";
 import { yourDataNode } from "./yourDataNode";
+import { ROW_TESTS } from "../ROW_TESTS";
 
 const read = () => {
   throw new Error("no files here");
@@ -63,8 +64,19 @@ describe("keeping some rows", () => {
     expect((result.outputs?.["table"] as Table).credits).toEqual(heat.credits);
   });
 
-  it("drops a row whose column holds nothing, whatever is asked", () => {
+  it("drops a row whose column holds nothing, unless what is asked is that it hold nothing", () => {
     expect(out(keepNode, { table: heat, column: "tn", is: "differs", value: "6" }).rows.length).toBe(2);
+    expect(tx(out(keepNode, { table: heat, column: "tn", is: "is-empty" }))).toEqual([32]);
+    expect(tx(out(keepNode, { table: heat, column: "tn", is: "has-a-value" }))).toEqual([14, 30, 16]);
+  });
+
+  it("keeps the rows between two values, both ends in", () => {
+    expect(tx(out(keepNode, { table: heat, column: "tx", is: "between", value: "16 30" }))).toEqual([30, 16]);
+  });
+
+  it("says each test as a reader would read it", () => {
+    expect(Object.values(ROW_TESTS).map((test) => test.label)).toEqual(["equals", "differs from", "is below", "is at most", "is above", "is at least", "is between", "is one of", "contains", "has a value", "is empty"]);
+    expect(ROW_TESTS["between"]?.test("b", "a c")).toBe(true);
   });
 });
 

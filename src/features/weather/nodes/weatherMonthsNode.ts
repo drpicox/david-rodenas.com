@@ -1,4 +1,5 @@
 import type { NodeKind } from "../../../platform/blueprint/NodeKind";
+import { seasonOf } from "../../../platform/data/seasonOf";
 import type { Column, Row, Table } from "../../../platform/blueprint/Table";
 import type { SparseHistogram } from "../WeatherStation";
 import { weatherStations } from "../weatherStations";
@@ -34,7 +35,7 @@ export const weatherMonthsNode: NodeKind = {
           if (tn === null && tx === null && pp === null) return null;
           const days = Math.max(countOf(year.tn?.months[month]), countOf(year.tx?.months[month]));
           const running = station.soFar?.year === Number(label);
-          return { ...(asked === "all" && { station: station.code }), year: Number(label), month: month + 1, tn, tx, rain: pp, downpour: pi, days, whole: !running && days >= WHOLE * daysIn(Number(label), month) ? "yes" : "no" };
+          return { ...(asked === "all" && { station: station.code }), year: Number(label), month: month + 1, season: seasonOf(month + 1), tn, tx, rain: pp, downpour: pi, days, whole: !running && days >= WHOLE * daysIn(Number(label), month) ? "yes" : "no" };
         }).filter((row): row is Row => row !== null),
       ),
     );
@@ -42,6 +43,7 @@ export const weatherMonthsNode: NodeKind = {
       ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
       { name: "month", kind: "number", key: true },
+      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it" },
       { name: "tn", kind: "number", unit: "°C", about: "the mean daily minimum" },
       { name: "tx", kind: "number", unit: "°C", about: "the mean daily maximum" },
       { name: "rain", kind: "number", unit: "mm", about: "the month's rain" },

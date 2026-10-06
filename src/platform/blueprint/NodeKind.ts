@@ -16,6 +16,12 @@ export type Editor =
   | { readonly kind: "number"; readonly min?: number; readonly max?: number; readonly step?: number; readonly show?: (value: number) => string }
   | { readonly kind: "choice"; readonly choices: readonly Choice[] }
   | { readonly kind: "column"; readonly of: string; readonly numeric?: boolean }
+  /**
+   * A value of a column of the table handed to another input, chosen by
+   * another input: one of its values, where a test asks for one; a number in
+   * its range, where a test compares numbers; words, where it asks for more.
+   */
+  | { readonly kind: "values"; readonly of: string; readonly column: string; readonly test: string }
   | { readonly kind: "text"; readonly lines?: number }
   | { readonly kind: "flag" };
 

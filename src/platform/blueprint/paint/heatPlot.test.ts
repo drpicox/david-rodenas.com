@@ -28,8 +28,8 @@ describe("a grid of cells, each as deep as its value", () => {
     expect(both).toContain("var(--bp-warm)");
   });
 
-  it("says what each cell holds, and what the palest and the deepest are", () => {
+  it("says what each cell holds, and what the palest and the deepest are, the deepest ending where the picture does", () => {
     expect(html).toContain("<title>month 2, hour 3: 25 µg/m³</title>");
-    expect(html).toContain(">40 µg/m³<");
+    expect(html).toMatch(/<text class="tick" x="542" y="292" text-anchor="end">40 µg\/m³</);
   });
 });

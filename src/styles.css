@@ -5902,12 +5902,17 @@ main p:has(> strong:first-child):not(h2 + p) {
   align-items: start;
 }
 
-/* A picture takes two columns where there are two, a number one: three numbers stand beside a chart instead of under it. */
+/* A picture takes two columns where there are two, a number one: three numbers stand beside a chart instead of under it. Whatever a program paints is a picture too. */
 @media (min-width: 40rem) {
-  .app .wb-cards .bp-card:has(.bp-plot, .bp-picture, .bp-table, .charts),
-  .app .bp-board .bp-card:has(.bp-plot, .bp-picture, .bp-table, .charts) {
+  .app .wb-cards .bp-card:has(.bp-painting > :not(.bp-readout)),
+  .app .bp-board .bp-card:has(.bp-painting > :not(.bp-readout)) {
     grid-column: span 2;
   }
+}
+
+/* A painting wider than its card, as a program's table can be, scrolls inside it rather than running over the next. */
+.app .bp-painting {
+  overflow-x: auto;
 }
 
 .app .bp-board > .bp-dials,
@@ -6663,4 +6668,51 @@ body.wb-full-open {
 
 .app .wb-node.pointed:not(.wb-role-dial) {
   box-shadow: 0 0 0 3px var(--role), 0 10px 24px rgb(0 0 0 / 0.16);
+}
+
+/* ✎ names a dial, or any node, where it stands. */
+.app .wb-dial-head {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.app .wb-dial-name[contenteditable],
+.app .wb-title[contenteditable] {
+  outline: none;
+  border-bottom: 1px dashed var(--accent);
+  color: var(--ink);
+}
+
+.app .wb-rename {
+  border: none !important;
+  padding: 0 0.2em !important;
+  font-size: 0.8em;
+  line-height: 1;
+  color: var(--dim) !important;
+  background: none !important;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.app .wb-dial:hover .wb-rename,
+.app .wb-head:hover .wb-rename,
+.app .wb-rename:focus-visible {
+  opacity: 1;
+}
+
+.app .wb-rename:hover {
+  color: var(--accent) !important;
+}
+
+.app .wb-head .wb-rename {
+  flex: none;
+}
+
+.app .wb-head .wb-kind:not(:empty) + .wb-rename {
+  margin-left: 0;
+}
+
+.app .wb-head .wb-kind:empty + .wb-rename {
+  margin-left: auto;
 }

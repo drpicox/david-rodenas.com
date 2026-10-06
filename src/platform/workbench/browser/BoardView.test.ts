@@ -7,7 +7,8 @@ import { BoardView } from "./BoardView";
 const turned: [string, Literal, boolean][] = [];
 const found: string[] = [];
 const pointed: (string | null)[] = [];
-const board = () => new BoardView({ turn: (node, value, done) => turned.push([node, value, done]), find: (node) => found.push(node), point: (node) => pointed.push(node) });
+const renamed: [string, string][] = [];
+const board = () => new BoardView({ turn: (node, value, done) => turned.push([node, value, done]), find: (node) => found.push(node), point: (node) => pointed.push(node), rename: (node, title) => renamed.push([node, title]) });
 const station: Dial = { node: "where", label: "Station", value: "WU", editor: { kind: "choice", choices: [{ value: "WU", label: "Badalona" }, { value: "X4", label: "el Raval" }] }, said: "Badalona", targets: [] };
 
 describe("the board beside the canvas", () => {
@@ -19,6 +20,18 @@ describe("the board beside the canvas", () => {
     select.value = "X4";
     select.dispatchEvent(new Event("change"));
     expect(turned.splice(0)).toEqual([["where", "X4", true]]);
+  });
+
+  it("lets a dial be given a name of its own, written where it stands", () => {
+    const view = board();
+    view.show([station], []);
+    (view.element.querySelector(".wb-rename") as HTMLButtonElement).click();
+    const name = view.element.querySelector(".wb-dial-name") as HTMLElement;
+    expect(name.getAttribute("contenteditable")).toBe("true");
+    name.textContent = "Where it was measured";
+    name.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+    expect(renamed.splice(0)).toEqual([["where", "Where it was measured"]]);
+    expect(name.hasAttribute("contenteditable")).toBe(false);
   });
 
   it("keeps a dial's control when only its value changed, and shows the value", () => {

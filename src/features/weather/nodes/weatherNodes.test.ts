@@ -87,7 +87,8 @@ describe("a weather station, month by month", () => {
     const table = tableOf(weatherMonthsNode, { station: "WU" });
     expect(table.rows.length).toBe(24);
     expect(table.rows[6]).toMatchObject({ year: 2024, month: 7, tn: (11 * 26 + 20 * 22) / 31, tx: (11 * 36 + 20 * 32) / 31, rain: 31, days: 31, whole: "yes" });
-    expect(table.columns.filter((column) => column.key).map((column) => column.name)).toEqual(["year", "month"]);
+    expect(table.columns.filter((column) => column.key).map((column) => column.name)).toEqual(["year", "month", "season"]);
+    expect(table.rows[6]?.["season"]).toBe("summer");
   });
 
   it("goes on into the year still running, as far as it goes, and never calls it whole", () => {

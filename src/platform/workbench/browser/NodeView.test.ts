@@ -64,6 +64,9 @@ describe("one node on the canvas", () => {
     (shown.element.querySelector(".wb-promote") as HTMLButtonElement).click();
     expect(promoted.splice(0)).toEqual(["from"]);
     const title = shown.element.querySelector(".wb-title") as HTMLElement;
+    (shown.element.querySelector(".wb-rename") as HTMLButtonElement).click();
+    expect(title.getAttribute("contenteditable")).toBe("true");
+    title.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     title.dispatchEvent(new MouseEvent("dblclick"));
     title.textContent = "Nights at home";
     title.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
