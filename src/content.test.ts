@@ -58,6 +58,13 @@ describe("the content", () => {
  * and a still that fails leaves its place empty without failing the build.
  * So it is said here, of every page as written.
  */
+/**
+ * Drawing every still of every page is the build's own work, and it grows with the site: a tangle of the source,
+ * a picture of it at a commit, a year of hours. Under the coverage the deploy counts, on a machine not this one,
+ * it took longer than a test is given by default, and failed a deploy for being slow rather than wrong.
+ */
+const STILLS = 60_000;
+
 describe("the content, in the HTML", () => {
   const PLACE = /<div class="app" data-app="([a-z0-9-]+)"(?: data-dials="([a-z0-9 -]+)")?(?: data-source="([^"]*)")?><\/div>/g;
   const PUBLIC = new URL("../public", import.meta.url).pathname;
@@ -73,7 +80,7 @@ describe("the content, in the HTML", () => {
   });
 
   // A blueprint is written in a page as text, and nothing but this would notice a kind renamed, a column gone, or a step that now fails.
-  it("runs every blueprint a page writes, as the build does, every line read and every node answering", () => {
+  it("runs every blueprint a page writes, as the build does, every line read and every node answering", { timeout: STILLS }, () => {
     const kit = blueprintKitOf(allFeatures);
     const troubled = places
       .filter(({ name }) => name === "blueprint")
@@ -88,7 +95,7 @@ describe("the content, in the HTML", () => {
     expect(troubled).toEqual([]);
   });
 
-  it("fills, on every page, every place that has a still, as the build does, and no still fails or draws nothing", () => {
+  it("fills, on every page, every place that has a still, as the build does, and no still fails or draws nothing", { timeout: STILLS }, () => {
     const failed = places.flatMap(({ route, name, dials, source }) => {
       const still = stills[name];
       if (!still) return [];
