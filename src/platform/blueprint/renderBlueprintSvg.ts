@@ -38,7 +38,7 @@ function wrapped(text: string, room: number): string[] {
  */
 export function renderBlueprintSvg(blueprint: Blueprint, kit: Kit, evaluation: Evaluation, read: (path: string) => string): string {
   const shapes = new Map(blueprint.nodes.map((node) => [node.id, nodeShapeOf(kit.kinds.get(node.kind))]));
-  const right = Math.max(0, ...blueprint.nodes.map((node) => node.x + NODE.width));
+  const right = Math.max(0, ...blueprint.nodes.map((node) => node.x + (shapes.get(node.id)?.width ?? NODE.width)));
   const bottom = Math.max(0, ...blueprint.nodes.map((node) => node.y + (shapes.get(node.id)?.height ?? 0)));
   const [left, top] = [Math.min(0, ...blueprint.nodes.map((node) => node.x)), Math.min(0, ...blueprint.nodes.map((node) => node.y))];
   const byId = new Map(blueprint.nodes.map((node) => [node.id, node]));
@@ -61,7 +61,7 @@ export function renderBlueprintSvg(blueprint: Blueprint, kit: Kit, evaluation: E
     const wired = new Set(blueprint.wires.filter((wire) => wire.to.node === node.id).map((wire) => wire.to.pin));
     const outputs = (kind?.outputs ?? []).map((pin) => {
       const y = shape.outputs.get(pin.name)?.y ?? 0;
-      return [tag("text", { class: "pin-label out", x: NODE.width - 12, y: y + 4, "text-anchor": "end" }, pin.label), tag("circle", { class: "pin", cx: NODE.width, cy: y, r: 4.5, style: `fill: ${colourOf(kit, pin.type)}` })];
+      return [tag("text", { class: "pin-label out", x: shape.width - 12, y: y + 4, "text-anchor": "end" }, pin.label), tag("circle", { class: "pin", cx: shape.width, cy: y, r: 4.5, style: `fill: ${colourOf(kit, pin.type)}` })];
     });
     const note = kind?.role === "note";
     const inputs = (kind?.inputs ?? []).map((pin) => {
@@ -85,14 +85,14 @@ export function renderBlueprintSvg(blueprint: Blueprint, kit: Kit, evaluation: E
       return [
         tag("circle", { class: wired.has(pin.name) ? "pin" : "pin open", cx: 0, cy: y, r: 4.5, style: `${wired.has(pin.name) ? "fill" : "stroke"}: ${colourOf(kit, pin.type)}` }),
         tag("text", { class: "pin-label in", x: 12, y: y + 4 }, pin.label),
-        shown ? tag("text", { class: `value ${shown.how}`, x: NODE.width - 10, y: y + 4, "text-anchor": "end" }, cut(shown.text, ROOM.value)) : null,
+        shown ? tag("text", { class: `value ${shown.how}`, x: shape.width - 10, y: y + 4, "text-anchor": "end" }, cut(shown.text, shape.width < NODE.width ? ROOM.value - 8 : ROOM.value)) : null,
       ];
     });
     return tag(
       "g",
       { class: `bp-node bp-role-${kind?.role ?? "unknown"}${foot.trouble ? " trouble" : ""}`, "data-node": node.id, transform: `translate(${node.x} ${node.y})` },
-      tag("rect", { class: "body", width: NODE.width, height: shape.height, rx: 6 }),
-      tag("path", { class: "head", d: `M0 ${NODE.header} V6 Q0 0 6 0 H${NODE.width - 6} Q${NODE.width} 0 ${NODE.width} 6 V${NODE.header} Z` }),
+      tag("rect", { class: "body", width: shape.width, height: shape.height, rx: 6 }),
+      tag("path", { class: "head", d: `M0 ${NODE.header} V6 Q0 0 6 0 H${shape.width - 6} Q${shape.width} 0 ${shape.width} 6 V${NODE.header} Z` }),
       tag("text", { class: "title", x: 10, y: 19 }, cut(node.title ?? kind?.title ?? node.kind, 30)),
       outputs,
       inputs,

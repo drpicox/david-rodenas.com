@@ -43,6 +43,8 @@ export interface WorkbenchSetting {
   readonly start?: { readonly text: string; readonly said: string };
   /** The board the build wrote, shown until the blueprint has run here: the pictures do not blink out while it does. */
   readonly stillBoard?: string;
+  /** Every blueprint the page writes, by the heading it stands under: any of them can be opened here. */
+  readonly examples?: readonly { readonly title: string; readonly text: string }[];
   /** Told the blueprint's text after every edit, to keep it; told nothing when it is the page's own again. */
   keep(text: string | null): void;
   /** A link that opens this blueprint as it now is. */
@@ -112,7 +114,7 @@ export class Workbench {
     this.marquee = el("div", { class: "wb-marquee", hidden: true });
     this.canvas = el("div", { class: "wb-canvas", tabindex: 0, role: "application", "aria-label": "The blueprint's canvas: its nodes and wires" }, this.world, this.marquee, el("p", { class: "wb-blank" }, "An empty blueprint. Double-click here, or press the space bar, to add a node."));
     this.status = el("p", { class: "wb-status", "aria-live": "polite" });
-    this.board = new BoardView({ turn: (node, value, done) => this.write(node, "value", value, done), find: (node) => this.find(node) });
+    this.board = new BoardView({ turn: (node, value, done) => this.write(node, "value", value, done), find: (node) => this.find(node), point: (node) => this.point(node) });
 
     const button = (label: string, title: string, act: () => void, extra = "") => {
       const made = el("button", { type: "button", title, "aria-label": title, class: extra }, label);
@@ -125,9 +127,11 @@ export class Workbench {
       reset: button("Reset", "Go back to the page's own blueprint", () => this.reset()),
       full: button("Full screen", "Work on it full screen (Esc to come back)", () => this.toggleFull(), "wb-full-button"),
     };
+    const examples = (setting.examples ?? []).length > 1 ? [button("Examples", "Open another of the page's blueprints here", () => this.toggleExamples(), "wb-examples-button")] : [];
     const bar = el(
       "div",
       { class: "wb-bar", role: "toolbar", "aria-label": "Blueprint" },
+      ...examples,
       button("＋ Node", "Add a node (space bar)", () => this.openMenu(null, undefined), "wb-add"),
       this.buttons.undo,
       this.buttons.redo,
@@ -379,9 +383,13 @@ export class Workbench {
     const value = node.values[pin] ?? settled ?? input.initial ?? (input.type === "number" ? 0 : input.type === "flag" ? false : "");
     const dialId = freshId(now, pin.replace(/[^\w-]/g, "") || "dial");
     const row = nodeShapeOf(kind).inputs.get(pin)?.y ?? 0;
-    const dial: PlacedNode = { id: dialId, kind: "dial", x: node.x - NODE.width - 60, y: node.y + row - NODE.header - NODE.row * 1.5, title: input.label || pin, values: { value } };
+    // Beside the input it turns, its wire level with it, moved off any node it would stand on.
+    const wanted = { x: node.x - NODE.dial - 48, y: node.y + row - (NODE.header + NODE.row / 2) };
+    const dial: PlacedNode = { id: dialId, kind: "dial", ...this.freeSpot(wanted, NODE.dial, nodeShapeOf(this.setting.kit.kinds.get("dial")).height), title: input.label || pin, values: { value } };
+    this.selection = new Set([dialId]);
     this.edit(withWire(withValue(withNode(now, dial), id, pin, undefined), { from: { node: dialId, pin: "value" }, to: { node: id, pin } }));
-    this.say(`${input.label || pin} is on the board now, as a dial.`);
+    this.reveal([dialId, id]);
+    this.say(`${input.label || pin} is on the board now, as a dial — and on the canvas, beside the node it turns.`);
   }
 
   private tidy(): void {
@@ -404,6 +412,19 @@ export class Workbench {
     this.edit(blueprint);
   }
 
+  /** The node a dial or a picture of the board comes from, lit on the canvas while it is pointed at, and said. */
+  private point(id: string | null): void {
+    for (const [each, view] of this.views) view.element.classList.toggle("pointed", each === id);
+    const node = id ? this.history.now.nodes.find((each) => each.id === id) : undefined;
+    const kind = node && this.setting.kit.kinds.get(node.kind);
+    if (!node || !kind) return this.say();
+    const into = this.history.now.wires.filter((wire) => wire.from.node === node.id).map((wire) => {
+      const target = this.history.now.nodes.find((each) => each.id === wire.to.node);
+      return `${wire.to.pin} of ${target?.title ?? this.setting.kit.kinds.get(target?.kind ?? "")?.title ?? wire.to.node}`;
+    });
+    this.say(kind.role === "dial" ? `${node.title ?? "This dial"} turns ${into.join(" and ") || "nothing yet: wire it into an input"}. It is lit on the canvas.` : `${node.title ?? kind.title} comes from the ${kind.title} node lit on the canvas.`);
+  }
+
   /** A node brought into view and chosen: what a picture's title on the board does. */
   private find(id: string): void {
     const node = this.history.now.nodes.find((each) => each.id === id);
@@ -421,18 +442,21 @@ export class Workbench {
   private openMenu(at: { x: number; y: number } | null, dragged: Dragged | undefined, end?: PinFound, detached?: Wire | null): void {
     this.closeMenu?.();
     const box = this.canvas.getBoundingClientRect();
-    const world = at ?? this.camera.toWorld(box.width / 2 - NODE.width / 2, box.height / 3);
+    const world = at ?? this.camera.toWorld(box.width / 2 - NODE.width / 2, box.height / 4);
     const screen = { left: world.x * this.camera.zoom + this.camera.x, top: world.y * this.camera.zoom + this.camera.y };
+    // Never taller than the canvas has room for under where it opens, and opened high enough to have room for most of it.
+    const top = Math.max(6, Math.min(screen.top, box.height - 280));
+    const height = Math.max(200, Math.min(420, box.height - top - 8));
     let taken = false;
     this.say(dragged ? "Choose what comes next, typing to narrow it; Escape lets the wire go." : "Choose a node, typing to narrow it; Escape closes the menu.");
     this.closeMenu = openKindMenu(
       this.canvas,
       this.setting.kit,
-      { left: Math.max(4, Math.min(screen.left, box.width - 280)), top: Math.max(4, Math.min(screen.top, box.height - 364)) },
+      { left: Math.max(4, Math.min(screen.left, box.width - 280)), top, ...(box.height > 0 && { height }) },
       dragged,
       (offer) => {
         taken = true;
-        this.add(offer, world, end);
+        this.add(offer, world, end, at === null);
       },
       () => {
         this.closeMenu = null;
@@ -445,14 +469,49 @@ export class Workbench {
     );
   }
 
-  private add(offer: Offer, at: { x: number; y: number }, end?: PinFound): void {
+  private add(offer: Offer, at: { x: number; y: number }, end?: PinFound, free = false): void {
     const now = this.history.now;
     const id = freshId(now, offer.kind.name);
-    const node: PlacedNode = { id, kind: offer.kind.name, x: Math.round(end?.side === "input" ? at.x - NODE.width : at.x), y: Math.round(at.y - NODE.header / 2), values: {} };
+    const shape = nodeShapeOf(offer.kind);
+    const asked = { x: Math.round(end?.side === "input" ? at.x - shape.width : at.x), y: Math.round(at.y - NODE.header / 2) };
+    const node: PlacedNode = { id, kind: offer.kind.name, ...(free ? this.freeSpot(asked, shape.width, shape.height) : asked), values: {} };
     let next = withNode(now, node);
     if (end && offer.pin) next = withWire(next, end.side === "output" ? { from: { node: end.node, pin: end.pin }, to: { node: id, pin: offer.pin } } : { from: { node: id, pin: offer.pin }, to: { node: end.node, pin: end.pin } });
     this.selection = new Set([id]);
     this.edit(next);
+    this.reveal([id]);
+  }
+
+  /** The nearest place to one asked for where a node that big stands on no other: tried further down, then further up, a node's row at a time. */
+  private freeSpot(asked: { x: number; y: number }, width: number, height: number): { x: number; y: number } {
+    const { kit } = this.setting;
+    const boxes = this.history.now.nodes.map((node) => ({ node, shape: nodeShapeOf(kit.kinds.get(node.kind)) }));
+    const clear = (y: number) => boxes.every(({ node, shape }) => asked.x + width + 12 <= node.x || node.x + shape.width + 12 <= asked.x || y + height + 12 <= node.y || node.y + shape.height + 12 <= y);
+    for (let step = 0; step < 40; step += 1) {
+      const y = asked.y + (step % 2 === 0 ? 1 : -1) * Math.ceil(step / 2) * NODE.row * 2;
+      if (clear(y)) return { x: Math.round(asked.x), y: Math.round(y) };
+    }
+    return { x: Math.round(asked.x), y: Math.round(asked.y) };
+  }
+
+  /** Some nodes brought into view, the canvas moved no more than it has to: a node added out of sight is a node not added, for whoever is looking. */
+  private reveal(ids: readonly string[]): void {
+    const { kit } = this.setting;
+    const nodes = this.history.now.nodes.filter((node) => ids.includes(node.id));
+    if (nodes.length === 0) return;
+    const box = this.canvas.getBoundingClientRect();
+    if (box.width <= 0 || box.height <= 0) return;
+    const { zoom } = this.camera;
+    const left = Math.min(...nodes.map((node) => node.x)) * zoom + this.camera.x;
+    const top = Math.min(...nodes.map((node) => node.y)) * zoom + this.camera.y;
+    const right = Math.max(...nodes.map((node) => node.x + nodeShapeOf(kit.kinds.get(node.kind)).width)) * zoom + this.camera.x;
+    const bottom = Math.max(...nodes.map((node) => node.y + nodeShapeOf(kit.kinds.get(node.kind)).height)) * zoom + this.camera.y;
+    const margin = 24;
+    if (left < margin) this.camera.x += margin - left;
+    else if (right > box.width - margin) this.camera.x -= Math.min(right - (box.width - margin), left - margin);
+    if (top < margin) this.camera.y += margin - top;
+    else if (bottom > box.height - margin) this.camera.y -= Math.min(bottom - (box.height - margin), top - margin);
+    this.applyCamera();
   }
 
   private openText(): void {
@@ -473,6 +532,31 @@ export class Workbench {
     } catch {
       this.say(link);
     }
+  }
+
+  /** The page's blueprints, to open any of them here: as an edit, so Undo and Reset go back to this one. */
+  private toggleExamples(): void {
+    const open = this.element.querySelector(".wb-examples");
+    if (open) {
+      open.remove();
+      return;
+    }
+    const list = el("ul", {});
+    const panel = el("div", { class: "wb-examples", role: "dialog", "aria-label": "The page's blueprints" }, el("p", {}, "Open one of the page's blueprints here; Reset comes back to this one."), list);
+    for (const example of this.setting.examples ?? []) {
+      const choose = el("button", { type: "button", class: example.text === this.setting.example ? "current" : undefined }, example.title);
+      choose.addEventListener("click", () => {
+        panel.remove();
+        this.edit(this.laidOut(example.text));
+        this.notice = `${example.title}, opened here. Undo, or Reset, goes back.`;
+        this.wake();
+        this.fit();
+        this.say();
+      });
+      list.append(el("li", {}, choose));
+    }
+    this.element.append(panel);
+    (list.querySelector("button:not(.current)") as HTMLButtonElement | null)?.focus();
   }
 
   /** What the hands do, said where the hands are: on a page full screen, the page's own words are out of sight. */
@@ -534,6 +618,7 @@ export class Workbench {
       this.pinches.delete(event.pointerId);
       this.gesture = null;
       this.preview = null;
+      this.clearFits();
       this.render();
     });
     canvas.addEventListener("dblclick", (event) => {
@@ -547,6 +632,8 @@ export class Workbench {
     canvas.addEventListener(
       "wheel",
       (event) => {
+        // A menu, or anything else that scrolls inside the canvas, scrolls itself.
+        if ((event.target as Element).closest(".wb-menu")) return;
         const box = canvas.getBoundingClientRect();
         if (event.ctrlKey || event.metaKey) {
           event.preventDefault();
@@ -640,6 +727,27 @@ export class Workbench {
       this.preview = withoutWires(now, existing.to, "input");
       this.gesture = { kind: "wire", end: from, type: typeOf(from), at, detached: existing, before: now };
     } else this.gesture = { kind: "wire", end, type: typeOf(end), at, detached: null, before: now };
+    this.markFits(this.gesture.end);
+  }
+
+  /** Every pin the wire being dragged could go into, lit, and the rest dimmed, as Unreal does: what fits where, seen before it is tried. */
+  private markFits(end: PinFound): void {
+    const { kit } = this.setting;
+    const blueprint = this.blueprint;
+    this.canvas.classList.add("wiring");
+    for (const [id, view] of this.views)
+      for (const pin of view.element.querySelectorAll<HTMLElement>(".wb-pin")) {
+        const name = pin.dataset["pin"] ?? "";
+        const side = pin.dataset["side"];
+        const wire = end.side === "output" && side === "input" ? { from: { node: end.node, pin: end.pin }, to: { node: id, pin: name } } : end.side === "input" && side === "output" ? { from: { node: id, pin: name }, to: { node: end.node, pin: end.pin } } : null;
+        pin.classList.toggle("fits", wire !== null && wireRefused(blueprint, kit, wire) === null);
+        pin.classList.toggle("held", id === end.node && name === end.pin);
+      }
+  }
+
+  private clearFits(): void {
+    this.canvas.classList.remove("wiring");
+    for (const pin of this.canvas.querySelectorAll(".wb-pin.fits, .wb-pin.held")) pin.classList.remove("fits", "held");
   }
 
   private moved(event: PointerEvent): void {
@@ -702,6 +810,7 @@ export class Workbench {
     const gesture = this.gesture;
     this.gesture = null;
     this.marquee.hidden = true;
+    this.clearFits();
     if (!gesture) return;
     if (gesture.kind === "pan" && !gesture.moved) {
       this.selection.clear();

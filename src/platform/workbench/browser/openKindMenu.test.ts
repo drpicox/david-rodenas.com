@@ -35,6 +35,28 @@ describe("the menu a node is added from", () => {
     expect(host.querySelector(".wb-menu")).toBeNull();
   });
 
+  it("says what the lit kind takes and gives, each pin in its colour, so how it is wired is seen before it is added", () => {
+    const { search, host } = opened();
+    search.value = "bars";
+    search.dispatchEvent(new Event("input"));
+    expect(host.querySelector(".wb-menu-pins")?.textContent).toBe("takes table, x, height, faint unless · paints on the board");
+    expect(host.querySelector(".wb-menu-pins .wb-dot")?.getAttribute("style")).toBe("--pin: var(--bp-table)");
+    search.value = "trend";
+    search.dispatchEvent(new Event("input"));
+    expect(host.querySelector(".wb-menu-pins")?.textContent).toBe("takes table, along, of · gives for each ten, for each one, over it all");
+  });
+
+  it("is no taller than it is told, and keeps the wheel to itself", () => {
+    const host = document.createElement("div");
+    let outside = 0;
+    host.addEventListener("wheel", () => (outside += 1));
+    openKindMenu(host, aKit, { left: 0, top: 0, height: 240 }, undefined, () => {}, () => {});
+    const menu = host.querySelector(".wb-menu") as HTMLElement;
+    expect(menu.style.maxHeight).toBe("240px");
+    menu.querySelector("ul")?.dispatchEvent(new WheelEvent("wheel", { bubbles: true, deltaY: 40 }));
+    expect(outside).toBe(0);
+  });
+
   it("moves along with the arrows, and closes on Escape taking nothing", () => {
     const { key, taken, closed, host } = opened();
     key("ArrowDown");

@@ -19,6 +19,9 @@ wired into questions of your own: the months at a weather station joined to
 the months at a measuring point, a correlation, the season taken out, a
 picture.
 
+- **A wire goes from an output**, on the right of a node, **into an input**
+  on the left of another, of the same colour: a table into a table, a number
+  into a number. While one is dragged, the pins it fits are lit.
 - **Drag from a pin** to wire it. Let go on another pin to join them, or in
   empty space to choose what comes next, from what fits.
 - **Double-click** the canvas, or press the space bar, to add any node.
@@ -27,12 +30,26 @@ picture.
   them away, and Ctrl+Z brings them back.
 - **◉**, beside a value, puts it on the board as a dial. The title of every
   picture on the board finds its node.
-- **Full screen** gives it the whole window; **Text** shows the blueprint as
+- **Examples** opens any of the page's blueprints in the one you are on;
+  **Full screen** gives it the whole window; **Text** shows the blueprint as
   text, to read, to copy, or to write by hand.
 
 Everything runs here, in your browser, on the files this site serves, and
 your changes are kept in this browser until you reset them. **Link** copies a
 link that opens a blueprint as you left it.
+
+Ten to start from, each a working blueprint, most of them a few nodes:
+
+1. [Nights that do not cool](#nights-that-do-not-cool) — a source, a picture, a trend.
+2. [A working day, in NO2](#a-working-day-in-no2) — the hour against the month.
+3. [Thirty years of NO2](#thirty-years-of-no2-every-measuring-point) — every measuring point, joined to its name.
+4. [Does the heat bring the NO2?](#does-the-heat-bring-the-no2) — two networks crossed, the season and the years taken out.
+5. [The files everything needs](#the-files-everything-needs) — this site's source by PageRank.
+6. [What changes, and what is needed](#what-changes-and-what-is-needed) — its history against its arrows.
+7. [The groups the arrows make](#the-groups-the-arrows-make) — the source tangled, a colour a group.
+8. [The source, grown](#the-source-grown) — a dial along every commit, to play.
+9. [The programs, as nodes](#the-programs-as-nodes) — a simulation turned by a dial.
+10. [Your own](#your-own) — a table you paste.
 
 ## Nights that do not cool
 

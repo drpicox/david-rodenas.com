@@ -22,12 +22,12 @@ import { trendNode } from "./nodes/trendNode";
 import { yourDataNode } from "./nodes/yourDataNode";
 
 /**
- * The nodes every blueprint has, whatever the features bring: a dial, the
- * steps that work on any table, the statistics, the pictures, a note, and a
- * table of one's own. In the order the menu shows them, shelf by shelf.
+ * The nodes every blueprint has, whatever the features bring: a table of
+ * one's own, the steps that work on any table, the statistics, the
+ * pictures, a dial and a note. In the order the menu shows them, shelf by
+ * shelf: what is done with data first, what is turned by hand after.
  */
 export const coreNodes: readonly NodeKind[] = [
-  dialNode,
   yourDataNode,
   keepNode,
   sortNode,
@@ -47,5 +47,6 @@ export const coreNodes: readonly NodeKind[] = [
   heatmapNode,
   showTableNode,
   readoutNode,
+  dialNode,
   noteNode,
 ];

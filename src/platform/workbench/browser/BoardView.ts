@@ -19,6 +19,8 @@ export interface BoardHands {
   turn(node: string, value: Literal, done: boolean): void;
   /** Bring a node into view on the canvas, and choose it. */
   find(node: string): void;
+  /** Light, on the canvas, the node a dial or a picture of the board comes from; none, to light none. */
+  point(node: string | null): void;
 }
 
 /**
@@ -40,6 +42,12 @@ export class BoardView {
       const button = (event.target as Element | null)?.closest<HTMLElement>("button[data-node]");
       if (button?.dataset["node"]) this.hands.find(button.dataset["node"]);
     });
+    // Pointing at a dial or a picture lights the node it comes from: which is which, on the board and on the canvas.
+    this.element.addEventListener("pointerover", (event) => {
+      const from = (event.target as Element | null)?.closest<HTMLElement>(".wb-dial[data-node], [data-key^='card:']");
+      this.hands.point(from ? (from.dataset["node"] ?? from.dataset["key"]?.slice("card:".length) ?? null) : null);
+    });
+    this.element.addEventListener("pointerleave", () => this.hands.point(null));
   }
 
   /** The board the build wrote, until the blueprint has run here and the board can be drawn from it. */

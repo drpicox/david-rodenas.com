@@ -23,15 +23,16 @@ const rowsOf = (pin: InputPin) => (typeof pin.editor === "object" && pin.editor.
  * then what it gives, on the right, then what it takes, on the left, each on
  * its own row with its editor beside it, then a foot that says what came out.
  * Nothing about the node but its kind decides it, so a wire stays where its
- * pin is whatever is written on the node.
+ * pin is whatever is written on the node. A dial is narrower than the rest.
  */
 export function nodeShapeOf(kind: NodeKind | undefined): NodeShape {
   const outputs = new Map<string, Point>();
   const inputs = new Map<string, Point>();
   const rows = new Map<string, number>();
+  const width = kind?.role === "dial" ? NODE.dial : NODE.width;
   let y = NODE.header;
   for (const pin of kind?.outputs ?? []) {
-    outputs.set(pin.name, { x: NODE.width, y: y + NODE.row / 2 });
+    outputs.set(pin.name, { x: width, y: y + NODE.row / 2 });
     y += NODE.row;
   }
   for (const pin of kind?.inputs ?? []) {
@@ -39,5 +40,5 @@ export function nodeShapeOf(kind: NodeKind | undefined): NodeShape {
     rows.set(pin.name, rowsOf(pin));
     y += NODE.row * rowsOf(pin);
   }
-  return { width: NODE.width, height: y + NODE.foot, inputs, outputs, rows };
+  return { width, height: y + NODE.foot, inputs, outputs, rows };
 }

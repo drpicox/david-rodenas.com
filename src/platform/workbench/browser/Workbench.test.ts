@@ -76,6 +76,28 @@ describe("a blueprint worked on in the page", () => {
     expect(element.querySelector(".wb-board .bp-painting svg")).not.toBeNull();
   });
 
+  it("lights, while a wire is dragged, every pin it could go into, and dims the rest", () => {
+    const { element } = bench("n = nights @ 0 0\nbars @ 400 0\nreadout @ 400 200");
+    const canvas = element.querySelector(".wb-canvas")!;
+    press(element.querySelector('.wb-node[data-node="n"] .wb-pin[data-side="output"]')!, pinPoint(element, "n", "table", "outputs"));
+    expect(canvas.classList.contains("wiring")).toBe(true);
+    const lit = [...element.querySelectorAll(".wb-pin.fits")].map((pin) => `${pin.closest(".wb-node")?.getAttribute("data-node")}.${pin.getAttribute("data-pin")}`);
+    expect(lit).toEqual(["bars.table"]);
+    release(canvas, { clientX: 300, clientY: 400 });
+    key(element.querySelector(".wb-menu input")!, "Escape");
+    expect(canvas.classList.contains("wiring")).toBe(false);
+    expect(element.querySelectorAll(".wb-pin.fits").length).toBe(0);
+  });
+
+  it("stands a node added from the toolbar where nothing else stands", () => {
+    const { element } = bench("n = nights @ 0 0");
+    (element.querySelector(".wb-add") as HTMLButtonElement).click();
+    (element.querySelector('.wb-menu [data-kind="nights"]') as HTMLElement).click();
+    const [first, added] = [...element.querySelectorAll<HTMLElement>(".wb-node")];
+    const overlap = Math.abs(Number.parseFloat(first!.style.top) - Number.parseFloat(added!.style.top)) < nodeShapeOf(aKit.kinds.get("nights")).height && Math.abs(Number.parseFloat(first!.style.left) - Number.parseFloat(added!.style.left)) < NODE.width;
+    expect(overlap).toBe(false);
+  });
+
   it("refuses, in words, a wire between what cannot meet", () => {
     const { element } = bench("n = nights @ 0 0\nreadout @ 400 0");
     const canvas = element.querySelector(".wb-canvas")!;
@@ -142,7 +164,10 @@ describe("a blueprint worked on in the page", () => {
     const { element } = bench("n = nights @ 400 0\nbars table: n @ 800 0");
     await settle();
     (element.querySelector('.wb-node[data-node="n"] .wb-promote') as HTMLButtonElement).click();
-    expect(element.querySelector(".wb-status")?.textContent).toBe("from is on the board now, as a dial.");
+    expect(element.querySelector(".wb-status")?.textContent).toBe("from is on the board now, as a dial — and on the canvas, beside the node it turns.");
+    const dial = element.querySelector<HTMLElement>('.wb-node[data-node="from"]')!;
+    expect(dial.style.left).toBe(`${400 - NODE.dial - 48}px`);
+    expect(Number.parseFloat(dial.style.top) + NODE.header + NODE.row / 2).toBe(nodeShapeOf(aKit.kinds.get("nights")).inputs.get("from")!.y);
     await settle();
     const slider = element.querySelector(".wb-board .wb-dial input[type=range]") as HTMLInputElement;
     expect(element.querySelector(".wb-dial-name")?.textContent).toBe("from");
@@ -198,6 +223,31 @@ describe("a blueprint worked on in the page", () => {
     workbench.wake();
     await settle();
     expect(workbench.element.querySelector(".wb-cards .bp-painting svg")).not.toBeNull();
+  });
+
+  it("lights the node a dial of the board turns, and says what it turns", async () => {
+    const { element } = bench('where = dial "Place" value: X4 @ 0 0\nn = nights place: where @ 300 0');
+    await settle();
+    element.querySelector(".wb-board .wb-dial")?.dispatchEvent(new Event("pointerover", { bubbles: true }));
+    expect(element.querySelector('.wb-node[data-node="where"]')?.classList.contains("pointed")).toBe(true);
+    expect(element.querySelector(".wb-status")?.textContent).toBe("Place turns place of Nights. It is lit on the canvas.");
+  });
+
+  it("opens any of the page's blueprints, as an edit Reset undoes", () => {
+    const { element } = bench("n = nights @ 0 0", { examples: [{ title: "Nights", text: "n = nights @ 0 0" }, { title: "Bars of nights", text: "m = nights @ 0 0\nbars table: m @ 400 0" }] });
+    (element.querySelector(".wb-examples-button") as HTMLButtonElement).click();
+    const buttons = [...element.querySelectorAll<HTMLButtonElement>(".wb-examples button")];
+    expect(buttons.map((button) => [button.textContent, button.className])).toEqual([["Nights", "current"], ["Bars of nights", ""]]);
+    buttons[1]?.click();
+    expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["m", "bars"]);
+    expect(element.querySelector(".wb-status")?.textContent).toBe("Bars of nights, opened here. Undo, or Reset, goes back.");
+    (element.querySelector('button[title^="Go back"]') as HTMLButtonElement).click();
+    expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["n"]);
+  });
+
+  it("offers no examples when the page has only the one", () => {
+    const { element } = bench("n = nights @ 0 0", { examples: [{ title: "Nights", text: "n = nights @ 0 0" }] });
+    expect(element.querySelector(".wb-examples-button")).toBeNull();
   });
 
   it("says how to use it, where the hands are, and closes", () => {

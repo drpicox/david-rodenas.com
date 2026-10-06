@@ -17,11 +17,22 @@ function shelvesOf(offers: readonly Offer[]): string[] {
  * wire could go into. Arrows move, Enter takes, Escape closes, and so does a
  * click anywhere else.
  */
-export function openKindMenu(host: HTMLElement, kit: Kit, where: { readonly left: number; readonly top: number }, dragged: Dragged | undefined, chose: (offer: Offer) => void, closed: () => void): () => void {
+/** What a kind takes and gives, each pin in the colour of what flows along it: how it can be wired, seen before it is added. */
+function pinsSaid(offer: Offer, kit: Kit): HTMLElement {
+  const { kind } = offer;
+  const pin = (name: string, type: string) => el("span", { class: "wb-menu-pin" }, el("span", { class: "wb-dot", style: `--pin: var(${kit.types.get(type)?.colour ?? "--dim"})`, "aria-hidden": "true" }), name);
+  const listed = (pins: readonly { name: string; label: string; type: string }[]) => pins.flatMap((each, at) => [...(at > 0 ? [", "] : []), pin(each.label || each.name, each.type)]);
+  const gives = kind.outputs.length > 0 ? ["gives ", ...listed(kind.outputs)] : kind.role === "paint" ? ["paints on the board"] : [];
+  const takes = kind.role === "dial" ? ["turned by hand"] : kind.inputs.length > 0 ? ["takes ", ...listed(kind.inputs)] : ["takes nothing"];
+  return el("p", { class: "wb-menu-pins" }, ...takes, ...(gives.length > 0 ? [" · ", ...gives] : []));
+}
+
+export function openKindMenu(host: HTMLElement, kit: Kit, where: { readonly left: number; readonly top: number; readonly height?: number }, dragged: Dragged | undefined, chose: (offer: Offer) => void, closed: () => void): () => void {
   const search = el("input", { type: "search", placeholder: dragged ? `What does ${kit.types.get(dragged.type)?.label ?? dragged.type} go ${dragged.side === "output" ? "into" : "come from"}?` : "Search for a node…", "aria-label": "Search for a kind of node", spellcheck: false });
   const list = el("ul", { role: "listbox", "aria-label": "Kinds of node" });
-  const about = el("p", { class: "wb-menu-about" });
-  const menu = el("div", { class: "wb-menu", role: "dialog", "aria-label": "Add a node", style: `left: ${Math.round(where.left)}px; top: ${Math.round(where.top)}px` }, search, list, about);
+  const about = el("div", { class: "wb-menu-about" });
+  const height = where.height === undefined ? "" : ` max-height: ${Math.round(where.height)}px;`;
+  const menu = el("div", { class: "wb-menu", role: "dialog", "aria-label": "Add a node", style: `left: ${Math.round(where.left)}px; top: ${Math.round(where.top)}px;${height}` }, search, list, about);
   let offers: Offer[] = [];
   let lit = 0;
 
@@ -29,7 +40,7 @@ export function openKindMenu(host: HTMLElement, kit: Kit, where: { readonly left
     lit = Math.max(0, Math.min(offers.length - 1, at));
     for (const item of list.querySelectorAll<HTMLElement>("[role=option]")) item.setAttribute("aria-selected", String(Number(item.dataset["at"]) === lit));
     const offer = offers[lit];
-    about.textContent = offer ? offer.kind.summary : "Nothing fits. Try other words.";
+    about.replaceChildren(...(offer ? [el("p", {}, offer.kind.summary), pinsSaid(offer, kit)] : [el("p", {}, "Nothing fits. Try other words.")]));
     list.querySelector(`[data-at="${lit}"]`)?.scrollIntoView?.({ block: "nearest" });
   };
   const fill = () => {
@@ -77,6 +88,8 @@ export function openKindMenu(host: HTMLElement, kit: Kit, where: { readonly left
     const item = (event.target as Element).closest<HTMLElement>("[role=option]");
     if (item && Number(item.dataset["at"]) !== lit) light(Number(item.dataset["at"]));
   });
+  // The wheel scrolls the list, never the canvas under it, whatever the canvas does with a wheel.
+  menu.addEventListener("wheel", (event) => event.stopPropagation());
   list.addEventListener("click", (event) => {
     const item = (event.target as Element).closest<HTMLElement>("[role=option]");
     if (item) take(Number(item.dataset["at"]));

@@ -6351,8 +6351,9 @@ main p:has(> strong:first-child):not(h2 + p) {
   z-index: 5;
   display: flex;
   flex-direction: column;
-  width: 17rem;
-  max-height: 22rem;
+  width: 18rem;
+  max-height: 26rem;
+  overflow: hidden;
   border: 1px solid var(--rule);
   border-radius: 8px;
   background: var(--paper);
@@ -6373,6 +6374,7 @@ main p:has(> strong:first-child):not(h2 + p) {
 
 .app .wb-menu ul {
   flex: 1;
+  min-height: 0;
   margin: 0;
   padding: 0 0.35em 0.35em;
   overflow-y: auto;
@@ -6401,6 +6403,7 @@ main p:has(> strong:first-child):not(h2 + p) {
 }
 
 .app .wb-menu-about {
+  flex: none;
   min-height: 3.4em;
   margin: 0;
   padding: 0.5em 0.75em;
@@ -6557,4 +6560,107 @@ body.wb-full-open {
   .app .wb-canvas {
     height: 20rem;
   }
+}
+
+/* While a wire is dragged, what it could go into is lit and the rest steps back, as in Unreal: what fits where, seen before it is tried. */
+.app .wb-canvas.wiring .wb-pin {
+  opacity: 0.25;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.app .wb-canvas.wiring .wb-pin.fits,
+.app .wb-canvas.wiring .wb-pin.held {
+  opacity: 1;
+  transform: scale(1.35);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--pin) 30%, transparent);
+}
+
+.app .wb-canvas.wiring .wb-node:not(:has(.wb-pin.fits, .wb-pin.held)) {
+  opacity: 0.55;
+}
+
+/* A node's kind, beside a title of its own: "Station", a dial. */
+.app .wb-kind {
+  flex: none;
+  margin-left: auto;
+  font-weight: normal;
+  font-size: 10px;
+  color: var(--dim);
+}
+
+.app .wb-kind:empty {
+  display: none;
+}
+
+/* What a kind takes and gives, in the menu, each pin in its colour. */
+.app .wb-menu-about p {
+  margin: 0;
+}
+
+.app .wb-menu-pins {
+  margin-top: 0.35em !important;
+  font: 10.5px/1.6 var(--mono);
+}
+
+.app .wb-menu-pin {
+  white-space: nowrap;
+}
+
+.app .wb-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 3px 0 1px;
+  border-radius: 50%;
+  background: var(--pin);
+  vertical-align: middle;
+}
+
+.app .wb-examples {
+  position: absolute;
+  z-index: 7;
+  top: 2.4rem;
+  left: 0.5rem;
+  max-width: 24rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 0.7em 0.9em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+  font-size: 0.82rem;
+}
+
+.app .wb-examples p {
+  margin: 0 0 0.5em;
+  color: var(--dim);
+}
+
+.app .wb-examples ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app .wb-examples button {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.25em;
+  text-align: left;
+  border-color: transparent;
+}
+
+.app .wb-examples button.current {
+  border-color: var(--rule);
+  color: var(--dim);
+}
+
+/* The node a dial or a picture of the board comes from, while it is pointed at. */
+.app .wb-node.pointed {
+  box-shadow: 0 0 0 3px var(--bp-role-dial), 0 10px 24px rgb(0 0 0 / 0.16);
+}
+
+.app .wb-node.pointed:not(.wb-role-dial) {
+  box-shadow: 0 0 0 3px var(--role), 0 10px 24px rgb(0 0 0 / 0.16);
 }

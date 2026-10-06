@@ -42,6 +42,8 @@ const DIALLED = new Set(["number", "text", "flag"]);
 export class NodeView {
   readonly element: HTMLElement;
   private readonly title: HTMLElement;
+  /** The kind, said beside a title of the node's own, so a node called "Station" is still seen to be a dial. */
+  private readonly kindSaid: HTMLElement;
   private readonly foot: HTMLElement;
   private readonly rows = new Map<string, { row: HTMLElement; pin: HTMLElement; edit: HTMLElement; signature: string; control: Control | null }>();
   private readonly outs = new Map<string, HTMLElement>();
@@ -53,6 +55,7 @@ export class NodeView {
     private readonly hands: NodeHands,
   ) {
     this.title = el("span", { class: "wb-title" });
+    this.kindSaid = el("span", { class: "wb-kind" });
     this.foot = el("footer", { class: "wb-foot" });
     this.element = el("div", { class: "wb-node", "data-node": id });
     this.title.addEventListener("dblclick", () => this.renaming());
@@ -66,8 +69,10 @@ export class NodeView {
     this.element.className = ["wb-node", `wb-role-${kind?.role ?? "unknown"}`, selected ? "selected" : "", foot.trouble ? "trouble" : "", result?.state === "waiting" ? "waiting" : ""].filter(Boolean).join(" ");
     this.element.style.left = `${node.x}px`;
     this.element.style.top = `${node.y}px`;
+    this.element.style.width = `${shape.width}px`;
     this.element.style.height = `${shape.height}px`;
     if (this.title.getAttribute("contenteditable") !== "true") this.title.textContent = node.title ?? kind?.title ?? node.kind;
+    this.kindSaid.textContent = node.title !== undefined && kind && node.title !== kind.title ? kind.title : "";
     this.foot.textContent = foot.said;
     this.foot.title = foot.said;
     for (const [pin, out] of this.outs) out.classList.toggle("open", !wiredOut.has(pin));
@@ -109,7 +114,7 @@ export class NodeView {
       this.rows.set(pin.name, { row, pin: dot, edit, signature: "", control: null });
       return row;
     });
-    const header = el("header", { class: "wb-head", title: kind?.summary ?? `There is no kind of node called ${node.kind}.` }, el("span", { class: "wb-glyph", "aria-hidden": "true" }), this.title);
+    const header = el("header", { class: "wb-head", title: kind?.summary ?? `There is no kind of node called ${node.kind}.` }, el("span", { class: "wb-glyph", "aria-hidden": "true" }), this.title, this.kindSaid);
     this.element.replaceChildren(header, ...outputs, ...inputs, this.foot);
   }
 

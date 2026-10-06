@@ -22,6 +22,15 @@ describe("one node on the canvas", () => {
     expect(element.querySelector(".wb-foot")?.textContent).toBe("wire or write: table");
   });
 
+  it("says its kind beside a title of its own, so a node called Station is seen to be a dial, and stands as wide as its kind", () => {
+    const shown = new NodeView(aKit, "where", { write: () => {}, promote: () => {}, rename: () => {} });
+    shown.show({ node: { id: "where", kind: "dial", x: 0, y: 0, title: "Station", values: { value: "WU" } }, result: undefined, wiredIn: new Set(), wiredOut: new Set(), editors: new Map(), selected: false });
+    expect([shown.element.querySelector(".wb-title")?.textContent, shown.element.querySelector(".wb-kind")?.textContent]).toEqual(["Station", "Dial"]);
+    expect(shown.element.style.width).toBe("176px");
+    shown.show({ node: { id: "where", kind: "dial", x: 0, y: 0, values: { value: "WU" } }, result: undefined, wiredIn: new Set(), wiredOut: new Set(), editors: new Map(), selected: false });
+    expect(shown.element.querySelector(".wb-kind")?.textContent).toBe("");
+  });
+
   it("shows no control for an input a wire feeds, and fills its pin", () => {
     const shown = view();
     shown.show({ node: { id: "b", kind: "bars", x: 0, y: 0, values: {} }, result: undefined, wiredIn: new Set(["table"]), wiredOut: new Set(), editors: new Map(), selected: false });

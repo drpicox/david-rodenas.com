@@ -6,7 +6,8 @@ import { BoardView } from "./BoardView";
 
 const turned: [string, Literal, boolean][] = [];
 const found: string[] = [];
-const board = () => new BoardView({ turn: (node, value, done) => turned.push([node, value, done]), find: (node) => found.push(node) });
+const pointed: (string | null)[] = [];
+const board = () => new BoardView({ turn: (node, value, done) => turned.push([node, value, done]), find: (node) => found.push(node), point: (node) => pointed.push(node) });
 const station: Dial = { node: "where", label: "Station", value: "WU", editor: { kind: "choice", choices: [{ value: "WU", label: "Badalona" }, { value: "X4", label: "el Raval" }] }, said: "Badalona", targets: [] };
 
 describe("the board beside the canvas", () => {
@@ -36,6 +37,15 @@ describe("the board beside the canvas", () => {
     expect(view.element.querySelector(".bp-credits")?.textContent).toBe("Source: Meteocat.");
     (view.element.querySelector("button.wb-find") as HTMLButtonElement).click();
     expect(found.splice(0)).toEqual(["b"]);
+  });
+
+  it("lights the node a dial or a picture comes from, while it is pointed at", () => {
+    const view = board();
+    view.show([station], [{ node: "b", title: "Bars", painting: { html: "<svg></svg>" } }]);
+    view.element.querySelector(".wb-dial")?.dispatchEvent(new Event("pointerover", { bubbles: true }));
+    view.element.querySelector(".bp-card svg")?.dispatchEvent(new Event("pointerover", { bubbles: true }));
+    view.element.dispatchEvent(new Event("pointerleave"));
+    expect(pointed.splice(0)).toEqual(["where", "b", null]);
   });
 
   it("draws a picture again in place, so what grows is seen growing", () => {

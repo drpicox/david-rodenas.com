@@ -28,6 +28,12 @@ function wakeWhenNear(element: Element, wake: () => void): () => void {
   return () => observer.disconnect();
 }
 
+/** The heading a place stands under, which is what its blueprint is called. */
+function headingOver(element: Element): string | null {
+  for (let at = element.previousElementSibling; at; at = at.previousElementSibling) if (/^H[1-4]$/.test(at.tagName)) return at.textContent;
+  return null;
+}
+
 const fetched = (path: string) => fetch(path).then((response) => (response.ok ? response.text() : Promise.reject(new Error(`${path}: ${response.status}`))));
 
 /**
@@ -48,12 +54,14 @@ export function mountWorkbench(kit: Kit): (host: HTMLElement) => () => void {
     const own = kept.get(key);
     const start = linked ? { text: linked, said: "Opened as a link carried it. Reset goes back to the page's own blueprint." } : own ? { text: own, said: "As you left it: your changes are kept in this browser. Reset goes back to the page's own blueprint." } : undefined;
     const still = host.querySelector(".bp-board")?.innerHTML;
+    const examples = places.map((place, at) => ({ title: headingOver(place) ?? `Blueprint ${at + 1}`, text: place.dataset["source"] ?? "" }));
     const workbench = new Workbench({
       kit,
       files,
       example,
       ...(start && { start }),
       ...(still && { stillBoard: still }),
+      examples,
       keep: (text) => (text === null ? kept.forget(key) : kept.set(key, text)),
       linkTo: (text) => `${window.location.origin}${window.location.pathname}?blueprint=${linkCodeOf(text)}#${host.id}`,
       copy: (text) => navigator.clipboard.writeText(text),

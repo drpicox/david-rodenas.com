@@ -32,6 +32,20 @@ describe("a blueprint written in a page, once the script is there", () => {
     stop();
   });
 
+  it("offers every blueprint of the page, each by the heading it stands under", () => {
+    const heading = document.createElement("h2");
+    heading.textContent = "Hot nights";
+    document.body.append(heading);
+    place("n = nights");
+    const second = document.createElement("h2");
+    second.textContent = "Bars";
+    document.body.append(second);
+    const host = place("m = nights\nbars table: m");
+    mountWorkbench(aKit)(host);
+    (host.querySelector(".wb-examples-button") as HTMLButtonElement).click();
+    expect([...host.querySelectorAll(".wb-examples button")].map((button) => button.textContent)).toEqual(["Hot nights", "Bars"]);
+  });
+
   it("starts as the reader left it, kept in their browser", () => {
     const host = place("n = nights @ 0 0");
     const first = mountWorkbench(aKit)(host);
