@@ -89,6 +89,14 @@ describe("sorting, and the first rows", () => {
     expect(tx(out(topNode, { table: heat, by: "tx", count: 2, end: "highest" }))).toEqual([32, 30]);
     expect(tx(out(topNode, { table: heat, by: "tx", count: 1, end: "lowest" }))).toEqual([14]);
   });
+
+  it("takes them, asked to, from each group of rows that share a column, a group after another", () => {
+    const hottest = out(topNode, { table: heat, by: "tx", count: 1, end: "highest", per: "month" });
+    expect(hottest.rows.map((row) => [row["month"], row["tx"]])).toEqual([
+      [1, 16],
+      [7, 32],
+    ]);
+  });
 });
 
 describe("grouping rows, and summing each group up", () => {
@@ -106,6 +114,12 @@ describe("grouping rows, and summing each group up", () => {
       { month: 7, year: 2023, tn: 22, rows: 1 },
       { month: 7, year: 2024, tn: null, rows: 1 },
     ]);
+  });
+
+  it("calls the column it sums up what it is asked to, so two groupings of one column can be joined and told apart", () => {
+    const evenings = out(groupNode, { table: heat, by: "year", value: "tx", how: "highest", name: "hottest" });
+    expect(evenings.columns.map((column) => column.name)).toEqual(["year", "hottest", "rows"]);
+    expect(evenings.rows[1]).toEqual({ year: 2024, hottest: 32, rows: 2 });
   });
 
   it("counts, with nothing to sum up", () => {

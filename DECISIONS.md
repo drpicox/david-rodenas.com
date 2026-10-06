@@ -31,6 +31,13 @@ Nothing was added to `package.json`: the canvas is a few hundred lines of DOM
 and SVG, the pictures are strings, the formulas are read by recursive descent
 and never by eval.
 
+The examples were first a workbench each, under their own headings, and a
+page of fifteen editors was too much page (6 October 2026). They are now
+written in one place, each under a `## Title`, and opened one at a time in
+one editor, from its Examples menu or from a link on the page that names
+one; the still still draws the first and writes out the text of every one,
+so all of them are in the HTML and the content test still runs every one.
+
 ### Trials, weighed with GoatCounter events (27 September 2026)
 A flag can be a trial: on for a share of readers, drawn once for each and kept
 in their browser, so the site they see does not change under them on a

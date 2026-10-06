@@ -339,7 +339,12 @@ graph LR
 
 The blueprint is only data, so it has a text, and the text is what a page
 writes, what a link carries and what the content test runs: every blueprint a
-page writes must read without a problem and answer at every node. The
+page writes must read without a problem and answer at every node. One place
+can hold many, each under a `## Title` line with what it is about in `#`
+lines — remarks to the language, so each one's lines are a blueprint as they
+stand (`examplesOf`): the still draws the first and writes out every one, and
+the workbench opens on the first, or on the one the address names, and offers
+the rest in its Examples menu, keeping the reader's changes to each apart. The
 pictures are markup, the same at build time and in the browser, keyed so
 that the browser can change them in place and a bar that grows is seen to.
 `platform/blueprint` needs nothing but the escaping of markup, so the

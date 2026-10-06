@@ -3,6 +3,7 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 import { allFeatures } from "./features/allFeatures";
 import { evaluateBlueprint } from "./platform/blueprint/evaluateBlueprint";
+import { examplesOf } from "./platform/blueprint/examplesOf";
 import { parseBlueprint } from "./platform/blueprint/parseBlueprint";
 import { Site } from "./platform/content/Site";
 import { unescapeHtml } from "./platform/markdown/unescapeHtml";
@@ -84,12 +85,13 @@ describe("the content, in the HTML", () => {
     const kit = blueprintKitOf(allFeatures);
     const troubled = places
       .filter(({ name }) => name === "blueprint")
-      .flatMap(({ route, source = "" }) => {
-        const { blueprint, problems } = parseBlueprint(source, kit);
+      .flatMap(({ route, source = "" }) => examplesOf(source).map((example) => ({ where: `${route} ${example.title}`.trim(), text: example.text })))
+      .flatMap(({ where, text }) => {
+        const { blueprint, problems } = parseBlueprint(text, kit);
         const results = evaluateBlueprint(blueprint, kit, { read });
         return [
-          ...problems.map((problem) => `${route} line ${problem.line}: ${problem.message}`),
-          ...[...results].filter(([, result]) => result.state !== "done").map(([id, result]) => `${route} ${id}: ${result.state === "failed" ? result.message : result.state}`),
+          ...problems.map((problem) => `${where} line ${problem.line}: ${problem.message}`),
+          ...[...results].filter(([, result]) => result.state !== "done").map(([id, result]) => `${where} ${id}: ${result.state === "failed" ? result.message : result.state}`),
         ];
       });
     expect(troubled).toEqual([]);

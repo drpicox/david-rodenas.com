@@ -43,7 +43,52 @@ describe("a blueprint written in a page, once the script is there", () => {
     const host = place("m = nights\nbars table: m");
     mountWorkbench(aKit)(host);
     (host.querySelector(".wb-examples-button") as HTMLButtonElement).click();
-    expect([...host.querySelectorAll(".wb-examples button")].map((button) => button.textContent)).toEqual(["Hot nights", "Bars"]);
+    expect([...host.querySelectorAll(".wb-examples li strong")].map((title) => title.textContent)).toEqual(["Hot nights", "Bars"]);
+  });
+
+  const MANY = "## Hot nights\n# The nights alone.\nn = nights @ 0 0\n\n## Bars\nm = nights @ 0 0\nbars table: m @ 400 0";
+  const nodes = (host: HTMLElement) => [...host.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"));
+
+  it("offers every blueprint one place holds, each by its own title, opening on the first", () => {
+    const host = place(MANY);
+    mountWorkbench(aKit)(host);
+    expect(nodes(host)).toEqual(["n"]);
+    (host.querySelector(".wb-examples-button") as HTMLButtonElement).click();
+    expect([...host.querySelectorAll(".wb-examples li strong")].map((title) => title.textContent)).toEqual(["Hot nights", "Bars"]);
+  });
+
+  it("opens the one the address names, and another when a link names it, standing where the link lands", () => {
+    window.history.replaceState(null, "", "/#bars");
+    const landed: Element[] = [];
+    Element.prototype.scrollIntoView = function (this: Element) {
+      landed.push(this);
+    };
+    const host = place(MANY);
+    mountWorkbench(aKit)(host);
+    expect(nodes(host)).toEqual(["m", "bars"]);
+    expect(landed).toEqual([document.getElementById("bars")]);
+    expect(host.contains(document.getElementById("hot-nights"))).toBe(true);
+    window.history.pushState(null, "", "/#hot-nights");
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    expect(nodes(host)).toEqual(["n"]);
+  });
+
+  it("names in the address only what the place itself holds", () => {
+    const host = place("## Hot nights\nn = nights @ 0 0");
+    place("## Bars\nm = nights @ 0 0\nbars table: m @ 400 0");
+    mountWorkbench(aKit)(host);
+    (host.querySelector(".wb-examples-button") as HTMLButtonElement).click();
+    (host.querySelectorAll(".wb-examples li button")[1] as HTMLButtonElement).click();
+    expect(nodes(host)).toEqual(["m", "bars"]);
+    expect(window.location.hash).toBe("");
+  });
+
+  it("says in the address which one is open, once the reader opens another", () => {
+    const host = place(MANY);
+    mountWorkbench(aKit)(host);
+    (host.querySelector(".wb-examples-button") as HTMLButtonElement).click();
+    (host.querySelectorAll(".wb-examples li button")[1] as HTMLButtonElement).click();
+    expect(window.location.hash).toBe("#bars");
   });
 
   it("starts as the reader left it, kept in their browser", () => {

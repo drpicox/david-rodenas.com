@@ -14,6 +14,9 @@ export interface Move {
 
 export type GoTo = (route: string, move?: Move) => boolean;
 
+/** The route a path is the page of: a directory, always ending in a slash. */
+const routeOf = (path: string) => (path.endsWith("/") ? path : `${path}/`);
+
 /**
  * Moving between pages without leaving the one that is open. The markdown is
  * already here and so is the renderer, so a link only has to swap what is
@@ -21,16 +24,20 @@ export type GoTo = (route: string, move?: Move) => boolean;
  * shell itself moves — a `cd`, a `cat` — the paper is kept: the address, the
  * title, the lit name in the navigation and what the page declares about
  * its looks follow, and nothing printed is lost. Anything not in the site —
- * a PDF, another site — is a real navigation.
+ * a PDF, another site — is a real navigation; a place on the same page is
+ * the browser's to go to, and a move of the history within the page leaves
+ * the page as it is.
  */
 export function mountNavigation(site: Site, onArrive: (page: Page, kept: boolean) => void): GoTo {
   const main = document.querySelector("main");
   if (!main) return () => false;
+  let shown = routeOf(window.location.pathname);
 
   const goTo: GoTo = (route, { push = true, keep = false } = {}) => {
     const page = site.at(route);
     if (!page) return false;
     if (!keep) main.innerHTML = renderMain(site, page);
+    shown = route;
     // What the new page declares about how it looks; what that means is the features' business.
     const declared = declaredAppearance(page);
     for (const attribute of APPEARANCE) {
@@ -60,15 +67,15 @@ export function mountNavigation(site: Site, onArrive: (page: Page, kept: boolean
     if (!anchor || anchor.target || anchor.dataset["run"]) return;
     const url = new URL(anchor.href, window.location.href);
     if (url.origin !== window.location.origin) return;
-    const route = url.pathname.endsWith("/") ? url.pathname : `${url.pathname}/`;
-    if (!site.at(route)) return;
+    const route = routeOf(url.pathname);
+    if (!site.at(route) || (url.hash && route === shown)) return;
     event.preventDefault();
     if (route !== window.location.pathname) goTo(route);
   });
 
   window.addEventListener("popstate", () => {
-    const route = window.location.pathname.endsWith("/") ? window.location.pathname : `${window.location.pathname}/`;
-    goTo(route, { push: false });
+    const route = routeOf(window.location.pathname);
+    if (route !== shown) goTo(route, { push: false });
   });
 
   return goTo;

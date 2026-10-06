@@ -98,6 +98,14 @@ describe("a measuring point's day, hour by hour", () => {
     expect(ran.settled).toEqual({ from: 2025, to: 2025 });
   });
 
+  it("is, asked for each year, a row for each year, month and hour, with the season of the month", () => {
+    const table = no2HoursNode.run({ station: "08019004", days: "workdays", years: "each" }, reading(files(false))).outputs?.["table"] as Table;
+    expect(table.rows.length).toBe(2 * 12 * 24);
+    expect(table.rows[0]).toMatchObject({ year: 2024, month: 1, season: "winter", hour: 1, no2: 30 });
+    expect(table.rows.at(-1)).toMatchObject({ year: 2025, month: 12, season: "winter", hour: 24, no2: 20 + 11 + 23 });
+    expect(table.columns.filter((column) => column.key).map((column) => column.name)).toEqual(["year", "month", "season", "hour"]);
+  });
+
   it("is of one measuring point at a time", () => {
     expect(() => no2HoursNode.run({ station: "all", days: "all" }, reading(files(false)))).toThrow("the hours are of one measuring point at a time");
   });

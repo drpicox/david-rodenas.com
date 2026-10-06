@@ -1,7 +1,8 @@
+import { cellOrder } from "../cellOrder";
 import type { NodeKind } from "../NodeKind";
 import { pickColumn } from "../pickColumn";
 import { summaryOf } from "../summaryOf";
-import type { Cell, Column, Row, Table } from "../Table";
+import type { Column, Row, Table } from "../Table";
 
 const HOW: Readonly<Record<string, (values: readonly number[]) => number>> = {
   mean: (values) => summaryOf(values).mean,
@@ -10,8 +11,6 @@ const HOW: Readonly<Record<string, (values: readonly number[]) => number>> = {
   lowest: (values) => summaryOf(values).lowest,
   highest: (values) => summaryOf(values).highest,
 };
-
-const cellOrder = (a: Cell | undefined, b: Cell | undefined) => (typeof a === "number" && typeof b === "number" ? a - b : String(a ?? "").localeCompare(String(b ?? "")));
 
 /**
  * One row a group of rows that share a column — or two — with a column of
@@ -31,6 +30,7 @@ export const groupNode: NodeKind = {
     { name: "and", label: "and by", type: "text", optional: true, editor: { kind: "column", of: "table" } },
     { name: "value", label: "summing up", type: "text", optional: true, editor: { kind: "column", of: "table", numeric: true } },
     { name: "how", label: "as its", type: "text", initial: "mean", editor: { kind: "choice", choices: [...Object.keys(HOW), "count"].map((how) => ({ value: how, label: how })) } },
+    { name: "name", label: "call it", type: "text", optional: true, hint: "what to call the column summed up; its own name when left empty" },
   ],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (inputs) => {
@@ -43,6 +43,7 @@ export const groupNode: NodeKind = {
     const sum = HOW[how];
     if (!counting && !sum) throw new Error(`as its: there is no ${how}: there are ${[...Object.keys(HOW), "count"].join(", ")}`);
     const keys = [by, ...(and ? [and] : [])];
+    const called = String(inputs["name"] ?? "").trim() || undefined;
     const groups = new Map<string, Row[]>();
     for (const row of table.rows) {
       const key = JSON.stringify(keys.map((column) => row[column.name] ?? null));
@@ -52,11 +53,11 @@ export const groupNode: NodeKind = {
       .map((members): Row => {
         const first = members[0] ?? {};
         const values = value ? members.map((row) => row[value.name]).filter((cell): cell is number => typeof cell === "number") : [];
-        const summed = value && sum ? { [value.name]: values.length > 0 ? sum(values) : null } : {};
+        const summed = value && sum ? { [called ?? value.name]: values.length > 0 ? sum(values) : null } : {};
         return { ...Object.fromEntries(keys.map((column) => [column.name, first[column.name] ?? null])), ...summed, rows: members.length };
       })
       .sort((a, b) => keys.reduce((order, column) => order || cellOrder(a[column.name], b[column.name]), 0));
-    const columns: Column[] = [...keys.map((column) => ({ ...column, key: true })), ...(value ? [{ ...value, key: false, about: `the ${how} of ${value.name}` }] : []), { name: "rows", kind: "number", key: false }];
+    const columns: Column[] = [...keys.map((column) => ({ ...column, key: true })), ...(value ? [{ ...value, name: called ?? value.name, key: false, about: `the ${how} of ${value.name}` }] : []), { name: "rows", kind: "number", key: false }];
     return { outputs: { table: { ...table, columns: columns.map(({ key, ...rest }) => (key ? { ...rest, key } : rest)), rows } }, settled: { by: by.name, ...(value && { value: value.name }) } };
   },
 };

@@ -5849,6 +5849,41 @@ main p:has(> strong:first-child):not(h2 + p) {
   font-size: 0.78rem;
 }
 
+/* A place that holds many blueprints writes every one out, each under its title, and says what the one shown is about. */
+.app .bp-text > p {
+  margin: 0.3em 0;
+  font-size: 0.82rem;
+}
+
+.app .bp-about {
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.app .bp-about strong {
+  margin-right: 0.3em;
+}
+
+.app .bp-about[hidden] {
+  display: none;
+}
+
+/* Full screen, the canvas needs the room: two lines of it, and the rest where the pointer rests. */
+.app .workbench.full .wb-about {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  flex-shrink: 0;
+}
+
+/* Where a link to one of a place's blueprints lands: the top of the place, whichever is open. */
+.app .wb-anchor {
+  display: block;
+  scroll-margin-top: 1rem;
+}
+
 /* ---- the workbench: a blueprint worked on, in the page ---- */
 
 .app .workbench {
@@ -6626,7 +6661,7 @@ body.wb-full-open {
   z-index: 7;
   top: 2.4rem;
   left: 0.5rem;
-  max-width: 24rem;
+  max-width: 28rem;
   max-height: 70vh;
   overflow-y: auto;
   padding: 0.7em 0.9em;
@@ -6648,7 +6683,7 @@ body.wb-full-open {
   list-style: none;
 }
 
-.app .wb-examples button {
+.app .wb-examples li button {
   display: block;
   width: 100%;
   margin: 0 0 0.25em;
@@ -6656,9 +6691,30 @@ body.wb-full-open {
   border-color: transparent;
 }
 
-.app .wb-examples button.current {
+.app .wb-examples li button.current {
   border-color: var(--rule);
+}
+
+/* Each by its title, and the start of what it is about: the whole of it is said over the canvas once it is open. */
+.app .wb-examples li button strong {
+  display: block;
+}
+
+.app .wb-examples li button span {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: var(--dim);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.app .wb-examples .wb-help-close {
+  float: right;
+  margin: -0.2em -0.3em 0 0.5em;
+  border: none;
+  padding: 0 0.3em;
 }
 
 /* The node a dial or a picture of the board comes from, while it is pointed at. */

@@ -4,6 +4,7 @@ import { dialsOf } from "../../blueprint/dialsOf";
 import { duplicated } from "../../blueprint/duplicated";
 import type { Evaluation } from "../../blueprint/Evaluation";
 import { evaluateBlueprint } from "../../blueprint/evaluateBlueprint";
+import type { Example } from "../../blueprint/examplesOf";
 import { freshId } from "../../blueprint/freshId";
 import type { Kit } from "../../blueprint/kitOf";
 import { movedBy } from "../../blueprint/movedBy";
@@ -37,18 +38,18 @@ import { openTextPanel } from "./openTextPanel";
 export interface WorkbenchSetting {
   readonly kit: Kit;
   readonly files: FilesInBrowser;
-  /** The blueprint the page wrote: what Reset goes back to. */
-  readonly example: string;
-  /** A version to start from instead — the reader's own, kept, or one a link carried — and what to say about it. */
-  readonly start?: { readonly text: string; readonly said: string };
+  /** The blueprints the page writes: the first is the one it opens on, any of them can be opened, and Reset goes back to the one open. */
+  readonly examples: readonly Example[];
+  /** Where to start instead: another of the examples, or a version of it a link carried, and what to say about that. */
+  readonly start?: { readonly example?: Example; readonly text?: string; readonly said?: string };
   /** The board the build wrote, shown until the blueprint has run here: the pictures do not blink out while it does. */
   readonly stillBoard?: string;
-  /** Every blueprint the page writes, by the heading it stands under: any of them can be opened here. */
-  readonly examples?: readonly { readonly title: string; readonly text: string }[];
-  /** Told the blueprint's text after every edit, to keep it; told nothing when it is the page's own again. */
-  keep(text: string | null): void;
-  /** A link that opens this blueprint as it now is. */
-  linkTo(text: string): string;
+  /** The reader's own version of each example, told after every edit, and told nothing when it is the example again. */
+  readonly own: { get(example: Example): string | null; set(example: Example, text: string | null): void };
+  /** Told which example is open, once the reader opens another, so that the address can say it. */
+  opened?(example: Example): void;
+  /** A link that opens this blueprint as it now is, a version of the example it came from. */
+  linkTo(example: Example, text: string): string;
   copy(text: string): Promise<void>;
 }
 
@@ -59,6 +60,8 @@ type Gesture =
   | { readonly kind: "marquee"; readonly from: { x: number; y: number }; at: { x: number; y: number }; readonly base: ReadonlySet<string> };
 
 const SVG = "http://www.w3.org/2000/svg";
+const KEPT = "As you left it: your changes are kept in this browser. Reset goes back to the page's own.";
+const NONE: Example = { title: "", slug: "", about: "", text: "" };
 const HINT = {
   fine: "Drag a pin to wire it; drop a wire in empty space to add what comes next. Double-click the canvas to add a node.",
   touch: "Open it full screen to work on it with your fingers.",
@@ -75,8 +78,12 @@ const HINT = {
  */
 export class Workbench {
   readonly element: HTMLElement;
-  private readonly history: EditHistory<Blueprint>;
-  private readonly example: Blueprint;
+  private history: EditHistory<Blueprint>;
+  /** The example open, and the blueprint it is, which Reset goes back to. */
+  private chosen: Example;
+  private original: Blueprint;
+  /** The board the build wrote, while it is still the board of what is open. */
+  private still: string | undefined;
   private evaluation: Evaluation = new Map();
   private preview: Blueprint | null = null;
   private selection = new Set<string>();
@@ -89,6 +96,7 @@ export class Workbench {
   private readonly nodes: HTMLElement;
   private readonly marquee: HTMLElement;
   private readonly status: HTMLElement;
+  private readonly about: HTMLElement;
   private readonly board: BoardView;
   private readonly views = new Map<string, NodeView>();
   private readonly buttons: Record<"undo" | "redo" | "reset" | "full", HTMLButtonElement>;
@@ -103,9 +111,12 @@ export class Workbench {
   private pinches = new Map<number, { x: number; y: number }>();
 
   constructor(private readonly setting: WorkbenchSetting) {
-    this.example = this.laidOut(setting.example);
-    this.history = new EditHistory(setting.start ? this.laidOut(setting.start.text) : this.example);
-    this.notice = setting.start?.said ?? "";
+    this.chosen = setting.start?.example ?? setting.examples[0] ?? NONE;
+    this.original = this.laidOut(this.chosen.text);
+    const own = setting.start?.text ?? setting.own.get(this.chosen);
+    this.history = new EditHistory(own ? this.laidOut(own) : this.original);
+    this.notice = setting.start?.said ?? (own ? KEPT : "");
+    this.still = this.chosen === setting.examples[0] && !own ? setting.stillBoard : undefined;
 
     this.wires = document.createElementNS(SVG, "svg");
     this.wires.classList.add("wb-wires");
@@ -114,6 +125,7 @@ export class Workbench {
     this.marquee = el("div", { class: "wb-marquee", hidden: true });
     this.canvas = el("div", { class: "wb-canvas", tabindex: 0, role: "application", "aria-label": "The blueprint's canvas: its nodes and wires" }, this.world, this.marquee, el("p", { class: "wb-blank" }, "An empty blueprint. Double-click here, or press the space bar, to add a node."));
     this.status = el("p", { class: "wb-status", "aria-live": "polite" });
+    this.about = el("p", { class: "bp-about wb-about" });
     this.board = new BoardView({
       turn: (node, value, done) => this.write(node, "value", value, done),
       find: (node) => this.find(node),
@@ -129,10 +141,10 @@ export class Workbench {
     this.buttons = {
       undo: button("Undo", "Undo (Ctrl+Z)", () => this.step("undo")),
       redo: button("Redo", "Redo (Ctrl+Shift+Z)", () => this.step("redo")),
-      reset: button("Reset", "Go back to the page's own blueprint", () => this.reset()),
+      reset: button("Reset", "Go back to the blueprint as the page wrote it", () => this.reset()),
       full: button("Full screen", "Work on it full screen (Esc to come back)", () => this.toggleFull(), "wb-full-button"),
     };
-    const examples = (setting.examples ?? []).length > 1 ? [button("Examples", "Open another of the page's blueprints here", () => this.toggleExamples(), "wb-examples-button")] : [];
+    const examples = setting.examples.length > 1 ? [button("Examples", "Open another of the page's blueprints here", () => this.toggleExamples(), "wb-examples-button")] : [];
     const bar = el(
       "div",
       { class: "wb-bar", role: "toolbar", "aria-label": "Blueprint" },
@@ -148,14 +160,44 @@ export class Workbench {
       button("?", "How to use it", () => this.toggleHelp(), "wb-help-button"),
       this.buttons.full,
     );
-    this.element = el("div", { class: "workbench" }, bar, el("div", { class: "wb-main" }, el("div", { class: "wb-stage" }, this.canvas, this.status), this.board.element));
+    this.element = el("div", { class: "workbench" }, bar, this.about, el("div", { class: "wb-main" }, el("div", { class: "wb-stage" }, this.canvas, this.status), this.board.element));
     // The stylesheet draws a node at the sizes a wire is drawn to: it is told them, so the two cannot drift apart.
     for (const [name, size] of Object.entries(NODE)) this.element.style.setProperty(`--bp-${name}`, `${size}px`);
 
     this.listen();
     this.stopListening = setting.files.listen(() => this.schedule());
-    if (setting.stillBoard) this.board.showStill(setting.stillBoard);
+    if (this.still) this.board.showStill(this.still);
+    this.tellAbout();
     this.render();
+  }
+
+  /** One of the page's examples, open here: as the reader left it, if they did, and Reset going back to it. */
+  open(example: Example): void {
+    if (example === this.chosen) return;
+    this.closeMenu?.();
+    this.element.querySelector(".wb-examples")?.remove();
+    this.chosen = example;
+    this.original = this.laidOut(example.text);
+    this.still = undefined;
+    const own = this.setting.own.get(example);
+    this.history = new EditHistory(own ? this.laidOut(own) : this.original);
+    this.preview = null;
+    this.selection.clear();
+    this.tellAbout();
+    this.changed();
+    this.notice = own ? KEPT : `Opened here: ${example.title}`;
+    this.setting.opened?.(example);
+    this.wake();
+    this.fit();
+    this.say();
+  }
+
+  /** What the example open is called, and what it is about, above the canvas. */
+  private tellAbout(): void {
+    const { title, about } = this.chosen;
+    this.about.hidden = !title;
+    this.about.title = about;
+    this.about.replaceChildren(el("strong", {}, title), about ? ` ${about}` : "");
   }
 
   /** A blueprint written by someone else — an agent — put on the canvas as an edit, so that Undo and Reset still work. */
@@ -208,7 +250,7 @@ export class Workbench {
     const now = this.history.now;
     const nodes = new Set(now.nodes.map((node) => node.id));
     this.selection = new Set([...this.selection].filter((id) => nodes.has(id)));
-    this.setting.keep(now === this.example ? null : printBlueprint(now, this.setting.kit));
+    this.setting.own.set(this.chosen, now === this.original ? null : printBlueprint(now, this.setting.kit));
     this.render();
     this.schedule();
   }
@@ -221,8 +263,8 @@ export class Workbench {
   }
 
   private reset(): void {
-    this.history.push(this.example);
-    this.notice = "Back to the page's own blueprint.";
+    this.history.push(this.original);
+    this.notice = "Back to the blueprint as the page wrote it.";
     this.changed();
     this.fit();
   }
@@ -274,11 +316,11 @@ export class Workbench {
         this.views.delete(id);
       }
     this.drawWires();
-    if (this.ran || !this.setting.stillBoard) this.drawBoard();
+    if (this.ran || !this.still) this.drawBoard();
     this.canvas.classList.toggle("blank", blueprint.nodes.length === 0);
     this.buttons.undo.disabled = !this.history.canUndo;
     this.buttons.redo.disabled = !this.history.canRedo;
-    this.buttons.reset.disabled = this.history.now === this.example;
+    this.buttons.reset.disabled = this.history.now === this.original;
     if (!this.gesture) this.say();
   }
 
@@ -530,7 +572,7 @@ export class Workbench {
   }
 
   private async share(): Promise<void> {
-    const link = this.setting.linkTo(printBlueprint(this.history.now, this.setting.kit));
+    const link = this.setting.linkTo(this.chosen, printBlueprint(this.history.now, this.setting.kit));
     try {
       await this.setting.copy(link);
       this.say("A link to this blueprint, as it is now, is copied: whoever opens it sees it so.");
@@ -539,7 +581,7 @@ export class Workbench {
     }
   }
 
-  /** The page's blueprints, to open any of them here: as an edit, so Undo and Reset go back to this one. */
+  /** The page's blueprints, each by its title and what it is about, to open any of them here. */
   private toggleExamples(): void {
     const open = this.element.querySelector(".wb-examples");
     if (open) {
@@ -547,16 +589,14 @@ export class Workbench {
       return;
     }
     const list = el("ul", {});
-    const panel = el("div", { class: "wb-examples", role: "dialog", "aria-label": "The page's blueprints" }, el("p", {}, "Open one of the page's blueprints here; Reset comes back to this one."), list);
-    for (const example of this.setting.examples ?? []) {
-      const choose = el("button", { type: "button", class: example.text === this.setting.example ? "current" : undefined }, example.title);
+    const close = el("button", { type: "button", class: "wb-help-close", "aria-label": "Close" }, "✕");
+    const panel = el("div", { class: "wb-examples", role: "dialog", "aria-label": "The page's blueprints" }, close, el("p", {}, "Open one of the page's blueprints here. Your changes to each are kept apart; Reset goes back to the one open."), list);
+    close.addEventListener("click", () => panel.remove());
+    for (const example of this.setting.examples) {
+      const choose = el("button", { type: "button", class: example === this.chosen ? "current" : undefined }, el("strong", {}, example.title), example.about ? el("span", {}, example.about) : "");
       choose.addEventListener("click", () => {
         panel.remove();
-        this.edit(this.laidOut(example.text));
-        this.notice = `${example.title}, opened here. Undo, or Reset, goes back.`;
-        this.wake();
-        this.fit();
-        this.say();
+        this.open(example);
       });
       list.append(el("li", {}, choose));
     }

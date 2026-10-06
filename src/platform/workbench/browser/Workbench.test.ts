@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { aKit } from "../../blueprint/aKit";
+import type { Example } from "../../blueprint/examplesOf";
 import { NODE } from "../../blueprint/NODE";
 import { nodeShapeOf } from "../../blueprint/nodeShapeOf";
 import { parseBlueprint } from "../../blueprint/parseBlueprint";
@@ -10,13 +11,26 @@ import { Workbench, type WorkbenchSetting } from "./Workbench";
 const settle = () => new Promise((resolve) => setTimeout(resolve, 5));
 const Pointer = (window.PointerEvent ?? MouseEvent) as typeof MouseEvent;
 
-/** A workbench on the page with a blueprint, and what it keeps and copies. */
-function bench(example: string, more: Partial<WorkbenchSetting> = {}) {
+const anExample = (text: string, title = "", about = ""): Example => ({ title, slug: title.toLowerCase().replace(/\W+/g, "-"), about, text });
+
+/** A workbench on the page with a blueprint — or several — and what it keeps of each, the reader's own versions it starts with, and what it copies. */
+function bench(example: string | readonly Example[], more: Partial<WorkbenchSetting> = {}, left: Readonly<Record<string, string>> = {}) {
   const kept: (string | null)[] = [];
-  const workbench = new Workbench({ kit: aKit, files: new FilesInBrowser(async () => ""), example, keep: (text) => kept.push(text), linkTo: (text) => `link:${text}`, copy: async () => {}, ...more });
+  const opened: Example[] = [];
+  const examples = typeof example === "string" ? [anExample(example)] : example;
+  const workbench = new Workbench({
+    kit: aKit,
+    files: new FilesInBrowser(async () => ""),
+    examples,
+    own: { get: (one) => left[one.title] ?? null, set: (_, text) => kept.push(text) },
+    opened: (one) => opened.push(one),
+    linkTo: (_, text) => `link:${text}`,
+    copy: async () => {},
+    ...more,
+  });
   document.body.replaceChildren(workbench.element);
   workbench.wake();
-  return { workbench, element: workbench.element, kept };
+  return { workbench, element: workbench.element, kept, opened };
 }
 
 /** Where a pin is drawn, on a canvas looked at as it is. */
@@ -199,9 +213,9 @@ describe("a blueprint worked on in the page", () => {
   });
 
   it("starts from the reader's own version when there is one, and goes back to the page's on Reset", () => {
-    const { element, kept } = bench("n = nights @ 0 0", { start: { text: "n = nights from: 2015 @ 0 0\nbars table: n @ 400 0", said: "As you left it." } });
+    const { element, kept } = bench("n = nights @ 0 0", {}, { "": "n = nights from: 2015 @ 0 0\nbars table: n @ 400 0" });
     expect(element.querySelectorAll(".wb-node").length).toBe(2);
-    expect(element.querySelector(".wb-status")?.textContent).toBe("As you left it.");
+    expect(element.querySelector(".wb-status")?.textContent).toContain("As you left it");
     (element.querySelector('button[title^="Go back"]') as HTMLButtonElement).click();
     expect(element.querySelectorAll(".wb-node").length).toBe(1);
     expect(kept.at(-1)).toBeNull();
@@ -217,7 +231,15 @@ describe("a blueprint worked on in the page", () => {
   });
 
   it("waits to run until it is near the screen, showing the board the build wrote until it has", async () => {
-    const workbench = new Workbench({ kit: aKit, files: new FilesInBrowser(async () => ""), example: "n = nights\nbars table: n", stillBoard: '<figure class="bp-card">the still</figure>', keep: () => {}, linkTo: String, copy: async () => {} });
+    const workbench = new Workbench({
+      kit: aKit,
+      files: new FilesInBrowser(async () => ""),
+      examples: [anExample("n = nights\nbars table: n")],
+      stillBoard: '<figure class="bp-card">the still</figure>',
+      own: { get: () => null, set: () => {} },
+      linkTo: String,
+      copy: async () => {},
+    });
     await settle();
     expect(workbench.element.querySelector(".wb-cards")?.textContent).toBe("the still");
     workbench.wake();
@@ -233,20 +255,39 @@ describe("a blueprint worked on in the page", () => {
     expect(element.querySelector(".wb-status")?.textContent).toBe("Place turns place of Nights. It is lit on the canvas.");
   });
 
-  it("opens any of the page's blueprints, as an edit Reset undoes", () => {
-    const { element } = bench("n = nights @ 0 0", { examples: [{ title: "Nights", text: "n = nights @ 0 0" }, { title: "Bars of nights", text: "m = nights @ 0 0\nbars table: m @ 400 0" }] });
+  it("opens any of the page's blueprints, says what it is about, and Reset goes back to it", () => {
+    const nights = anExample("n = nights @ 0 0", "Nights", "The nights alone.");
+    const bars = anExample("m = nights @ 0 0\nbars table: m @ 400 0", "Bars of nights", "A bar a year.");
+    const { element, opened, kept } = bench([nights, bars]);
+    expect(element.querySelector(".wb-about")?.textContent).toBe("Nights The nights alone.");
     (element.querySelector(".wb-examples-button") as HTMLButtonElement).click();
-    const buttons = [...element.querySelectorAll<HTMLButtonElement>(".wb-examples button")];
-    expect(buttons.map((button) => [button.textContent, button.className])).toEqual([["Nights", "current"], ["Bars of nights", ""]]);
+    const buttons = [...element.querySelectorAll<HTMLButtonElement>(".wb-examples li button")];
+    expect(buttons.map((button) => [button.querySelector("strong")?.textContent, button.className])).toEqual([["Nights", "current"], ["Bars of nights", ""]]);
     buttons[1]?.click();
     expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["m", "bars"]);
-    expect(element.querySelector(".wb-status")?.textContent).toBe("Bars of nights, opened here. Undo, or Reset, goes back.");
+    expect(element.querySelector(".wb-about")?.textContent).toBe("Bars of nights A bar a year.");
+    expect(opened).toEqual([bars]);
+    const from = element.querySelector('.wb-node[data-node="m"] input[type="number"]') as HTMLInputElement;
+    from.value = "2010";
+    from.dispatchEvent(new Event("change"));
+    expect(kept.at(-1)).toContain("m = nights from: 2010");
     (element.querySelector('button[title^="Go back"]') as HTMLButtonElement).click();
+    expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["m", "bars"]);
+    expect(kept.at(-1)).toBeNull();
+  });
+
+  it("opens an example as the reader left it, kept apart from the rest", () => {
+    const nights = anExample("n = nights @ 0 0", "Nights");
+    const bars = anExample("m = nights @ 0 0", "Bars of nights");
+    const { workbench, element } = bench([nights, bars], {}, { "Bars of nights": "m = nights @ 0 0\nbars table: m @ 400 0" });
     expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["n"]);
+    workbench.open(bars);
+    expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["m", "bars"]);
+    expect(element.querySelector(".wb-status")?.textContent).toContain("As you left it");
   });
 
   it("offers no examples when the page has only the one", () => {
-    const { element } = bench("n = nights @ 0 0", { examples: [{ title: "Nights", text: "n = nights @ 0 0" }] });
+    const { element } = bench([anExample("n = nights @ 0 0", "Nights")]);
     expect(element.querySelector(".wb-examples-button")).toBeNull();
   });
 
