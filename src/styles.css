@@ -6497,6 +6497,45 @@ main p:has(> strong:first-child):not(h2 + p) {
   font-style: italic;
 }
 
+/* What could come after the chosen node, a click away: along the foot of the canvas, over it, in as many lines as it needs. */
+.app .wb-next {
+  position: absolute;
+  z-index: 4;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.4em;
+  max-height: 5.6em;
+  overflow-y: auto;
+  padding: 0.35em 0.5em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.12);
+  white-space: nowrap;
+  cursor: default;
+}
+
+.app .wb-next[hidden] {
+  display: none;
+}
+
+.app .wb-next-said {
+  flex: none;
+  font: 11px var(--mono);
+  color: var(--dim);
+}
+
+.app .wb-next button {
+  flex: none;
+  padding: 0.15em 0.65em;
+  border-radius: 999px;
+  font-size: 0.74rem;
+}
+
 /* An output's name is pressed to look at what it gives: a table's first rows, what its columns are. */
 .app .wb-peek {
   padding: 0;

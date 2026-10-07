@@ -228,6 +228,25 @@ describe("a blueprint worked on in the page", () => {
     expect(element.querySelector(".wb-wire-hit title")?.textContent).toBe("a table: 5 rows · year, nights");
   });
 
+  it("offers what could come after the chosen node; a click adds it, wired and written, and offers what could come after that", async () => {
+    const { element } = bench("n = nights @ 0 0");
+    await settle();
+    const canvas = element.querySelector(".wb-canvas")!;
+    press(element.querySelector('.wb-node[data-node="n"] .wb-head')!, { clientX: 20, clientY: 10 });
+    release(canvas, { clientX: 20, clientY: 10 });
+    const offered = () => [...element.querySelectorAll<HTMLButtonElement>(".wb-next button")];
+    expect(offered().map((button) => button.textContent)).toEqual(["Bars of nights, year by year", "Trend of nights", "Summary of nights", "The ten with the most nights", "Show the table"]);
+    offered()[1]?.click();
+    expect([...element.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["n", "trend"]);
+    expect(element.querySelectorAll(".wb-wire").length).toBe(1);
+    await settle();
+    expect(offered()[0]?.textContent).toBe("On the board: for each ten");
+    offered()[0]?.click();
+    await settle();
+    expect(element.querySelector(".wb-board .bp-readout")).not.toBeNull();
+    expect(element.querySelector<HTMLElement>(".wb-next")?.hidden).toBe(true);
+  });
+
   it("is written as text, and rewritten from text, keeping where the nodes it knows stand", () => {
     const { element } = bench("n = nights @ 40 40");
     (element.querySelector('button[title^="The blueprint as text"]') as HTMLButtonElement).click();

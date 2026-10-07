@@ -22,6 +22,12 @@ picture.
 - **A wire goes from an output**, on the right of a node, **into an input**
   on the left of another, of the same colour: a table into a table, a number
   into a number. While one is dragged, the pins it fits are lit.
+- **Choose a node**, and what could come next is offered under the canvas,
+  read off what it gives: a picture of it, the years measured whole, the
+  season taken out, a join with another source standing apart. A click adds
+  it, wired and written, and offers what could come after that.
+- **Press an output's name** to look at what it gives: a table's first rows,
+  and what its columns are. A wire says what it carries when pointed at.
 - **Drag from a pin** to wire it. Let go on another pin to join them, or in
   empty space to choose what comes next, from what fits.
 - **Double-click** the canvas, or press the space bar, to add any node.

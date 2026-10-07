@@ -16,6 +16,7 @@ import { parseBlueprint } from "../../blueprint/parseBlueprint";
 import { peekOf } from "../../blueprint/peekOf";
 import { printBlueprint } from "../../blueprint/printBlueprint";
 import { resolvedEditor } from "../../blueprint/resolvedEditor";
+import { type Suggestion, suggestionsFor } from "../../blueprint/suggestionsFor";
 import { tag } from "../../blueprint/tag";
 import { tidyBlueprint } from "../../blueprint/tidyBlueprint";
 import { wirePath } from "../../blueprint/wirePath";
@@ -101,6 +102,9 @@ export class Workbench {
   private readonly wires: SVGSVGElement;
   private readonly nodes: HTMLElement;
   private readonly marquee: HTMLElement;
+  /** What could come after the chosen node, a click away. */
+  private readonly next: HTMLElement;
+  private nextShown = "";
   private readonly status: HTMLElement;
   private readonly about: HTMLElement;
   private readonly board: BoardView;
@@ -132,7 +136,8 @@ export class Workbench {
     this.nodes = el("div", { class: "wb-nodes" });
     this.world = el("div", { class: "wb-world" }, this.wires, this.nodes);
     this.marquee = el("div", { class: "wb-marquee", hidden: true });
-    this.canvas = el("div", { class: "wb-canvas", tabindex: 0, role: "application", "aria-label": "The blueprint's canvas: its nodes and wires" }, this.world, this.marquee, el("p", { class: "wb-blank" }, "An empty blueprint. Double-click here, or press the space bar, to add a node."));
+    this.next = el("div", { class: "wb-next", role: "toolbar", "aria-label": "What could come next" });
+    this.canvas = el("div", { class: "wb-canvas", tabindex: 0, role: "application", "aria-label": "The blueprint's canvas: its nodes and wires" }, this.world, this.marquee, this.next, el("p", { class: "wb-blank" }, "An empty blueprint. Double-click here, or press the space bar, to add a node."));
     this.status = el("p", { class: "wb-status", "aria-live": "polite" });
     this.about = el("p", { class: "bp-about wb-about" });
     this.board = new BoardView({
@@ -331,6 +336,7 @@ export class Workbench {
         this.views.delete(id);
       }
     this.drawWires();
+    if (!this.gesture) this.offerNext();
     if (this.ran || !this.still) this.drawBoard();
     this.canvas.classList.toggle("blank", blueprint.nodes.length === 0);
     this.buttons.undo.disabled = !this.history.canUndo;
@@ -383,6 +389,42 @@ export class Workbench {
       if (fixed) paths.push(this.path(gesture.end.side === "output" ? wirePath(fixed, gesture.at) : wirePath(gesture.at, fixed), "wb-wire dragging", kit.types.get(gesture.type)?.colour));
     }
     this.wires.replaceChildren(...paths);
+  }
+
+  /** What could come after the one node chosen, read off what it gave: built again only when that changes, so a button is never pulled from under a hand. */
+  private offerNext(): void {
+    const [chosen] = this.selection.size === 1 ? [...this.selection] : [];
+    const offered = chosen ? suggestionsFor(this.history.now, chosen, this.setting.kit, this.evaluation) : [];
+    const shown = `${chosen}\u0000${offered.map((each) => each.label).join("\u0000")}`;
+    this.next.hidden = offered.length === 0;
+    if (shown === this.nextShown) return;
+    this.nextShown = shown;
+    this.next.replaceChildren(
+      el("span", { class: "wb-next-said" }, "Next:"),
+      ...offered.map((offer) => {
+        const take = el("button", { type: "button", title: `Add it, wired from what is chosen: ${this.setting.kit.kinds.get(offer.kind)?.title ?? offer.kind}` }, offer.label);
+        take.addEventListener("click", () => chosen && this.follow(chosen, offer));
+        return take;
+      }),
+    );
+  }
+
+  /** A next step taken: its node added to the right of the one it follows, wired from it, written as offered, and chosen — so what could come after it is offered in turn. */
+  private follow(id: string, offer: Suggestion): void {
+    const { kit } = this.setting;
+    const now = this.history.now;
+    const after = now.nodes.find((node) => node.id === id);
+    if (!after) return;
+    const shape = nodeShapeOf(kit.kinds.get(offer.kind));
+    const at = this.freeSpot({ x: after.x + nodeShapeOf(kit.kinds.get(after.kind)).width + 80, y: after.y }, shape.width, shape.height);
+    const node: PlacedNode = { id: freshId(now, offer.kind), kind: offer.kind, ...at, values: offer.values };
+    let next = withWire(withNode(now, node), { from: { node: id, pin: offer.from }, to: { node: node.id, pin: offer.into } });
+    if (offer.also) next = withWire(next, { from: offer.also.from, to: { node: node.id, pin: offer.also.into } });
+    this.selection = new Set([node.id]);
+    this.edit(next);
+    this.reveal([node.id]);
+    this.notice = `${offer.label}: added, wired from what was chosen. What could come after it is offered in turn.`;
+    this.say();
   }
 
   /** What a wire carries, in words, for whoever points at it — and, where the input takes it as something else, as what: a graph read as a table. */
@@ -675,6 +717,8 @@ export class Workbench {
       el(
         "ul",
         {},
+        line("Choose a node", "and what could come next is offered under the canvas: a click adds it, wired and written."),
+        line("Press an output's name", "to look at what it gives: a table's first rows, and what its columns are."),
         line("Drag from a pin", "to wire it: let go on another pin, or in empty space to choose what comes next."),
         line("Double-click, or the space bar,", "to add any node."),
         line("Drag a node by its title", "to move it, and the canvas to move about; Ctrl and the wheel zoom; F fits it all."),
@@ -768,7 +812,7 @@ export class Workbench {
 
   private pressed(event: PointerEvent): void {
     const target = event.target as Element;
-    if (target.closest(".wb-menu, .wb-edit, .wb-promote, .wb-peek, .wb-peek-panel, [contenteditable]")) return;
+    if (target.closest(".wb-menu, .wb-edit, .wb-promote, .wb-peek, .wb-peek-panel, .wb-next, [contenteditable]")) return;
     // On a phone, the page scrolls over a canvas in the page; the blueprint is worked on full screen.
     if (event.pointerType === "touch" && !this.full()) return;
     if (event.pointerType === "touch") {
