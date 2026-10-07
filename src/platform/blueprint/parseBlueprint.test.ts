@@ -14,6 +14,15 @@ const kit = kitOf(
     kind("trend", [{ name: "table", label: "table", type: "table" }, { name: "x", label: "x", type: "text" }], [{ name: "slope", label: "slope", type: "number" }, { name: "per-ten", label: "per ten", type: "number" }]),
     kind("readout", [{ name: "value", label: "value", type: "number" }, { name: "digits", label: "digits", type: "number", initial: 2 }], []),
     kind("dial", [{ name: "value", label: "value", type: "value" }], [{ name: "value", label: "value", type: "value" }]),
+    kind(
+      "bars",
+      [
+        { name: "table", label: "table", type: "table" },
+        { name: "y", label: "height", type: "text", optional: true, editor: { kind: "column", of: "table" } },
+        { name: "about", label: "about", type: "text", optional: true, editor: { kind: "text" } },
+      ],
+      [],
+    ),
   ],
   coreTypes,
 );
@@ -39,6 +48,16 @@ describe("a blueprint read from its text", () => {
     const { blueprint } = parseBlueprint(["tx = weather-months", "fit = trend table: tx x: tx"].join("\n"), kit);
     expect(blueprint.wires).toEqual([{ from: { node: "tx", pin: "table" }, to: { node: "fit", pin: "table" } }]);
     expect(blueprint.nodes[1]?.values).toEqual({ x: "tx" });
+  });
+
+  it("reads a word as words where an input names a column, or holds words of its own, though a node is called so; a wire there names its output after a dot", () => {
+    const { blueprint } = parseBlueprint(["warm = dial value: tx", "heat = weather-months", "bars table: heat y: warm about: heat", "bars table: heat y: warm.value"].join("\n"), kit);
+    expect(blueprint.nodes[2]?.values).toEqual({ y: "warm", about: "heat" });
+    expect(blueprint.wires).toEqual([
+      { from: { node: "heat", pin: "table" }, to: { node: "bars", pin: "table" } },
+      { from: { node: "heat", pin: "table" }, to: { node: "bars-2", pin: "table" } },
+      { from: { node: "warm", pin: "value" }, to: { node: "bars-2", pin: "y" } },
+    ]);
   });
 
   it("names a node it was not told to name after its kind, apart from every other name", () => {

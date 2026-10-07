@@ -15,6 +15,7 @@ const kit = kitOf(
     kind("trend", [{ name: "table", label: "table", type: "table" }], [{ name: "slope", label: "slope", type: "number" }, { name: "per-ten", label: "per ten", type: "number" }]),
     kind("readout", [{ name: "value", label: "value", type: "number" }, { name: "faded", label: "faded", type: "flag", optional: true }], []),
     kind("dial", [{ name: "value", label: "value", type: "value" }], [{ name: "value", label: "value", type: "value" }]),
+    kind("bars", [{ name: "y", label: "height", type: "text", optional: true, editor: { kind: "column", of: "table" } }], []),
   ],
   coreTypes,
 );
@@ -60,6 +61,13 @@ describe("a blueprint written as text", () => {
   it("quotes a word that would otherwise be read as a wire, or as something else", () => {
     const named: Blueprint = { nodes: [{ id: "heat", kind: "weather-months", x: 0, y: 0, values: { station: "both" } }, { id: "both", kind: "join", x: 0, y: 0, values: { on: "a:b" } }], wires: [] };
     expect(printBlueprint(named, kit, { positions: false })).toBe('weather-months station: "both"\njoin on: "a:b"');
+  });
+
+  it("names the output of a wire into an input that names a column, which a bare name would be read as", () => {
+    const wired: Blueprint = { nodes: [{ id: "warm", kind: "dial", x: 0, y: 0, values: { value: "tx" } }, { id: "bars", kind: "bars", x: 0, y: 0, values: {} }], wires: [{ from: { node: "warm", pin: "value" }, to: { node: "bars", pin: "y" } }] };
+    const text = printBlueprint(wired, kit, { positions: false });
+    expect(text).toBe("warm = dial value: tx\nbars y: warm.value");
+    expect(parseBlueprint(text, kit).blueprint.wires).toEqual(wired.wires);
   });
 
   it("writes a node of a kind there is none of as it was read", () => {

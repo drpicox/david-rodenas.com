@@ -11,8 +11,8 @@ export const readoutNode: NodeKind = {
   summary: "One number on the board, large: a correlation, a trend, a count.",
   inputs: [
     { name: "value", label: "value", type: "number" },
-    { name: "unit", label: "unit", type: "text", optional: true },
-    { name: "about", label: "what it is", type: "text", optional: true },
+    { name: "unit", label: "unit", type: "text", optional: true, editor: { kind: "text" } },
+    { name: "about", label: "what it is", type: "text", optional: true, editor: { kind: "text" } },
   ],
   outputs: [],
   run: (inputs) => {

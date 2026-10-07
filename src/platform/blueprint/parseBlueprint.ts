@@ -116,7 +116,9 @@ function valueAs(type: string | undefined, text: string): Literal {
  * A blueprint from its text: one node a line, `name = kind "Title" input:
  * value … @ x y`, where a value that names another node — or one of its
  * outputs, after a dot — is a wire from it, wherever what it gives could go
- * into that input. The text is what a page writes a blueprint in, what a link
+ * into that input; but where an input names a column, or holds words of its
+ * own, a bare name is those words, and a wire names the output after a dot.
+ * The text is what a page writes a blueprint in, what a link
  * carries and what an agent can read, so a line that cannot be read is said,
  * by its number, and the rest is read anyway.
  */
@@ -160,7 +162,9 @@ export function parseBlueprint(text: string, kit: Kit): BlueprintRead {
       }
       const reference = value.quoted ? null : REFERENCE.exec(value.text);
       const from = reference?.[1];
-      if (from !== undefined && from !== id && kindOf.has(from)) {
+      // Where an input names a column, or holds words of its own, a name is those words — a dial is often called what it sets — and a wire there names the output, after a dot.
+      const words = typeof pin?.editor === "object" && (pin.editor.kind === "column" || pin.editor.kind === "text") && reference?.[2] === undefined;
+      if (from !== undefined && from !== id && kindOf.has(from) && !words) {
         const out = reference?.[2] ?? kindOf.get(from)?.outputs[0]?.name ?? "value";
         // A column called as a node is called is a column: a name is a wire only where what the node gives could go.
         const given = kindOf.get(from)?.outputs.find((output) => output.name === out)?.type;

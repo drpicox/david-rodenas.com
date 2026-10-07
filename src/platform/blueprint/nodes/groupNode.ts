@@ -30,7 +30,7 @@ export const groupNode: NodeKind = {
     { name: "and", label: "and by", type: "text", optional: true, editor: { kind: "column", of: "table" } },
     { name: "value", label: "summing up", type: "text", optional: true, editor: { kind: "column", of: "table", numeric: true } },
     { name: "how", label: "as its", type: "text", initial: "mean", editor: { kind: "choice", choices: [...Object.keys(HOW), "count"].map((how) => ({ value: how, label: how })) } },
-    { name: "name", label: "call it", type: "text", optional: true, hint: "what to call the column summed up; its own name when left empty" },
+    { name: "name", label: "call it", type: "text", optional: true, editor: { kind: "text" }, hint: "what to call the column summed up; its own name when left empty" },
   ],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (inputs) => {

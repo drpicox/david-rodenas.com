@@ -26,7 +26,7 @@ export const joinNode: NodeKind = {
   inputs: [
     { name: "left", label: "left", type: "table" },
     { name: "right", label: "right", type: "table" },
-    { name: "on", label: "on", type: "text", optional: true, hint: "the names of the columns to match, as: year month; the keys both have when left empty" },
+    { name: "on", label: "on", type: "text", optional: true, editor: { kind: "text" }, hint: "the names of the columns to match, as: year month; the keys both have when left empty" },
   ],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (inputs) => {

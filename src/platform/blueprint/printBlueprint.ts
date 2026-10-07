@@ -17,7 +17,8 @@ export function printBlueprint(blueprint: Blueprint, kit: Kit, { positions = tru
   const ids = new Set(blueprint.nodes.map((node) => node.id));
   const sources = new Set(blueprint.wires.map((wire) => wire.from.node));
   const kindOfId = new Map(blueprint.nodes.map((node) => [node.id, kit.kinds.get(node.kind)]));
-  const reference = ({ node, pin }: PinRef) => (kindOfId.get(node)?.outputs[0]?.name === pin ? node : `${node}.${pin}`);
+  // Into an input that names a column, or holds words of its own, a bare name is read as those words: the wire names its output.
+  const reference = ({ node, pin }: PinRef, named: boolean) => (kindOfId.get(node)?.outputs[0]?.name === pin && !named ? node : `${node}.${pin}`);
   // A word is written bare unless it would be read back as something else: a wire, a number, an input's name, a comment.
   const literal = (value: Literal, type: string | undefined): string => {
     if (typeof value === "boolean") return value ? "yes" : "no";
@@ -32,9 +33,10 @@ export function printBlueprint(blueprint: Blueprint, kit: Kit, { positions = tru
       const into = new Map(blueprint.wires.filter((wire) => wire.to.node === node.id).map((wire) => [wire.to.pin, wire.from]));
       const pins = kind ? kind.inputs.map((pin) => pin.name) : [...new Set([...Object.keys(node.values), ...into.keys()])];
       const typeOf = new Map(kind?.inputs.map((pin) => [pin.name, pin.type]));
+      const named = new Set(kind?.inputs.filter((pin) => typeof pin.editor === "object" && (pin.editor.kind === "column" || pin.editor.kind === "text")).map((pin) => pin.name));
       const written = pins.flatMap((pin) => {
         const from = into.get(pin);
-        if (from) return [`${pin}: ${reference(from)}`];
+        if (from) return [`${pin}: ${reference(from, named.has(pin))}`];
         const value = node.values[pin];
         return value === undefined ? [] : [`${pin}: ${literal(value, typeOf.get(pin))}`];
       });

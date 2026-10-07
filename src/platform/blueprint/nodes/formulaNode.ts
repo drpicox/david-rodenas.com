@@ -11,9 +11,9 @@ export const formulaNode: NodeKind = {
   summary: "A new column worked out of the others, row by row, with + − × ÷ ^, brackets and a few functions: tx - tn, log(lines).",
   inputs: [
     { name: "table", label: "table", type: "table" },
-    { name: "name", label: "new column", type: "text", initial: "result" },
-    { name: "formula", label: "is", type: "text", initial: "", hint: "the names of columns, numbers, + - * / ^, brackets, and abs sqrt log log10 exp round min max" },
-    { name: "unit", label: "unit", type: "text", optional: true },
+    { name: "name", label: "new column", type: "text", initial: "result", editor: { kind: "text" } },
+    { name: "formula", label: "is", type: "text", initial: "", editor: { kind: "text" }, hint: "the names of columns, numbers, + - * / ^, brackets, and abs sqrt log log10 exp round min max" },
+    { name: "unit", label: "unit", type: "text", optional: true, editor: { kind: "text" } },
   ],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (inputs) => {
