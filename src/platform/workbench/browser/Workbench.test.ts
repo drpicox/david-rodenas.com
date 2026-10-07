@@ -343,6 +343,18 @@ describe("a blueprint worked on in the page", () => {
     expect(kept.at(-1)).toBeNull();
   });
 
+  it("opens an example whose names the one before used for other kinds of node, nothing of the one before left on it", async () => {
+    const dialled = anExample('x = dial "Place" value: X4 @ 0 0\nn = nights place: x @ 300 0', "Dialled");
+    const plain = anExample("x = nights @ 0 0\nbars table: x @ 400 0", "Plain");
+    const { workbench, element } = bench([dialled, plain]);
+    await settle();
+    expect(() => workbench.open(plain)).not.toThrow();
+    expect(element.querySelector(".wb-about strong")?.textContent).toBe("Plain");
+    expect(element.querySelector('.wb-node[data-node="x"] .wb-foot')?.textContent).toBe("");
+    await settle();
+    expect(element.querySelector(".wb-wire-hit title")?.textContent).toBe("a table: 5 rows · year, nights");
+  });
+
   it("opens an example as the reader left it, kept apart from the rest", () => {
     const nights = anExample("n = nights @ 0 0", "Nights");
     const bars = anExample("m = nights @ 0 0", "Bars of nights");

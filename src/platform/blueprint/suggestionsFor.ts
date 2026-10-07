@@ -148,6 +148,8 @@ export function suggestionsFor(blueprint: Blueprint, id: string, kit: Kit, evalu
   if (!kind || result?.state !== "done") return [];
   return kind.outputs
     .flatMap((output): Suggestion[] => {
+      // A run made before the node became another kind gave other outputs: nothing is offered after one it did not give.
+      if (!(output.name in result.outputs)) return [];
       const value = result.outputs[output.name];
       if (output.type === "table") return afterTable(value as Table, output.name, blueprint, node, kit, evaluation);
       if (output.type === "number") return [{ label: `On the board: ${output.label}`, kind: "readout", from: output.name, into: "value", values: {} }];

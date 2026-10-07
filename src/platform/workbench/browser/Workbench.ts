@@ -36,6 +36,8 @@ import { pinAt, type PinFound } from "../pinAt";
 import { BoardView, type Card } from "./BoardView";
 import type { FilesInBrowser } from "./FilesInBrowser";
 import { NodeView } from "./NodeView";
+import { openExamples } from "./openExamples";
+import { openHelp } from "./openHelp";
 import { openKindMenu } from "./openKindMenu";
 import { openPeek } from "./openPeek";
 import { openTextPanel } from "./openTextPanel";
@@ -196,6 +198,8 @@ export class Workbench {
     this.chosen = example;
     this.original = this.laidOut(example.text);
     this.still = undefined;
+    // What the one before made is not this one's: a node called as one of its nodes was may be another kind of node.
+    this.evaluation = new Map();
     const own = this.setting.own.get(example);
     this.history = new EditHistory(own ? this.laidOut(own) : this.original);
     this.preview = null;
@@ -434,7 +438,7 @@ export class Workbench {
   private carried(wire: Wire): string | null {
     const { kit } = this.setting;
     const result = this.evaluation.get(wire.from.node);
-    if (result?.state !== "done") return null;
+    if (result?.state !== "done" || !(wire.from.pin in result.outputs)) return null;
     const kindOf = (id: string) => kit.kinds.get(this.blueprint.nodes.find((node) => node.id === id)?.kind ?? "");
     const out = kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "value";
     const into = kindOf(wire.to.node)?.inputs.find((pin) => pin.name === wire.to.pin)?.type;
@@ -450,7 +454,7 @@ export class Workbench {
     const output = kit.kinds.get(node?.kind ?? "")?.outputs.find((each) => each.name === pin);
     if (!node || !output) return;
     const result = this.evaluation.get(id);
-    const html = result?.state === "done" ? peekOf(result.outputs[pin], output.type, kit).html : tag("p", {}, footOf(result, node.kind).said || "It has not run yet.").html;
+    const html = result?.state === "done" && pin in result.outputs ? peekOf(result.outputs[pin], output.type, kit).html : tag("p", {}, footOf(result, node.kind).said || "It has not run yet.").html;
     this.closePeek?.();
     this.closePeek = openPeek(this.canvas, `${node.title ?? kit.kinds.get(node.kind)?.title ?? node.kind} gives ${output.label}`, html, anchor);
   }
@@ -692,58 +696,18 @@ export class Workbench {
     }
   }
 
-  /** The page's blueprints, each by its title and what it is about, to open any of them here. */
+  /** The page's blueprints, to open any of them here; pressed again, put away. */
   private toggleExamples(): void {
     const open = this.element.querySelector(".wb-examples");
-    if (open) {
-      open.remove();
-      return;
-    }
-    const list = el("ul", {});
-    const close = el("button", { type: "button", class: "wb-help-close", "aria-label": "Close" }, "✕");
-    const panel = el("div", { class: "wb-examples", role: "dialog", "aria-label": "The page's blueprints" }, close, el("p", {}, "Open one of the page's blueprints here. Your changes to each are kept apart; Reset goes back to the one open."), list);
-    close.addEventListener("click", () => panel.remove());
-    for (const example of this.setting.examples) {
-      const choose = el("button", { type: "button", class: example === this.chosen ? "current" : undefined }, el("strong", {}, example.title), example.about ? el("span", {}, example.about) : "");
-      choose.addEventListener("click", () => {
-        panel.remove();
-        this.open(example);
-      });
-      list.append(el("li", {}, choose));
-    }
-    this.element.append(panel);
-    (list.querySelector("button:not(.current)") as HTMLButtonElement | null)?.focus();
+    if (open) open.remove();
+    else openExamples(this.element, this.setting.examples, this.chosen, (example) => this.open(example));
   }
 
-  /** What the hands do, said where the hands are: on a page full screen, the page's own words are out of sight. */
+  /** What the hands do, said where the hands are; pressed again, put away. */
   private toggleHelp(): void {
     const open = this.element.querySelector(".wb-help");
-    if (open) {
-      open.remove();
-      return;
-    }
-    const line = (keys: string, what: string) => el("li", {}, el("strong", {}, keys), ` ${what}`);
-    const close = el("button", { type: "button", class: "wb-help-close", "aria-label": "Close" }, "✕");
-    const help = el(
-      "div",
-      { class: "wb-help", role: "dialog", "aria-label": "How to use it" },
-      close,
-      el(
-        "ul",
-        {},
-        line("Choose a node", "and what could come next is offered under the canvas: a click adds it, wired and written."),
-        line("Press an output's name", "to look at what it gives: a table's first rows, and what its columns are."),
-        line("Drag from a pin", "to wire it: let go on another pin, or in empty space to choose what comes next."),
-        line("Double-click, or the space bar,", "to add any node."),
-        line("Drag a node by its title", "to move it, and the canvas to move about; Ctrl and the wheel zoom; F fits it all."),
-        line("Shift and drag", "chooses several; Delete takes them away, Ctrl+D copies them, Ctrl+Z undoes."),
-        line("Alt and a click on a pin", "lets go of its wires; so does dragging a wire off its input into empty space."),
-        line("◉ beside a value", "puts it on the board as a dial; ▶ on a dial plays it."),
-        line("Double-click a title", "to rename the node; a picture's title on the board finds its node."),
-      ),
-    );
-    close.addEventListener("click", () => help.remove());
-    this.element.append(help);
+    if (open) open.remove();
+    else openHelp(this.element);
   }
 
   private full(): boolean {

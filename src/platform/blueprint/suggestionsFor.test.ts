@@ -121,6 +121,10 @@ describe("what is offered to come next", () => {
     ]);
   });
 
+  it("is nothing after an output its last run did not give: a node that became another kind since", () => {
+    expect(suggestionsFor({ nodes: [placed("a")], wires: [] }, "a", aKit, new Map([["a", done({ value: 3 })]]))).toEqual([]);
+  });
+
   it("is nothing for a node that has not run", () => {
     expect(suggestionsFor({ nodes: [placed("a")], wires: [] }, "a", aKit, new Map())).toEqual([]);
   });
