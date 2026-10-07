@@ -61,6 +61,23 @@ describe("lines", () => {
   });
 });
 
+describe("what is named in an order of its own", () => {
+  const seasons: Table = {
+    columns: [
+      { name: "hour", kind: "number", key: true },
+      { name: "season", kind: "text", key: true, order: ["winter", "spring", "summer", "autumn"] },
+      { name: "no2", kind: "number" },
+    ],
+    rows: ["autumn", "spring", "summer", "winter"].flatMap((season, at) => [1, 2].map((hour) => ({ hour, season, no2: at + hour }))),
+    credits: [],
+  };
+
+  it("is drawn in that order, a line or a colour each, not in the order the rows come in", () => {
+    expect(painting(linesNode, { table: seasons, x: "hour", y: "no2", split: "season" }).html.match(/data-key="line:[^"]+"/g)).toEqual(['data-key="line:winter"', 'data-key="line:spring"', 'data-key="line:summer"', 'data-key="line:autumn"']);
+    expect(painting(scatterNode, { table: seasons, x: "hour", y: "no2", colour: "season" }).html.match(/<text[^>]*>(winter|spring|summer|autumn)<\/text>/g)?.map((label) => label.replace(/<[^>]*>/g, ""))).toEqual(["winter", "spring", "summer", "autumn"]);
+  });
+});
+
 describe("lines of two columns", () => {
   it("draw a line for each, named after it", () => {
     const both: Table = { columns: [{ name: "month", kind: "number" }, { name: "clean", kind: "number" }, { name: "debt", kind: "number" }], rows: [{ month: 1, clean: 1, debt: 2 }, { month: 2, clean: 3, debt: 3 }] };

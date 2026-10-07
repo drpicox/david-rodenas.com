@@ -5,6 +5,7 @@ import { scatterPlot } from "../paint/scatterPlot";
 import { pickColumn } from "../pickColumn";
 import type { Table } from "../Table";
 import { cellLabel } from "./cellLabel";
+import { inOrderOf } from "./inOrderOf";
 import { creditLines } from "./creditLines";
 import { numericPairs } from "./numericPairs";
 
@@ -35,7 +36,7 @@ export const scatterNode: NodeKind = {
     const label = inputs["label"] ? pickColumn(table, inputs["label"] as string, "named by") : undefined;
     const { xs, ys, rows } = numericPairs(table, x.name, y.name);
     if (rows.length > MOST) throw new Error(`${rows.length} dots are too many to see: keep some rows first`);
-    const groups = colour ? [...new Set(rows.map((row) => cellLabel(row[colour.name])))] : [];
+    const groups = colour ? inOrderOf(colour, rows.map((row) => cellLabel(row[colour.name]))) : [];
     const points = rows.map((row, at) => ({
       x: xs[at] ?? 0,
       y: ys[at] ?? 0,

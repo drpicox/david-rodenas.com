@@ -3,6 +3,7 @@ import { linePlot } from "../paint/linePlot";
 import { pickColumn } from "../pickColumn";
 import type { Table } from "../Table";
 import { cellLabel } from "./cellLabel";
+import { inOrderOf } from "./inOrderOf";
 import { creditLines } from "./creditLines";
 import { numericPairs } from "./numericPairs";
 
@@ -32,7 +33,7 @@ export const linesNode: NodeKind = {
       return { name, points: xs.map((px, at) => [px, ys[at] ?? 0] as const).sort((a, b) => a[0] - b[0]) };
     };
     const series = split
-      ? [...new Set(table.rows.map((row) => cellLabel(row[split.name])))].map((name) => lineOf(name, table.rows.filter((row) => cellLabel(row[split.name]) === name), y.name))
+      ? inOrderOf(split, table.rows.map((row) => cellLabel(row[split.name]))).map((name) => lineOf(name, table.rows.filter((row) => cellLabel(row[split.name]) === name), y.name))
       : [lineOf(y.name, table.rows, y.name), ...(and ? [lineOf(and.name, table.rows, and.name)] : [])];
     // Two columns on one axis are named by the legend: the axis says only what they are counted in.
     const html = linePlot({ series, x: x.name, y: and ? (y.unit ?? "") : y.name, ...(y.unit && !and && { unit: y.unit }) }).html;

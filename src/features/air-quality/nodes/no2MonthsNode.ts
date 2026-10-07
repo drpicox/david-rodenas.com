@@ -1,4 +1,5 @@
 import type { NodeKind } from "../../../platform/blueprint/NodeKind";
+import { SEASON_ORDER } from "../../../platform/data/SEASON_ORDER";
 import { seasonOf } from "../../../platform/data/seasonOf";
 import type { Column, Row, Table } from "../../../platform/blueprint/Table";
 import type { No2Selection } from "../No2Selection";
@@ -47,7 +48,7 @@ export const no2MonthsNode: NodeKind = {
       ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
       { name: "month", kind: "number", key: true },
-      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it" },
+      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it", order: SEASON_ORDER },
       { name: "no2", kind: "number", unit: "µg/m³", about: "the mean of the month's hours" },
       { name: "hours", kind: "number", about: "the hours the mean is of" },
       { name: "measured", kind: "number", about: "the share of the month's hours measured, 0 to 1" },

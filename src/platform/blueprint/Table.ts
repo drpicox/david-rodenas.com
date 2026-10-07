@@ -13,6 +13,8 @@ export interface Column {
   readonly key?: boolean;
   /** It came into the table from the second of two joined: what a measure of one source is set against. */
   readonly joined?: boolean;
+  /** The order its words are named in, where it is not the alphabet's nor the rows': winter, spring, summer, autumn. */
+  readonly order?: readonly string[];
 }
 
 export type Row = Readonly<Record<string, Cell>>;

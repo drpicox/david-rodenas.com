@@ -1,4 +1,5 @@
 import type { NodeKind } from "../../../platform/blueprint/NodeKind";
+import { SEASON_ORDER } from "../../../platform/data/SEASON_ORDER";
 import { seasonOf } from "../../../platform/data/seasonOf";
 import type { Column, Row, Table } from "../../../platform/blueprint/Table";
 import type { SparseHistogram } from "../WeatherStation";
@@ -43,7 +44,7 @@ export const weatherMonthsNode: NodeKind = {
       ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
       { name: "month", kind: "number", key: true },
-      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it" },
+      { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it", order: SEASON_ORDER },
       { name: "tn", kind: "number", unit: "°C", about: "the mean daily minimum" },
       { name: "tx", kind: "number", unit: "°C", about: "the mean daily maximum" },
       { name: "rain", kind: "number", unit: "mm", about: "the month's rain" },
