@@ -2,6 +2,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { aKit } from "../../blueprint/aKit";
 import type { Example } from "../../blueprint/examplesOf";
+import { kitOf } from "../../blueprint/kitOf";
+import type { NodeKind } from "../../blueprint/NodeKind";
 import { NODE } from "../../blueprint/NODE";
 import { nodeShapeOf } from "../../blueprint/nodeShapeOf";
 import { parseBlueprint } from "../../blueprint/parseBlueprint";
@@ -245,6 +247,24 @@ describe("a blueprint worked on in the page", () => {
     await settle();
     expect(element.querySelector(".wb-board .bp-readout")).not.toBeNull();
     expect(element.querySelector<HTMLElement>(".wb-next")?.hidden).toBe(true);
+  });
+
+  it("offers a kind on trial only while its flag is on, and runs it either way", async () => {
+    const trial: NodeKind = { ...(aKit.kinds.get("bars") as NodeKind), name: "big-bars", title: "Big bars", flag: "recipes" };
+    const kit = kitOf([...aKit.kinds.values(), trial], [...aKit.types.values()]);
+    let on = false;
+    const { element } = bench("n = nights @ 0 0\nbig-bars table: n @ 400 0", { kit, isOn: (flag) => flag === "recipes" && on });
+    await settle();
+    expect(element.querySelector(".wb-board .bp-painting svg")).not.toBeNull();
+    const offered = () => {
+      element.querySelector(".wb-canvas")?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, clientX: 100, clientY: 300 }));
+      const kinds = [...element.querySelectorAll<HTMLElement>(".wb-menu [role=option]")].map((item) => item.dataset["kind"]);
+      (element.querySelector(".wb-menu input") as HTMLInputElement).dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+      return kinds;
+    };
+    expect(offered()).not.toContain("big-bars");
+    on = true;
+    expect(offered()).toContain("big-bars");
   });
 
   it("is written as text, and rewritten from text, keeping where the nodes it knows stand", () => {

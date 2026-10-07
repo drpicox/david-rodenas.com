@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it } from "vitest";
 import { aKit } from "../../blueprint/aKit";
+import { kitOf } from "../../blueprint/kitOf";
+import type { NodeKind } from "../../blueprint/NodeKind";
 import { askProgram } from "../../browser/askProgram";
 import { linkCodeOf } from "../linkCodeOf";
 import { mountWorkbench } from "./mountWorkbench";
@@ -108,6 +110,20 @@ describe("a blueprint written in a page, once the script is there", () => {
     askProgram(host, { text: "x = nights @ 0 0\nbars table: x @ 400 0" });
     expect([...host.querySelectorAll(".wb-node")].map((node) => node.getAttribute("data-node"))).toEqual(["x", "bars"]);
     expect(host.querySelector(".wb-status")?.textContent).toBe("Written by an agent. Undo, or Reset, goes back.");
+  });
+
+  it("offers a kind on trial only where the flags say its own is on", () => {
+    const trial: NodeKind = { ...(aKit.kinds.get("bars") as NodeKind), name: "big-bars", title: "Big bars", flag: "recipes" };
+    const kit = kitOf([...aKit.kinds.values(), trial], [...aKit.types.values()]);
+    const offered = (isOn?: (flag: string) => boolean) => {
+      document.body.replaceChildren();
+      const host = place("n = nights @ 0 0");
+      mountWorkbench(kit, isOn)(host);
+      host.querySelector(".wb-canvas")?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, clientX: 10, clientY: 10 }));
+      return [...host.querySelectorAll<HTMLElement>(".wb-menu [role=option]")].map((item) => item.dataset["kind"]);
+    };
+    expect(offered()).not.toContain("big-bars");
+    expect(offered((flag) => flag === "recipes")).toContain("big-bars");
   });
 
   it("starts as a link to it carried it", () => {

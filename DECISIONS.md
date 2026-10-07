@@ -31,6 +31,16 @@ Nothing was added to `package.json`: the canvas is a few hundred lines of DOM
 and SVG, the pictures are strings, the formulas are read by recursive descent
 and never by eval.
 
+Making a blueprint was hard for David for two reasons he named: knowing
+which nodes to put, and seeing what flows between them (7 October 2026). So
+what could come next after a chosen node is offered under the canvas, read
+off what the node gave, a click adding it wired and written; and an output's
+name opens a look at what it gives. Bigger nodes — two sources crossed, two
+times of a day compared — might be easier, or might be harder to use, so
+they are a trial, a feature of their own behind the flag `recipes`: offered
+only to a reader who switches it on, run for everyone, each one checked to
+give what the chain of small nodes it stands for gives.
+
 The examples were first a workbench each, under their own headings, and a
 page of fifteen editors was too much page (6 October 2026). They are now
 written in one place, each under a `## Title`, and opened one at a time in

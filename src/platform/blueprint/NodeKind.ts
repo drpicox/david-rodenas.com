@@ -92,6 +92,12 @@ export interface NodeKind {
   readonly shelf: string;
   /** One line on what it does, for the menu and for whoever points at it. */
   readonly summary: string;
+  /**
+   * A kind on trial: offered in the menu, and among what could come next,
+   * only while this flag is on. It runs either way, so a blueprint that
+   * names it works for every reader.
+   */
+  readonly flag?: string;
   readonly inputs: readonly InputPin[];
   readonly outputs: readonly OutputPin[];
   /** Handed every input, settled; throws, in words, what it could not do. */

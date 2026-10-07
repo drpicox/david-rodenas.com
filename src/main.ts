@@ -50,7 +50,7 @@ function mount(): void {
 
   const commands = [...siteCommands, ...commandsOf(allFeatures), flagsCommand(flags, flagStore)];
   // A blueprint a page writes can name the nodes of every feature, so it is put together here, where every feature is known.
-  const apps = { ...appsOf(allFeatures), blueprint: mountWorkbench(blueprintKitOf(allFeatures)) };
+  const apps = { ...appsOf(allFeatures), blueprint: mountWorkbench(blueprintKitOf(allFeatures), (name) => flagStore.isOn(name)) };
 
   const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   const route = here(window.location.pathname);

@@ -8,6 +8,7 @@ import { footOf } from "../../blueprint/footOf";
 import type { Example } from "../../blueprint/examplesOf";
 import { freshId } from "../../blueprint/freshId";
 import type { Kit } from "../../blueprint/kitOf";
+import type { NodeKind } from "../../blueprint/NodeKind";
 import { movedBy } from "../../blueprint/movedBy";
 import { NODE } from "../../blueprint/NODE";
 import type { Literal } from "../../blueprint/NodeKind";
@@ -53,6 +54,8 @@ export interface WorkbenchSetting {
   readonly own: { get(example: Example): string | null; set(example: Example, text: string | null): void };
   /** Told which example is open, once the reader opens another, so that the address can say it. */
   opened?(example: Example): void;
+  /** Whether a flag is on: a kind on trial is offered only while its own is. */
+  isOn?(flag: string): boolean;
   /** A link that opens this blueprint as it now is, a version of the example it came from. */
   linkTo(example: Example, text: string): string;
   copy(text: string): Promise<void>;
@@ -394,7 +397,7 @@ export class Workbench {
   /** What could come after the one node chosen, read off what it gave: built again only when that changes, so a button is never pulled from under a hand. */
   private offerNext(): void {
     const [chosen] = this.selection.size === 1 ? [...this.selection] : [];
-    const offered = chosen ? suggestionsFor(this.history.now, chosen, this.setting.kit, this.evaluation) : [];
+    const offered = chosen ? suggestionsFor(this.history.now, chosen, this.setting.kit, this.evaluation).filter((offer) => this.offers(this.setting.kit.kinds.get(offer.kind))) : [];
     const shown = `${chosen}\u0000${offered.map((each) => each.label).join("\u0000")}`;
     this.next.hidden = offered.length === 0;
     if (shown === this.nextShown) return;
@@ -584,7 +587,7 @@ export class Workbench {
     this.say(dragged ? "Choose what comes next, typing to narrow it; Escape lets the wire go." : "Choose a node, typing to narrow it; Escape closes the menu.");
     this.closeMenu = openKindMenu(
       this.canvas,
-      this.setting.kit,
+      this.offeredKit(),
       { left: Math.max(4, Math.min(screen.left, box.width - (side ? MENU.side : MENU.narrow))), top, ...(box.height > 0 && { height }), side },
       dragged,
       (offer) => {
@@ -601,6 +604,17 @@ export class Workbench {
       },
       (kind) => this.seenIn(kind.name),
     );
+  }
+
+  /** Whether a kind is offered to be added: every kind, but one on trial while its flag is off. */
+  private offers(kind: NodeKind | undefined): boolean {
+    return kind !== undefined && (kind.flag === undefined || this.setting.isOn?.(kind.flag) === true);
+  }
+
+  /** The kit as the menu offers it: asked for each time, since a flag can be switched while the page is open. */
+  private offeredKit(): Kit {
+    const { kit } = this.setting;
+    return { kinds: new Map([...kit.kinds].filter(([, kind]) => this.offers(kind))), types: kit.types };
   }
 
   /** The page's examples a kind of node is found in: where to see it at work. */

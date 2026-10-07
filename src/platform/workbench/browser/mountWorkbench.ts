@@ -48,7 +48,7 @@ const fetched = (path: string) => fetch(path).then((response) => (response.ok ? 
  * time. A link on the page to one of its blueprints lands on the place, and
  * opens it.
  */
-export function mountWorkbench(kit: Kit): (host: HTMLElement) => () => void {
+export function mountWorkbench(kit: Kit, isOn: (flag: string) => boolean = () => false): (host: HTMLElement) => () => void {
   return (host) => {
     files ??= new FilesInBrowser(fetched);
     const places = [...document.querySelectorAll<HTMLElement>('.app[data-app="blueprint"]')];
@@ -75,6 +75,7 @@ export function mountWorkbench(kit: Kit): (host: HTMLElement) => () => void {
       },
       linkTo: (example, text) => `${window.location.origin}${window.location.pathname}?blueprint=${linkCodeOf(text)}#${(mine.includes(example) && example.slug) || host.id}`,
       copy: (text) => navigator.clipboard.writeText(text),
+      isOn,
     });
     // Where a link to each of them lands: on the place, whichever of them is open.
     const anchors = mine.filter((example) => example.slug).map((example) => el("span", { id: example.slug, class: "wb-anchor" }));
