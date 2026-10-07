@@ -30,7 +30,7 @@ export async function refreshRunning<Held>(source: YearlySource<Held>, ports: Re
 
   try {
     const answers: unknown[] = [];
-    for (const url of source.requestsFor(year)) answers.push(await ports.fetchJson(url));
+    for (const url of source.requestsFor(year, ports.today)) answers.push(await (source.answers === "text" ? ports.fetchText(url) : ports.fetchJson(url)));
     const { files, through } = source.soFar(year, answers);
     const running: RunningYear<Held> = { year, through, refreshed: today, files };
     ports.write(at(FILE), layeredJson(running, 3));

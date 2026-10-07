@@ -17,7 +17,7 @@ const december = row(EIXAMPLE, 12, 1, 4, 40);
 
 describe("a year of NO2, from the portal to the files", () => {
   it("asks once for the whole year, every station, already added up by month and day of the week", () => {
-    const [url, ...rest] = no2Source.requestsFor(2019);
+    const [url, ...rest] = no2Source.requestsFor(2019, new Date("2026-10-07"));
     expect(rest).toEqual([]);
     const asked = new URL(url ?? "");
     expect(asked.pathname).toContain("tasf-thgu");
@@ -68,7 +68,7 @@ describe("a year of NO2, from the portal to the files", () => {
   });
 
   it("asks for the last day each row reaches, so that a year still running can say how far it goes", () => {
-    expect(new URL(no2Source.requestsFor(2026)[0] ?? "").searchParams.get("$select")).toContain("max(data) as last");
+    expect(new URL(no2Source.requestsFor(2026, new Date("2026-10-07"))[0] ?? "").searchParams.get("$select")).toContain("max(data) as last");
   });
 
   it("keeps the year still running, up to the last day the portal has, as only that year of each station", () => {

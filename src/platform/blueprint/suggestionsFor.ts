@@ -77,7 +77,8 @@ function afterTable(table: Table, from: string, blueprint: Blueprint, node: Plac
   const m = measures[0]?.name;
   const crossed = (table.credits?.length ?? 0) >= 2;
   const unlike = measures.filter((column) => column.name !== m && column.unit && column.unit !== measures[0]?.unit);
-  const other = (crossed ? unlike.at(-1) : unlike[0])?.name;
+  // Crossed, the measure set against the first is one that came from the other source, whatever its unit; else, one in another unit.
+  const other = (crossed ? (measures.find((column) => column.joined && column.name !== m) ?? unlike.at(-1)) : unlike[0])?.name;
   const whole = named("whole") !== undefined;
 
   const filters = whole && table.rows.some((row) => row["whole"] === "no") ? offer("Only what was measured whole", "keep", { column: "whole", is: "equals", value: "yes" }) : [];

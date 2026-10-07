@@ -139,6 +139,7 @@ describe("joining two tables", () => {
     ]);
     expect(both.settled).toEqual({ on: "year month" });
     expect(both.said).toBe("3 rows matched, of 4 and 3");
+    expect(table.columns.filter((column) => column.joined).map((column) => column.name)).toEqual(["no2", "tx2"]);
   });
 
   it("owes the credits of both", () => {

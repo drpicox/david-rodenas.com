@@ -90,6 +90,11 @@ describe("what is offered to come next", () => {
     expect(labels(offered).slice(0, 3)).toEqual(["Correlation of tx and no2", "Scatter: tx against no2", "Take the season out"]);
   });
 
+  it("sets, after two sources joined, a measure of one against a measure of the other, though both are in degrees", () => {
+    const sea: Table = { ...table([year, month, { name: "tn", kind: "number", unit: "°C" }, { name: "rain", kind: "number", unit: "mm" }, { name: "sst", kind: "number", unit: "°C", joined: true }]), credits: [{ said: "Meteocat." }, { said: "NOAA." }] };
+    expect(labels(after(sea))[0]).toBe("Correlation of tn and sst");
+  });
+
   it("is, after the season taken out, the years taken out too, and never the season again", () => {
     const blueprint: Blueprint = { nodes: [{ ...placed("s", "season"), values: { by: "month" } }], wires: [] };
     const offered = suggestionsFor(blueprint, "s", aKit, new Map([["s", done({ table: table([year, month, { name: "tn", kind: "number", unit: "°C" }]) })]]));

@@ -13,8 +13,14 @@ export interface YearlySource<Held> {
   readonly files: readonly string[];
   /** What the index says besides the years held: who measured, where, under what terms. */
   readonly about: Readonly<Record<string, unknown>>;
-  /** The addresses that between them hold one year. */
-  requestsFor(year: number): readonly string[];
+  /** How its portal answers: JSON, as most do, or words to be read — a table written out as text. */
+  readonly answers?: "json" | "text";
+  /**
+   * The addresses that between them hold one year — told what day it is, for
+   * a year still running whose days the portal holds can only be reckoned
+   * from it, or a year not yet to be asked for. Throws to wait.
+   */
+  requestsFor(year: number, today: Date): readonly string[];
   /** The files as they are once that year is in them. Throws when the answers are not a whole year. */
   withYear(files: Readonly<Record<string, Held | undefined>>, year: number, answers: readonly unknown[]): Record<string, Held>;
   /**

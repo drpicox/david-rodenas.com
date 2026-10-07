@@ -32,6 +32,10 @@ function disk(initial: Record<string, unknown> = {}) {
         asked.push(url);
         return answer(url);
       },
+      fetchText: async (url: string) => {
+        asked.push(url);
+        return String(answer(url));
+      },
       today: new Date("2026-09-20T12:00:00Z"),
       log: () => {},
     }),
@@ -45,6 +49,23 @@ describe("keeping a yearly source up to date", () => {
     expect(report.added).toEqual([2023, 2024, 2025]);
     expect(on.json("public/data/rain/a.json")).toEqual({ years: { 2023: 23, 2024: 24, 2025: 25 } });
     expect(on.json("public/data/rain/index.json")).toMatchObject({ measuredBy: "someone", years: [2023, 2024, 2025] });
+  });
+
+  it("asks a source that is answered in words for words, telling it what day it is", async () => {
+    const days: Date[] = [];
+    const worded: YearlySource<Held> = {
+      ...source,
+      answers: "text",
+      requestsFor: (year, today) => {
+        days.push(today);
+        return [`https://example.test/${year}`];
+      },
+      withYear: (files, year, answers) => ({ "a.json": { years: { ...files["a.json"]?.years, [year]: String(answers[0]).length } } }),
+    };
+    const on = disk({ "public/data/rain/index.json": { years: [2023, 2024] } });
+    await refreshSource(worded, { ...on.ports(() => "words"), fetchJson: async () => Promise.reject(new Error("asked for JSON")) });
+    expect(on.json("public/data/rain/a.json")).toEqual({ years: { 2025: 5 } });
+    expect(days).toEqual([new Date("2026-09-20T12:00:00Z")]);
   });
 
   it("asks for nothing while the year has not changed", async () => {

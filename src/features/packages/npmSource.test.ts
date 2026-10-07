@@ -6,7 +6,7 @@ const answer = (downloads: Record<string, number | null>) =>
 
 describe("a year of npm downloads, from the registry to the file", () => {
   it("asks the registry once for the whole year and every package", () => {
-    const [url, ...rest] = npmSource.requestsFor(2024);
+    const [url, ...rest] = npmSource.requestsFor(2024, new Date("2026-10-07"));
     expect(rest).toEqual([]);
     expect(url).toContain("https://api.npmjs.org/downloads/point/2024-01-01:2024-12-31/");
     expect(url).toContain("string-cache-map,async-barrier");

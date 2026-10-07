@@ -7,6 +7,8 @@ export interface RefreshPorts {
   read(path: string): string | null;
   write(path: string, text: string): void;
   fetchJson(url: string): Promise<unknown>;
+  /** The words a portal answers with, for one that does not answer in JSON. */
+  fetchText(url: string): Promise<string>;
   readonly today: Date;
   log(line: string): void;
 }
@@ -43,7 +45,7 @@ export async function refreshSource<Held>(source: YearlySource<Held>, ports: Ref
   for (const year of wanted) {
     try {
       const answers: unknown[] = [];
-      for (const url of source.requestsFor(year)) answers.push(await ports.fetchJson(url));
+      for (const url of source.requestsFor(year, ports.today)) answers.push(await (source.answers === "text" ? ports.fetchText(url) : ports.fetchJson(url)));
       const held = Object.fromEntries(source.files.map((file) => [file, parsed<Held>(file)]));
       const files = source.withYear(held, year, answers);
 

@@ -43,6 +43,11 @@ const ports = {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
   },
+  async fetchText(url) {
+    const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.text();
+  },
   today: new Date(),
   log: (line) => console.log(line),
 };

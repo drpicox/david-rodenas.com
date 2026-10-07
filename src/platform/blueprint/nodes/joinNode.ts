@@ -46,7 +46,7 @@ export const joinNode: NodeKind = {
       for (let count = 2; taken.has(name); count += 1) name = `${column.name}${count}`;
       taken.add(name);
       renamed.set(column.name, name);
-      added.push({ ...column, name });
+      added.push({ ...column, name, joined: true });
     }
     const keyOf = (row: Row) => JSON.stringify(on.map((name) => row[name] ?? null));
     const partners = new Map<string, Row[]>();

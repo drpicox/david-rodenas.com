@@ -14,7 +14,7 @@ const yearOf = (rows: unknown[], station = "WU") => weatherSource.withYear({}, 2
 
 describe("a year of weather, from the portal to the files", () => {
   it("asks once for the year: the chosen stations, the four variables, every day", () => {
-    const [url, ...rest] = weatherSource.requestsFor(2024);
+    const [url, ...rest] = weatherSource.requestsFor(2024, new Date("2026-10-07"));
     expect(rest).toEqual([]);
     const where = new URL(url ?? "").searchParams.get("$where") ?? "";
     expect(url).toContain("7bvh-jvq2");

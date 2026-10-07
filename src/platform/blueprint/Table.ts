@@ -11,6 +11,8 @@ export interface Column {
   readonly about?: string;
   /** It says which row a row is — a year, a month, a station — rather than what was measured there: what two tables are joined on. */
   readonly key?: boolean;
+  /** It came into the table from the second of two joined: what a measure of one source is set against. */
+  readonly joined?: boolean;
 }
 
 export type Row = Readonly<Record<string, Cell>>;
