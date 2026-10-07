@@ -4,6 +4,7 @@ import { dialsOf } from "../../blueprint/dialsOf";
 import { duplicated } from "../../blueprint/duplicated";
 import type { Evaluation } from "../../blueprint/Evaluation";
 import { evaluateBlueprint } from "../../blueprint/evaluateBlueprint";
+import { footOf } from "../../blueprint/footOf";
 import type { Example } from "../../blueprint/examplesOf";
 import { freshId } from "../../blueprint/freshId";
 import type { Kit } from "../../blueprint/kitOf";
@@ -12,8 +13,10 @@ import { NODE } from "../../blueprint/NODE";
 import type { Literal } from "../../blueprint/NodeKind";
 import { nodeShapeOf } from "../../blueprint/nodeShapeOf";
 import { parseBlueprint } from "../../blueprint/parseBlueprint";
+import { peekOf } from "../../blueprint/peekOf";
 import { printBlueprint } from "../../blueprint/printBlueprint";
 import { resolvedEditor } from "../../blueprint/resolvedEditor";
+import { tag } from "../../blueprint/tag";
 import { tidyBlueprint } from "../../blueprint/tidyBlueprint";
 import { wirePath } from "../../blueprint/wirePath";
 import { wireRefused } from "../../blueprint/wireRefused";
@@ -32,6 +35,7 @@ import { BoardView, type Card } from "./BoardView";
 import type { FilesInBrowser } from "./FilesInBrowser";
 import { NodeView } from "./NodeView";
 import { openKindMenu } from "./openKindMenu";
+import { openPeek } from "./openPeek";
 import { openTextPanel } from "./openTextPanel";
 
 /** Where a workbench stands, and what it is handed. */
@@ -103,6 +107,7 @@ export class Workbench {
   private readonly views = new Map<string, NodeView>();
   private readonly buttons: Record<"undo" | "redo" | "reset" | "full", HTMLButtonElement>;
   private closeMenu: (() => void) | null = null;
+  private closePeek: (() => void) | null = null;
   private scheduled = false;
   private stopped = false;
   /** Run only once it is near the screen: a page of blueprints does not run all of them for a reader who reads the first. */
@@ -233,6 +238,7 @@ export class Workbench {
     this.stopped = true;
     this.stopListening();
     this.closeMenu?.();
+    this.closePeek?.();
     document.body.classList.remove("wb-full-open");
   }
 
@@ -298,7 +304,12 @@ export class Workbench {
       seen.add(node.id);
       let view = this.views.get(node.id);
       if (!view) {
-        view = new NodeView(kit, node.id, { write: (id, pin, value, done) => this.write(id, pin, value, done), promote: (id, pin) => this.promote(id, pin), rename: (id, title) => this.edit(withTitle(this.history.now, id, title)) });
+        view = new NodeView(kit, node.id, {
+          write: (id, pin, value, done) => this.write(id, pin, value, done),
+          promote: (id, pin) => this.promote(id, pin),
+          rename: (id, title) => this.edit(withTitle(this.history.now, id, title)),
+          peek: (id, pin, anchor) => this.peek(id, pin, anchor),
+        });
         this.views.set(node.id, view);
         this.nodes.append(view.element);
       }
@@ -362,6 +373,8 @@ export class Workbench {
       paths.push(this.path(d, `wb-wire${chosen ? " chosen" : ""}${waiting ? " idle" : ""}`, kit.types.get(typeOut(wire.from.node, wire.from.pin))?.colour));
       const hit = this.path(d, "wb-wire-hit");
       hit.dataset["to"] = `${wire.to.node}\u0000${wire.to.pin}`;
+      const said = this.carried(wire);
+      if (said) hit.append(Object.assign(document.createElementNS(SVG, "title"), { textContent: said }));
       paths.push(hit);
     }
     const gesture = this.gesture;
@@ -370,6 +383,31 @@ export class Workbench {
       if (fixed) paths.push(this.path(gesture.end.side === "output" ? wirePath(fixed, gesture.at) : wirePath(gesture.at, fixed), "wb-wire dragging", kit.types.get(gesture.type)?.colour));
     }
     this.wires.replaceChildren(...paths);
+  }
+
+  /** What a wire carries, in words, for whoever points at it — and, where the input takes it as something else, as what: a graph read as a table. */
+  private carried(wire: Wire): string | null {
+    const { kit } = this.setting;
+    const result = this.evaluation.get(wire.from.node);
+    if (result?.state !== "done") return null;
+    const kindOf = (id: string) => kit.kinds.get(this.blueprint.nodes.find((node) => node.id === id)?.kind ?? "");
+    const out = kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "value";
+    const into = kindOf(wire.to.node)?.inputs.find((pin) => pin.name === wire.to.pin)?.type;
+    const type = kit.types.get(out);
+    const read = into && into !== out ? `, read here as ${kit.types.get(into)?.label ?? into}` : "";
+    return `${type?.label ?? out}: ${type ? type.describe(result.outputs[wire.from.pin]) : ""}${read}`;
+  }
+
+  /** What one output of a node gives, beside it: what it is in words, its first rows, and what its columns are. */
+  private peek(id: string, pin: string, anchor: Element): void {
+    const { kit } = this.setting;
+    const node = this.history.now.nodes.find((each) => each.id === id);
+    const output = kit.kinds.get(node?.kind ?? "")?.outputs.find((each) => each.name === pin);
+    if (!node || !output) return;
+    const result = this.evaluation.get(id);
+    const html = result?.state === "done" ? peekOf(result.outputs[pin], output.type, kit).html : tag("p", {}, footOf(result, node.kind).said || "It has not run yet.").html;
+    this.closePeek?.();
+    this.closePeek = openPeek(this.canvas, `${node.title ?? kit.kinds.get(node.kind)?.title ?? node.kind} gives ${output.label}`, html, anchor);
   }
 
   private path(d: string, className: string, colour?: string): SVGElement {
@@ -730,7 +768,7 @@ export class Workbench {
 
   private pressed(event: PointerEvent): void {
     const target = event.target as Element;
-    if (target.closest(".wb-menu, .wb-edit, .wb-promote, [contenteditable]")) return;
+    if (target.closest(".wb-menu, .wb-edit, .wb-promote, .wb-peek, .wb-peek-panel, [contenteditable]")) return;
     // On a phone, the page scrolls over a canvas in the page; the blueprint is worked on full screen.
     if (event.pointerType === "touch" && !this.full()) return;
     if (event.pointerType === "touch") {

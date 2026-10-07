@@ -6497,6 +6497,75 @@ main p:has(> strong:first-child):not(h2 + p) {
   font-style: italic;
 }
 
+/* An output's name is pressed to look at what it gives: a table's first rows, what its columns are. */
+.app .wb-peek {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  text-decoration: underline dotted color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+
+.app .wb-peek:hover,
+.app .wb-peek:focus-visible {
+  background: none;
+  color: var(--ink);
+  text-decoration-style: solid;
+}
+
+.app .wb-peek-panel {
+  position: absolute;
+  z-index: 7;
+  width: 390px;
+  max-width: calc(100% - 8px);
+  max-height: 300px;
+  overflow: auto;
+  padding: 0.6em 0.8em 0.7em;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+  font: 12px/1.4 var(--text);
+  cursor: default;
+}
+
+.app .wb-peek-title {
+  margin: 0 0 0.35em;
+  font-weight: 600;
+}
+
+.app .wb-peek-panel .wb-help-close {
+  float: right;
+  margin: -0.2em -0.3em 0 0.5em;
+  border: none;
+  padding: 0 0.3em;
+}
+
+.app .bp-peek > p {
+  margin: 0 0 0.45em;
+}
+
+.app .bp-peek-said {
+  font: 11.5px var(--mono);
+  color: var(--dim);
+}
+
+.app .bp-peek-columns {
+  margin: 0.55em 0 0;
+  padding-left: 1.1em;
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.app .bp-peek-columns strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 /* The blueprint as text, over the workbench. */
 .app .wb-text {
   position: absolute;

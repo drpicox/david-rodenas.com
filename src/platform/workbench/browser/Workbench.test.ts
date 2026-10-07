@@ -212,6 +212,22 @@ describe("a blueprint worked on in the page", () => {
     expect(element.querySelector(".wb-menu-seen")?.textContent).toBe("In the examples: Bars of nights.");
   });
 
+  it("shows what an output gives, its first rows, when its name is pressed, until Escape", async () => {
+    const { element } = bench("n = nights @ 0 0");
+    await settle();
+    (element.querySelector('.wb-node[data-node="n"] .wb-peek') as HTMLButtonElement).click();
+    expect(element.querySelector(".wb-peek-panel .bp-peek-said")?.textContent).toBe("a table: 5 rows · year, nights");
+    expect(element.querySelectorAll(".wb-peek-panel tbody tr").length).toBe(5);
+    element.querySelector(".wb-peek-panel")?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    expect(element.querySelector(".wb-peek-panel")).toBeNull();
+  });
+
+  it("says what flows along a wire, to whoever points at it", async () => {
+    const { element } = bench("n = nights @ 0 0\nbars table: n @ 400 0");
+    await settle();
+    expect(element.querySelector(".wb-wire-hit title")?.textContent).toBe("a table: 5 rows · year, nights");
+  });
+
   it("is written as text, and rewritten from text, keeping where the nodes it knows stand", () => {
     const { element } = bench("n = nights @ 40 40");
     (element.querySelector('button[title^="The blueprint as text"]') as HTMLButtonElement).click();

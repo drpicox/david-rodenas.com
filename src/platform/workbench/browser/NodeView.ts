@@ -27,6 +27,8 @@ export interface NodeHands {
   /** An input put on the board as a dial. */
   promote(node: string, pin: string): void;
   rename(node: string, title: string): void;
+  /** A look asked for at what an output gives, beside what was pressed. */
+  peek(node: string, pin: string, anchor: Element): void;
 }
 
 /** A primitive that a dial can stand for: numbers, words, yes and no. */
@@ -104,7 +106,9 @@ export class NodeView {
     const outputs = (kind?.outputs ?? []).map((pin) => {
       const dot = el("span", { class: "wb-pin open", "data-pin": pin.name, "data-side": "output", style: `--pin: ${colour(pin.type)}`, title: `${pin.label}: ${this.kit.types.get(pin.type)?.label ?? pin.type}` });
       this.outs.set(pin.name, dot);
-      return el("div", { class: "wb-row wb-out" }, el("span", { class: "wb-label" }, pin.label), dot);
+      const look = el("button", { type: "button", class: "wb-label wb-peek", title: `Look at what it gives: ${this.kit.types.get(pin.type)?.label ?? pin.type}` }, pin.label);
+      look.addEventListener("click", () => this.hands.peek(this.id, pin.name, look));
+      return el("div", { class: "wb-row wb-out" }, look, dot);
     });
     const shape = nodeShapeOf(kind);
     const inputs = (kind?.inputs ?? []).map((pin) => {

@@ -7,7 +7,7 @@ import { NodeView } from "./NodeView";
 const written: [string, string, Literal | undefined, boolean][] = [];
 const promoted: string[] = [];
 const renamed: string[] = [];
-const view = () => new NodeView(aKit, "b", { write: (node, pin, value, done) => written.push([node, pin, value, done]), promote: (_node, pin) => promoted.push(pin), rename: (_node, title) => renamed.push(title) });
+const view = () => new NodeView(aKit, "b", { write: (node, pin, value, done) => written.push([node, pin, value, done]), promote: (_node, pin) => promoted.push(pin), rename: (_node, title) => renamed.push(title), peek: () => {} });
 const columns = { kind: "choice" as const, choices: [{ value: "year", label: "year" }, { value: "nights", label: "nights" }] };
 
 describe("one node on the canvas", () => {
@@ -23,7 +23,7 @@ describe("one node on the canvas", () => {
   });
 
   it("says its kind beside a title of its own, so a node called Station is seen to be a dial, and stands as wide as its kind", () => {
-    const shown = new NodeView(aKit, "where", { write: () => {}, promote: () => {}, rename: () => {} });
+    const shown = new NodeView(aKit, "where", { write: () => {}, promote: () => {}, rename: () => {}, peek: () => {} });
     shown.show({ node: { id: "where", kind: "dial", x: 0, y: 0, title: "Station", values: { value: "WU" } }, result: undefined, wiredIn: new Set(), wiredOut: new Set(), editors: new Map(), selected: false });
     expect([shown.element.querySelector(".wb-title")?.textContent, shown.element.querySelector(".wb-kind")?.textContent]).toEqual(["Station", "Dial"]);
     expect(shown.element.style.width).toBe("176px");
@@ -50,7 +50,7 @@ describe("one node on the canvas", () => {
   });
 
   it("keeps showing what a list starts with, however often it is drawn again", () => {
-    const shown = new NodeView(aKit, "c", { write: () => {}, promote: () => {}, rename: () => {} });
+    const shown = new NodeView(aKit, "c", { write: () => {}, promote: () => {}, rename: () => {}, peek: () => {} });
     const of = { kind: "choice" as const, choices: [{ value: "values", label: "the values" }, { value: "ranks", label: "the ranks" }] };
     const draw = () => shown.show({ node: { id: "c", kind: "correlation", x: 0, y: 0, values: {} }, result: undefined, wiredIn: new Set(["table"]), wiredOut: new Set(), editors: new Map([["of", of]]), selected: false });
     draw();
@@ -59,7 +59,7 @@ describe("one node on the canvas", () => {
   });
 
   it("puts an input on the board, and is renamed in place", () => {
-    const shown = new NodeView(aKit, "n", { write: () => {}, promote: (_node, pin) => promoted.push(pin), rename: (_node, title) => renamed.push(title) });
+    const shown = new NodeView(aKit, "n", { write: () => {}, promote: (_node, pin) => promoted.push(pin), rename: (_node, title) => renamed.push(title), peek: () => {} });
     shown.show({ node: { id: "n", kind: "nights", x: 0, y: 0, values: {} }, result: undefined, wiredIn: new Set(), wiredOut: new Set(), editors: new Map([["from", { kind: "number" as const }]]), selected: false });
     (shown.element.querySelector(".wb-promote") as HTMLButtonElement).click();
     expect(promoted.splice(0)).toEqual(["from"]);
@@ -78,5 +78,13 @@ describe("one node on the canvas", () => {
     shown.show({ node: { id: "b", kind: "teleport", x: 0, y: 0, values: {} }, result: { state: "unknown" }, wiredIn: new Set(), wiredOut: new Set(), editors: new Map(), selected: false });
     expect(shown.element.querySelector(".wb-title")?.textContent).toBe("teleport");
     expect(shown.element.querySelector(".wb-foot")?.textContent).toBe("there is no kind of node called teleport");
+  });
+
+  it("asks to look at what an output gives when its name is pressed", () => {
+    const looked: string[] = [];
+    const shown = new NodeView(aKit, "n", { write: () => {}, promote: () => {}, rename: () => {}, peek: (node, pin) => looked.push(`${node}.${pin}`) });
+    shown.show({ node: { id: "n", kind: "nights", x: 0, y: 0, values: {} }, result: undefined, wiredIn: new Set(), wiredOut: new Set(), editors: new Map(), selected: false });
+    (shown.element.querySelector(".wb-peek") as HTMLButtonElement).click();
+    expect(looked).toEqual(["n.table"]);
   });
 });
