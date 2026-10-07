@@ -7,6 +7,20 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### The sea, from NOAA (7 October 2026)
+David asked for the temperature of the sea. The Catalan coast has better
+measurements than a satellite analysis — the buoys of Puertos del Estado, the
+long series of L'Estartit — but the buoys' terms forbid passing the data on to
+anyone, the series of L'Estartit is open only as monthly means that end in
+2018, and Copernicus Marine's finer grid asks its users to register. NOAA's
+daily Optimum Interpolation analysis, OISST, is free to use and to pass on,
+reaches back to 1982 and is three days behind, from a server that needs no
+account; its cells are a quarter of a degree, so a point is the sea off a
+place, and the page says so. The server answers in words and slowly, so a
+source of open data can now be answered in text and is told what day it is,
+and a year is asked for a quarter at a time; the years before this one were
+fetched once, by hand, and are kept in the repository like every other.
+
 ### Blueprints: the site's data, wired by hand (5 October 2026)
 David asked for an explorer "estil blueprint" — Unreal's and Unity's — where
 statistics and graphs are configured by wiring nodes, with dials, rather than

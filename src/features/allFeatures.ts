@@ -14,6 +14,7 @@ import { packagesFeature } from "./packages/packagesFeature";
 import { portfolioFeature } from "./portfolio/portfolioFeature";
 import { postTestsFeature } from "./post-tests/postTestsFeature";
 import { recipesFeature } from "./recipes/recipesFeature";
+import { seaFeature } from "./sea/seaFeature";
 import { rocketFeature } from "./rocket/rocketFeature";
 import { stepNamesFeature } from "./step-names/stepNamesFeature";
 import { bowlingKataFeature } from "./bowling-kata/bowlingKataFeature";
@@ -46,6 +47,7 @@ export const allFeatures: readonly Feature[] = [
   headlineFeature,
   airQualityFeature,
   weatherFeature,
+  seaFeature,
   nextWordFeature,
   rocketFeature,
   packagesFeature,

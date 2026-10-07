@@ -1,0 +1,8 @@
+{
+"measures":"the temperature of the sea's surface, a day at a time, in cells of a quarter of a degree",
+"dataset":"https://psl.noaa.gov/data/gridded/data.noaa.oisst.v2.highres.html",
+"attribution":"NOAA OISST v2.1 (Huang and others, 2021): data provided by the NOAA PSL, Boulder, Colorado, USA, from their website at https://psl.noaa.gov.",
+"points":[{"code":"estartit","name":"Off L'Estartit","lat":42.125,"lon":3.375},{"code":"barcelona","name":"Off Barcelona","lat":41.375,"lon":2.375},{"code":"tarragona","name":"Off Tarragona","lat":41.125,"lon":1.375},{"code":"ebre","name":"Off the Ebre delta","lat":40.625,"lon":0.875}],
+"years":[1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],
+"refreshed":"2026-10-07"
+}

@@ -70,6 +70,7 @@ graph LR
     nextword["<b>next-word</b><br/>a language model reduced to<br/>counting which word follows which"]
     weather["<b>weather</b><br/>days over a threshold, year by year,<br/>and the open data it keeps"]
     air["<b>air-quality</b><br/>NO2 by the hour and the month,<br/>and the open data it keeps"]
+    sea["<b>sea</b><br/>the sea's surface off the coast,<br/>a day at a time, and the open data it keeps"]
     writings["<b>writings</b><br/>the essays and talks the pages list,<br/>as a tool for an agent"]
     recipes["<b>recipes</b><br/>a flag: bigger nodes for the blueprints,<br/>two sources crossed in one"]
   end
@@ -345,7 +346,12 @@ can hold many, each under a `## Title` line with what it is about in `#`
 lines — remarks to the language, so each one's lines are a blueprint as they
 stand (`examplesOf`): the still draws the first and writes out every one, and
 the workbench opens on the first, or on the one the address names, and offers
-the rest in its Examples menu, keeping the reader's changes to each apart. The
+the rest in its Examples menu, keeping the reader's changes to each apart.
+What could come next after a node (`suggestionsFor`) and what an output gives
+(`peekOf`) are read off its result in node, where they are tested; the
+workbench only offers them — under the canvas, and beside an output's name. A
+kind on trial (`NodeKind.flag`) runs for everyone and is offered only to a
+reader with its flag on, which the composition hands the workbench. The
 pictures are markup, the same at build time and in the browser, keyed so
 that the browser can change them in place and a bar that grows is seen to.
 `platform/blueprint` needs nothing but the escaping of markup, so the

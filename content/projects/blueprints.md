@@ -1,6 +1,6 @@
 ---
 title: Blueprints
-summary: The data this site keeps — the weather, the air, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Eighteen examples to start from, the last one yours.
+summary: The data this site keeps — the weather, the air, the sea, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Nineteen examples to start from, the last one yours.
 order: 92
 ---
 
@@ -36,7 +36,7 @@ picture.
   them away, and Ctrl+Z brings them back.
 - **◉**, beside a value, puts it on the board as a dial. The title of every
   picture on the board finds its node.
-- **Examples** opens any of the eighteen below; **Full screen** gives the
+- **Examples** opens any of the nineteen below; **Full screen** gives the
   editor the whole window; **Text** shows the blueprint as text, to read, to
   copy, or to write by hand.
 
@@ -44,11 +44,11 @@ Everything runs here, in your browser, on the files this site serves, and
 your changes to each example are kept in this browser until you reset them.
 **Link** copies a link that opens a blueprint as you left it.
 
-Eighteen to start from, each a working blueprint, in the editor's
+Nineteen to start from, each a working blueprint, in the editor's
 **Examples** menu or here:
 
 - **The weather and the air**: [nights that do not cool](#nights-that-do-not-cool), a source, a picture and a trend; [one season, year by year](#one-season-year-by-year), with filters; [a working day, in NO2](#a-working-day-in-no2), a heat map; [the NO2 through the day](#the-no2-through-the-day), a line a season and each month's highest hour; [thirty years of NO2](#thirty-years-of-no2-every-measuring-point), every measuring point joined to its name.
-- **The two, crossed**: [does the heat bring the NO2?](#does-the-heat-bring-the-no2), the season and the years taken out; [patterns of heat and NO2](#patterns-of-heat-and-no2), season by season, the rain, the span of a day; [does the NO2 rise as the evening cools?](#does-the-no2-rise-as-the-evening-cools), a guess put to the data; [what the lockdown did to the evening](#what-the-lockdown-did-to-the-evening), the spring of 2020.
+- **The two, crossed**: [does the heat bring the NO2?](#does-the-heat-bring-the-no2), the season and the years taken out; [patterns of heat and NO2](#patterns-of-heat-and-no2), season by season, the rain, the span of a day; [does the NO2 rise as the evening cools?](#does-the-no2-rise-as-the-evening-cools), a guess put to the data; [what the lockdown did to the evening](#what-the-lockdown-did-to-the-evening), the spring of 2020; [does a warm sea go with warm nights?](#does-a-warm-sea-go-with-warm-nights), the sea beside the weather — and [the sea's own page](/projects/sea/) has more of it.
 - **This site's own source**: [the files everything needs](#the-files-everything-needs), by PageRank; [how much the files are needed](#how-much-the-files-are-needed), a histogram; [what changes, and what is needed](#what-changes-and-what-is-needed); [files that keep changing](#files-that-keep-changing), a filter on the graph; [the groups the arrows make](#the-groups-the-arrows-make), tangled; [the source, grown](#the-source-grown), a dial along every commit.
 - **The programs**: [technical debt](#the-programs-as-nodes) and [the rocket](#the-rocket-as-a-node), as nodes.
 - **[Your own](#your-own)**: a table you paste.
@@ -195,6 +195,20 @@ paired = join left: late-mean right: early-mean
 rise = formula "The evening's rise" table: paired name: rise formula: "evening - afternoon" unit: µg/m³
 bars "The evening's rise in that month, year by year" table: rise x: year y: rise
 
+## Does a warm sea go with warm nights?
+# The sea off Barcelona, from NOAA's daily analysis, and the Meteocat's weather station of Badalona, by the sea, month by month. Both follow the season, and both the years; with each month less its month's mean, and less its year's, what is left is how unusual a month was, and whether an unusually warm sea went with unusually warm nights. A correlation says what goes with what, never why.
+sea = sea-months point: barcelona
+nights = weather-months station: WU
+both = join left: sea right: nights
+whole = keep "Months measured whole" table: both column: whole is: equals value: yes
+seasonless = season "Less each month's mean" table: whole by: month
+odd = season "Less each year's mean too" table: seasonless by: year
+measured = correlation table: whole x: sst y: tn
+left = correlation table: odd x: sst y: tn
+readout "As measured" value: measured.r about: "r of the sea's monthly mean and the mean night, month by month"
+readout "The season and the years taken out" value: left.r about: "r of what is left of each"
+scatter "What is left of each month: the sea against the nights" table: odd x: sst y: tn colour: season
+
 ## The files everything needs
 # This site's own source, at its last commit, as a graph: a node a file, an arrow a file that needs another. Measured by PageRank — needed by what is itself needed — the ten at the top, and the whole source drawn as the architecture page draws it, each file as big as the files that need it and as deep as its PageRank.
 source = source
@@ -272,9 +286,11 @@ bars "Your numbers" table: mine
 
 A blueprint is written in this page as text, one node a line —
 `name = kind input: value`, where a value that names another node is a wire
-from it — and the build runs it on the same files the browser fetches, so
-the pictures are in the page before any script: the first blueprint is drawn
-under its board, and the text of every one is there to read. The eighteen
+from it, unless the input names a column or holds words of its own, where a
+wire names the output after a dot, as `y: dial.value` — and the build runs it
+on the same files the browser fetches, so the pictures are in the page before
+any script: the first blueprint is drawn under its board, and the text of
+every one is there to read. The nineteen
 are written in one place, each under a `## Title` line, with what it is about
 in `#` lines under it, which the language reads as remarks. In the browser,
 the same text becomes the canvas, and its Examples menu. A feature of the
