@@ -60,6 +60,8 @@ type Gesture =
   | { readonly kind: "marquee"; readonly from: { x: number; y: number }; at: { x: number; y: number }; readonly base: ReadonlySet<string> };
 
 const SVG = "http://www.w3.org/2000/svg";
+/** How wide the menu is with its words beside its list, and how wide a canvas has to be to have room for it. */
+const MENU = { narrow: 280, side: 580 };
 const KEPT = "As you left it: your changes are kept in this browser. Reset goes back to the page's own.";
 const NONE: Example = { title: "", slug: "", about: "", text: "" };
 const HINT = {
@@ -109,6 +111,8 @@ export class Workbench {
   private notice: string;
   private readonly stopListening: () => void;
   private pinches = new Map<number, { x: number; y: number }>();
+  /** The examples each kind of node is found in, worked out the first time the menu asks. */
+  private seen: Map<string, string[]> | null = null;
 
   constructor(private readonly setting: WorkbenchSetting) {
     this.chosen = setting.start?.example ?? setting.examples[0] ?? NONE;
@@ -494,12 +498,14 @@ export class Workbench {
     // Never taller than the canvas has room for under where it opens, and opened high enough to have room for most of it.
     const top = Math.max(6, Math.min(screen.top, box.height - 280));
     const height = Math.max(200, Math.min(420, box.height - top - 8));
+    // Beside the list, what a kind does has room to be said whole; on a narrow canvas, it is said under it.
+    const side = box.width >= MENU.side + 16;
     let taken = false;
     this.say(dragged ? "Choose what comes next, typing to narrow it; Escape lets the wire go." : "Choose a node, typing to narrow it; Escape closes the menu.");
     this.closeMenu = openKindMenu(
       this.canvas,
       this.setting.kit,
-      { left: Math.max(4, Math.min(screen.left, box.width - 280)), top, ...(box.height > 0 && { height }) },
+      { left: Math.max(4, Math.min(screen.left, box.width - (side ? MENU.side : MENU.narrow))), top, ...(box.height > 0 && { height }), side },
       dragged,
       (offer) => {
         taken = true;
@@ -513,7 +519,18 @@ export class Workbench {
         this.render();
         this.canvas.focus({ preventScroll: true });
       },
+      (kind) => this.seenIn(kind.name),
     );
+  }
+
+  /** The page's examples a kind of node is found in: where to see it at work. */
+  private seenIn(kind: string): readonly string[] {
+    if (!this.seen) {
+      this.seen = new Map();
+      for (const example of this.setting.examples)
+        for (const name of new Set(parseBlueprint(example.text, this.setting.kit).blueprint.nodes.map((node) => node.kind))) this.seen.set(name, [...(this.seen.get(name) ?? []), example.title]);
+    }
+    return this.seen.get(kind) ?? [];
   }
 
   private add(offer: Offer, at: { x: number; y: number }, end?: PinFound, free = false): void {

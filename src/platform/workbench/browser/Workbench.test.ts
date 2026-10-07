@@ -200,6 +200,18 @@ describe("a blueprint worked on in the page", () => {
     expect(element.querySelector<HTMLElement>('.wb-node[data-node="nights"]')?.style.left).toBe("100px");
   });
 
+  it("says, in a menu with room beside its list, which of the page's examples a kind is found in", () => {
+    const { element } = bench([anExample("n = nights @ 0 0", "Nights"), anExample("m = nights @ 0 0\nbars table: m @ 400 0", "Bars of nights")]);
+    const canvas = element.querySelector<HTMLElement>(".wb-canvas")!;
+    canvas.getBoundingClientRect = () => ({ x: 0, y: 0, left: 0, top: 0, right: 900, bottom: 600, width: 900, height: 600, toJSON: () => ({}) });
+    canvas.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, clientX: 100, clientY: 60 }));
+    const search = element.querySelector(".wb-menu input") as HTMLInputElement;
+    search.value = "bars";
+    search.dispatchEvent(new Event("input"));
+    expect(element.querySelector(".wb-menu")?.classList.contains("side")).toBe(true);
+    expect(element.querySelector(".wb-menu-seen")?.textContent).toBe("In the examples: Bars of nights.");
+  });
+
   it("is written as text, and rewritten from text, keeping where the nodes it knows stand", () => {
     const { element } = bench("n = nights @ 40 40");
     (element.querySelector('button[title^="The blueprint as text"]') as HTMLButtonElement).click();

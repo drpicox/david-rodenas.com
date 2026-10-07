@@ -6412,7 +6412,7 @@ main p:has(> strong:first-child):not(h2 + p) {
   color: var(--ink);
 }
 
-.app .wb-menu ul {
+.app .wb-menu ul[role="listbox"] {
   flex: 1;
   min-height: 0;
   margin: 0;
@@ -6450,6 +6450,51 @@ main p:has(> strong:first-child):not(h2 + p) {
   border-top: 1px solid var(--rule);
   font: 11.5px/1.35 var(--text);
   color: var(--dim);
+}
+
+/* Where the canvas has room, what the lit kind does stands beside the list, as tall as the menu, and is said whole. */
+.app .wb-menu.side {
+  display: grid;
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 580px;
+}
+
+.app .wb-menu.side input[type="search"] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.app .wb-menu.side ul[role="listbox"] {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.app .wb-menu.side .wb-menu-about {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  overflow-y: auto;
+  padding: 0.75em 0.9em;
+  border-top: none;
+  border-left: 1px solid var(--rule);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.app .wb-menu-inputs {
+  margin: 0.7em 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+}
+
+.app .wb-menu-inputs li {
+  margin: 0 0 0.3em;
+}
+
+.app .wb-menu-seen {
+  margin-top: 0.7em !important;
+  font-style: italic;
 }
 
 /* The blueprint as text, over the workbench. */

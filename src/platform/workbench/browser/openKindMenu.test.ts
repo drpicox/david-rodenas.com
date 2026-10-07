@@ -46,6 +46,19 @@ describe("the menu a node is added from", () => {
     expect(host.querySelector(".wb-menu-pins")?.textContent).toBe("takes table, along, of · gives for each ten, for each one, over it all");
   });
 
+  it("stands what the lit kind does beside the list, where there is room, with what each input is for and the examples it is found in", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    openKindMenu(host, aKit, { left: 0, top: 0, side: true }, undefined, () => {}, () => {}, (kind) => (kind.name === "bars" ? ["Hot nights", "Your own"] : []));
+    const search = host.querySelector("input") as HTMLInputElement;
+    search.value = "bars";
+    search.dispatchEvent(new Event("input"));
+    expect(host.querySelector(".wb-menu")?.classList.contains("side")).toBe(true);
+    const inputs = [...host.querySelectorAll(".wb-menu-inputs li")].map((item) => item.textContent);
+    expect(inputs).toEqual(["table", "x — chosen for you when left empty", "height — chosen for you when left empty", "faint unless — a column that says no, or 0, for the rows to draw faint: a year not measured whole"]);
+    expect(host.querySelector(".wb-menu-seen")?.textContent).toBe("In the examples: Hot nights, Your own.");
+  });
+
   it("is no taller than it is told, and keeps the wheel to itself", () => {
     const host = document.createElement("div");
     let outside = 0;
