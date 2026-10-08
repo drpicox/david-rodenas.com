@@ -2,6 +2,7 @@ import type { Feature } from "../platform/plugin/Feature";
 import { architectureFeature } from "./architecture/architectureFeature";
 import { adventureFeature } from "./adventure/adventureFeature";
 import { airQualityFeature } from "./air-quality/airQualityFeature";
+import { barcelonaSeriesFeature } from "./barcelona-series/barcelonaSeriesFeature";
 import { developerMeetingsFeature } from "./developer-meetings/developerMeetingsFeature";
 import { fibergochiFeature } from "./fibergochi/fibergochiFeature";
 import { firstNetworkFeature } from "./first-network/firstNetworkFeature";
@@ -47,6 +48,7 @@ export const allFeatures: readonly Feature[] = [
   headlineFeature,
   airQualityFeature,
   weatherFeature,
+  barcelonaSeriesFeature,
   seaFeature,
   nextWordFeature,
   rocketFeature,

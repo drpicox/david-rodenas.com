@@ -124,7 +124,7 @@ The top level says what this is: a frame, and the features standing in it.
     who asked for less motion
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
-  `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `sea/`, `next-word/`,
+  `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `sea/`, `barcelona-series/`, `next-word/`,
   `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`, `adventure/`, `post-tests/`, `thesis-results/`, `step-names/`, `bowling-kata/`, `tests-as-examples/`, `gherkin-genie/`, `small-steps/`, `guess-the-rule/`, `writings/`, `recipes/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know

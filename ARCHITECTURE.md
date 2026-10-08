@@ -71,6 +71,7 @@ graph LR
     weather["<b>weather</b><br/>days over a threshold, year by year,<br/>and the open data it keeps"]
     air["<b>air-quality</b><br/>NO2 by the hour and the month,<br/>and the open data it keeps"]
     sea["<b>sea</b><br/>the sea's surface off the coast,<br/>a day at a time, and the open data it keeps"]
+    barcelona["<b>barcelona-series</b><br/>Barcelona's mean temperature since 1780,<br/>month by month, and the open data it keeps"]
     writings["<b>writings</b><br/>the essays and talks the pages list,<br/>as a tool for an agent"]
     recipes["<b>recipes</b><br/>a flag: bigger nodes for the blueprints,<br/>two sources crossed in one"]
   end

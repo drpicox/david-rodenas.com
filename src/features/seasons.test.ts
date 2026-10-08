@@ -5,6 +5,7 @@ import type { NodeKind } from "../platform/blueprint/NodeKind";
 import type { Table } from "../platform/blueprint/Table";
 import { seasonOf } from "../platform/data/seasonOf";
 import { no2MonthsNode } from "./air-quality/nodes/no2MonthsNode";
+import { barcelonaMonthsNode } from "./barcelona-series/nodes/barcelonaMonthsNode";
 import { seaMonthsNode } from "./sea/nodes/seaMonthsNode";
 import { weatherMonthsNode } from "./weather/nodes/weatherMonthsNode";
 
@@ -13,13 +14,18 @@ const read = (path: string) => readFileSync(join(PUBLIC, path), "utf8");
 const tableOf = (kind: NodeKind, inputs: Record<string, unknown>) => kind.run(inputs, { read }).outputs?.["table"] as Table;
 
 /**
- * The weather, the air and the sea each say the season of a month, and nothing but
+ * The weather, the air, the sea and Barcelona's long series each say the season of a month, and nothing but
  * this holds them to saying it alike: a join of the two matches on it, and a
  * legend names it, so a month put in another season by one of them, or a
  * season named in another order, would cross the two wrongly and say nothing.
  */
 describe("the seasons, as every source of months names them", () => {
-  const tables = [tableOf(weatherMonthsNode, { station: "WU" }), tableOf(no2MonthsNode, { station: "08019004", days: "all" }), tableOf(seaMonthsNode, { point: "barcelona" })];
+  const tables = [
+    tableOf(weatherMonthsNode, { station: "WU" }),
+    tableOf(no2MonthsNode, { station: "08019004", days: "all" }),
+    tableOf(seaMonthsNode, { point: "barcelona" }),
+    tableOf(barcelonaMonthsNode, {}),
+  ];
 
   it("are one column, said and ordered alike", () => {
     const [weather, ...others] = tables.map((table) => table.columns.find((column) => column.name === "season"));
