@@ -68,6 +68,19 @@ describe("keeping a yearly source up to date", () => {
     expect(days).toEqual([new Date("2026-09-20T12:00:00Z")]);
   });
 
+  it("asks once for a file that holds every year, however many years it fills", async () => {
+    const whole: YearlySource<Held> = {
+      ...source,
+      requestsFor: () => ["https://example.test/series"],
+      withYear: (files, year, answers) => ({ "a.json": { years: { ...files["a.json"]?.years, [year]: (answers[0] as Record<number, number>)[year]! } } }),
+    };
+    const on = disk();
+    const report = await refreshSource(whole, on.ports(() => ({ 2023: 23, 2024: 24, 2025: 25 })));
+    expect(report.added).toEqual([2023, 2024, 2025]);
+    expect(on.asked).toEqual(["https://example.test/series"]);
+    expect(on.json("public/data/rain/a.json")).toEqual({ years: { 2023: 23, 2024: 24, 2025: 25 } });
+  });
+
   it("asks for nothing while the year has not changed", async () => {
     const on = disk({ "public/data/rain/index.json": { years: [2023, 2024, 2025] } });
     const before = new Map(on.files);

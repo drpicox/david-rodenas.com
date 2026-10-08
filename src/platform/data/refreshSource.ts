@@ -1,17 +1,8 @@
+import { answersOf } from "./answersOf";
 import { layeredJson } from "./layeredJson";
 import { missingYears } from "./missingYears";
+import type { RefreshPorts } from "./RefreshPorts";
 import type { YearlySource } from "./YearlySource";
-
-export interface RefreshPorts {
-  /** The text of a file, or null when there is none. */
-  read(path: string): string | null;
-  write(path: string, text: string): void;
-  fetchJson(url: string): Promise<unknown>;
-  /** The words a portal answers with, for one that does not answer in JSON. */
-  fetchText(url: string): Promise<string>;
-  readonly today: Date;
-  log(line: string): void;
-}
 
 export interface RefreshReport {
   readonly added: readonly number[];
@@ -41,11 +32,11 @@ export async function refreshSource<Held>(source: YearlySource<Held>, ports: Ref
   let years = parsed<{ years?: number[] }>("index.json")?.years ?? [];
   const wanted = [...new Set([...missingYears(years, source.firstYear, ports.today), ...again])].sort((a, b) => a - b);
   const added: number[] = [];
+  const known = new Map<string, Promise<unknown>>();
 
   for (const year of wanted) {
     try {
-      const answers: unknown[] = [];
-      for (const url of source.requestsFor(year, ports.today)) answers.push(await (source.answers === "text" ? ports.fetchText(url) : ports.fetchJson(url)));
+      const answers = await answersOf(source, year, ports, known);
       const held = Object.fromEntries(source.files.map((file) => [file, parsed<Held>(file)]));
       const files = source.withYear(held, year, answers);
 

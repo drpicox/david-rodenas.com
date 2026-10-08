@@ -21,6 +21,12 @@ export interface YearlySource<Held> {
    * from it, or a year not yet to be asked for. Throws to wait.
    */
   requestsFor(year: number, today: Date): readonly string[];
+  /**
+   * For a portal that names its file anew each year, from a page that stays
+   * put: the address of the file, read off the page each request reaches.
+   * Throws when the page no longer links to one.
+   */
+  follow?(page: string): string;
   /** The files as they are once that year is in them. Throws when the answers are not a whole year. */
   withYear(files: Readonly<Record<string, Held | undefined>>, year: number, answers: readonly unknown[]): Record<string, Held>;
   /**

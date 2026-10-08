@@ -1,5 +1,6 @@
+import { answersOf } from "./answersOf";
 import { layeredJson } from "./layeredJson";
-import type { RefreshPorts } from "./refreshSource";
+import type { RefreshPorts } from "./RefreshPorts";
 import type { RunningYear } from "./RunningYear";
 import { runningYearOf } from "./runningYearOf";
 import type { YearlySource } from "./YearlySource";
@@ -29,9 +30,7 @@ export async function refreshRunning<Held>(source: YearlySource<Held>, ports: Re
   }
 
   try {
-    const answers: unknown[] = [];
-    for (const url of source.requestsFor(year, ports.today)) answers.push(await (source.answers === "text" ? ports.fetchText(url) : ports.fetchJson(url)));
-    const { files, through } = source.soFar(year, answers);
+    const { files, through } = source.soFar(year, await answersOf(source, year, ports));
     const running: RunningYear<Held> = { year, through, refreshed: today, files };
     ports.write(at(FILE), layeredJson(running, 3));
     ports.log(`${source.name}: ${year} so far, to ${through}`);
