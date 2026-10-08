@@ -32,7 +32,7 @@ a time, and the portal is asked again only when a year has ended; while you
 read, nothing is fetched from anyone but this site.
 
 - [NO2 by the hour and the month](/projects/no2/) -- thirty years of hourly measurements, averaged by hour of the day and month of the year. A city's working day turns out to have a shape, and it does not reach the top of the hill.
-- [Hot nights, counted](/projects/hot-nights/) -- how many nights a year never cool below 25 °C, at nine weather stations, and whether the second half of each record differs from the first.
+- [Hot nights, counted](/projects/hot-nights/) -- how many nights a year never cool below 25 °C, and how many days reach 30 °C, at nine weather stations and in six long series since 1950, whether the second half of each record differs from the first, and Barcelona's mean temperature every year since 1780.
 - [The sea, a day at a time](/projects/sea/) -- the temperature of the sea's surface off four stretches of the Catalan coast, every day since 1982: its mean year by year, the days it is warm, and this year beside what is usual for each day.
 
 ## Before the doctorate, in the order they were made
@@ -59,6 +59,6 @@ Two labs I set, which are just as much things to play: they live under
 
 ## Take it apart yourself
 
-- [Blueprints](/projects/blueprints/) -- the weather, the air, the sea and this site's own source as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Nineteen to start from, the last one yours.
+- [Blueprints](/projects/blueprints/) -- the weather since 1780, the air, the sea and this site's own source as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Twenty to start from, the last one yours.
 
 Use `ls` to see them all, or `cat next-word` to read one here.

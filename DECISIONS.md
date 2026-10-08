@@ -7,6 +7,27 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### The long record, from the Meteocat's climatologists (8 October 2026)
+David remembered charts he had made from the Meteocat — Barcelona's mean
+temperature every year since 1780, and the days and nights over 30 and 20 °C
+at the Observatori Fabra since 1950 — and asked for them beside the hot
+nights, maxima included. They are two of the Meteocat's climatology
+products, not its network's open data: CADTEP, its daily series since 1950,
+checked, homogenised and blended where a record breaks off, and the
+reconstructed monthly series of Barcelona since 1780. Both are kept as the
+stations are, a finished year at a time, and both are kept apart from the
+stations, with an index of their own: they are credited to another source,
+have no year still running, cover other years, and are homogenised where the
+stations are not — so a question names a station or a series, or every one
+of either, and never the two mixed, and the page shows where the two records
+of the one observatory disagree, without guessing why. The series are served whole, a file each, so a
+refresh asks for a file once however many years it fills; the file of 1780 is
+renamed with every year, so a source can follow the page that links to it.
+Six series were chosen of the twenty-eight with temperatures: the Fabra, the
+coast at el Prat, and four inland, Granollers, just behind the hills of the
+Maresme, among them; the one series of the Maresme, Malgrat de Mar, holds
+only rain.
+
 ### The sea, from NOAA (7 October 2026)
 David asked for the temperature of the sea. The Catalan coast has better
 measurements than a satellite analysis — the buoys of Puertos del Estado, the

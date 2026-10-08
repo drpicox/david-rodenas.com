@@ -1,6 +1,6 @@
 ---
 title: Blueprints
-summary: The data this site keeps — the weather, the air, the sea, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Nineteen examples to start from, the last one yours.
+summary: The data this site keeps — the weather since 1780, the air, the sea, its own source — as nodes to wire together, the way Unreal and Unity wire their programs: sources, filters, steps, statistics and pictures, with dials to turn. Twenty examples to start from, the last one yours.
 order: 92
 ---
 
@@ -36,7 +36,7 @@ picture.
   them away, and Ctrl+Z brings them back.
 - **◉**, beside a value, puts it on the board as a dial. The title of every
   picture on the board finds its node.
-- **Examples** opens any of the nineteen below; **Full screen** gives the
+- **Examples** opens any of the twenty below; **Full screen** gives the
   editor the whole window; **Text** shows the blueprint as text, to read, to
   copy, or to write by hand.
 
@@ -44,10 +44,10 @@ Everything runs here, in your browser, on the files this site serves, and
 your changes to each example are kept in this browser until you reset them.
 **Link** copies a link that opens a blueprint as you left it.
 
-Nineteen to start from, each a working blueprint, in the editor's
+Twenty to start from, each a working blueprint, in the editor's
 **Examples** menu or here:
 
-- **The weather and the air**: [nights that do not cool](#nights-that-do-not-cool), a source, a picture and a trend; [one season, year by year](#one-season-year-by-year), with filters; [a working day, in NO2](#a-working-day-in-no2), a heat map; [the NO2 through the day](#the-no2-through-the-day), a line a season and each month's highest hour; [thirty years of NO2](#thirty-years-of-no2-every-measuring-point), every measuring point joined to its name.
+- **The weather and the air**: [nights that do not cool](#nights-that-do-not-cool), a source, a picture and a trend; [one season, year by year](#one-season-year-by-year), with filters; [a working day, in NO2](#a-working-day-in-no2), a heat map; [the NO2 through the day](#the-no2-through-the-day), a line a season and each month's highest hour; [thirty years of NO2](#thirty-years-of-no2-every-measuring-point), every measuring point joined to its name; [Barcelona since 1780](#barcelona-since-1780), the longest series the site keeps — and [the page of hot nights](/projects/hot-nights/#the-long-record) has more of it.
 - **The two, crossed**: [does the heat bring the NO2?](#does-the-heat-bring-the-no2), the season and the years taken out; [patterns of heat and NO2](#patterns-of-heat-and-no2), season by season, the rain, the span of a day; [does the NO2 rise as the evening cools?](#does-the-no2-rise-as-the-evening-cools), a guess put to the data; [what the lockdown did to the evening](#what-the-lockdown-did-to-the-evening), the spring of 2020; [does a warm sea go with warm nights?](#does-a-warm-sea-go-with-warm-nights), the sea beside the weather — and [the sea's own page](/projects/sea/) has more of it.
 - **This site's own source**: [the files everything needs](#the-files-everything-needs), by PageRank; [how much the files are needed](#how-much-the-files-are-needed), a histogram; [what changes, and what is needed](#what-changes-and-what-is-needed); [files that keep changing](#files-that-keep-changing), a filter on the graph; [the groups the arrows make](#the-groups-the-arrows-make), tangled; [the source, grown](#the-source-grown), a dial along every commit.
 - **The programs**: [technical debt](#the-programs-as-nodes) and [the rocket](#the-rocket-as-a-node), as nodes.
@@ -106,6 +106,15 @@ whole = keep table: named column: whole is: equals value: yes
 lines "NO2 a year, a line a measuring point" table: whole x: year y: no2 split: name
 trend = trend table: whole y: no2
 readout "Each decade, every point together" value: trend.per-ten unit: µg/m³
+
+## Barcelona since 1780
+# The longest series the site keeps: Barcelona's mean temperature every year since 1780, the Meteocat's, and the straight line through the years from the dial's on, as the change it makes each decade. Turn the dial to see how much the line depends on where it starts.
+start = dial "From" value: 1780
+years = barcelona-years
+kept = keep "From the dial's year on" table: years column: year is: at-least value: start
+lines "Barcelona's mean temperature, year by year" table: kept x: year y: mean
+trend = trend table: kept y: mean
+readout "Each decade" value: trend.per-ten unit: °C about: "along the straight line fitted through the years from the dial's on"
 
 ## Does the heat bring the NO2?
 # The Meteocat's weather station and the Generalitat's measuring point in one town, month by month. As measured, warm months have less NO2 than cold ones: that is the season, which both follow. Each month less its month's mean takes the season out, and less its year's mean too takes out the years, along which the air has got cleaner and the weather warmer; what is left can have the other sign. A correlation says what goes with what, never why. Badalona, Sabadell, Girona and Tarragona have both.
@@ -290,7 +299,7 @@ from it, unless the input names a column or holds words of its own, where a
 wire names the output after a dot, as `y: dial.value` — and the build runs it
 on the same files the browser fetches, so the pictures are in the page before
 any script: the first blueprint is drawn under its board, and the text of
-every one is there to read. The nineteen
+every one is there to read. The twenty
 are written in one place, each under a `## Title` line, with what it is about
 in `#` lines under it, which the language reads as remarks. In the browser,
 the same text becomes the canvas, and its Examples menu. A feature of the
