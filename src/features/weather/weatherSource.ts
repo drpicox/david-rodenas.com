@@ -1,7 +1,7 @@
 import { socrataUrl } from "../../platform/data/socrataUrl";
 import type { YearlySource } from "../../platform/data/YearlySource";
-import { histogramOf } from "./histogramOf";
-import type { WeatherStation, WeatherVariable, WeatherVariableYear, WeatherYear } from "./WeatherStation";
+import { variableYearOf, type Day } from "./variableYearOf";
+import type { WeatherStation, WeatherVariable, WeatherYear } from "./WeatherStation";
 import { weatherStations } from "./weatherStations";
 import { weatherVariables, type WeatherVariableInfo } from "./weatherVariables";
 
@@ -19,30 +19,6 @@ const DROPPED = "No representatiu";
 const KEPT = ["Representatiu", ""];
 
 type Row = Readonly<Record<string, string | undefined>>;
-interface Day {
-  readonly date: string;
-  readonly value: number;
-}
-
-const round = (value: number, decimals: number) => Math.round(value * 10 ** decimals) / 10 ** decimals;
-
-function summaryOf(values: readonly number[], how: WeatherVariableInfo["summary"]): number | null {
-  if (values.length === 0) return null;
-  if (how === "max") return Math.max(...values);
-  const sum = values.reduce((a, b) => a + b, 0);
-  return round(how === "sum" ? sum : sum / values.length, 2);
-}
-
-function variableYear(days: readonly Day[], info: WeatherVariableInfo): WeatherVariableYear {
-  const byMonth = Array.from({ length: 12 }, (_, month) => days.filter(({ date }) => Number(date.slice(5, 7)) === month + 1).map(({ value }) => value));
-  const highest = days.reduce((a, b) => (b.value > a.value ? b : a));
-  const lowest = days.reduce((a, b) => (b.value < a.value ? b : a));
-  return {
-    months: byMonth.map((values) => histogramOf(values, info.bin, info.range)),
-    summaries: byMonth.map((values) => summaryOf(values, info.summary)),
-    record: [highest.value, highest.date, lowest.value, lowest.date],
-  };
-}
 
 /**
  * The rows of one year, sorted into station, variable and day; throws at
@@ -79,7 +55,7 @@ function filesWith(files: Readonly<Record<string, WeatherStation | undefined>>, 
       const file = `${station.code}.json`;
       const measured = VARIABLES.flatMap(([variable, info]) => {
         const ofIt = days.get(`${station.code}/${info.code}`);
-        return ofIt ? [[variable, variableYear(ofIt, info)] as const] : [];
+        return ofIt ? [[variable, variableYearOf(ofIt, info)] as const] : [];
       });
       const thisYear: WeatherYear = Object.fromEntries(measured);
       const years = { ...files[file]?.years, ...(measured.length ? { [year]: thisYear } : {}) };

@@ -62,6 +62,33 @@ describe("the weather figure, once the script is there", () => {
     expect(host.querySelector("p.source")?.textContent).toContain("2026 so far, to 28 September");
   });
 
+  it("offers the Meteocat's long series beside its stations, and credits the one chosen to the source it is kept from", async () => {
+    const asked: string[] = [];
+    const seriesIndex = { ...index, attribution: "Servei Meteorològic de Catalunya, CADTEP." };
+    vi.stubGlobal("fetch", async (url: string) => {
+      asked.push(url);
+      return { ok: true, text: async () => "", json: async () => (url === "/data/climate-series/index.json" ? seriesIndex : url.endsWith("index.json") ? index : station) };
+    });
+    const host = document.createElement("div");
+    mountWeather(host);
+    await settled();
+    const stations = host.querySelector("select") as HTMLSelectElement;
+    expect([...stations.querySelectorAll("optgroup")].map((group) => group.label)).toEqual(["Automatic stations", "Long series, since 1950"]);
+
+    stations.value = "baic0008";
+    stations.dispatchEvent(new Event("change"));
+    await settled();
+    expect(asked).toContain("/data/climate-series/baic0008.json");
+    expect(asked).not.toContain("/data/climate-series/running.json");
+    expect(host.querySelector("p.source")?.textContent).toContain("CADTEP");
+
+    stations.value = "WU";
+    stations.dispatchEvent(new Event("change"));
+    await settled();
+    expect(host.querySelectorAll("p.source").length).toBe(1);
+    expect(host.querySelector("p.source")?.textContent).toContain("Whoever measured");
+  });
+
   it("answers an agent's question where the reader sees it: the station, the kind of day, the threshold and the months", async () => {
     const host = await mounted();
     askProgram(host, { station: "WU", kind: "torrid-nights", threshold: 25.5, months: "5,6,7" });

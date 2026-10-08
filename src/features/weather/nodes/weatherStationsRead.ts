@@ -3,24 +3,25 @@ import type { Credit } from "../../../platform/blueprint/Table";
 import { readRunning } from "../../../platform/data/readRunning";
 import type { SourceIndex } from "../../../platform/data/renderSourceLine";
 import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
+import { stationsNamed } from "../stationsNamed";
 import type { WeatherStation } from "../WeatherStation";
-import { weatherStations } from "../weatherStations";
-
-const RUNNING = "/data/weather/running.json";
 
 /**
- * The stations a node asks for — one, or every one — each with the year still
- * running among its years when there is one, and who to credit for them:
- * the network, and the day the copy was last brought up to date.
+ * The stations a node asks for — one, or every one of a group — each with the
+ * year still running among its years when its group keeps one, whether a
+ * whole group was asked for, and who to credit for them: the source they are
+ * kept from, and the day the copy was last brought up to date.
  */
-export function weatherStationsRead(read: (path: string) => string, code: string): { stations: WithSoFar<WeatherStation>[]; credit: Credit } {
-  const codes = code === "all" ? weatherStations.map((station) => station.code) : [code];
-  if (!weatherStations.some((station) => station.code === codes[0])) throw new Error(`station: there is no station ${code}`);
+export function weatherStationsRead(read: (path: string) => string, code: string): { stations: WithSoFar<WeatherStation>[]; every: boolean; credit: Credit } {
+  const named = stationsNamed(code);
+  if (!named) throw new Error(`station: there is no station ${code}`);
+  const { group, codes } = named;
+  const runningAt = `${group.directory}/running.json`;
   // Read outside readRunning, which forgives every failure: a year still on its way is to be waited for, not forgiven.
-  const text = optionalRead(read, RUNNING);
-  const running = text === null ? null : readRunning<WeatherStation>(() => text, RUNNING);
-  const stations = codes.map((each) => withSoFar(JSON.parse(read(`/data/weather/${each}.json`)) as WeatherStation, running, `${each}.json`));
-  const index = JSON.parse(read("/data/weather/index.json")) as SourceIndex;
+  const text = group.running ? optionalRead(read, runningAt) : null;
+  const running = text === null ? null : readRunning<WeatherStation>(() => text, runningAt);
+  const stations = codes.map((each) => withSoFar(JSON.parse(read(`${group.directory}/${each}.json`)) as WeatherStation, running, `${each}.json`));
+  const index = JSON.parse(read(`${group.directory}/index.json`)) as SourceIndex;
   const refreshed = running && running.refreshed > index.refreshed ? running.refreshed : index.refreshed;
-  return { stations, credit: { said: index.attribution, refreshed } };
+  return { stations, every: group.every.name === code, credit: { said: index.attribution, refreshed } };
 }

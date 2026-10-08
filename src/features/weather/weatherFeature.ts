@@ -1,5 +1,6 @@
 import type { Feature } from "../../platform/plugin/Feature";
 import { mountWeather } from "./browser/mountWeather";
+import { climateSeriesSource } from "./climateSeriesSource";
 import { hotNightsTool } from "./hotNightsTool";
 import { weatherNodes } from "./nodes/weatherNodes";
 import { weatherSource } from "./weatherSource";
@@ -10,7 +11,7 @@ export const weatherFeature: Feature = {
   name: "weather",
   apps: { weather: mountWeather },
   stills: { weather: weatherStill },
-  sources: [weatherSource],
+  sources: [weatherSource, climateSeriesSource],
   tools: [hotNightsTool],
   nodes: weatherNodes,
 };

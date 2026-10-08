@@ -10,6 +10,7 @@ import { daysPerYear } from "./daysPerYear";
 import { questionInWords } from "./questionInWords";
 import { recordOf } from "./recordOf";
 import { twoHalves } from "./twoHalves";
+import { weatherGroups, type WeatherGroup } from "./weatherGroups";
 import type { WeatherQuestion } from "./WeatherQuestion";
 import type { WeatherStation } from "./WeatherStation";
 import { weatherPresets } from "./weatherPresets";
@@ -20,11 +21,13 @@ const APP = "weather";
 const oneDecimal = (value: number) => Math.round(value * 10) / 10;
 const mean = (values: readonly number[]) => values.reduce((a, b) => a + b, 0) / values.length;
 
-const runningFrom = (read: ToolSurroundings["read"]) => read("/data/weather/running.json").then((text) => readRunning<WeatherStation>(() => text, ""), () => null);
+/** The year still running, for a group that keeps one and when it arrives; nothing otherwise. */
+const runningFrom = (read: ToolSurroundings["read"], group: WeatherGroup) =>
+  group.running ? read(`${group.directory}/running.json`).then((text) => readRunning<WeatherStation>(() => text, ""), () => null) : Promise.resolve(null);
 
 /** The stations that arrived, the year still running among their years; one whose file did not is left out rather than failing the rest. */
-async function stationsAt(codes: readonly string[], read: ToolSurroundings["read"], running: RunningYear<WeatherStation> | null): Promise<WithSoFar<WeatherStation>[]> {
-  const asked = await Promise.allSettled(codes.map((code) => read(`/data/weather/${code}.json`).then((text) => withSoFar(JSON.parse(text) as WeatherStation, running, `${code}.json`))));
+async function stationsAt(codes: readonly string[], group: WeatherGroup, read: ToolSurroundings["read"], running: RunningYear<WeatherStation> | null): Promise<WithSoFar<WeatherStation>[]> {
+  const asked = await Promise.allSettled(codes.map((code) => read(`${group.directory}/${code}.json`).then((text) => withSoFar(JSON.parse(text) as WeatherStation, running, `${code}.json`))));
   return asked.flatMap((station) => (station.status === "fulfilled" ? [station.value] : []));
 }
 
@@ -64,12 +67,17 @@ function oneInWords(counted: ReturnType<typeof countedAt>, said: string, soFar?:
 export const hotNightsTool: AgentTool = {
   name: "hot-nights",
   description:
-    "Days of a kind counted year by year at nine weather stations of the Meteocat in Catalonia, from 1988: torrid nights (the daily minimum at 25 °C or more), tropical nights (20 °C or more), hot and torrid days, frost, rain. " +
-    "For a station: every year's count, whether it was measured whole, the year still running so far, the two halves of the record compared, and its most extreme day; for all: the stations side by side.",
+    `Days of a kind counted year by year at ${weatherStations.length} automatic weather stations of the Meteocat in Catalonia, from 1988, or in ${weatherGroups[1]?.stations.length} of its long series, checked and homogenised by its climatologists, from 1950: torrid nights (the daily minimum at 25 °C or more), tropical nights (20 °C or more), hot and torrid days, frost, rain. ` +
+    "For a station or a series: every year's count, whether it was measured whole, the year still running so far where it is kept, the two halves of the record compared, and its most extreme day; for all, or all-series: them side by side.",
   inputSchema: {
     type: "object",
     properties: {
-      station: { type: "string", enum: [...weatherStations.map(({ code }) => code), "all"], default: weatherStations[0]?.code, description: `${weatherStations.map(({ code, name }) => `${code} ${name}`).join("; ")}; or all of them` },
+      station: {
+        type: "string",
+        enum: weatherGroups.flatMap((group) => [...group.stations.map(({ code }) => code), group.every.name]),
+        default: weatherStations[0]?.code,
+        description: weatherGroups.map((group) => `${group.stations.map(({ code, name }) => `${code} ${name}`).join("; ")}; or ${group.every.name}, ${group.every.label}`).join(". "),
+      },
       kind: { type: "string", enum: weatherPresets.map(({ id }) => id), default: weatherPresets[0]?.id, description: weatherPresets.map(({ id, name, atLeast, threshold, variable }) => `${id}: ${name}, ${weatherVariables[variable].name} ${atLeast ? "at least" : "below"} ${threshold} ${weatherVariables[variable].unit}`).join("; ") },
       threshold: { type: "number", description: "moves the kind's threshold, in its unit: °C, mm or mm/h" },
       months: { type: "array", items: { type: "integer", minimum: 1, maximum: 12 }, description: "the months to count in, January being 1; every month when left out" },
@@ -84,10 +92,10 @@ export const hotNightsTool: AgentTool = {
   async answer(input, { site, read }) {
     const asked = askedQuestion(input);
     if ("refused" in asked) return asked;
-    const { codes, question, kind, from, to } = asked;
-    const index = JSON.parse(await read("/data/weather/index.json")) as SourceIndex;
-    const running = await runningFrom(read);
-    const stations = await stationsAt(codes, read, running);
+    const { codes, group, question, kind, from, to } = asked;
+    const index = JSON.parse(await read(`${group.directory}/index.json`)) as SourceIndex;
+    const running = await runningFrom(read, group);
+    const stations = await stationsAt(codes, group, read, running);
     if (stations.length === 0) return { refused: "the measurements did not arrive; ask again" };
     const said = questionInWords(question);
     const route = pageShowing(site, APP)?.route;

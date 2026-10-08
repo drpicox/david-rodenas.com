@@ -23,12 +23,12 @@ export const weatherMonthsNode: NodeKind = {
   title: "Weather by month",
   role: "source",
   shelf: "Weather",
-  summary: "A weather station of the Meteocat month by month: the mean daily minimum and maximum, the rain, and the most rain in an hour.",
+  summary: "A weather station of the Meteocat, or one of its long series, month by month: the mean daily minimum and maximum, the rain, and the most rain in an hour.",
   inputs: [{ name: "station", label: "station", type: "text", initial: weatherStations[0]?.code ?? "WU", editor: weatherStationChoice }],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (inputs, { read }) => {
     const asked = String(inputs["station"]);
-    const { stations, credit } = weatherStationsRead(read, asked);
+    const { stations, every, credit } = weatherStationsRead(read, asked);
     const rows = stations.flatMap((station) =>
       Object.entries(station.years).flatMap(([label, year]) =>
         Array.from({ length: 12 }, (_, month): Row | null => {
@@ -36,19 +36,19 @@ export const weatherMonthsNode: NodeKind = {
           if (tn === null && tx === null && pp === null) return null;
           const days = Math.max(countOf(year.tn?.months[month]), countOf(year.tx?.months[month]));
           const running = station.soFar?.year === Number(label);
-          return { ...(asked === "all" && { station: station.code }), year: Number(label), month: month + 1, season: seasonOf(month + 1), tn, tx, rain: pp, downpour: pi, days, whole: !running && days >= WHOLE * daysIn(Number(label), month) ? "yes" : "no" };
+          return { ...(every && { station: station.code }), year: Number(label), month: month + 1, season: seasonOf(month + 1), tn, tx, rain: pp, downpour: pi, days, whole: !running && days >= WHOLE * daysIn(Number(label), month) ? "yes" : "no" };
         }).filter((row): row is Row => row !== null),
       ),
     );
     const columns: Column[] = [
-      ...(asked === "all" ? [{ name: "station", kind: "text" as const, key: true }] : []),
+      ...(every ? [{ name: "station", kind: "text" as const, key: true }] : []),
       { name: "year", kind: "number", key: true },
       { name: "month", kind: "number", key: true },
       { name: "season", kind: "text", key: true, about: "winter is December to February, as meteorologists count it", order: SEASON_ORDER },
       { name: "tn", kind: "number", unit: "°C", about: "the mean daily minimum" },
       { name: "tx", kind: "number", unit: "°C", about: "the mean daily maximum" },
       { name: "rain", kind: "number", unit: "mm", about: "the month's rain" },
-      { name: "downpour", kind: "number", unit: "mm/h", about: "the most rain in one hour" },
+      { name: "downpour", kind: "number", unit: "mm/h", about: "the most rain in one hour, which the long series do not have" },
       { name: "days", kind: "number", about: "the days measured" },
       { name: "whole", kind: "text", about: "yes when nearly every day was measured, and the month is over" },
     ];

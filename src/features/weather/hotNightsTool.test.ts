@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Site } from "../../platform/content/Site";
 import { aWeatherStation } from "./aWeatherStation";
+import { climateSeries } from "./climateSeries";
 import { hotNightsTool } from "./hotNightsTool";
 import { steadyYear } from "./steadyYear";
 
@@ -17,7 +18,18 @@ const running = { year: 2026, through: "2026-09-30", refreshed: "2026-10-01", fi
 function served(files: Record<string, unknown>) {
   return (path: string) => (path in files ? Promise.resolve(JSON.stringify(files[path])) : Promise.reject(new Error(`${path}: 404`)));
 }
-const read = served({ "/data/weather/index.json": index, "/data/weather/WU.json": badalona, "/data/weather/X4.json": raval, "/data/weather/running.json": running });
+const seriesIndex = { attribution: "Servei Meteorològic de Catalunya, CADTEP (Prohom and others, 2023).", dataset: "https://example.test", years: [1950, 2025], refreshed: "2026-10-08" };
+// The Fabra's long series has a torrid night a year in its first half and two in its second.
+const fabra = { ...aWeatherStation({ "1950": steadyYear(1950, 12), "1951": steadyYear(1951, 12), "2024": steadyYear(2024, 12), "2025": steadyYear(2025, 12) }), code: "baic0008", name: "Barcelona - Observatori Fabra, since 1950" };
+const longSeries = Object.fromEntries(climateSeries.map((series) => [`/data/climate-series/${series.code}.json`, { ...fabra, code: series.code, name: series.name }]));
+const read = served({
+  "/data/weather/index.json": index,
+  "/data/weather/WU.json": badalona,
+  "/data/weather/X4.json": raval,
+  "/data/weather/running.json": running,
+  "/data/climate-series/index.json": seriesIndex,
+  ...longSeries,
+});
 const ask = async (input: Record<string, unknown>) => (await hotNightsTool.answer(input, { site, origin: "https://david-rodenas.com", read })) as { summary: string; data: Record<string, unknown>; [key: string]: unknown };
 
 describe("counting days at the Meteocat's stations, for an agent", () => {
@@ -59,6 +71,21 @@ describe("counting days at the Meteocat's stations, for an agent", () => {
     expect(summary).toMatch(/^Most days with a daily minimum of 25 °C or more, whole year, in the second half of each record: Barcelona - el Raval/);
   });
 
+  it("counts in one of the Meteocat's long series as at a station, credited to the series, which have no year still running", async () => {
+    const answer = await ask({ station: "baic0008", kind: "tropical-nights", threshold: 12 });
+    expect(answer).toMatchObject({ source: "Servei Meteorològic de Catalunya, CADTEP (Prohom and others, 2023).", refreshed: "2026-10-08", show: { app: "weather", values: { station: "baic0008" } } });
+    expect(answer.data["station"]).toMatchObject({ code: "baic0008", name: "Barcelona - Observatori Fabra, since 1950" });
+    expect((answer.data["halves"] as { from: number; to: number }[]).map(({ from, to }) => [from, to])).toEqual([
+      [1950, 1951],
+      [2024, 2025],
+    ]);
+  });
+
+  it("puts every long series side by side when asked for all of them, and only them", async () => {
+    const { data } = (await ask({ station: "all-series", kind: "frost-days" })) as unknown as { data: { stations: { code: string }[] } };
+    expect(data.stations.map(({ code }) => code).sort()).toEqual(climateSeries.map(({ code }) => code).sort());
+  });
+
   it("says whose measurements they are and how fresh the copy is, and where the page is", async () => {
     expect(await ask({ station: "WU" })).toMatchObject({ source: "Servei Meteorològic de Catalunya (XEMA).", refreshed: "2026-10-01", route: "/projects/hot-nights/" });
   });
@@ -69,7 +96,7 @@ describe("counting days at the Meteocat's stations, for an agent", () => {
   });
 
   it("refuses what it cannot count, and says why", async () => {
-    expect(await ask({ station: "Mars" })).toEqual({ refused: "station: Mars is not one of WU, X4, X8, D5, UP, XF, XJ, XE, VK or all" });
+    expect(await ask({ station: "Mars" })).toEqual({ refused: "station: Mars is not one of WU, X4, X8, D5, UP, XF, XJ, XE, VK, all, baic0008, baic0007, baic0019, baic0009, baic0012, baic0005 or all-series" });
     expect(await ask({ kind: "snow" })).toEqual({ refused: "kind: snow is not one of torrid-nights, tropical-nights, hot-days, torrid-days, frost-days, rainy-days, heavy-rain or downpours" });
     expect(await ask({ months: [0] })).toEqual({ refused: "months: 0 is not a month from 1 to 12" });
     expect(await ask({ threshold: "hot" })).toEqual({ refused: "threshold: hot is not a number" });

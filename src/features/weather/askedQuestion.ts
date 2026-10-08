@@ -1,10 +1,13 @@
+import { stationsNamed } from "./stationsNamed";
+import { weatherGroups, type WeatherGroup } from "./weatherGroups";
 import type { WeatherQuestion } from "./WeatherQuestion";
 import { weatherPresets } from "./weatherPresets";
-import { weatherStations } from "./weatherStations";
 
 export interface Asked {
-  /** The stations asked about, by code: one, or every one. */
+  /** The stations asked about, by code: one, or every one of a group. */
   readonly codes: readonly string[];
+  /** Where they are kept, and who is credited for them. */
+  readonly group: WeatherGroup;
   /** The preset the question started from, for the page's own list. */
   readonly kind: string;
   readonly question: WeatherQuestion;
@@ -12,7 +15,8 @@ export interface Asked {
   readonly to?: number;
 }
 
-const ALL = "all";
+/** Every name a question can give, group by group: each station, then all of them. */
+const NAMES = weatherGroups.flatMap((group) => [...group.stations.map(({ code }) => code), group.every.name]);
 const listed = (names: readonly string[]) => `${names.slice(0, -1).join(", ")} or ${names.at(-1)}`;
 const numberOf = (said: unknown) => (typeof said === "number" ? said : typeof said === "string" && said.trim() !== "" ? Number(said) : Number.NaN);
 
@@ -23,9 +27,9 @@ const numberOf = (said: unknown) => (typeof said === "number" ? said : typeof sa
  * counts them from 0.
  */
 export function askedQuestion(input: Readonly<Record<string, unknown>>): Asked | { refused: string } {
-  const codes = weatherStations.map(({ code }) => code);
-  const station = String(input["station"] ?? codes[0]);
-  if (station !== ALL && !codes.includes(station)) return { refused: `station: ${station} is not one of ${listed([...codes, ALL])}` };
+  const station = String(input["station"] ?? NAMES[0]);
+  const named = stationsNamed(station);
+  if (!named) return { refused: `station: ${station} is not one of ${listed(NAMES)}` };
 
   const kind = String(input["kind"] ?? weatherPresets[0]?.id);
   const preset = weatherPresets.find(({ id }) => id === kind);
@@ -44,7 +48,8 @@ export function askedQuestion(input: Readonly<Record<string, unknown>>): Asked |
   if (to !== undefined && !Number.isInteger(to)) return { refused: `to: ${String(input["to"])} is not a year` };
 
   return {
-    codes: station === ALL ? codes : [station],
+    codes: named.codes,
+    group: named.group,
     kind,
     question: { variable: preset.variable, atLeast: preset.atLeast, threshold, months: [...new Set(months as number[])].sort((a, b) => a - b).map((month) => month - 1) },
     ...(from !== undefined && { from }),

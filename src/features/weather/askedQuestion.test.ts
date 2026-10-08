@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { askedQuestion } from "./askedQuestion";
+import { climateSeries } from "./climateSeries";
+import { weatherGroups } from "./weatherGroups";
 
 describe("what an agent asks of the weather, as the page's own question", () => {
   it("is the page's own first question when nothing is said: torrid nights over the whole year, at the first station", () => {
-    expect(askedQuestion({})).toEqual({ codes: ["WU"], kind: "torrid-nights", question: { variable: "tn", atLeast: true, threshold: 25, months: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] } });
+    expect(askedQuestion({})).toEqual({ codes: ["WU"], group: weatherGroups[0], kind: "torrid-nights", question: { variable: "tn", atLeast: true, threshold: 25, months: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] } });
   });
 
   it("counts months from 1, as people do, and keeps each once, in order", () => {
@@ -13,6 +15,11 @@ describe("what an agent asks of the weather, as the page's own question", () => 
 
   it("is every station when asked for all, and a kind's threshold moved when one is given", () => {
     expect(askedQuestion({ station: "all", kind: "frost-days", threshold: "-2" })).toMatchObject({ codes: ["WU", "X4", "X8", "D5", "UP", "XF", "XJ", "XE", "VK"], question: { variable: "tn", atLeast: false, threshold: -2 } });
+  });
+
+  it("is one of the long series as well, or every one of them, kept with the long series and never mixed with the network's", () => {
+    expect(askedQuestion({ station: "baic0008" })).toMatchObject({ codes: ["baic0008"], group: { directory: "/data/climate-series" } });
+    expect(askedQuestion({ station: "all-series" })).toMatchObject({ codes: climateSeries.map(({ code }) => code) });
   });
 
   it("takes the years to list, and refuses what is not one", () => {

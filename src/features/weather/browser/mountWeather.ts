@@ -3,13 +3,15 @@ import { PROGRAM_ASKED } from "../../../platform/browser/PROGRAM_ASKED";
 import { runningAt } from "../../../platform/browser/runningAt";
 import type { Values } from "../../../platform/program/Values";
 import { sourceLineOf } from "../../../platform/browser/sourceLineOf";
+import type { RunningYear } from "../../../platform/data/RunningYear";
 import { withSoFar, type WithSoFar } from "../../../platform/data/withSoFar";
 import { firstQuestion } from "../firstQuestion";
 import { renderWeatherFigure } from "../renderWeatherFigure";
+import { stationsNamed } from "../stationsNamed";
+import { weatherGroups, type WeatherGroup } from "../weatherGroups";
 import { weatherPresets } from "../weatherPresets";
 import type { WeatherQuestion } from "../WeatherQuestion";
 import type { WeatherStation } from "../WeatherStation";
-import { weatherStations } from "../weatherStations";
 import { weatherVariables } from "../weatherVariables";
 
 const SEASONS: readonly (readonly [string, readonly number[]])[] = [
@@ -26,12 +28,27 @@ const SLIDE = { tn: [-10, 30], tx: [0, 45], pp: [0.5, 100], pi: [0.5, 60] } as c
  * The figure the build already wrote, with the question put above it: where,
  * what kind of day, how much of it, and when in the year. The threshold is a
  * slider because the files hold histograms, not counts: moving it asks the
- * portal nothing and the server nothing.
+ * portal nothing and the server nothing. A station of the network and one of
+ * the long series are kept apart, so each is fetched from where it is kept,
+ * and the line under the figure credits the source of the one shown.
  */
 export function mountWeather(host: HTMLElement): () => void {
+  const network = weatherGroups[0]!;
   const held = new Map<string, Promise<WeatherStation>>();
-  const running = runningAt<WeatherStation>("/data/weather/running.json");
-  const source = sourceLineOf(host, "/data/weather/index.json", "/data/weather/running.json");
+  const runnings = new Map<WeatherGroup, Promise<RunningYear<WeatherStation> | null>>();
+  const lines = new Map<WeatherGroup, HTMLElement>();
+  const runningOf = (group: WeatherGroup) => {
+    const running = runnings.get(group) ?? (group.running ? runningAt<WeatherStation>(`${group.directory}/running.json`) : Promise.resolve(null));
+    runnings.set(group, running);
+    return running;
+  };
+  // The page's own group has the line the build wrote under its still; another's is made when it is first shown.
+  const lineOf = (group: WeatherGroup) => {
+    const line = lines.get(group) ?? sourceLineOf(group === network ? host : el("div"), `${group.directory}/index.json`, group.running ? `${group.directory}/running.json` : undefined);
+    lines.set(group, line);
+    return line;
+  };
+  let source = lineOf(network);
   const figure = el("div");
   figure.append(...host.querySelectorAll("figure"));
 
@@ -40,7 +57,11 @@ export function mountWeather(host: HTMLElement): () => void {
   let stopped = false;
 
   const option = (value: string | number, label: string) => el("option", { value }, label);
-  const stationSelect = el("select", { onchange: () => void choose(stationSelect.value) }, ...weatherStations.map(({ code, name }) => option(code, name)));
+  const stationSelect = el(
+    "select",
+    { onchange: () => void choose(stationSelect.value) },
+    ...weatherGroups.map((group) => el("optgroup", { label: group.label }, ...group.stations.map(({ code, name }) => option(code, name)))),
+  );
   const presetSelect = el(
     "select",
     {
@@ -70,12 +91,16 @@ export function mountWeather(host: HTMLElement): () => void {
   }
 
   async function choose(code: string): Promise<void> {
-    const asked = held.get(code) ?? fetch(`/data/weather/${code}.json`).then((response) => response.json() as Promise<WeatherStation>);
+    const group = stationsNamed(code)?.group ?? network;
+    const asked = held.get(code) ?? fetch(`${group.directory}/${code}.json`).then((response) => response.json() as Promise<WeatherStation>);
     held.set(code, asked);
     try {
-      const [arrived, soFar] = await Promise.all([asked, running]);
+      const [arrived, soFar] = await Promise.all([asked, runningOf(group)]);
       if (stopped || stationSelect.value !== code) return;
       station = withSoFar(arrived, soFar, `${code}.json`);
+      const credit = lineOf(group);
+      if (credit !== source) source.replaceWith(credit);
+      source = credit;
       draw();
     } catch {
       held.delete(code);

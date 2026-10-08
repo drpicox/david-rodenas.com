@@ -5,8 +5,10 @@ import type { NodeKind } from "../../../platform/blueprint/NodeKind";
 import { Pending } from "../../../platform/blueprint/Pending";
 import type { Table } from "../../../platform/blueprint/Table";
 import type { RunningYear } from "../../../platform/data/RunningYear";
+import { climateSeries } from "../climateSeries";
 import { histogramOf } from "../histogramOf";
 import type { WeatherStation, WeatherYear } from "../WeatherStation";
+import { weatherStations } from "../weatherStations";
 import { weatherVariables } from "../weatherVariables";
 import { weatherDaysNode } from "./weatherDaysNode";
 import { weatherMonthsNode } from "./weatherMonthsNode";
@@ -48,6 +50,11 @@ const files = (withRunning: boolean): Record<string, string> => ({
   "/data/weather/WU.json": JSON.stringify(station),
   ...(withRunning && { "/data/weather/running.json": JSON.stringify(running) }),
 });
+/** The long series, as the site keeps them: apart from the network's stations, with an index of their own and no year still running. */
+const seriesFiles: Record<string, string> = {
+  "/data/climate-series/index.json": JSON.stringify({ attribution: "Servei Meteorològic de Catalunya, CADTEP (Prohom and others, 2023).", dataset: "https://example.org", years: [2024, 2025], refreshed: "2026-10-08" }),
+  ...Object.fromEntries(climateSeries.map((series) => [`/data/climate-series/${series.code}.json`, JSON.stringify({ ...station, ...series })])),
+};
 const reading = (held: Record<string, string>) => ({
   read: (path: string) => {
     const text = held[path];
@@ -77,8 +84,20 @@ describe("the stations a weather node reads", () => {
     expect(() => weatherStationsRead(reading(files(false)).read, "ZZ")).toThrow("station: there is no station ZZ");
   });
 
-  it("are offered by name, and all of them at once", () => {
-    expect(weatherStationChoice.kind === "choice" && weatherStationChoice.choices.at(-1)).toEqual({ value: "all", label: "every station" });
+  it("are one of the long series as well, read where they are kept, credited to them, and with no year still running", () => {
+    const { stations, credit } = weatherStationsRead(reading({ ...files(true), ...seriesFiles }).read, "baic0008");
+    expect(stations.map((each) => [each.code, each.soFar])).toEqual([["baic0008", undefined]]);
+    expect(credit).toEqual({ said: "Servei Meteorològic de Catalunya, CADTEP (Prohom and others, 2023).", refreshed: "2026-10-08" });
+  });
+
+  it("are every long series at once, side by side", () => {
+    expect(weatherStationsRead(reading(seriesFiles).read, "all-series").stations.map((each) => each.code)).toEqual(climateSeries.map((series) => series.code));
+  });
+
+  it("are offered by name, the network's and the long series', and every one of each at once", () => {
+    const choices = weatherStationChoice.kind === "choice" ? weatherStationChoice.choices : [];
+    expect(choices.map((choice) => choice.value)).toEqual([...weatherStations.map(({ code }) => code), "all", ...climateSeries.map(({ code }) => code), "all-series"]);
+    expect(choices.find((choice) => choice.value === "all-series")?.label).toBe("every long series");
   });
 });
 
@@ -117,8 +136,10 @@ describe("the days of a kind, year by year", () => {
 });
 
 describe("the weather stations themselves", () => {
-  it("are a row each, with how high they stand", () => {
-    expect(tableOf(weatherStationsNode, {}).rows[0]).toEqual({ station: "WU", name: "Badalona - Museu", municipality: "Badalona", altitude: 42, setting: "urban, by the sea" });
+  it("are a row each, with how high they stand, and which of the Meteocat's records they are", () => {
+    const rows = tableOf(weatherStationsNode, {}).rows;
+    expect(rows[0]).toEqual({ station: "WU", name: "Badalona - Museu", municipality: "Badalona", altitude: 42, setting: "urban, by the sea", record: "Automatic stations" });
+    expect(rows.find((row) => row["station"] === "baic0008")).toMatchObject({ altitude: 412, record: "Long series, since 1950" });
   });
 });
 
