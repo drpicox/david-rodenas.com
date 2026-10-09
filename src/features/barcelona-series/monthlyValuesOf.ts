@@ -1,13 +1,14 @@
-/** How the Meteocat writes a month it has no value for: far below any mean a month of Barcelona has had. */
+/** How the Meteocat writes a month it has no value for: far below any mean or any rain a month of Barcelona has had. */
 const ABSENT = -99;
 
 /**
- * The mean temperature of each month of every year of Barcelona's series,
- * January to December, from the text the Meteocat serves: a header about the
- * series, a line naming the columns — the year, then the months by their
- * initials — and a year a row, oldest first. Anything else is refused.
+ * A value for each month of every year of one of Barcelona's series — the
+ * mean temperature, or the rain — January to December, from the text the
+ * Meteocat serves: a header about the series, a line naming the columns — the
+ * year, then the months by their initials — and a year a row, oldest first.
+ * Anything else is refused.
  */
-export function monthlyMeansOf(text: string): Map<number, (number | null)[]> {
+export function monthlyValuesOf(text: string): Map<number, (number | null)[]> {
   const lines = text.split(/\r?\n/);
   const head = lines.findIndex((line) => line.startsWith("ANY\t"));
   if (head < 0) throw new Error("the answer is not the series: it names no columns");

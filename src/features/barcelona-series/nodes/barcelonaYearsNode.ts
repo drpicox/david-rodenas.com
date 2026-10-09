@@ -18,7 +18,7 @@ export const barcelonaYearsNode: NodeKind = {
   inputs: [],
   outputs: [{ name: "table", label: "table", type: "table" }],
   run: (_inputs, { read }) => {
-    const { series, credit } = barcelonaRead(read);
+    const { series, credit } = barcelonaRead(read, "temperature");
     const rows = Object.entries(series.years).map(([label, months]) => {
       const measured = months.filter((month): month is number => month !== null);
       const whole = measured.length === 12;
