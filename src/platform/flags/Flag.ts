@@ -15,4 +15,11 @@ export interface Flag {
    * chooses for themselves has left the trial.
    */
   readonly trial?: number;
+  /**
+   * The ways it can be on, when there is more than one to choose between —
+   * `flags search palette`, `?search=palette`, and `search=palette` in
+   * `data-flags` — and off besides. A flag with choices is never drawn in a
+   * trial: a lot says on or off, not which.
+   */
+  readonly choices?: readonly string[];
 }

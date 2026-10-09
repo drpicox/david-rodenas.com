@@ -9,6 +9,7 @@ const FLAGS: Flag[] = [
   { name: "portfolio", description: "lists with pictures as cards" },
   { name: "loud", description: "everything in capitals" },
 ];
+const SEARCH: Flag = { name: "search", description: "how the site is searched", choices: ["prompt", "header", "palette"] };
 
 function aStore(...on: string[]): FlagStore {
   const kept = new Set(on);
@@ -52,6 +53,32 @@ describe("the flags command", () => {
   it("refuses a flag there is not, and a choice that is neither", () => {
     expect(run(aStore(), "colour")).toEqual({ text: "flags: colour: no such flag. Try flags", error: true });
     expect(run(aStore(), "loud", "maybe")).toEqual({ text: "flags: loud: choose on or off", error: true });
+  });
+
+  it("lists a flag with choices with each of them and off, the one it is at marked", () => {
+    expect(flagsCommand([SEARCH], aStore("search=header")).run(context, []).text).toBe("search   prompt [header] palette  off   how the site is searched");
+    expect(flagsCommand([SEARCH], aStore()).run(context, []).html).toContain('<a href="#" data-run="flags search palette" title="flags search palette">palette</a>');
+  });
+
+  it("switches a flag with choices to one of them and every other off, or all of them off", () => {
+    const store = aStore("search=prompt");
+    const chosen = () => SEARCH.choices!.filter((choice) => store.isOn(`search=${choice}`));
+    flagsCommand([SEARCH], store).run(context, ["search", "palette"]);
+    expect(chosen()).toEqual(["palette"]);
+    flagsCommand([SEARCH], store).run(context, ["search", "off"]);
+    expect(chosen()).toEqual([]);
+  });
+
+  it("turns a flag with choices named alone to its first choice, and off again", () => {
+    const store = aStore();
+    flagsCommand([SEARCH], store).run(context, ["search"]);
+    expect(store.isOn("search=prompt")).toBe(true);
+    flagsCommand([SEARCH], store).run(context, ["search"]);
+    expect(store.isOn("search=prompt")).toBe(false);
+  });
+
+  it("refuses a choice a flag with choices has not, naming the ones it has", () => {
+    expect(flagsCommand([SEARCH], aStore()).run(context, ["search", "on"])).toEqual({ text: "flags: search: choose prompt, header, palette or off", error: true });
   });
 
   it("says so when there are none", () => {

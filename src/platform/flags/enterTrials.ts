@@ -9,7 +9,7 @@ import type { FlagStore } from "./FlagStore";
  */
 export function enterTrials(flags: readonly Flag[], store: FlagStore, random: () => number): { name: string; on: boolean }[] {
   return flags.flatMap((flag) => {
-    if (flag.trial === undefined || store.chosen(flag.name)) return [];
+    if (flag.trial === undefined || flag.choices || store.chosen(flag.name)) return [];
     let on = store.drawn(flag.name);
     if (on === undefined) {
       on = random() < flag.trial;

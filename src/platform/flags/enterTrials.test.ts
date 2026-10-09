@@ -29,6 +29,12 @@ const portfolio = { name: "portfolio", description: "", trial: 0.5 };
 const plain = { name: "loud", description: "" };
 
 describe("the trials a reader is entered in", () => {
+  it("leave out a flag with choices: a trial draws on or off, not one of several", () => {
+    const store = aStore();
+    expect(enterTrials([{ name: "search", description: "", choices: ["prompt", "palette"], trial: 0.5 }], store, () => 0.1)).toEqual([]);
+    expect(store.on.size).toBe(0);
+  });
+
   it("draw a flag with a trial once, on for the share it asks, and keep what was drawn", () => {
     const store = aStore();
     expect(enterTrials([portfolio, plain], store, () => 0.3)).toEqual([{ name: "portfolio", on: true }]);
