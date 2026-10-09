@@ -1,6 +1,6 @@
 ---
 title: Hot nights, counted
-summary: How many nights a year never cool below 25 °C, and how many days reach 30 °C, at nine weather stations and in six long series since 1950, whether the second half of each record differs from the first, and Barcelona's mean temperature every year since 1780.
+summary: How many nights a year never cool below 25 °C, and how many days reach 30 °C, at nine weather stations and in six long series since 1950, whether the second half of each record differs from the first, and Barcelona's mean temperature since 1780 and its rain since 1786.
 order: 32
 was: /open-data/hot-nights/
 ---
@@ -53,12 +53,14 @@ it. And one longer still: Barcelona's mean temperature, month by month, since
 1780. It was put together with the University of Barcelona from the records
 of the doctors who measured the city — the first of them, Francesc Salvà, in
 his house in carrer de Petritxol — and from the Observatori Fabra, where most
-of it comes from.
+of it comes from. Its rain goes back to 1786: by its paper's count, the
+longest series of rain measured in the Iberian Peninsula.
 
 What follows is a blueprint: the pictures are drawn by nodes wired together,
 and the dials on the board turn them. Its menu holds a few more questions —
 where the long line turns, the six long series side by side, the summers
-since 1780, and whether a warm year is a year of warm nights.
+since 1780, whether a warm year is a year of warm nights, and the rain since
+1786.
 
 ```::blueprint
 ## Barcelona, since 1780
@@ -110,6 +112,15 @@ both = join left: years right: nights
 scatter "Tropical nights against the year's mean, a dot a year" table: both x: mean y: days
 together = correlation table: both x: mean y: days
 readout "r" value: together.r about: "of a year's mean temperature and its tropical nights at the Fabra"
+
+## Rain since 1786
+# Barcelona's rain every year since 1786 — by its paper's count, the longest series of rain measured in the Iberian Peninsula — and the straight line through the years from the dial's on, as the change it makes each decade. A year that misses a month has no total, and is left out.
+start = dial "From" value: 1786
+rain = barcelona-rain
+kept = keep "From the dial's year on" table: rain column: year is: at-least value: start
+lines "Barcelona's rain, year by year" table: kept x: year y: rain
+trend = trend table: kept y: rain
+readout "Each decade" value: trend.per-ten unit: mm about: "along the straight line fitted through the years from the dial's on"
 ```
 
 - **Barcelona has not been as warm in the 246 years of its series as in the
@@ -133,6 +144,11 @@ readout "r" value: together.r about: "of a year's mean temperature and its tropi
   tropical nights went from 51.4 a year to 72.2; at Lleida, inland, days at
   35 °C or more from 11.2 to 22.1. 2022 has the most days at 30 °C or more of
   the record at all six.
+- **Rain has no such line, but it has had its driest years.** A year's rain
+  in Barcelona came to 556 mm on average over the first hundred years of the
+  series, 616 over the next hundred, and 607 since 1987. Yet 2021 to 2023
+  were the driest three years in a row since 1822 to 1824, and 2022, at
+  308 mm, the driest single year since 1835.
 
 ## What it is not
 
@@ -157,7 +173,8 @@ it is not over, and its days can still be corrected. The long series have no
 year still running: the Meteocat adds a whole year to them once it is over.
 
 Barcelona's series since 1780 holds a mean for each month, and a year's mean
-is the mean of its twelve. Its first decades were read in doctors' houses,
+is the mean of its twelve; its rain, a total for each month, and a year's is
+the sum of its twelve, none for a year that misses one. Its first decades were read in doctors' houses,
 with the instruments of their day; the Meteocat has checked and homogenised
 the whole, and places it at the Observatori Fabra, 411 m up, where most of
 it was measured.
@@ -182,7 +199,9 @@ The long series are the Meteocat's too: CADTEP, its daily series since 1950
 1950](https://www.meteo.cat/wpweb/climatologia/dades-i-productes-climatics/series-climatiques-des-de-1950/);
 Prohom and others, 2023, in the International Journal of Climatology), and
 [the climate series of Barcelona since
-1780](https://www.meteo.cat/wpweb/climatologia/dades-i-productes-climatics/serie-climatica-de-barcelona-des-de-1780/)
-(Prohom, Barriendos, Aguilar and Ripoll, 2012). The site keeps them as it
+1780](https://www.meteo.cat/wpweb/climatologia/dades-i-productes-climatics/serie-climatica-de-barcelona-des-de-1780/):
+its temperatures (Prohom, Barriendos, Aguilar and Ripoll, 2012), and its rain
+since 1786 (Prohom, Barriendos and Sanchez-Lorenzo, 2015, in the
+International Journal of Climatology). The site keeps them as it
 keeps the stations, a finished year at a time, once the Meteocat has added
 it.
