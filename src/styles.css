@@ -2414,6 +2414,17 @@ figure.bars figcaption {
 
 /* ---- the shell's listings: a name, and what it is after a #, cut to what fits ---- */
 
+/*
+ * A line under a line, as a terminal prints them. They share their class with
+ * the page's listing of names and titles, which is a grid of two columns, and
+ * in it every other line of `ls`, `find` or `grep` was set beside the one
+ * before, squeezed into what the longest left.
+ */
+.screen pre.listing {
+  display: block;
+  border-top: 0;
+}
+
 .screen pre.listing .line {
   display: block;
   white-space: pre;
