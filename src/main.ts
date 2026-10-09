@@ -85,7 +85,7 @@ function mount(): void {
   // A feature that has something to say about the page it started on says it now.
   if (page) for (const feature of allFeatures) feature.arrive?.(page);
   const prompt = { run: (line: string) => void terminal?.run(line) };
-  for (const feature of allFeatures) feature.install?.(prompt);
+  for (const feature of allFeatures) feature.install?.(prompt, { site: siteInBrowser });
 
   // An agent in the reader's browser is offered what the reader is: the site to read, the programs, and the prompt.
   const tools = [...siteTools, ...toolsOf(allFeatures)];

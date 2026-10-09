@@ -67,8 +67,8 @@ export interface Feature {
   readonly stills?: Readonly<Record<string, Still>>;
   /** Open data it keeps a copy of in the repository, refreshed before a build when the year has changed. */
   readonly sources?: readonly YearlySource<unknown>[];
-  /** Once, when the page is first set up. Returns how to undo it. */
-  install?(prompt: Prompt): (() => void) | void;
+  /** Once, when the page is first set up, with the site it stands in, as a program is handed it. Returns how to undo it. */
+  install?(prompt: Prompt, surroundings: Surroundings): (() => void) | void;
   /** Whenever the page changes without a reload, and once for the page it started on. */
   arrive?(page: Page): void;
 }
