@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { execFileSync, spawn } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "vite";
 
@@ -16,8 +16,16 @@ import { createServer } from "vite";
  * From the commit given; without one, what is not committed yet, new files
  * whole, or else the last commit. Every file is put back as it was after each
  * change, and on the way out whatever happens.
+ *
+ * A change can make the tests loop for ever — `>=` into `<` in the condition
+ * of a loop, a step by one the other way — and a run that never ends would
+ * hold the deploy until the runner gave up on it, hours later, as it did once.
+ * So each run has as long as a whole run of the tests could take, and one
+ * that takes longer is stopped, its workers with it, and counted as caught:
+ * the tests did not pass.
  */
 const MOST = 30;
+const HANG = 180_000;
 const git = (...args) => execFileSync("git", args, { encoding: "utf8", maxBuffer: 1 << 26 });
 
 /** What the push changed, as git's hunks say it: for each file, the lines it gained or changed. */
@@ -59,6 +67,30 @@ function untracked() {
     .map((file) => [file, new Set(readFileSync(file, "utf8").split("\n").map((_, index) => index + 1))]);
 }
 
+/** The tests that import a file, run once, in a group of processes of their own, so that a run that hangs can be stopped whole. */
+function relatedRun(file) {
+  return new Promise((resolve) => {
+    const child = spawn("npx", ["vitest", "related", file, "--run", "--passWithNoTests", "--silent"], { detached: true, stdio: ["ignore", "pipe", "pipe"] });
+    let output = "";
+    let settled = false;
+    const settle = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    child.stdout.on("data", (chunk) => (output += chunk));
+    child.stderr.on("data", (chunk) => (output += chunk));
+    const timer = setTimeout(() => {
+      try {
+        process.kill(-child.pid, "SIGKILL");
+      } catch {}
+      settle({ status: null, output, hung: true });
+    }, HANG);
+    child.on("close", (status) => settle({ status, output, hung: false }));
+  });
+}
+
 let restore = null;
 process.on("exit", () => restore?.());
 const vite = await createServer({ server: { middlewareMode: true }, appType: "custom", logLevel: "warn" });
@@ -73,11 +105,11 @@ try {
     for (const mutant of mutantsOf(original, lines, each)) {
       restore = () => writeFileSync(file, original);
       writeFileSync(file, mutant.text);
-      const run = spawnSync("npx", ["vitest", "related", file, "--run", "--passWithNoTests", "--silent"], { encoding: "utf8" });
+      const run = await relatedRun(file);
       restore();
       restore = null;
-      const none = /No test files found/.test(`${run.stdout}${run.stderr}`);
-      tried.push({ file, line: mutant.line, from: mutant.from, to: mutant.to, caught: run.status !== 0 && !none, none });
+      const none = /No test files found/.test(run.output);
+      tried.push({ file, line: mutant.line, from: mutant.from, to: mutant.to, caught: (run.hung || run.status !== 0) && !none, none, hung: run.hung });
     }
   }
   const missed = tried.filter(({ caught }) => !caught);
@@ -85,7 +117,9 @@ try {
   const lines = [`### Broken on purpose: the lines ${range === "HEAD" ? "not committed yet" : range} changed`, ""];
   if (tried.length === 0) lines.push("Nothing on those lines to break.");
   else {
-    lines.push(`${tried.length - missed.length} of ${tried.length} small changes to those lines made a test fail.${missed.length > 0 ? " These did not:" : ""}`);
+    const hung = tried.filter((one) => one.hung).length;
+    const stopped = hung > 0 ? ` (${hung} by making the tests run on past ${HANG / 60_000} minutes, and were stopped)` : "";
+    lines.push(`${tried.length - missed.length} of ${tried.length} small changes to those lines made a test fail${stopped}.${missed.length > 0 ? " These did not:" : ""}`);
     // The same change on the same line, more than once, is one row, counted.
     const rows = new Map();
     for (const { file, line, from, to, none } of missed) {
