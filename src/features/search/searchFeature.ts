@@ -1,12 +1,10 @@
 import type { Feature } from "../../platform/plugin/Feature";
-import { installSearch } from "./browser/installSearch";
+import { mountSearch } from "./browser/mountSearch";
 import { searchCommand } from "./searchCommand";
-import { searchFlag } from "./searchFlag";
 
-/** Finding a page by what it says: `search` at the prompt for everyone, and three ways of asking it, behind one flag, to choose between. */
+/** Finding a page by what it says: `search` at the prompt, and the header that types it, with what it finds printed where `ls` printed the directories. */
 export const searchFeature: Feature = {
   name: "search",
-  flags: [searchFlag],
   commands: [searchCommand],
-  install: installSearch,
+  install: (_prompt, { site }) => mountSearch(site),
 };

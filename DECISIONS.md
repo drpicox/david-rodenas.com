@@ -7,31 +7,27 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
-### Search, three ways, behind one flag (9 October 2026)
+### Search: the header and the prompt, one command (10 October 2026)
 The site has grown past what `ls` and the directories show at a glance, and
-David asked for a search: three ways of it first, and one flag to choose
-between them. All three ask the same thing of the markdown already in the
-browser, so nothing is indexed and nothing is fetched: every word must start
-a word of the page, whatever its case and accents, so that salva finds Salvà
-and rain does not find brain; a title counts most, then the summary, the
-address, a little for each time the text says it, and a little more when it
-says it whole. Code and programs are not the page's words.
+David asked for a search, but first for three ways of it to try against each
+other behind one flag: at the prompt, in the header, and in a palette over the
+page. He kept the first two, joined, and dropped the palette, which was a
+window, the thing the terminal's rule leaves out. So there is one way now,
+for every reader, and no flag: the session that opens every page with `ls`
+says `search` when `/`, the search beside `ls`, or the key at the end of the
+prompt bar is pressed, and prints what it finds where `ls` printed the
+directories, as the words are typed — and the same line is written at the
+prompt below as it is typed above, because it is the one command, seen in two
+places. Enter follows the page chosen; `search` typed at the prompt prints
+what it finds there, as `find` and `grep` print.
 
-- **`prompt`**: the shell's own way. `search` is a command for every reader,
-  printed as `find` and `grep` print; the flag adds `/` to begin it, and the
-  key shown at the end of the prompt bar.
-- **`header`**: the session that opens every page with `ls` becomes `find`,
-  and prints what it finds where the directories were. Nothing opens over
-  the page, which keeps the rule that the commands navigate the document.
-- **`palette`**: the way documentation sites do it, a box over the page, opened
-  by a glass beside the half-moon, by `/` or by ⌘K. It is a window, which the
-  terminal's rule leaves out: it is here to be weighed against the other two,
-  not because the rule changed.
-
-`flags search prompt`, `header` or `palette`, or `?search=…` in a link,
-chooses; off is the site as it was, with the command. A flag can be a choice
-among a few for this. Whichever is kept, the other two go, and the flag with
-them.
+It reads the markdown already in the browser, so nothing is indexed and
+nothing is fetched: every word must start a word of the page, whatever its
+case and accents, so that salva finds Salvà and rain does not find brain; a
+title counts most, then the summary, the address, a little for each time the
+text says it, and a little more when it says it whole. Code and programs are
+not the page's words. A flag can still be a choice among a few, as the trial
+needed, for the next one.
 
 ### The long record, from the Meteocat's climatologists (8 October 2026)
 David remembered charts he had made from the Meteocat — Barcelona's mean

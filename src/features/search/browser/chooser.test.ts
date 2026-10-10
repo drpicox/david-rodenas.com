@@ -12,7 +12,7 @@ beforeEach(() => {
   document.body.innerHTML = '<input><div id="found"></div>';
   input = document.querySelector("input")!;
   found = document.querySelector("#found")!;
-  list = chooser(searchSite, input, found, "cards", "Type.");
+  list = chooser(searchSite, input, found, "Type.");
 });
 
 describe("a box that lists the pages found", () => {
@@ -20,7 +20,7 @@ describe("a box that lists the pages found", () => {
     list.show();
     expect(found.textContent).toBe("Type.");
     searchKeys.type(input, "nights");
-    expect([...found.querySelectorAll("a")].map((link) => [link.getAttribute("href"), link.classList.contains("chosen")])).toEqual([
+    expect([...found.querySelectorAll("a")].map((link) => [link.getAttribute("href"), link.closest("li")?.classList.contains("chosen")])).toEqual([
       ["/projects/hot-nights/", true],
       ["/projects/sea/", false],
     ]);

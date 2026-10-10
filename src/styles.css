@@ -6937,52 +6937,10 @@ body.wb-full-open {
   margin-left: auto;
 }
 
-/* ---- search: three ways to find a page by what it says, tried one at a time with `flags search …` ---- */
+/* ---- search: the header says `search` where it said `ls`, and the prompt below says it too ---- */
 
-/* What every way shows: the words found are the page's ink, bold, as grep marks them. */
-.found mark {
-  background: none;
-  color: var(--ink);
-  font-weight: bold;
-}
-
-/* 1. At the prompt: what search prints is read as grep's is, the line that says the words dimmed under the page's path. */
-.screen pre.found .said {
-  color: var(--dim);
-}
-
-/* The key to press stands at the end of the prompt bar, and pressing it is pressing it. */
-.terminal .search-key {
-  display: none;
-}
-
-[data-flags~="search=prompt"] .terminal .search-key {
-  display: inline;
-  flex: none;
-  margin-left: auto;
-  padding: 0 0.45em;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  color: var(--dim);
-  font: inherit;
-  font-size: 0.85em;
-  cursor: pointer;
-}
-
-[data-flags~="search=prompt"] .terminal .search-key:hover {
-  color: var(--accent);
-  border-color: var(--accent-soft);
-}
-
-/* 2. In the header: `ls` becomes `find`, and what it finds is printed where the directories were. */
-.find-open,
-.site-header .find-line,
-.site-header .found-here {
-  display: none;
-}
-
-[data-flags~="search=header"] .find-open {
-  display: inline;
+/* The search beside `ls`, and the key at the end of the prompt bar: the key is no use without a keyboard. */
+.search-open {
   margin-left: 1.5ch;
   padding: 0;
   border: 0;
@@ -6992,27 +6950,58 @@ body.wb-full-open {
   cursor: pointer;
 }
 
-[data-flags~="search=header"] .find-open:hover {
+.search-open:hover,
+.terminal .search-key:hover {
   color: var(--accent);
 }
 
-.session.finding > .ran:not(.find-line),
-.session.finding > nav {
+.search-open kbd,
+.terminal .search-key kbd {
+  font: inherit;
+}
+
+.terminal .search-key {
+  flex: none;
+  margin-left: auto;
+  padding: 0 0.45em;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+}
+
+@media (pointer: coarse) {
+  .search-open kbd,
+  .terminal .search-key kbd {
+    display: none;
+  }
+}
+
+.site-header .search-line,
+.site-header .found-here {
   display: none;
 }
 
-.session.finding > .found-here {
+.session.searching > .ran:not(.search-line),
+.session.searching > nav {
+  display: none;
+}
+
+.session.searching > .found-here {
   display: block;
 }
 
-/* The line is the session's own, `find` where `ls` was; the box takes what the line leaves, down to nothing on a phone. */
-.session.finding > .find-line {
+/* The line is the session's own, `search` where `ls` was; the box takes what the line leaves, down to nothing on a phone. */
+.session.searching > .search-line {
   display: flex;
   align-items: baseline;
   gap: 1ch;
 }
 
-.find-input {
+.search-input {
   flex: 1;
   min-width: 0;
   max-width: 40ch;
@@ -7031,38 +7020,38 @@ body.wb-full-open {
   line-height: 1.6;
 }
 
-.found.lines {
+.found {
   list-style: none;
   margin: 0.2rem 0 0;
   padding: 0;
 }
 
 /* The one Enter would follow is lit as a line under the cursor is, with the accent at its edge. */
-.found.lines li {
+.found li {
   margin: 0 -0.5rem;
   padding: 0.15rem 0.5rem;
   border-left: 2px solid transparent;
 }
 
-.found.lines li.chosen {
+.found li.chosen {
   background: var(--sunken);
   border-left-color: var(--accent);
 }
 
-.found.lines a {
+.found a {
   color: var(--ink);
   text-decoration: none;
 }
 
-.found.lines a:hover {
+.found a:hover {
   text-decoration: underline;
 }
 
-.found.lines .hint {
+.found .hint {
   color: var(--dim);
 }
 
-.found.lines .said {
+.found .said {
   display: block;
   padding-left: 2ch;
   overflow: hidden;
@@ -7073,180 +7062,36 @@ body.wb-full-open {
   text-overflow: ellipsis;
 }
 
+/* The words found are the page's ink, bold, as grep marks them. */
+.found mark {
+  background: none;
+  color: var(--ink);
+  font-weight: bold;
+}
+
 .found-here .none,
 .found-here .more {
   margin: 0.2rem 0 0;
   color: var(--dim);
 }
 
-/* 3. In a palette: a glass beside the half-moon, and a box over the page that lists the pages found as cards. */
-.search-open {
-  display: none;
-  flex: none;
-  align-self: flex-start;
-  width: 1.6rem;
-  height: 1.6rem;
-  margin-top: 0.05rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--dim);
-  line-height: 1;
-  cursor: pointer;
-}
-
-[data-flags~="search=palette"] .search-open {
-  display: grid;
-  place-items: center;
-}
-
-.search-open:hover {
-  color: var(--accent);
-}
-
-.palette {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 12vh 1rem 1rem;
-  background: color-mix(in srgb, var(--paper) 60%, transparent);
-  backdrop-filter: blur(2px);
-}
-
-.palette[hidden] {
-  display: none;
-}
-
-.palette-box {
-  display: flex;
-  flex-direction: column;
-  width: min(40rem, 100%);
-  max-height: 76vh;
-  overflow: hidden;
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  background: var(--paper);
-  box-shadow: 0 14px 44px rgb(0 0 0 / 0.2);
-}
-
-.palette-line {
-  display: flex;
-  align-items: baseline;
-  gap: 1ch;
-  margin: 0;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.palette-line input {
-  flex: 1;
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  background: none;
-  color: var(--ink);
-  caret-color: var(--accent);
-  font: inherit;
-}
-
-.palette-found {
-  overflow-y: auto;
-  padding: 0.4rem;
-}
-
-.found.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-.found .card {
-  display: grid;
-  gap: 0.1rem;
-  padding: 0.55rem 0.75rem;
-  border-left: 3px solid transparent;
-  border-radius: 5px;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.found .card.chosen,
-.found .card:hover {
-  background: var(--sunken);
-  border-left-color: var(--accent);
-}
-
-.found .card .where {
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 0.75rem;
-}
-
-.found .card strong {
-  color: var(--title);
-  font-weight: 600;
-}
-
-.found .card .said {
-  display: -webkit-box;
-  overflow: hidden;
-  color: var(--dim);
-  font-size: 0.9rem;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.palette .none,
-.palette .more {
-  margin: 0;
-  padding: 0.5rem 0.75rem;
+/* What search prints at the prompt is read as grep's is: the line that says the words dimmed under the page's path. */
+.screen pre.found .said {
   color: var(--dim);
 }
 
-.palette-keys {
-  margin: 0;
-  padding: 0.5rem 1rem;
-  border-top: 1px solid var(--rule);
-  color: var(--dim);
-  font-family: var(--mono);
-  font-size: 0.75rem;
-}
-
-/* On a phone the header is a grid of the world, the session's first line and the half-moon; the glass and the finding take places in it. */
+/* On a phone the header is a grid of the world, the session's first line and the half-moon; the search takes the line's place, and what it finds the listing's. */
 @media (max-width: 640px) {
-  [data-flags~="search=palette"] .site-header {
-    grid-template-columns: auto 1fr auto auto;
-  }
-
-  .search-open {
-    grid-area: 1 / 3;
-  }
-
-  [data-flags~="search=palette"] .theme-toggle {
-    grid-area: 1 / 4;
-  }
-
-  .session.finding > .find-line {
+  .session.searching > .search-line {
     grid-area: 1 / 2;
   }
 
-  .session.finding > .found-here {
+  .session.searching > .found-here {
     grid-column: 1 / -1;
     margin-top: 0.4rem;
   }
 
-  .found.lines .said {
+  .found .said {
     white-space: normal;
-  }
-}
-
-@media print {
-  .search-open,
-  .palette {
-    display: none;
   }
 }

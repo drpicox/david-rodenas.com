@@ -9,8 +9,4 @@ export const searchKeys = {
     input.value = words;
     input.dispatchEvent(new Event("input", { bubbles: true }));
   },
-  choose(choice: string | null): void {
-    if (choice === null) delete document.documentElement.dataset["flags"];
-    else document.documentElement.dataset["flags"] = `search=${choice}`;
-  },
 };

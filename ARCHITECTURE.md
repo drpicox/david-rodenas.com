@@ -74,7 +74,7 @@ graph LR
     barcelona["<b>barcelona-series</b><br/>Barcelona's mean temperature since 1780,<br/>month by month, and the open data it keeps"]
     writings["<b>writings</b><br/>the essays and talks the pages list,<br/>as a tool for an agent"]
     recipes["<b>recipes</b><br/>a flag: bigger nodes for the blueprints,<br/>two sources crossed in one"]
-    search["<b>search</b><br/>a page by what it says: a command,<br/>and three ways to ask it behind a flag"]
+    search["<b>search</b><br/>a page by what it says: the command,<br/>and the header that types it"]
   end
 
   world -. "turning, handed over by allFeatures.ts" .-> sky
