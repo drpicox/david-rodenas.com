@@ -5,6 +5,7 @@ import type { Kit } from "../../platform/blueprint/kitOf";
 import { tag } from "../../platform/blueprint/tag";
 import { conduitPath } from "./conduitPath";
 import { faceOf, type Port } from "./faceOf";
+import { flowOf } from "./flowOf";
 import { SCHEMATIC } from "./SCHEMATIC";
 import { schematicOf } from "./schematicOf";
 
@@ -42,6 +43,7 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
   const placed = new Map(schematic.modules.map((module) => [module.id, module]));
   const byId = new Map(blueprint.nodes.map((node) => [node.id, node]));
   const feeding = new Set(schematic.conduits.map(({ wire }) => wire.from.node));
+  const flow = flowOf(schematic);
   const ran = (id: string) => (runs.get(id) ? `${runs.get(id)! % 2}` : null);
 
   const conduits = schematic.conduits.map(({ wire, points }) => {
@@ -51,8 +53,15 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     const names = ["lc-conduit", evaluation.get(wire.from.node)?.state === "done" ? "" : "idle", ran(wire.from.node) ? `flow-${ran(wire.from.node)}` : "", chosen !== null && (wire.from.node === chosen || wire.to.node === chosen) ? "near" : ""];
     return tag(
       "g",
-      { class: names.filter(Boolean).join(" "), "data-key": `wire:${wire.to.node}.${wire.to.pin}`, style: `--pin: var(${kit.types.get(type)?.colour ?? "--dim"}); --lc-step: ${placed.get(wire.from.node)?.column ?? 0}` },
+      {
+        class: names.filter(Boolean).join(" "),
+        // Called by both its ends: wired from somewhere else, it is another conduit, and one that begins is seen to.
+        "data-key": `wire:${wire.to.node}.${wire.to.pin}:${wire.from.node}.${wire.from.pin}`,
+        style: `--pin: var(${kit.types.get(type)?.colour ?? "--dim"}); --lc-step: ${placed.get(wire.from.node)?.column ?? 0}; --lc-from: ${flow.get(wire) ?? 0}`,
+      },
       tag("path", { class: "lc-line", d }),
+      // What flows along it, all the while: drawn in pixels, so that it goes as fast along a long conduit as along a short one.
+      tag("path", { class: "lc-stream", d }),
       // A stroke a hundred long whatever the conduit's length, so that one rule of the stylesheet sends a pulse along any of them.
       tag("path", { class: "lc-pulse", d, pathLength: 100 }),
     );

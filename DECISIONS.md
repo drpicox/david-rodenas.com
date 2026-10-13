@@ -45,6 +45,19 @@ anew is known, and a pulse goes once along the conduits out of whatever ran
 again, a column later the further along the flow. Turning a dial shows what
 depends on it. It runs once and stops, so it needs no button to pause it.
 
+David, having seen it run: the flow is the best of it — could it stay on,
+slowly, or at least when a conduit is made or something touched? So what
+flows is seen flowing all the while: short strokes a fixed way apart go
+slowly along every conduit that carries something. Each conduit is as far
+out of step as the flow has come when it sets out along it (`flowOf`), so
+one movement of the stylesheet does for all of them, and what leaves a
+module is what came into it a module's width before. The pulse is still
+what ran again, brighter and faster, and a conduit that is new is seen to
+begin, since it is called by both its ends. This is the one thing on the
+display that moves without being asked, so it keeps the rule of whatever
+moves on this site: only while the display is on screen, with a pad (Flow)
+that puts it to rest, and never for a reader who asked for less motion.
+
 What it does not do, on purpose: wires are not drawn by hand, nodes are not
 placed, and only what needs nothing wired into it can be added from nothing.
 The blueprint's text is a pad away for the rest, and the workbench a flag

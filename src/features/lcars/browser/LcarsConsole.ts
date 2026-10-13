@@ -26,9 +26,9 @@ const two = (count: number) => String(count).padStart(2, "0");
  * of what hands do. Nothing here is dragged: the display lays the modules
  * out itself, on a grid, and a blueprint is worked on by pressing — a module,
  * to ask what it takes and gives; a pad, to add what could come next, to
- * take it away again, to go back. Every figure on a pad is a real one, and a
- * module is seen to run: a pulse goes along the conduits out of whatever
- * ran again, which is only what follows the dial that was turned.
+ * take it away again, to go back. Every figure on a pad is a real one, and
+ * what flows is seen to: a stream along every conduit, and a pulse out of
+ * whatever ran again, which is only what follows the dial that was turned.
  *
  * A trial, and a small one on purpose: wires are not drawn by hand here, nor
  * modules placed. The text of the blueprint is a pad away, for whatever the
@@ -41,6 +41,10 @@ export class LcarsConsole implements Bench {
   private chosen: string | null = null;
   private pointed: string | null = null;
   private closeMenu: (() => void) | null = null;
+  /** Whether what flows is to be seen flowing, which its pad says, and whether the display is where it can be seen at all. */
+  private flowing = true;
+  private onScreen = true;
+  private readonly watched: IntersectionObserver | undefined;
   private readonly title = el("p", { class: "lc-title" });
   private readonly count = el("span", { class: "lc-count" });
   private readonly about = el("p", { class: "lc-about" });
@@ -53,7 +57,7 @@ export class LcarsConsole implements Bench {
   private readonly status = el("p", { class: "lc-status", "aria-live": "polite" });
   private readonly query: QueryView;
   private readonly board: BoardView;
-  private readonly keys: Record<"examples" | "undo" | "redo" | "reset" | "full", HTMLButtonElement>;
+  private readonly keys: Record<"examples" | "undo" | "redo" | "reset" | "flow" | "full", HTMLButtonElement>;
 
   constructor(private readonly setting: BenchSetting) {
     // Kept without where the nodes stand: this display never placed them, and the workbench tidies what does not say.
@@ -83,6 +87,7 @@ export class LcarsConsole implements Bench {
       undo: key("undo", "Undo", "Undo (Ctrl+Z)", () => this.work.undo()),
       redo: key("redo", "Redo", "Redo (Ctrl+Shift+Z)", () => this.work.redo()),
       reset: key("reset", "Reset", "Go back to the blueprint as the page wrote it", () => this.work.reset()),
+      flow: key("flow", "Flow", "What flows along the conduits, seen flowing: pressed, it rests", () => this.toggleFlow()),
       full: key("full", "Full display", "Give the display the whole window (Esc to come back)", () => this.toggleFull()),
     };
     const several = setting.examples.length > 1;
@@ -103,6 +108,7 @@ export class LcarsConsole implements Bench {
       key("text", "Text", "The blueprint as text, to read, copy or write", () => this.openText()),
       key("link", "Link", "Copy a link to the blueprint as it is now", () => void this.share()),
       key("help", "Help", "How this display is worked", () => this.toggleHelp()),
+      this.keys.flow,
       this.keys.full,
       this.fill,
     );
@@ -130,6 +136,17 @@ export class LcarsConsole implements Bench {
 
     // The stylesheet draws a module at the sizes a conduit is run to: it is told them, so the two cannot drift apart.
     for (const [name, size] of Object.entries(SCHEMATIC)) this.element.style.setProperty(`--lc-${name}`, `${size}px`);
+
+    // Whatever moves on a page moves only where it is seen: off the screen, the flow rests where it was.
+    this.watched =
+      typeof IntersectionObserver === "function"
+        ? new IntersectionObserver((entries) => {
+            for (const entry of entries) this.onScreen = entry.isIntersecting;
+            this.showFlow();
+          })
+        : undefined;
+    this.watched?.observe(this.element);
+    this.showFlow();
 
     this.listen();
     if (this.work.still) this.board.showStill(this.work.still);
@@ -162,6 +179,7 @@ export class LcarsConsole implements Bench {
 
   stop(): void {
     this.work.stop();
+    this.watched?.disconnect();
     this.closeMenu?.();
     document.body.classList.remove("lc-full-open");
   }
@@ -353,12 +371,23 @@ export class LcarsConsole implements Bench {
         line("Dial", "beside a value puts it on the board; a dial is turned there, or where it is chosen."),
         line("Add", "adds what needs nothing wired into it: a source, a table of your own, a note."),
         line("Remove, or Delete,", "takes the module chosen away; Undo, or Ctrl+Z, brings it back."),
-        line("A pulse along a conduit", "is what ran again: turning a dial runs only what follows it."),
+        line("What moves along a conduit", "is what flows; the brighter pulse is what ran again, which is only what follows the dial that was turned. Flow puts the stream to rest."),
         line("Text", "is the blueprint as it is written, for whatever the pads do not reach. Wires are not drawn by hand here: the workbench is a flag away, flags lcars off."),
       ),
     );
     close.addEventListener("click", () => help.remove());
     this.body.append(help);
+  }
+
+  /** The flow along the conduits, let go on or put to rest: whatever moves all the while has a pad that stops it. */
+  private toggleFlow(): void {
+    this.flowing = !this.flowing;
+    this.showFlow();
+  }
+
+  private showFlow(): void {
+    this.element.classList.toggle("flowing", this.flowing && this.onScreen);
+    this.keys.flow.setAttribute("aria-pressed", String(this.flowing));
   }
 
   private full(): boolean {

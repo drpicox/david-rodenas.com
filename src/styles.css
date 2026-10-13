@@ -7335,7 +7335,13 @@ body.wb-full-open {
 .app .lcars .lc-key-text { --lc-key: var(--lc-lilac); }
 .app .lcars .lc-key-link { --lc-key: var(--lc-lilac); }
 .app .lcars .lc-key-help { --lc-key: var(--lc-violet); }
+.app .lcars .lc-key-flow { --lc-key: var(--lc-ice); }
 .app .lcars .lc-key-full { --lc-key: var(--lc-orange); min-height: 2.8rem; }
+
+/* A pad that holds something on is lit while it does, and low once it is let go. */
+.app .lcars .lc-key[aria-pressed="false"] {
+  background: color-mix(in srgb, var(--lc-key) 38%, #000);
+}
 
 /* The block the pads end in: as tall as the display has room for, and carrying how many modules and conduits it shows. */
 .app .lc-fill {
@@ -7436,6 +7442,7 @@ body.wb-full-open {
 }
 
 .app .lc-line,
+.app .lc-stream,
 .app .lc-pulse {
   fill: none;
   stroke: var(--pin);
@@ -7449,6 +7456,36 @@ body.wb-full-open {
 
 .app .lc-world.tracing .lc-conduit:not(.near) .lc-line {
   opacity: 0.32;
+}
+
+/*
+ * What flows along a conduit, seen flowing all the while: short strokes a
+ * fixed way apart that go along it slowly, as fast along a long conduit as
+ * along a short one. Each conduit is as far out of step as the flow has come
+ * when it sets out, so one movement does for all of them, and what leaves a
+ * module is what came into it. Only while the display is on the screen and
+ * the pad that holds it on is lit; never for a reader who asked for less
+ * motion.
+ */
+.app .lc-stream {
+  stroke: color-mix(in srgb, var(--pin) 25%, var(--lc-white));
+  stroke-dasharray: 6 42;
+  stroke-dashoffset: calc(var(--lc-from) * 1px + 6px);
+  opacity: 0;
+}
+
+.app .lcars.flowing .lc-conduit:not(.idle) .lc-stream {
+  opacity: 1;
+  animation: lc-stream 2s linear infinite;
+}
+
+/* With a module chosen, only its part of the flow is seen flowing. */
+.app .lcars.flowing .lc-world.tracing .lc-conduit:not(.near) .lc-stream {
+  opacity: 0;
+}
+
+@keyframes lc-stream {
+  to { stroke-dashoffset: calc(var(--lc-from) * 1px - 42px); }
 }
 
 /* A pulse: one short white stroke that goes the length of the conduit once, a column later the further along the flow. */
@@ -8466,6 +8503,12 @@ body.lc-full-open {
   .app .lcars *::before,
   .app .lcars *::after {
     animation: none !important;
+  }
+
+  /* Nothing flows, so there is nothing for a pad to hold on. */
+  .app .lcars .lc-stream,
+  .app .lcars .lc-key-flow {
+    display: none;
   }
 }
 

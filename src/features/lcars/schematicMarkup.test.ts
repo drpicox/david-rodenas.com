@@ -73,17 +73,29 @@ describe("a schematic, as markup", () => {
   it("runs a conduit for every wire, in the colour of what flows along it, from the port it leaves to the port of the input it feeds", () => {
     expect(html.match(/<g class="lc-conduit/g)?.length).toBe(3);
     const level = `M${wide(false, true)} ${SCHEMATIC.pad / 2} L${wide(false, true) + SCHEMATIC.channel} ${SCHEMATIC.pad / 2}`;
-    expect(html).toContain(`data-key="wire:n.place" style="--pin: var(--bp-value); --lc-step: 0"><path class="lc-line" d="${level}"></path><path class="lc-pulse" d="${level}" pathLength="100"></path></g>`);
-    expect(html).toContain('data-key="wire:bars.table" style="--pin: var(--bp-table)');
+    expect(html).toContain(`data-key="wire:n.place:place.value" style="--pin: var(--bp-value); --lc-step: 0; --lc-from: ${wide(false, true)}"><path class="lc-line" d="${level}"></path>`);
+    expect(html).toContain('data-key="wire:bars.table:whole.table" style="--pin: var(--bp-table)');
     const joined = drawn("a = nights\nb = nights\njoin left: a right: b");
-    const ends = [...joined.matchAll(/data-key="wire:join\.(\w+)"[^>]*><path class="lc-line" d="[^"]* (\S+)"/g)].map((found) => [found[1], Number(found[2])]);
+    const ends = [...joined.matchAll(/data-key="wire:join\.(\w+):[^"]*"[^>]*><path class="lc-line" d="[^"]* (\S+)"/g)].map((found) => [found[1], Number(found[2])]);
     expect(ends).toEqual([["left", (SCHEMATIC.pad - SCHEMATIC.port) / 2], ["right", (SCHEMATIC.pad + SCHEMATIC.port) / 2]]);
+  });
+
+  it("draws along each conduit a stream to flow, and a pulse to go its length once, each as far out of step as the flow has come when it sets out", () => {
+    const level = `M${wide(false, true)} ${SCHEMATIC.pad / 2} L${wide(false, true) + SCHEMATIC.channel} ${SCHEMATIC.pad / 2}`;
+    expect(html).toContain(`<path class="lc-line" d="${level}"></path><path class="lc-stream" d="${level}"></path><path class="lc-pulse" d="${level}" pathLength="100"></path></g>`);
+    // Out of the dial, along a channel, across the module it feeds: where the next conduit sets out.
+    expect(html).toContain(`data-key="wire:whole.table:n.table" style="--pin: var(--bp-table); --lc-step: 1; --lc-from: ${wide(false, true) + SCHEMATIC.channel + wide(true, true)}"`);
+  });
+
+  it("calls a conduit by both its ends: one wired from somewhere else is another conduit, which is seen to begin", () => {
+    expect(drawn("a = nights\nb = nights\nbars table: a")).toContain('data-key="wire:bars.table:a.table"');
+    expect(drawn("a = nights\nb = nights\nbars table: b")).toContain('data-key="wire:bars.table:b.table"');
   });
 
   it("dims a module that has not answered and the conduits out of it, and marks one in trouble", () => {
     const waiting = drawn(TEXT, {}, false);
     expect(classOf(moduleOf(waiting, "n"))).toContain("idle");
-    expect(waiting).toContain('<g class="lc-conduit idle" data-key="wire:whole.table"');
+    expect(waiting).toContain('<g class="lc-conduit idle" data-key="wire:whole.table:n.table"');
     expect(classOf(moduleOf(html, "n"))).not.toContain("idle");
     expect(classOf(moduleOf(drawn("bars"), "bars"))).toContain("trouble");
     expect(moduleOf(drawn("bars"), "bars")).toContain('<span class="lc-row missing"><i>table</i><b>—</b></span>');
@@ -95,9 +107,9 @@ describe("a schematic, as markup", () => {
     expect(moduleOf(chosen, "whole")).toContain('aria-pressed="true"');
     expect(classOf(moduleOf(chosen, "whole"))).toContain("chosen");
     expect(moduleOf(chosen, "n")).toContain('aria-pressed="false"');
-    expect(chosen).toContain('<g class="lc-conduit near" data-key="wire:whole.table"');
-    expect(chosen).toContain('<g class="lc-conduit near" data-key="wire:bars.table"');
-    expect(chosen).toContain('<g class="lc-conduit" data-key="wire:n.place"');
+    expect(chosen).toContain('<g class="lc-conduit near" data-key="wire:whole.table:n.table"');
+    expect(chosen).toContain('<g class="lc-conduit near" data-key="wire:bars.table:whole.table"');
+    expect(chosen).toContain('<g class="lc-conduit" data-key="wire:n.place:place.value"');
   });
 
   it("lights the module pointed at from the board, without choosing it", () => {
@@ -110,7 +122,7 @@ describe("a schematic, as markup", () => {
   it("marks a module each time it runs, differently from the time before, and what flows out of it with it", () => {
     const once = drawn(TEXT, { runs: new Map([["n", 1]]) });
     expect(classOf(moduleOf(once, "n"))).toContain("ran-1");
-    expect(once).toContain('<g class="lc-conduit flow-1" data-key="wire:whole.table"');
+    expect(once).toContain('<g class="lc-conduit flow-1" data-key="wire:whole.table:n.table"');
     expect(classOf(moduleOf(once, "whole")).some((name) => name.startsWith("ran-"))).toBe(false);
     expect(classOf(moduleOf(drawn(TEXT, { runs: new Map([["n", 2]]) }), "n"))).toContain("ran-0");
   });

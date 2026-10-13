@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { aKit } from "../../../platform/blueprint/aKit";
 import type { Example } from "../../../platform/blueprint/examplesOf";
 import type { BenchSetting } from "../../../platform/plugin/Bench";
@@ -37,7 +37,10 @@ function display(example: string | readonly Example[], more: Partial<BenchSettin
 
 const press = (element: Element, name: string, extra: KeyboardEventInit = {}) => element.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true, ...extra }));
 
-afterEach(() => document.body.replaceChildren());
+afterEach(() => {
+  document.body.replaceChildren();
+  vi.unstubAllGlobals();
+});
 
 const NIGHTS = 'place = dial "Station" value: X4\nn = nights place: place\nbars "Nights a year" table: n';
 
@@ -173,8 +176,45 @@ describe("a blueprint on the display of a starship", () => {
     select.dispatchEvent(new Event("change"));
     await settle();
     expect([ranOf("n"), ranOf("other")]).toEqual(["ran-0", "ran-1"]);
-    expect(element.querySelector('[data-key="wire:bars.table"]')?.classList.contains("flow-0")).toBe(true);
+    expect(element.querySelector('[data-key^="wire:bars.table:"]')?.classList.contains("flow-0")).toBe(true);
     expect(module("place")?.querySelector(".lc-said")?.textContent).toBe("Dial · Badalona");
+  });
+
+  it("lets what flows be seen flowing, all the while, until its pad is pressed, and again once it is pressed again", () => {
+    const { element, key } = display(NIGHTS);
+    expect(element.classList.contains("flowing")).toBe(true);
+    expect(key("flow").getAttribute("aria-pressed")).toBe("true");
+    key("flow").click();
+    expect(element.classList.contains("flowing")).toBe(false);
+    expect(key("flow").getAttribute("aria-pressed")).toBe("false");
+    key("flow").click();
+    expect(element.classList.contains("flowing")).toBe(true);
+  });
+
+  it("rests the flow while the display is off the screen, and no longer watches for it once it is stopped", () => {
+    const watching: { seen: (entries: { isIntersecting: boolean }[]) => void; over: boolean }[] = [];
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        private readonly held: (typeof watching)[number];
+        constructor(seen: (entries: { isIntersecting: boolean }[]) => void) {
+          this.held = { seen, over: false };
+          watching.push(this.held);
+        }
+        observe() {}
+        disconnect() {
+          this.held.over = true;
+        }
+      },
+    );
+    const { console, element, key } = display(NIGHTS);
+    watching[0]?.seen([{ isIntersecting: false }]);
+    expect(element.classList.contains("flowing")).toBe(false);
+    expect(key("flow").getAttribute("aria-pressed")).toBe("true");
+    watching[0]?.seen([{ isIntersecting: true }]);
+    expect(element.classList.contains("flowing")).toBe(true);
+    console.stop();
+    expect(watching[0]?.over).toBe(true);
   });
 
   it("puts an input on the board as a dial, when asked beside it", async () => {
