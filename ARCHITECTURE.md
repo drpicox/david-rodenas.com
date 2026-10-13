@@ -74,6 +74,7 @@ graph LR
     barcelona["<b>barcelona-series</b><br/>Barcelona's mean temperature since 1780,<br/>month by month, and the open data it keeps"]
     writings["<b>writings</b><br/>the essays and talks the pages list,<br/>as a tool for an agent"]
     recipes["<b>recipes</b><br/>a flag: bigger nodes for the blueprints,<br/>two sources crossed in one"]
+    lcars["<b>lcars</b><br/>a flag: the blueprints as a starship's<br/>display, worked by pressing pads"]
     search["<b>search</b><br/>a page by what it says: the command,<br/>and the header that types it"]
   end
 
@@ -103,6 +104,7 @@ graph LR
   feature -- "stills" --> stills["fillStills<br/><i>what a program's place holds<br/>in the HTML, before any script</i>"]
   feature -- "sources" --> sources["refreshSource<br/><i>open data, a finished year<br/>at a time, before a build</i>"]
   feature -- "nodes, pinTypes" --> nodes["a blueprint's nodes<br/><i>its data as sources, wired<br/>to steps, statistics, pictures:<br/>§9</i>"]
+  feature -- "benches" --> benches["another bench for a blueprint<br/><i>behind a flag, in the<br/>workbench's place: §9</i>"]
   feature -- "install(prompt)" --> once["once, when the page is set up"]
   feature -- "arrive(page)" --> moved["every time the page changes<br/>without a reload"]
 ```
@@ -334,11 +336,15 @@ graph LR
   parse["parseBlueprint<br/><i>one node a line; a name<br/>that fits an input is a wire</i>"]
   run["evaluateBlueprint<br/><i>in the order the wires need;<br/>what did not change is kept;<br/>a file on its way is waited for</i>"]
   still["blueprintStill<br/><i>node, at build time:<br/>the board, the blueprint drawn,<br/>its text</i>"]
-  bench["workbench/browser<br/><i>the canvas and the board,<br/>run again at every edit</i>"]
+  open["workbench/OpenBlueprint<br/><i>the one open: its history, its runs,<br/>the reader's own version, kept</i>"]
+  bench["workbench/browser<br/><i>the canvas and the board:<br/>wires dragged by hand</i>"]
+  other["a feature's bench<br/><i>behind a flag: lcars, a schematic<br/>laid out by the display, and pads</i>"]
 
   text --> parse --> run
   run --> still
-  run --> bench
+  run --> open
+  open --> bench
+  open --> other
 ```
 
 The blueprint is only data, so it has a text, and the text is what a page
@@ -358,4 +364,17 @@ pictures are markup, the same at build time and in the browser, keyed so
 that the browser can change them in place and a bar that grows is seen to.
 `platform/blueprint` needs nothing but the escaping of markup, so the
 features' nodes, the plugin and the workbench can all need it; the workbench
-is needed by the composition alone.
+is needed by the composition, and by a feature that brings a bench of its own.
+
+A bench is what a page's blueprint is worked on at (`plugin/Bench`), and
+there can be more than one. What is the same at every bench is not a bench's:
+`OpenBlueprint` is the blueprint open — which of the page's examples, every
+state it was in, what a run of it made, the reader's own version kept — and
+it stands on no page, so it is tested in node. The workbench is one view of
+it, with a canvas and wires to drag. A feature can bring another behind a
+flag (`Feature.benches`, chosen by `benchOf` each time a place is filled):
+`lcars` lays the same blueprint out as a schematic on a grid (`schematicOf`:
+the tidying's columns, a row for every module and for every conduit that
+only passes a column, a lane for each output in the channels between) and
+works it by pressing pads. The mount, the address, the examples, an agent's
+blueprint and what the reader's browser keeps are the same for both.

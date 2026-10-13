@@ -7,6 +7,51 @@ why, so the reasoning survives longer than the memory of it.
 
 ## Decided
 
+### The blueprints as an LCARS display, a trial (13 October 2026)
+David saw an LCARS panel drawn for the web — the displays of Star Trek's
+starships — and asked whether the blueprints could have a version in that
+style: behind a flag, a side project that need not do everything, "and not
+an LCARS with the blueprints set in it". So it is not a skin on the
+workbench. A canvas where nodes are dragged about and wires pulled by hand
+is Unreal's idea of what hands do; an LCARS panel is pads to press, and the
+display lays itself out. `features/lcars` is another bench, behind
+`flags lcars on`: the same blueprint, laid out as a schematic on a grid —
+the tidying's columns, modules as pads in two blocks, conduits that run
+level and turn only in the channels between columns, each output on a lane
+of its own — and worked by pressing: a module, to ask what it takes and
+gives, where its inputs are written; a pad, for what could come next
+(`suggestionsFor`, already there), to take a module away, to go back.
+
+Two things the idiom gave that the workbench has not. An LCARS panel is
+covered in figures that mean nothing; here every one is real — the rows a
+module gave, the number it found, what a dial is set to (`codeOf`). And a
+module is seen to run: a run keeps what did not change, so what it made
+anew is known, and a pulse goes once along the conduits out of whatever ran
+again, a column later the further along the flow. Turning a dial shows what
+depends on it. It runs once and stops, so it needs no button to pause it.
+
+What it does not do, on purpose: wires are not drawn by hand, nodes are not
+placed, and only what needs nothing wired into it can be added from nothing.
+The blueprint's text is a pad away for the rest, and the workbench a flag
+away; both keep the reader's version of an example in the same place, the
+display's without where its nodes stand.
+
+It cost the frame one seam and one refactor, and both stand without it. A
+feature may bring a bench (`Feature.benches`, by flag; `plugin/Bench` says
+what any bench is handed and asked), and the mount asks which each time it
+fills a place. And two benches each keeping a history, running the
+blueprint and saving the reader's version made the knot of files deeper —
+the ratchet said so, by two — so what is the same at every bench became
+`OpenBlueprint`, tested without a page, and the workbench and the display
+are two views of it. The workbench lost a hundred lines by it.
+
+No font was added. The face is the narrowest each system has — DIN or
+Helvetica condensed on a Mac or an iPhone, Bahnschrift on Windows, Roboto
+condensed on Android — which is not the same display everywhere, and was
+only looked at on a Mac. A web font would make it
+so, and would be the first thing this site ships that was not written here:
+not for a trial.
+
 ### Search: the header and the prompt, one command (10 October 2026)
 The site has grown past what `ls` and the directories show at a glance, and
 David asked for a search, but first for three ways of it to try against each

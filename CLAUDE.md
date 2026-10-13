@@ -116,16 +116,20 @@ The top level says what this is: a frame, and the features standing in it.
     has: a dial, steps on tables, statistics, pictures (`paint/`). A feature
     brings the nodes about its own data, as `nodes` and `pinTypes`. Needs
     nothing but the escaping of markup, so everything can need it
-  - `workbench/` — where a blueprint written in a page is worked on: in
-    `browser/`, the canvas, the board, the menu, the text; mounted by
-    `main.ts`, the one place that knows every feature's nodes
+  - `workbench/` — where a blueprint written in a page is worked on:
+    `OpenBlueprint`, the one open, with its history, its runs and the
+    reader's own version, which stands on no page; and in `browser/`, the
+    canvas, the board, the menu, the text, which draw it. Mounted by
+    `main.ts`, the one place that knows every feature's nodes — and, where a
+    feature brings another bench behind a flag (`Feature.benches`), which
+    bench a blueprint opens at
   - `browser/mountPlayer` — how anything that moves is played: only on screen,
     with a button to pause it, resting on its last frame, never for a reader
     who asked for less motion
 - `src/features/` — **one folder each, and deleting the folder deletes the
   feature.** `world/`, `theme/`, `sky/`, `technical-debt/`,
   `developer-meetings/`, `headline/`, `air-quality/`, `weather/`, `sea/`, `barcelona-series/`, `next-word/`,
-  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`, `adventure/`, `post-tests/`, `thesis-results/`, `step-names/`, `bowling-kata/`, `tests-as-examples/`, `gherkin-genie/`, `small-steps/`, `guess-the-rule/`, `writings/`, `recipes/`, `search/`. A feature owns everything about itself: its rules,
+  `rocket/`, `packages/`, `fish-market/`, `lagoon/`, `maze/`, `first-network/`, `fibergochi/`, `portfolio/`, `architecture/`, `adventure/`, `post-tests/`, `thesis-results/`, `step-names/`, `bowling-kata/`, `tests-as-examples/`, `gherkin-genie/`, `small-steps/`, `guess-the-rule/`, `writings/`, `recipes/`, `lcars/`, `search/`. A feature owns everything about itself: its rules,
   its commands, its screen, its storage.
 - `src/main.ts` — the composition root, and the only file allowed to know
   about more than one feature at a time.

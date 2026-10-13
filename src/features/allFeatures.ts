@@ -9,6 +9,7 @@ import { firstNetworkFeature } from "./first-network/firstNetworkFeature";
 import { fishMarketFeature } from "./fish-market/fishMarketFeature";
 import { headlineFeature } from "./headline/headlineFeature";
 import { lagoonFeature } from "./lagoon/lagoonFeature";
+import { lcarsFeature } from "./lcars/lcarsFeature";
 import { mazeFeature } from "./maze/mazeFeature";
 import { nextWordFeature } from "./next-word/nextWordFeature";
 import { packagesFeature } from "./packages/packagesFeature";
@@ -72,5 +73,6 @@ export const allFeatures: readonly Feature[] = [
   guessTheRuleFeature,
   writingsFeature,
   recipesFeature,
+  lcarsFeature,
   searchFeature,
 ];

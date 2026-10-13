@@ -6937,6 +6937,1432 @@ body.wb-full-open {
   margin-left: auto;
 }
 
+/* ---- lcars: the blueprints as a starship's display, a trial behind a flag ---- */
+
+/*
+ * The display is black glass whatever paper the page is on, as a panel of a
+ * starship is, and it speaks in one tall narrow face, in capitals. There is
+ * no web font on this site, so the face is the narrowest each system has:
+ * DIN or Helvetica condensed on a Mac or an iPhone, Bahnschrift on Windows,
+ * Roboto condensed on Android. Its colours are the warm ones of the 24th century's panels — the
+ * grey of the later ships left out — and the site's own are said again
+ * inside it, so that everything a blueprint paints follows: a bar is orange
+ * here because the accent is.
+ */
+.app .lcars {
+  --lc-orange: #ff9933;
+  --lc-gold: #ffcc66;
+  --lc-peach: #ffcc99;
+  --lc-lilac: #cc99cc;
+  --lc-bell: #9999cc;
+  --lc-violet: #9c9cff;
+  --lc-ice: #99ccff;
+  --lc-rose: #cc6699;
+  --lc-red: #cc6666;
+  --lc-alert: #ff4a2e;
+  --lc-green: #8fd6a3;
+  --lc-white: #f6f4ff;
+  --lc-font: "Antonio", "Swiss911 UCm BT", "DIN Condensed", "HelveticaNeue-CondensedBold", "Avenir Next Condensed", "Bahnschrift", "Roboto Condensed", sans-serif-condensed, "Arial Narrow", "Liberation Sans Narrow", sans-serif;
+  --lc-side: 7.25rem;
+  --lc-bar: 1.3rem;
+  --lc-gap: 0.28rem;
+  --lc-inner: 1.5rem;
+
+  --paper: #000;
+  --sunken: #0b0b12;
+  --ink: var(--lc-peach);
+  --lead: var(--lc-peach);
+  --dim: var(--lc-bell);
+  --rule: #2c2c44;
+  --accent: var(--lc-orange);
+  --accent-soft: var(--lc-bell);
+  --warn: var(--lc-alert);
+  --hl-string: var(--lc-green);
+  --arrow-in: var(--lc-gold);
+  --heat: var(--lc-orange);
+  --heat-top: var(--lc-peach);
+  --heat-warm: var(--lc-orange);
+  --heat-warm-top: #ffe9cf;
+  --bp-number: var(--lc-green);
+  --bp-text: var(--lc-rose);
+  --bp-flag: var(--lc-red);
+  --bp-table: var(--lc-ice);
+  --bp-graph: var(--lc-orange);
+  --bp-value: var(--lc-gold);
+  --bp-heat: var(--lc-orange);
+  --bp-warm: var(--lc-orange);
+  --bp-cold: var(--lc-ice);
+  --bp-role-dial: var(--lc-gold);
+  --bp-role-source: var(--lc-orange);
+  --bp-role-step: var(--lc-bell);
+  --bp-role-statistic: var(--lc-lilac);
+  --bp-role-paint: var(--lc-ice);
+  --bp-role-note: #8d7a9a;
+  --bp-c0: var(--lc-orange);
+  --bp-c1: var(--lc-violet);
+  --bp-c2: var(--lc-ice);
+  --bp-c3: var(--lc-rose);
+  --bp-c4: var(--lc-gold);
+  --bp-c5: var(--lc-green);
+  --bp-c6: var(--lc-lilac);
+  --bp-c7: var(--lc-white);
+
+  position: relative;
+  padding: 1rem 1.1rem 1.1rem 1rem;
+  /* Clipped to the glass: what opens over the decks dims the display behind it, and none of the page around it. */
+  overflow: clip;
+  border-radius: 1.3rem;
+  background: #000;
+  color: var(--lc-peach);
+  color-scheme: dark;
+  font-family: var(--lc-font);
+  font-stretch: condensed;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1.2;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.app .lcars p {
+  margin: 0;
+}
+
+.app .lcars button {
+  padding: 0.22em 1em 0.1em;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lc-key, var(--lc-peach));
+  color: #000;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.app .lcars button:hover {
+  filter: brightness(1.18);
+}
+
+.app .lcars button:active {
+  background: var(--lc-white);
+}
+
+.app .lcars button:disabled {
+  opacity: 0.3;
+  filter: none;
+  cursor: default;
+}
+
+.app .lcars :focus-visible {
+  outline: 2px solid var(--lc-white);
+  outline-offset: 2px;
+}
+
+/* What is written by hand: the right half of a pill, the half a label is the left of. */
+.app .lcars select,
+.app .lcars input[type="text"],
+.app .lcars input[type="number"],
+.app .lcars input[type="search"] {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: 1.5rem;
+  padding: 0.16em 0.9em 0 0.5em;
+  border: 0;
+  border-radius: 0 999px 999px 0;
+  background: var(--lc-peach);
+  color: #000;
+  font: inherit;
+  font-size: 0.9rem;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.app .lcars select {
+  appearance: none;
+  padding-right: 1.7em;
+  background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(-45deg, transparent 50%, #000 50%);
+  background-position: calc(100% - 0.95em) 54%, calc(100% - 0.6em) 54%;
+  background-size: 0.36em 0.36em;
+  background-repeat: no-repeat;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.app .lcars input::placeholder {
+  color: rgb(0 0 0 / 0.45);
+}
+
+.app .lcars input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--lc-orange);
+}
+
+.app .lcars textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-left: 0.5rem solid var(--lc-bell);
+  background: var(--sunken);
+  color: var(--lc-peach);
+  font: 12px/1.5 var(--mono);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---- the frame: two blocks, each an elbow and a bar, with a column of pads down the lower one ---- */
+
+.app .lc-top,
+.app .lc-main {
+  display: grid;
+  grid-template-columns: var(--lc-side) minmax(0, 1fr);
+}
+
+.app .lc-main {
+  grid-template-rows: auto 1fr;
+  margin-top: calc(var(--lc-gap) * 1.6);
+}
+
+.app .lc-top-side {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 3.2rem;
+  padding: 0.3rem 0.6rem 0.1rem;
+  border-top-left-radius: 1rem;
+  background: var(--lc-lilac);
+  color: #000;
+  font-size: 0.95rem;
+}
+
+.app .lc-top-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem 2rem;
+  align-items: start;
+  padding: 0 0 0.5rem 1.3rem;
+}
+
+/* An elbow: a block as wide as the column of pads, swept round a corner into the bar; the corner inside it is cut out of it, in black. */
+.app .lc-elbow {
+  position: relative;
+  grid-column: 1;
+  width: calc(var(--lc-side) + var(--lc-inner));
+  height: calc(var(--lc-bar) + var(--lc-inner));
+}
+
+.app .lc-elbow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: var(--lc-inner);
+  height: var(--lc-inner);
+  background: #000;
+}
+
+.app .lc-top > .lc-elbow {
+  border-bottom-left-radius: 3.4rem 2.8rem;
+  background: var(--lc-lilac);
+}
+
+.app .lc-top > .lc-elbow::after {
+  top: 0;
+  border-bottom-left-radius: var(--lc-inner);
+}
+
+.app .lc-main > .lc-elbow {
+  border-top-left-radius: 3.4rem 2.8rem;
+  background: var(--lc-orange);
+}
+
+.app .lc-main > .lc-elbow::after {
+  bottom: 0;
+  border-top-left-radius: var(--lc-inner);
+}
+
+.app .lc-bar {
+  display: flex;
+  grid-column: 2;
+  gap: var(--lc-gap);
+  height: var(--lc-bar);
+  margin-left: calc(var(--lc-inner) + var(--lc-gap));
+}
+
+.app .lc-top > .lc-bar {
+  align-self: end;
+}
+
+.app .lc-rail {
+  display: flex;
+  flex: 1;
+  gap: var(--lc-gap);
+  min-width: 0;
+}
+
+.app .lc-rail:last-child:not(:first-child) {
+  flex: 0 1 auto;
+}
+
+.app .lc-rail i {
+  flex: 0 1 3.4rem;
+  min-width: 0.4rem;
+  background: var(--lc-bell);
+}
+
+.app .lc-rail i.wide {
+  flex: 1 1 6rem;
+}
+
+.app .lc-rail i.thin {
+  flex-basis: 0.9rem;
+}
+
+.app .lc-rail i.a { background: var(--lc-lilac); }
+.app .lc-rail i.b { background: var(--lc-peach); }
+.app .lc-rail i.c { background: var(--lc-orange); }
+.app .lc-rail i.d { background: var(--lc-violet); }
+
+.app .lc-main .lc-rail i.c.wide {
+  background: var(--lc-orange);
+}
+
+/* A light for each module of the blueprint, lit as it answers. */
+.app .lc-lights {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.24rem;
+  max-width: 45%;
+  padding: 0 0.3rem;
+  overflow: hidden;
+}
+
+.app .lc-lights i {
+  flex: none;
+  width: 0.36rem;
+  height: 0.36rem;
+  border-radius: 50%;
+  background: #33334d;
+}
+
+.app .lc-lights i.done { background: var(--lc-white); }
+.app .lc-lights i.waiting { background: var(--lc-gold); animation: lc-wait 0.9s steps(2, jump-none) infinite; }
+.app .lc-lights i.failed,
+.app .lc-lights i.missing,
+.app .lc-lights i.unknown { background: var(--lc-alert); }
+
+/* What the display is of: called large, in the corner a starship's panels say what they are, and said beside it. */
+.app .lc-headline {
+  grid-column: 2;
+  max-width: 26rem;
+  text-align: right;
+}
+
+.app .lc-title {
+  color: var(--lc-orange);
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.3rem);
+  line-height: 0.98;
+  letter-spacing: 0.02em;
+}
+
+.app .lc-sub {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  color: var(--lc-bell);
+  font-size: 0.95rem;
+}
+
+.app .lcars .lc-flip {
+  padding: 0.2em 0.75em 0.1em;
+  background: var(--lc-bell);
+  font-size: 0.72rem;
+}
+
+.app .lc-about {
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 52rem;
+  color: var(--lc-peach);
+  font-size: 0.92rem;
+  line-height: 1.32;
+  letter-spacing: 0.045em;
+}
+
+/* ---- the pads down the side ---- */
+
+.app .lc-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lc-gap);
+  padding-top: var(--lc-gap);
+}
+
+.app .lcars .lc-key {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 2.15rem;
+  padding: 0.25rem 0.6rem 0.08rem;
+  border-radius: 0;
+  background: var(--lc-key, var(--lc-peach));
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: right;
+}
+
+.app .lc-key-code {
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
+.app .lc-key-code:empty {
+  display: none;
+}
+
+.app .lcars .lc-key-examples { --lc-key: var(--lc-gold); min-height: 3.1rem; }
+.app .lcars .lc-key-add { --lc-key: var(--lc-peach); }
+.app .lcars .lc-key-undo { --lc-key: var(--lc-bell); }
+.app .lcars .lc-key-redo { --lc-key: var(--lc-bell); }
+.app .lcars .lc-key-reset { --lc-key: var(--lc-red); }
+.app .lcars .lc-key-text { --lc-key: var(--lc-lilac); }
+.app .lcars .lc-key-link { --lc-key: var(--lc-lilac); }
+.app .lcars .lc-key-help { --lc-key: var(--lc-violet); }
+.app .lcars .lc-key-full { --lc-key: var(--lc-orange); min-height: 2.8rem; }
+
+/* The block the pads end in: as tall as the display has room for, and carrying how many modules and conduits it shows. */
+.app .lc-fill {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: flex-end;
+  min-height: 3rem;
+  padding: 0.3rem 0.6rem 0.5rem;
+  border-bottom-left-radius: 1rem;
+  background: var(--lc-bell);
+  color: #000;
+  font-size: 0.8rem;
+}
+
+/* ---- the decks: the schematic, the module asked, the board ---- */
+
+.app .lc-body {
+  position: relative;
+  min-width: 0;
+  padding: 0.9rem 0 0 1.3rem;
+}
+
+.app .lc-deck {
+  min-width: 0;
+  margin: 0 0 1.1rem;
+}
+
+.app .lc-deck[hidden] {
+  display: none;
+}
+
+.app .lcars .lc-deck-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.6rem;
+  color: var(--lc-bell);
+  font-size: 0.85rem;
+  font-weight: inherit;
+  line-height: 1.1;
+}
+
+.app .lcars .lc-deck-head::after {
+  content: "";
+  flex: 1;
+  order: 1;
+  height: 0.16rem;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.app .lc-deck-name {
+  flex: none;
+  padding: 0.2rem 0.7rem 0.06rem 1.1rem;
+  border-radius: 999px 0 0 999px;
+  background: var(--lc-bell);
+  color: #000;
+}
+
+/*
+ * A blueprint wider than the display is moved along, as any long reading is.
+ * The stripe at an edge says there is more that way: it is painted on the
+ * display, and covered by a black one painted on what moves, which is over
+ * it only when that end has been reached.
+ */
+.app .lc-schematic {
+  display: flex;
+  padding: 0.5rem 0.6rem;
+  margin: 0 0 0 -0.6rem;
+  overflow-x: auto;
+  background:
+    linear-gradient(#000, #000) left / 0.5rem 100% no-repeat local,
+    linear-gradient(#000, #000) right / 0.5rem 100% no-repeat local,
+    linear-gradient(var(--lc-orange), var(--lc-orange)) left / 0.22rem 100% no-repeat scroll,
+    linear-gradient(var(--lc-orange), var(--lc-orange)) right / 0.22rem 100% no-repeat scroll;
+  scrollbar-color: var(--lc-bell) #000;
+  scrollbar-width: thin;
+}
+
+.app .lc-schematic.blank::before {
+  content: "No modules. Add one, from the pads beside.";
+  color: var(--lc-bell);
+  font-size: 0.9rem;
+}
+
+.app .lc-world {
+  position: relative;
+  flex: none;
+  margin: 0 auto;
+}
+
+.app .lc-conduits {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.app .lc-line,
+.app .lc-pulse {
+  fill: none;
+  stroke: var(--pin);
+  stroke-width: 3;
+}
+
+.app .lc-conduit.idle .lc-line {
+  stroke-dasharray: 2 5;
+  opacity: 0.45;
+}
+
+.app .lc-world.tracing .lc-conduit:not(.near) .lc-line {
+  opacity: 0.32;
+}
+
+/* A pulse: one short white stroke that goes the length of the conduit once, a column later the further along the flow. */
+.app .lc-pulse {
+  stroke: var(--lc-white);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 10 110;
+  stroke-dashoffset: 10;
+  opacity: 0;
+}
+
+.app .lc-conduit.flow-0 .lc-pulse {
+  animation: lc-flow-a 0.55s linear calc(var(--lc-step) * 0.16s + 0.12s) 1 both;
+}
+
+.app .lc-conduit.flow-1 .lc-pulse {
+  animation: lc-flow-b 0.55s linear calc(var(--lc-step) * 0.16s + 0.12s) 1 both;
+}
+
+/* Two names for one movement: a module that runs again goes from one to the other, which is what starts it again. */
+@keyframes lc-flow-a {
+  0% { stroke-dashoffset: 10; opacity: 1; }
+  99% { opacity: 1; }
+  100% { stroke-dashoffset: -100; opacity: 0; }
+}
+
+@keyframes lc-flow-b {
+  0% { stroke-dashoffset: 10; opacity: 1; }
+  99% { opacity: 1; }
+  100% { stroke-dashoffset: -100; opacity: 0; }
+}
+
+@keyframes lc-ran-a {
+  0% { filter: brightness(2) saturate(0.25); }
+  100% { filter: none; }
+}
+
+@keyframes lc-ran-b {
+  0% { filter: brightness(2) saturate(0.25); }
+  100% { filter: none; }
+}
+
+@keyframes lc-wait {
+  0% { opacity: 1; }
+  100% { opacity: 0.25; }
+}
+
+/* A module: a pad in two blocks — the figure it carries, and its name — with what came out of it under them. */
+.app .lcars .lc-module {
+  --role: var(--lc-bell);
+  position: absolute;
+  display: block;
+  width: var(--lc-module);
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--role);
+  font-size: 0.92rem;
+  line-height: 1;
+  text-align: right;
+}
+
+.app .lcars .lc-module:hover {
+  filter: brightness(1.2);
+}
+
+.app .lcars .lc-module:active {
+  background: none;
+}
+
+.app .lc-module.lc-role-dial { --role: var(--bp-role-dial); }
+.app .lc-module.lc-role-source { --role: var(--bp-role-source); }
+.app .lc-module.lc-role-step { --role: var(--bp-role-step); }
+.app .lc-module.lc-role-statistic { --role: var(--bp-role-statistic); }
+.app .lc-module.lc-role-paint { --role: var(--bp-role-paint); }
+.app .lc-module.lc-role-note { --role: var(--bp-role-note); }
+
+.app .lc-pad {
+  display: flex;
+  gap: 0.2rem;
+  height: var(--lc-pad);
+}
+
+.app .lc-code,
+.app .lc-name {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 0 0.45rem 0.05rem;
+  overflow: hidden;
+  color: #000;
+}
+
+.app .lc-code {
+  flex: none;
+  min-width: 2.35rem;
+  background: color-mix(in srgb, var(--role) 68%, #000);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.app .lc-name {
+  flex: 1;
+  min-width: 0;
+  background: var(--role);
+}
+
+/* A name too long for a line takes two, as the small pads of a starship do; one longer still is cut, and said whole where the module is asked. */
+.app .lc-name b {
+  display: -webkit-box;
+  /* Room over the first line: a narrow face stands taller than its line, and what is cut is cut here. */
+  padding-top: 0.3em;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.8rem;
+  font-weight: inherit;
+  line-height: 1;
+}
+
+/* An end is rounded where the flow begins, or ends: a pill is something nothing else joins. */
+.app .lc-module.begins .lc-code {
+  padding-left: 0.8rem;
+  border-radius: 999px 0 0 999px;
+}
+
+.app .lc-module.ends .lc-name {
+  padding-right: 0.85rem;
+  border-radius: 0 999px 999px 0;
+}
+
+.app .lc-said {
+  display: block;
+  margin-top: 0.32rem;
+  overflow: hidden;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.app .lc-module.idle {
+  opacity: 0.4;
+}
+
+.app .lc-module.waiting .lc-code {
+  animation: lc-wait 0.9s steps(2, jump-none) infinite;
+}
+
+.app .lc-module.trouble .lc-code {
+  background: var(--lc-alert);
+}
+
+.app .lc-module.trouble .lc-said {
+  color: var(--lc-alert);
+}
+
+.app .lc-module.chosen .lc-name,
+.app .lc-module.pointed .lc-name {
+  background: var(--lc-white);
+}
+
+.app .lc-module.chosen .lc-said {
+  color: var(--lc-white);
+}
+
+/* A module that ran is lit for a moment, a column later the further along the flow: what a dial turned reaches is seen reaching it. */
+.app .lc-module.ran-0 .lc-pad {
+  animation: lc-ran-a 0.6s ease-out calc(var(--lc-step) * 0.16s) 1;
+}
+
+.app .lc-module.ran-1 .lc-pad {
+  animation: lc-ran-b 0.6s ease-out calc(var(--lc-step) * 0.16s) 1;
+}
+
+/* ---- the module asked ---- */
+
+.app .lcars .lc-query .lc-deck-head {
+  color: var(--lc-white);
+}
+
+.app .lc-query .lc-deck-name {
+  background: var(--lc-white);
+}
+
+.app .lc-query-name {
+  font-size: 1.15rem;
+}
+
+.app .lc-query-kind {
+  color: var(--lc-bell);
+}
+
+.app .lc-query-kind:empty {
+  display: none;
+}
+
+.app .lcars .lc-remove {
+  order: 2;
+  background: var(--lc-red);
+}
+
+.app .lc-query-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.9fr);
+  gap: 0.9rem 1.8rem;
+  align-items: start;
+}
+
+.app .lc-query-summary {
+  color: var(--lc-peach);
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.app .lc-query-said {
+  margin-top: 0.5rem !important;
+  color: var(--lc-orange);
+  font-size: 1.05rem;
+}
+
+.app .lc-query-said.trouble {
+  color: var(--lc-alert);
+}
+
+.app .lc-takes,
+.app .lc-gives {
+  min-width: 0;
+  margin: 0;
+}
+
+.app .lc-gives[hidden] {
+  display: none;
+}
+
+.app .lc-take {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 38%) minmax(0, 1fr);
+  gap: 0.2rem;
+  margin: 0 0 0.2rem;
+}
+
+.app .lcars dt {
+  margin: 0;
+  font: inherit;
+}
+
+.app .lc-take dt,
+.app .lc-give dt {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-sizing: border-box;
+  min-height: 1.5rem;
+  padding: 0.16rem 0.6rem 0 0.75rem;
+  overflow: hidden;
+  border-radius: 999px 0 0 999px;
+  background: var(--lc-bell);
+  color: #000;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.app .lc-take dd {
+  display: flex;
+  gap: 0.2rem;
+  min-width: 0;
+  margin: 0;
+}
+
+/* The colour of what an input takes, or an output gives: the colour of the conduit that would carry it. */
+.app .lc-port {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: -0.12rem;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: var(--pin);
+}
+
+.app .lcars .lc-take dd select,
+.app .lcars .lc-take dd input[type="text"],
+.app .lcars .lc-take dd input[type="number"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.app .lcars .lc-take dd textarea {
+  flex: 1;
+  min-height: 4.5rem;
+}
+
+.app .lcars .lc-from {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 0 999px 999px 0;
+  background: var(--lc-ice);
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.app .lc-from::before {
+  content: "◀ ";
+  font-size: 0.7em;
+}
+
+.app .lcars .lc-promote {
+  flex: none;
+  padding-inline: 0.7em;
+  background: var(--lc-gold);
+  font-size: 0.72rem;
+}
+
+.app .lcars .lc-take:has(.lc-promote) dd > :first-child {
+  border-radius: 0;
+}
+
+.app .lc-give {
+  margin: 0 0 0.5rem;
+}
+
+.app .lc-give dt {
+  display: inline-flex;
+  background: var(--lc-lilac);
+}
+
+.app .lc-give dd {
+  min-width: 0;
+  margin: 0.3rem 0 0;
+}
+
+.app .lcars .bp-peek-said {
+  color: var(--lc-peach);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.app .lcars .bp-peek > p,
+.app .lcars .bp-peek-columns {
+  margin: 0.35rem 0 0;
+  color: var(--lc-bell);
+  font-size: 0.78rem;
+}
+
+.app .lcars .bp-peek-columns {
+  padding: 0;
+  list-style: none;
+}
+
+.app .lcars .bp-peek-columns strong {
+  color: var(--lc-peach);
+  font-weight: inherit;
+}
+
+.app .lc-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lc-gap);
+  margin-top: 0.9rem;
+}
+
+.app .lc-next[hidden] {
+  display: none;
+}
+
+.app .lc-next-said {
+  margin-right: 0.4rem;
+  color: var(--lc-bell);
+  font-size: 0.85rem;
+}
+
+.app .lcars .lc-next button {
+  border-radius: 0;
+  background: var(--lc-gold);
+}
+
+.app .lcars .lc-next button:nth-child(3n) { background: var(--lc-peach); }
+.app .lcars .lc-next button:nth-child(3n + 1) { background: var(--lc-lilac); }
+
+.app .lcars .lc-next button:nth-child(2) {
+  border-radius: 999px 0 0 999px;
+}
+
+.app .lcars .lc-next button:last-child {
+  border-radius: 0 999px 999px 0;
+}
+
+.app .lcars .lc-next button:nth-child(2):last-child {
+  border-radius: 999px;
+}
+
+/* ---- the board: its dials, as the display has them, and the pictures ---- */
+
+.app .lcars .wb-board {
+  order: 0;
+}
+
+.app .lcars .wb-dials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  margin: 0 0 1.1rem;
+}
+
+.app .lcars .wb-dial {
+  display: grid;
+  flex: 1 1 15rem;
+  grid-template-columns: minmax(5rem, auto) minmax(0, 1fr);
+  gap: 0.2rem;
+  max-width: 30rem;
+  color: #000;
+  font-size: 0.9rem;
+}
+
+.app .lcars .wb-dial-head {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 1.5rem;
+  padding: 0.16rem 0.7rem 0 1rem;
+  border-radius: 999px 0 0 999px;
+  background: var(--lc-gold);
+  white-space: nowrap;
+}
+
+/* A dial is named where it is chosen on the schematic's text; the little pencil is one more thing than a pad needs. */
+.app .lcars .wb-rename {
+  display: none;
+}
+
+.app .lcars .wb-slider {
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.app .lcars .wb-slider .wb-play {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.1rem 0 0;
+  border-radius: 0;
+  background: var(--lc-orange);
+  font-size: 0.6rem;
+}
+
+/* A slider is a gauge: a run of ticks, and a pill that slides along it. */
+.app .lcars input[type="range"] {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  height: 1.5rem;
+  margin: 0;
+  background: repeating-linear-gradient(90deg, var(--lc-bell) 0 2px, transparent 2px 7px) center / 100% 46% no-repeat, #15151f;
+  cursor: pointer;
+}
+
+.app .lcars input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 0.8rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: var(--lc-orange);
+}
+
+.app .lcars input[type="range"]::-moz-range-thumb {
+  width: 0.8rem;
+  height: 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--lc-orange);
+}
+
+.app .lcars .wb-slider output {
+  box-sizing: border-box;
+  min-width: 4.2em;
+  height: 1.5rem;
+  padding: 0.3rem 0.9em 0 0.5em;
+  border-radius: 0 999px 999px 0;
+  background: var(--lc-peach);
+  color: #000;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.app .lcars .wb-empty {
+  color: var(--lc-bell);
+  font-size: 0.85rem;
+}
+
+/* A picture stands in a bracket: a bar down its side, its title along the top, a stub underneath. */
+.app .lcars .bp-card {
+  --card: var(--lc-bell);
+  position: relative;
+  padding: 0 0 0.9rem 0.8rem;
+  border: 0;
+  border-left: 0.8rem solid var(--card);
+  border-radius: 1.05rem 0 0 1.05rem;
+  background: none;
+}
+
+.app .lcars .bp-card:nth-child(4n + 1) { --card: var(--lc-lilac); }
+.app .lcars .bp-card:nth-child(4n + 2) { --card: var(--lc-peach); }
+.app .lcars .bp-card:nth-child(4n + 3) { --card: var(--lc-violet); }
+
+.app .lcars .bp-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: min(9rem, 40%);
+  height: 0.4rem;
+  background: var(--card);
+}
+
+.app .lcars .bp-card figcaption {
+  margin: 0 0 0.6rem -0.8rem;
+  padding: 0.22rem 0.8rem 0.08rem 0.4rem;
+  background: var(--card);
+  color: #000;
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.15;
+}
+
+.app .lcars .wb-board .wb-find:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.app .lcars .bp-plot text {
+  fill: var(--lc-bell);
+  font: bold 12px var(--lc-font);
+  font-stretch: condensed;
+  letter-spacing: 0.04em;
+}
+
+.app .lcars .bp-plot .axis-name {
+  fill: var(--lc-peach);
+  font-size: 12.5px;
+}
+
+.app .lcars .bp-plot .legend text {
+  fill: var(--lc-peach);
+}
+
+.app .lcars .bp-plot .fit {
+  stroke: var(--lc-white);
+}
+
+.app .lcars .bp-readout .value {
+  color: var(--lc-orange);
+  font: bold 3.3rem/0.95 var(--lc-font);
+  font-stretch: condensed;
+  letter-spacing: 0.01em;
+}
+
+.app .lcars .bp-readout .unit {
+  color: var(--lc-bell);
+  font-size: 1.1rem;
+}
+
+.app .lcars .bp-readout .about,
+.app .lcars .bp-caption {
+  color: var(--lc-peach);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.app .lcars .bp-credits {
+  color: var(--lc-bell);
+  font-size: 0.72rem;
+  font-style: normal;
+  line-height: 1.3;
+}
+
+.app .lcars .bp-problem {
+  color: var(--lc-alert);
+  font-size: 0.9rem;
+}
+
+.app .lcars .bp-card.waiting .bp-problem {
+  color: var(--lc-bell);
+}
+
+.app .lcars .bp-table table {
+  width: auto;
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+
+.app .lcars .bp-table th,
+.app .lcars .bp-table td {
+  padding: 0.14rem 1.5rem 0 0;
+  border-bottom: 0;
+  color: var(--lc-peach);
+}
+
+.app .lcars .bp-table th {
+  color: var(--lc-bell);
+  font-weight: inherit;
+}
+
+.app .lcars .bp-table tr:nth-child(even) td {
+  color: var(--lc-gold);
+}
+
+.app .lcars .bp-table .more {
+  color: var(--lc-bell);
+}
+
+.app .lc-status {
+  min-height: 1.3em;
+  margin-top: 0.4rem !important;
+  color: var(--lc-bell);
+  font-size: 0.82rem;
+}
+
+/* ---- what opens over the decks: the page's blueprints, the text, the menu of kinds, the help ---- */
+
+.app .lcars .wb-examples,
+.app .lcars .wb-text,
+.app .lc-help {
+  position: absolute;
+  z-index: 7;
+  inset: 0.5rem 0 auto 1.3rem;
+  max-width: none;
+  max-height: none;
+  padding: 0.8rem 0 1rem 0.9rem;
+  border: 0;
+  border-left: 0.8rem solid var(--lc-gold);
+  border-radius: 1.05rem 0 0 1.05rem;
+  background: #000;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.72);
+  font-size: 0.9rem;
+}
+
+.app .lcars .wb-examples p,
+.app .lcars .wb-text-help {
+  margin: 0 0 0.7rem;
+  color: var(--lc-bell);
+}
+
+.app .lcars .wb-text-help code {
+  font-family: var(--mono);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.app .lcars .wb-examples ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(19rem, 100%), 1fr));
+  gap: var(--lc-gap);
+  counter-reset: blueprint;
+}
+
+.app .lcars .wb-examples li {
+  counter-increment: blueprint;
+}
+
+.app .lcars .wb-examples li button {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr);
+  gap: 0 0.2rem;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--lc-peach);
+  text-align: left;
+}
+
+.app .lcars .wb-examples li button::before {
+  content: counter(blueprint, decimal-leading-zero);
+  grid-row: 1 / span 2;
+  padding: 0.3rem 0.4rem 0;
+  border-radius: 999px 0 0 999px;
+  background: var(--lc-bell);
+  color: #000;
+  text-align: right;
+}
+
+.app .lcars .wb-examples li button strong {
+  padding: 0.3rem 0.6rem 0.1rem;
+  background: var(--lc-bell);
+  color: #000;
+  font-weight: inherit;
+}
+
+.app .lcars .wb-examples li:nth-child(3n + 1) button { --lc-key: var(--lc-lilac); }
+.app .lcars .wb-examples li:nth-child(3n + 2) button { --lc-key: var(--lc-peach); }
+.app .lcars .wb-examples li:nth-child(3n) button { --lc-key: var(--lc-violet); }
+
+.app .lcars .wb-examples li button::before,
+.app .lcars .wb-examples li button strong {
+  background: var(--lc-key);
+}
+
+.app .lcars .wb-examples li button.current::before,
+.app .lcars .wb-examples li button.current strong {
+  background: var(--lc-white);
+}
+
+.app .lcars .wb-examples li button span {
+  margin: 0.3rem 0.6rem 0.4rem;
+  color: var(--lc-bell);
+  font-size: 0.74rem;
+  line-height: 1.3;
+}
+
+.app .lcars .wb-help-close {
+  float: right;
+  margin: -0.2rem 0 0.4rem 0.8rem;
+  background: var(--lc-red);
+}
+
+.app .lcars .wb-text-buttons {
+  gap: var(--lc-gap);
+  margin-top: 0.5rem;
+}
+
+.app .lcars .wb-problems {
+  color: var(--lc-alert);
+  font-size: 0.82rem;
+}
+
+.app .lc-help {
+  border-left-color: var(--lc-violet);
+}
+
+.app .lc-help ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--lc-peach);
+  line-height: 1.35;
+}
+
+.app .lc-help li {
+  margin: 0 0 0.4rem;
+}
+
+.app .lc-help strong {
+  color: var(--lc-orange);
+  font-weight: inherit;
+}
+
+.app .lcars .wb-menu {
+  border: 0;
+  border-left: 0.8rem solid var(--lc-peach);
+  border-radius: 1.05rem 0 0 1.05rem;
+  background: #000;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.72);
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.app .lcars .wb-menu input[type="search"] {
+  width: auto;
+  margin: 0.5rem;
+}
+
+.app .lcars .wb-menu .wb-shelf {
+  color: var(--lc-bell);
+  font-size: 0.74rem;
+}
+
+.app .lcars .wb-menu [role="option"] {
+  border-radius: 0;
+  color: var(--lc-peach);
+}
+
+.app .lcars .wb-menu [aria-selected="true"] {
+  background: var(--lc-peach);
+  color: #000;
+}
+
+.app .lcars .wb-menu-about,
+.app .lcars .wb-menu-pins {
+  color: var(--lc-bell);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+/* ---- the whole window, and a narrow one ---- */
+
+/* The frame stays where it is and the decks move inside it, as on a panel: the pads are always under the hand. */
+.app .lcars.full {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0;
+}
+
+.app .lcars.full .lc-main {
+  flex: 1;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+}
+
+.app .lcars.full .lc-side {
+  overflow: hidden;
+}
+
+.app .lcars.full .lc-body {
+  padding-right: 0.4rem;
+  overflow-y: auto;
+  scrollbar-color: var(--lc-bell) #000;
+  scrollbar-width: thin;
+}
+
+body.lc-full-open {
+  overflow: hidden;
+}
+
+/* With the window to itself, the board stands beside the schematic and what is asked of it. */
+@media (min-width: 72rem) {
+  .app .lcars.full .lc-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    column-gap: 2rem;
+    align-content: start;
+  }
+
+  .app .lcars.full .lc-deck {
+    grid-column: 1;
+  }
+
+  .app .lcars.full .lc-readings {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  .app .lcars.full .lc-status {
+    grid-column: 1 / -1;
+  }
+
+  .app .lcars.full .lc-query-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+
+  .app .lcars.full .lc-gives {
+    grid-column: 1 / -1;
+  }
+
+  /* The board's column is narrow there: a number beside a number, a picture as wide as the column. */
+  .app .lcars.full .wb-cards {
+    grid-template-columns: repeat(auto-fill, minmax(min(11.5rem, 100%), 1fr));
+  }
+
+  .app .lcars.full .wb-cards .bp-card:has(.bp-painting > :not(.bp-readout)) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 56rem) {
+  .app .lc-query-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 40rem) {
+  .app .lcars {
+    --lc-side: 4.6rem;
+    --lc-inner: 1rem;
+    padding: 0.6rem 0.6rem 0.8rem 0.5rem;
+    border-radius: 0.8rem;
+  }
+
+  .app .lc-top-body,
+  .app .lc-body {
+    padding-left: 0.7rem;
+  }
+
+  .app .lc-top-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app .lc-headline,
+  .app .lc-about {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .app .lcars .lc-key {
+    padding-inline: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  .app .lcars .wb-examples,
+  .app .lcars .wb-text,
+  .app .lc-help {
+    left: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app .lcars *,
+  .app .lcars *::before,
+  .app .lcars *::after {
+    animation: none !important;
+  }
+}
+
 /* ---- search: the header says `search` where it said `ls`, and the prompt below says it too ---- */
 
 /* The search beside `ls`, and the key at the end of the prompt bar: the key is no use without a keyboard. */
