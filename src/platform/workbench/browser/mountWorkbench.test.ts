@@ -4,6 +4,7 @@ import { aKit } from "../../blueprint/aKit";
 import { kitOf } from "../../blueprint/kitOf";
 import type { NodeKind } from "../../blueprint/NodeKind";
 import { askProgram } from "../../browser/askProgram";
+import type { Bench, BenchSetting } from "../../plugin/Bench";
 import { linkCodeOf } from "../linkCodeOf";
 import { mountWorkbench } from "./mountWorkbench";
 
@@ -124,6 +125,43 @@ describe("a blueprint written in a page, once the script is there", () => {
     };
     expect(offered()).not.toContain("big-bars");
     expect(offered((flag) => flag === "recipes")).toContain("big-bars");
+  });
+
+  /** A bench that only says what it was asked: what any other bench is handed, and told. */
+  const another = (asked: string[], handed: BenchSetting[] = []) => (setting: BenchSetting): Bench => {
+    handed.push(setting);
+    const element = document.createElement("div");
+    element.className = "another-bench";
+    return { element, placed: () => asked.push("placed"), wake: () => asked.push("wake"), open: (example) => asked.push(`open ${example.title}`), ask: (text) => asked.push(`ask ${text}`), stop: () => asked.push("stop") };
+  };
+
+  it("opens the blueprint at another bench where one is asked for, handed what the workbench is and told what it is told", () => {
+    window.history.replaceState(null, "", "/#bars");
+    const asked: string[] = [];
+    const handed: BenchSetting[] = [];
+    const host = place(MANY);
+    const stop = mountWorkbench(aKit, undefined, () => another(asked, handed))(host);
+    expect(host.querySelector(".another-bench")).not.toBeNull();
+    expect(host.querySelector(".workbench")).toBeNull();
+    expect(handed[0]?.examples.map((example) => example.title)).toEqual(["Hot nights", "Bars"]);
+    expect(handed[0]?.start?.example?.title).toBe("Bars");
+    window.history.pushState(null, "", "/#hot-nights");
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    askProgram(host, { text: "x = nights" });
+    stop();
+    expect(asked).toEqual(["placed", "wake", "open Hot nights", "ask x = nights", "stop"]);
+  });
+
+  it("asks which bench each time a blueprint is put on a page: a flag switched between two pages is heeded on the second", () => {
+    let other = false;
+    const mount = mountWorkbench(aKit, undefined, () => (other ? another([]) : undefined));
+    const first = place("n = nights @ 0 0");
+    mount(first);
+    other = true;
+    const second = place("n = nights @ 0 0");
+    mount(second);
+    expect(first.querySelector(".workbench")).not.toBeNull();
+    expect(second.querySelector(".another-bench")).not.toBeNull();
   });
 
   it("starts as a link to it carried it", () => {

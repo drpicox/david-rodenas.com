@@ -1,4 +1,5 @@
 import type { Blueprint, PlacedNode } from "./Blueprint";
+import { columnsOf } from "./columnsOf";
 import type { Kit } from "./kitOf";
 import { NODE } from "./NODE";
 import { type NodeShape, nodeShapeOf } from "./nodeShapeOf";
@@ -8,31 +9,6 @@ const ACROSS = 80;
 const DOWN = 20;
 /** Twice each way is enough for a page's blueprints to settle; more only polishes what nobody sees. */
 const SWEEPS = 2;
-
-/** Each node's column: one after the furthest of what it needs; a node that needs nothing stands just before the first that needs it. */
-function columnsOf(blueprint: Blueprint): Map<string, number> {
-  const upstream = new Map<string, string[]>();
-  const downstream = new Map<string, string[]>();
-  for (const { from, to } of blueprint.wires) {
-    upstream.set(to.node, [...(upstream.get(to.node) ?? []), from.node]);
-    downstream.set(from.node, [...(downstream.get(from.node) ?? []), to.node]);
-  }
-  const column = new Map<string, number>();
-  const columnOf = (id: string, seen: ReadonlySet<string>): number => {
-    const known = column.get(id);
-    if (known !== undefined) return known;
-    const before = (upstream.get(id) ?? []).filter((other) => !seen.has(other));
-    const value = before.length === 0 ? 0 : 1 + Math.max(...before.map((other) => columnOf(other, new Set([...seen, id]))));
-    column.set(id, value);
-    return value;
-  };
-  for (const node of blueprint.nodes) columnOf(node.id, new Set());
-  for (const node of blueprint.nodes) {
-    const after = downstream.get(node.id) ?? [];
-    if ((upstream.get(node.id) ?? []).length === 0 && after.length > 0) column.set(node.id, Math.max(0, Math.min(...after.map((other) => column.get(other) ?? 0)) - 1));
-  }
-  return column;
-}
 
 /**
  * A blueprint with every node placed: in columns, left to right, as the

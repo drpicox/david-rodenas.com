@@ -1,23 +1,16 @@
 import { el } from "../../browser/el";
 import type { Blueprint, PlacedNode, Wire } from "../../blueprint/Blueprint";
-import { dialsOf } from "../../blueprint/dialsOf";
 import { duplicated } from "../../blueprint/duplicated";
-import type { Evaluation } from "../../blueprint/Evaluation";
-import { evaluateBlueprint } from "../../blueprint/evaluateBlueprint";
 import { footOf } from "../../blueprint/footOf";
 import type { Example } from "../../blueprint/examplesOf";
 import { freshId } from "../../blueprint/freshId";
 import type { Kit } from "../../blueprint/kitOf";
-import type { NodeKind } from "../../blueprint/NodeKind";
 import { movedBy } from "../../blueprint/movedBy";
 import { NODE } from "../../blueprint/NODE";
 import type { Literal } from "../../blueprint/NodeKind";
 import { nodeShapeOf } from "../../blueprint/nodeShapeOf";
 import { parseBlueprint } from "../../blueprint/parseBlueprint";
 import { peekOf } from "../../blueprint/peekOf";
-import { printBlueprint } from "../../blueprint/printBlueprint";
-import { resolvedEditor } from "../../blueprint/resolvedEditor";
-import { type Suggestion, suggestionsFor } from "../../blueprint/suggestionsFor";
 import { tag } from "../../blueprint/tag";
 import { tidyBlueprint } from "../../blueprint/tidyBlueprint";
 import { wirePath } from "../../blueprint/wirePath";
@@ -28,13 +21,13 @@ import { withoutWires } from "../../blueprint/withoutWires";
 import { withTitle } from "../../blueprint/withTitle";
 import { withValue } from "../../blueprint/withValue";
 import { withWire } from "../../blueprint/withWire";
+import type { Bench, BenchSetting } from "../../plugin/Bench";
 import { boundsOf } from "../boundsOf";
 import { Camera } from "../Camera";
-import { EditHistory } from "../EditHistory";
 import type { Dragged, Offer } from "../kindsFor";
+import { OpenBlueprint } from "../OpenBlueprint";
 import { pinAt, type PinFound } from "../pinAt";
-import { BoardView, type Card } from "./BoardView";
-import type { FilesInBrowser } from "./FilesInBrowser";
+import { BoardView } from "./BoardView";
 import { NodeView } from "./NodeView";
 import { openExamples } from "./openExamples";
 import { openHelp } from "./openHelp";
@@ -42,26 +35,8 @@ import { openKindMenu } from "./openKindMenu";
 import { openPeek } from "./openPeek";
 import { openTextPanel } from "./openTextPanel";
 
-/** Where a workbench stands, and what it is handed. */
-export interface WorkbenchSetting {
-  readonly kit: Kit;
-  readonly files: FilesInBrowser;
-  /** The blueprints the page writes: the first is the one it opens on, any of them can be opened, and Reset goes back to the one open. */
-  readonly examples: readonly Example[];
-  /** Where to start instead: another of the examples, or a version of it a link carried, and what to say about that. */
-  readonly start?: { readonly example?: Example; readonly text?: string; readonly said?: string };
-  /** The board the build wrote, shown until the blueprint has run here: the pictures do not blink out while it does. */
-  readonly stillBoard?: string;
-  /** The reader's own version of each example, told after every edit, and told nothing when it is the example again. */
-  readonly own: { get(example: Example): string | null; set(example: Example, text: string | null): void };
-  /** Told which example is open, once the reader opens another, so that the address can say it. */
-  opened?(example: Example): void;
-  /** Whether a flag is on: a kind on trial is offered only while its own is. */
-  isOn?(flag: string): boolean;
-  /** A link that opens this blueprint as it now is, a version of the example it came from. */
-  linkTo(example: Example, text: string): string;
-  copy(text: string): Promise<void>;
-}
+/** Where a workbench stands, and what it is handed: what any bench is. */
+export type WorkbenchSetting = BenchSetting;
 
 type Gesture =
   | { readonly kind: "pan"; readonly x: number; readonly y: number; readonly from: { x: number; y: number }; moved: boolean }
@@ -72,8 +47,6 @@ type Gesture =
 const SVG = "http://www.w3.org/2000/svg";
 /** How wide the menu is with its words beside its list, and how wide a canvas has to be to have room for it. */
 const MENU = { narrow: 280, side: 580 };
-const KEPT = "As you left it: your changes are kept in this browser. Reset goes back to the page's own.";
-const NONE: Example = { title: "", slug: "", about: "", text: "" };
 const HINT = {
   fine: "Drag a pin to wire it; drop a wire in empty space to add what comes next. Double-click the canvas to add a node.",
   touch: "Open it full screen to work on it with your fingers.",
@@ -88,15 +61,10 @@ const HINT = {
  * for the menu of what fits, drag a node by its title, drag the canvas to
  * move about, and Ctrl and the wheel to zoom.
  */
-export class Workbench {
+export class Workbench implements Bench {
   readonly element: HTMLElement;
-  private history: EditHistory<Blueprint>;
-  /** The example open, and the blueprint it is, which Reset goes back to. */
-  private chosen: Example;
-  private original: Blueprint;
-  /** The board the build wrote, while it is still the board of what is open. */
-  private still: string | undefined;
-  private evaluation: Evaluation = new Map();
+  /** The blueprint open here: its history, its runs, the reader's own version of it. The workbench draws it, and hands it what hands do. */
+  private readonly work: OpenBlueprint;
   private preview: Blueprint | null = null;
   private selection = new Set<string>();
   private chosenWire: Wire | null = null;
@@ -117,24 +85,12 @@ export class Workbench {
   private readonly buttons: Record<"undo" | "redo" | "reset" | "full", HTMLButtonElement>;
   private closeMenu: (() => void) | null = null;
   private closePeek: (() => void) | null = null;
-  private scheduled = false;
-  private stopped = false;
-  /** Run only once it is near the screen: a page of blueprints does not run all of them for a reader who reads the first. */
-  private awake = false;
-  private ran = false;
-  private notice: string;
-  private readonly stopListening: () => void;
   private pinches = new Map<number, { x: number; y: number }>();
   /** The examples each kind of node is found in, worked out the first time the menu asks. */
   private seen: Map<string, string[]> | null = null;
 
   constructor(private readonly setting: WorkbenchSetting) {
-    this.chosen = setting.start?.example ?? setting.examples[0] ?? NONE;
-    this.original = this.laidOut(this.chosen.text);
-    const own = setting.start?.text ?? setting.own.get(this.chosen);
-    this.history = new EditHistory(own ? this.laidOut(own) : this.original);
-    this.notice = setting.start?.said ?? (own ? KEPT : "");
-    this.still = this.chosen === setting.examples[0] && !own ? setting.stillBoard : undefined;
+    this.work = new OpenBlueprint(setting, () => this.drawn());
 
     this.wires = document.createElementNS(SVG, "svg");
     this.wires.classList.add("wb-wires");
@@ -149,7 +105,7 @@ export class Workbench {
       turn: (node, value, done) => this.write(node, "value", value, done),
       find: (node) => this.find(node),
       point: (node) => this.point(node),
-      rename: (node, title) => this.edit(withTitle(this.history.now, node, title)),
+      rename: (node, title) => this.edit(withTitle(this.work.now, node, title)),
     });
 
     const button = (label: string, title: string, act: () => void, extra = "") => {
@@ -184,38 +140,27 @@ export class Workbench {
     for (const [name, size] of Object.entries(NODE)) this.element.style.setProperty(`--bp-${name}`, `${size}px`);
 
     this.listen();
-    this.stopListening = setting.files.listen(() => this.schedule());
-    if (this.still) this.board.showStill(this.still);
+    if (this.work.still) this.board.showStill(this.work.still);
     this.tellAbout();
     this.render();
   }
 
   /** One of the page's examples, open here: as the reader left it, if they did, and Reset going back to it. */
   open(example: Example): void {
-    if (example === this.chosen) return;
+    if (example === this.work.example) return;
     this.closeMenu?.();
     this.element.querySelector(".wb-examples")?.remove();
-    this.chosen = example;
-    this.original = this.laidOut(example.text);
-    this.still = undefined;
-    // What the one before made is not this one's: a node called as one of its nodes was may be another kind of node.
-    this.evaluation = new Map();
-    const own = this.setting.own.get(example);
-    this.history = new EditHistory(own ? this.laidOut(own) : this.original);
     this.preview = null;
     this.selection.clear();
+    this.work.open(example);
     this.tellAbout();
-    this.changed();
-    this.notice = own ? KEPT : `Opened here: ${example.title}`;
-    this.setting.opened?.(example);
-    this.wake();
     this.fit();
     this.say();
   }
 
   /** What the example open is called, and what it is about, above the canvas. */
   private tellAbout(): void {
-    const { title, about } = this.chosen;
+    const { title, about } = this.work.example;
     this.about.hidden = !title;
     this.about.title = about;
     this.about.replaceChildren(el("strong", {}, title), about ? ` ${about}` : "");
@@ -223,22 +168,20 @@ export class Workbench {
 
   /** A blueprint written by someone else — an agent — put on the canvas as an edit, so that Undo and Reset still work. */
   ask(text: string): void {
-    this.edit(this.laidOut(text));
-    this.notice = "Written by an agent. Undo, or Reset, goes back.";
-    this.wake();
+    this.preview = null;
+    this.work.ask(text);
     this.fit();
     this.say();
   }
 
   /** Near the screen: run the blueprint, and from now on whenever it changes. */
   wake(): void {
-    this.awake = true;
-    this.schedule();
+    this.work.wake();
   }
 
   /** The blueprint shown: being dragged, or as it stands. */
   private get blueprint(): Blueprint {
-    return this.preview ?? this.history.now;
+    return this.preview ?? this.work.now;
   }
 
   /** Put on the page, and looking at all of it. */
@@ -247,70 +190,42 @@ export class Workbench {
   }
 
   stop(): void {
-    this.stopped = true;
-    this.stopListening();
+    this.work.stop();
     this.closeMenu?.();
     this.closePeek?.();
     document.body.classList.remove("wb-full-open");
   }
 
-  /** A blueprint from its text, tidied when the text does not say where its nodes stand. */
-  private laidOut(text: string): Blueprint {
-    const { blueprint, placed } = parseBlueprint(text, this.setting.kit);
-    return placed ? blueprint : tidyBlueprint(blueprint, this.setting.kit);
-  }
-
   /** A new blueprint, kept for undoing — joined with the edit before when they have one key — drawn, kept, and run. */
   private edit(next: Blueprint, key?: string): void {
     this.preview = null;
-    this.history.push(next, key);
-    this.notice = "";
-    this.changed();
+    this.work.edit(next, key);
   }
 
-  private changed(): void {
-    const now = this.history.now;
-    const nodes = new Set(now.nodes.map((node) => node.id));
+  /** Told by the blueprint open here that it changed, or that a run of it ended: what is no longer there is no longer chosen, and all of it is drawn again. */
+  private drawn(): void {
+    const nodes = new Set(this.work.now.nodes.map((node) => node.id));
     this.selection = new Set([...this.selection].filter((id) => nodes.has(id)));
-    this.setting.own.set(this.chosen, now === this.original ? null : printBlueprint(now, this.setting.kit));
     this.render();
-    this.schedule();
   }
 
   private step(way: "undo" | "redo"): void {
-    if (way === "undo") this.history.undo();
-    else this.history.redo();
     this.preview = null;
-    this.changed();
+    if (way === "undo") this.work.undo();
+    else this.work.redo();
   }
 
   private reset(): void {
-    this.history.push(this.original);
-    this.notice = "Back to the blueprint as the page wrote it.";
-    this.changed();
+    this.work.reset();
     this.fit();
-  }
-
-  /** Run the blueprint soon — once, however many edits come before — so a slider dragged runs it once a frame, not once an event. */
-  private schedule(): void {
-    if (this.scheduled || this.stopped || !this.awake) return;
-    this.scheduled = true;
-    setTimeout(() => {
-      this.scheduled = false;
-      if (this.stopped) return;
-      this.evaluation = evaluateBlueprint(this.history.now, this.setting.kit, { read: this.setting.files.read }, this.evaluation);
-      // The board the build wrote stays until every picture can be drawn here: it would only blink out into "fetching".
-      this.ran ||= [...this.evaluation.values()].every((result) => result.state !== "waiting");
-      this.render();
-    }, 0);
   }
 
   // ---- drawing
 
   private render(): void {
     const blueprint = this.blueprint;
-    const { kit, files } = this.setting;
-    const dials = new Map(dialsOf(blueprint, kit, files.read, this.evaluation).map((dial) => [dial.node, dial]));
+    const { kit } = this.setting;
+    const dials = new Map(this.work.dials().map((dial) => [dial.node, dial]));
     const seen = new Set<string>();
     for (const node of blueprint.nodes) {
       seen.add(node.id);
@@ -319,7 +234,7 @@ export class Workbench {
         view = new NodeView(kit, node.id, {
           write: (id, pin, value, done) => this.write(id, pin, value, done),
           promote: (id, pin) => this.promote(id, pin),
-          rename: (id, title) => this.edit(withTitle(this.history.now, id, title)),
+          rename: (id, title) => this.edit(withTitle(this.work.now, id, title)),
           peek: (id, pin, anchor) => this.peek(id, pin, anchor),
         });
         this.views.set(node.id, view);
@@ -328,10 +243,10 @@ export class Workbench {
       const dial = dials.get(node.id);
       view.show({
         node,
-        result: this.evaluation.get(node.id),
+        result: this.work.evaluation.get(node.id),
         wiredIn: this.wiredInto(node.id),
         wiredOut: this.wiredOutOf(node.id),
-        editors: dial ? new Map([["value", dial.editor]]) : this.editorsOf(node),
+        editors: dial ? new Map([["value", dial.editor]]) : this.work.editorsOf(node),
         selected: this.selection.has(node.id),
         // A dial says what it is set to as the board does: a station by its name, not its code.
         ...(dial && { foot: `on the board: ${dial.said}` }),
@@ -344,11 +259,11 @@ export class Workbench {
       }
     this.drawWires();
     if (!this.gesture) this.offerNext();
-    if (this.ran || !this.still) this.drawBoard();
+    if (this.work.ran || !this.work.still) this.board.show(this.work.dials(), this.work.cards());
     this.canvas.classList.toggle("blank", blueprint.nodes.length === 0);
-    this.buttons.undo.disabled = !this.history.canUndo;
-    this.buttons.redo.disabled = !this.history.canRedo;
-    this.buttons.reset.disabled = this.history.now === this.original;
+    this.buttons.undo.disabled = !this.work.canUndo;
+    this.buttons.redo.disabled = !this.work.canRedo;
+    this.buttons.reset.disabled = !this.work.own;
     if (!this.gesture) this.say();
   }
 
@@ -358,12 +273,6 @@ export class Workbench {
 
   private wiredOutOf(id: string): Set<string> {
     return new Set(this.blueprint.wires.filter((wire) => wire.from.node === id).map((wire) => wire.from.pin));
-  }
-
-  /** How each input of a node is written, as its kind says, worked out from what it was handed. */
-  private editorsOf(node: PlacedNode): Map<string, ReturnType<typeof resolvedEditor>> {
-    const { kit, files } = this.setting;
-    return new Map((kit.kinds.get(node.kind)?.inputs ?? []).map((pin) => [pin.name, resolvedEditor(node, pin, kit, files.read, this.evaluation)]));
   }
 
   private drawWires(): void {
@@ -382,7 +291,7 @@ export class Workbench {
       if (!from || !to) continue;
       const d = wirePath(from, to);
       const chosen = this.chosenWire?.to.node === wire.to.node && this.chosenWire.to.pin === wire.to.pin;
-      const waiting = this.evaluation.get(wire.from.node)?.state !== "done";
+      const waiting = this.work.evaluation.get(wire.from.node)?.state !== "done";
       paths.push(this.path(d, `wb-wire${chosen ? " chosen" : ""}${waiting ? " idle" : ""}`, kit.types.get(typeOut(wire.from.node, wire.from.pin))?.colour));
       const hit = this.path(d, "wb-wire-hit");
       hit.dataset["to"] = `${wire.to.node}\u0000${wire.to.pin}`;
@@ -401,7 +310,7 @@ export class Workbench {
   /** What could come after the one node chosen, read off what it gave: built again only when that changes, so a button is never pulled from under a hand. */
   private offerNext(): void {
     const [chosen] = this.selection.size === 1 ? [...this.selection] : [];
-    const offered = chosen ? suggestionsFor(this.history.now, chosen, this.setting.kit, this.evaluation).filter((offer) => this.offers(this.setting.kit.kinds.get(offer.kind))) : [];
+    const offered = chosen ? this.work.nextFor(chosen) : [];
     const shown = `${chosen}\u0000${offered.map((each) => each.label).join("\u0000")}`;
     this.next.hidden = offered.length === 0;
     if (shown === this.nextShown) return;
@@ -410,34 +319,31 @@ export class Workbench {
       el("span", { class: "wb-next-said" }, "Next:"),
       ...offered.map((offer) => {
         const take = el("button", { type: "button", title: `Add it, wired from what is chosen: ${this.setting.kit.kinds.get(offer.kind)?.title ?? offer.kind}` }, offer.label);
-        take.addEventListener("click", () => chosen && this.follow(chosen, offer));
+        take.addEventListener("click", () => chosen && this.follow(chosen, offer.label));
         return take;
       }),
     );
   }
 
   /** A next step taken: its node added to the right of the one it follows, wired from it, written as offered, and chosen — so what could come after it is offered in turn. */
-  private follow(id: string, offer: Suggestion): void {
+  private follow(id: string, label: string): void {
     const { kit } = this.setting;
-    const now = this.history.now;
-    const after = now.nodes.find((node) => node.id === id);
-    if (!after) return;
+    const after = this.work.now.nodes.find((node) => node.id === id);
+    const offer = this.work.nextFor(id).find((each) => each.label === label);
+    if (!after || !offer) return;
     const shape = nodeShapeOf(kit.kinds.get(offer.kind));
-    const at = this.freeSpot({ x: after.x + nodeShapeOf(kit.kinds.get(after.kind)).width + 80, y: after.y }, shape.width, shape.height);
-    const node: PlacedNode = { id: freshId(now, offer.kind), kind: offer.kind, ...at, values: offer.values };
-    let next = withWire(withNode(now, node), { from: { node: id, pin: offer.from }, to: { node: node.id, pin: offer.into } });
-    if (offer.also) next = withWire(next, { from: offer.also.from, to: { node: node.id, pin: offer.also.into } });
-    this.selection = new Set([node.id]);
-    this.edit(next);
-    this.reveal([node.id]);
-    this.notice = `${offer.label}: added, wired from what was chosen. What could come after it is offered in turn.`;
+    const added = this.work.follow(id, offer, this.freeSpot({ x: after.x + nodeShapeOf(kit.kinds.get(after.kind)).width + 80, y: after.y }, shape.width, shape.height));
+    this.selection = new Set([added]);
+    this.render();
+    this.reveal([added]);
+    this.work.notice = `${offer.label}: added, wired from what was chosen. What could come after it is offered in turn.`;
     this.say();
   }
 
   /** What a wire carries, in words, for whoever points at it — and, where the input takes it as something else, as what: a graph read as a table. */
   private carried(wire: Wire): string | null {
     const { kit } = this.setting;
-    const result = this.evaluation.get(wire.from.node);
+    const result = this.work.evaluation.get(wire.from.node);
     if (result?.state !== "done" || !(wire.from.pin in result.outputs)) return null;
     const kindOf = (id: string) => kit.kinds.get(this.blueprint.nodes.find((node) => node.id === id)?.kind ?? "");
     const out = kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "value";
@@ -450,10 +356,10 @@ export class Workbench {
   /** What one output of a node gives, beside it: what it is in words, its first rows, and what its columns are. */
   private peek(id: string, pin: string, anchor: Element): void {
     const { kit } = this.setting;
-    const node = this.history.now.nodes.find((each) => each.id === id);
+    const node = this.work.now.nodes.find((each) => each.id === id);
     const output = kit.kinds.get(node?.kind ?? "")?.outputs.find((each) => each.name === pin);
     if (!node || !output) return;
-    const result = this.evaluation.get(id);
+    const result = this.work.evaluation.get(id);
     const html = result?.state === "done" && pin in result.outputs ? peekOf(result.outputs[pin], output.type, kit).html : tag("p", {}, footOf(result, node.kind).said || "It has not run yet.").html;
     this.closePeek?.();
     this.closePeek = openPeek(this.canvas, `${node.title ?? kit.kinds.get(node.kind)?.title ?? node.kind} gives ${output.label}`, html, anchor);
@@ -467,21 +373,6 @@ export class Workbench {
     return path;
   }
 
-  private drawBoard(): void {
-    const { kit, files } = this.setting;
-    const blueprint = this.history.now;
-    const painters = blueprint.nodes.filter((node) => kit.kinds.get(node.kind)?.role === "paint");
-    const cards = painters.map((node): Card => {
-      const result = this.evaluation.get(node.id);
-      const title = node.title ?? kit.kinds.get(node.kind)?.title ?? node.kind;
-      if (result?.state === "done" && result.painting) return { node: node.id, title, painting: result.painting };
-      if (result?.state === "failed") return { node: node.id, title, problem: result.message };
-      if (result?.state === "missing") return { node: node.id, title, problem: `Wire a ${result.pins.join(" and a ")} into it.` };
-      return { node: node.id, title, waiting: true };
-    });
-    this.board.show(dialsOf(blueprint, kit, files.read, this.evaluation), cards);
-  }
-
   private applyCamera(): void {
     const { x, y, zoom } = this.camera;
     this.world.style.transform = `translate(${x}px, ${y}px) scale(${zoom})`;
@@ -491,7 +382,7 @@ export class Workbench {
   }
 
   private fit(): void {
-    const bounds = boundsOf(this.history.now, this.setting.kit);
+    const bounds = boundsOf(this.work.now, this.setting.kit);
     const box = this.canvas.getBoundingClientRect();
     if (bounds) this.camera.fit(bounds, { width: box.width, height: box.height });
     this.applyCamera();
@@ -499,53 +390,50 @@ export class Workbench {
 
   /** The line under the canvas: what was just done or refused, or how to begin. */
   private say(words?: string): void {
-    this.status.textContent = words ?? (this.notice || (this.touching() && !this.full() ? HINT.touch : HINT.fine));
+    this.status.textContent = words ?? (this.work.notice || (this.touching() && !this.full() ? HINT.touch : HINT.fine));
   }
 
   // ---- what hands do to the blueprint
 
   private write(id: string, pin: string, value: Literal | undefined, done: boolean): void {
-    const next = withValue(this.history.now, id, pin, value);
+    const next = withValue(this.work.now, id, pin, value);
     this.edit(next, done ? undefined : `${id}\u0000${pin}`);
   }
 
   /** An input put on the board: a dial wired into it, standing to its left, holding what the input holds now. */
   private promote(id: string, pin: string): void {
-    const now = this.history.now;
-    const node = now.nodes.find((each) => each.id === id);
-    const kind = node && this.setting.kit.kinds.get(node.kind);
+    const { kit } = this.setting;
+    const node = this.work.now.nodes.find((each) => each.id === id);
+    const kind = node && kit.kinds.get(node.kind);
     const input = kind?.inputs.find((each) => each.name === pin);
     if (!node || !input) return;
-    const result = this.evaluation.get(id);
-    const settled = result?.state === "done" ? result.settled[pin] : undefined;
-    const value = node.values[pin] ?? settled ?? input.initial ?? (input.type === "number" ? 0 : input.type === "flag" ? false : "");
-    const dialId = freshId(now, pin.replace(/[^\w-]/g, "") || "dial");
     const row = nodeShapeOf(kind).inputs.get(pin)?.y ?? 0;
     // Beside the input it turns, its wire level with it, moved off any node it would stand on.
     const wanted = { x: node.x - NODE.dial - 48, y: node.y + row - (NODE.header + NODE.row / 2) };
-    const dial: PlacedNode = { id: dialId, kind: "dial", ...this.freeSpot(wanted, NODE.dial, nodeShapeOf(this.setting.kit.kinds.get("dial")).height), title: input.label || pin, values: { value } };
-    this.selection = new Set([dialId]);
-    this.edit(withWire(withValue(withNode(now, dial), id, pin, undefined), { from: { node: dialId, pin: "value" }, to: { node: id, pin } }));
-    this.reveal([dialId, id]);
+    const dial = this.work.promote(id, pin, this.freeSpot(wanted, NODE.dial, nodeShapeOf(kit.kinds.get("dial")).height));
+    if (dial === null) return;
+    this.selection = new Set([dial]);
+    this.render();
+    this.reveal([dial, id]);
     this.say(`${input.label || pin} is on the board now, as a dial — and on the canvas, beside the node it turns.`);
   }
 
   private tidy(): void {
-    this.edit(tidyBlueprint(this.history.now, this.setting.kit));
+    this.edit(tidyBlueprint(this.work.now, this.setting.kit));
     this.fit();
   }
 
   private remove(): void {
-    if (this.selection.size > 0) this.edit(withoutNodes(this.history.now, [...this.selection]));
+    if (this.selection.size > 0) this.edit(withoutNodes(this.work.now, [...this.selection]));
     else if (this.chosenWire) {
-      this.edit(withoutWires(this.history.now, this.chosenWire.to, "input"));
+      this.edit(withoutWires(this.work.now, this.chosenWire.to, "input"));
       this.chosenWire = null;
     }
   }
 
   private duplicate(): void {
     if (this.selection.size === 0) return;
-    const { blueprint, ids } = duplicated(this.history.now, [...this.selection], 30);
+    const { blueprint, ids } = duplicated(this.work.now, [...this.selection], 30);
     this.selection = new Set(ids);
     this.edit(blueprint);
   }
@@ -553,11 +441,11 @@ export class Workbench {
   /** The node a dial or a picture of the board comes from, lit on the canvas while it is pointed at, and said. */
   private point(id: string | null): void {
     for (const [each, view] of this.views) view.element.classList.toggle("pointed", each === id);
-    const node = id ? this.history.now.nodes.find((each) => each.id === id) : undefined;
+    const node = id ? this.work.now.nodes.find((each) => each.id === id) : undefined;
     const kind = node && this.setting.kit.kinds.get(node.kind);
     if (!node || !kind) return this.say();
-    const into = this.history.now.wires.filter((wire) => wire.from.node === node.id).map((wire) => {
-      const target = this.history.now.nodes.find((each) => each.id === wire.to.node);
+    const into = this.work.now.wires.filter((wire) => wire.from.node === node.id).map((wire) => {
+      const target = this.work.now.nodes.find((each) => each.id === wire.to.node);
       return `${wire.to.pin} of ${target?.title ?? this.setting.kit.kinds.get(target?.kind ?? "")?.title ?? wire.to.node}`;
     });
     this.say(kind.role === "dial" ? `${node.title ?? "This dial"} turns ${into.join(" and ") || "nothing yet: wire it into an input"}. It is lit on the canvas.` : `${node.title ?? kind.title} comes from the ${kind.title} node lit on the canvas.`);
@@ -565,7 +453,7 @@ export class Workbench {
 
   /** A node brought into view and chosen: what a picture's title on the board does. */
   private find(id: string): void {
-    const node = this.history.now.nodes.find((each) => each.id === id);
+    const node = this.work.now.nodes.find((each) => each.id === id);
     if (!node) return;
     this.selection = new Set([id]);
     const box = this.canvas.getBoundingClientRect();
@@ -601,7 +489,7 @@ export class Workbench {
       () => {
         this.closeMenu = null;
         // A wire pulled off its input and dropped where nothing was chosen is let go: that is how a wire is taken away by hand.
-        if (!taken && detached) this.edit(withoutWires(this.history.now, detached.to, "input"));
+        if (!taken && detached) this.edit(withoutWires(this.work.now, detached.to, "input"));
         else if (!taken) this.preview = null;
         this.render();
         this.canvas.focus({ preventScroll: true });
@@ -610,15 +498,10 @@ export class Workbench {
     );
   }
 
-  /** Whether a kind is offered to be added: every kind, but one on trial while its flag is off. */
-  private offers(kind: NodeKind | undefined): boolean {
-    return kind !== undefined && (kind.flag === undefined || this.setting.isOn?.(kind.flag) === true);
-  }
-
   /** The kit as the menu offers it: asked for each time, since a flag can be switched while the page is open. */
   private offeredKit(): Kit {
     const { kit } = this.setting;
-    return { kinds: new Map([...kit.kinds].filter(([, kind]) => this.offers(kind))), types: kit.types };
+    return { kinds: new Map([...kit.kinds].filter(([, kind]) => this.work.offers(kind))), types: kit.types };
   }
 
   /** The page's examples a kind of node is found in: where to see it at work. */
@@ -632,7 +515,7 @@ export class Workbench {
   }
 
   private add(offer: Offer, at: { x: number; y: number }, end?: PinFound, free = false): void {
-    const now = this.history.now;
+    const now = this.work.now;
     const id = freshId(now, offer.kind.name);
     const shape = nodeShapeOf(offer.kind);
     const asked = { x: Math.round(end?.side === "input" ? at.x - shape.width : at.x), y: Math.round(at.y - NODE.header / 2) };
@@ -647,7 +530,7 @@ export class Workbench {
   /** The nearest place to one asked for where a node that big stands on no other: tried further down, then further up, a node's row at a time. */
   private freeSpot(asked: { x: number; y: number }, width: number, height: number): { x: number; y: number } {
     const { kit } = this.setting;
-    const boxes = this.history.now.nodes.map((node) => ({ node, shape: nodeShapeOf(kit.kinds.get(node.kind)) }));
+    const boxes = this.work.now.nodes.map((node) => ({ node, shape: nodeShapeOf(kit.kinds.get(node.kind)) }));
     const clear = (y: number) => boxes.every(({ node, shape }) => asked.x + width + 12 <= node.x || node.x + shape.width + 12 <= asked.x || y + height + 12 <= node.y || node.y + shape.height + 12 <= y);
     for (let step = 0; step < 40; step += 1) {
       const y = asked.y + (step % 2 === 0 ? 1 : -1) * Math.ceil(step / 2) * NODE.row * 2;
@@ -659,7 +542,7 @@ export class Workbench {
   /** Some nodes brought into view, the canvas moved no more than it has to: a node added out of sight is a node not added, for whoever is looking. */
   private reveal(ids: readonly string[]): void {
     const { kit } = this.setting;
-    const nodes = this.history.now.nodes.filter((node) => ids.includes(node.id));
+    const nodes = this.work.now.nodes.filter((node) => ids.includes(node.id));
     if (nodes.length === 0) return;
     const box = this.canvas.getBoundingClientRect();
     if (box.width <= 0 || box.height <= 0) return;
@@ -677,9 +560,9 @@ export class Workbench {
   }
 
   private openText(): void {
-    openTextPanel(this.element, printBlueprint(this.history.now, this.setting.kit, { positions: false }), this.setting.kit, (text) => {
+    openTextPanel(this.element, this.work.text(), this.setting.kit, (text) => {
       const { blueprint } = parseBlueprint(text, this.setting.kit);
-      const before = new Map(this.history.now.nodes.map((node) => [node.id, node]));
+      const before = new Map(this.work.now.nodes.map((node) => [node.id, node]));
       const kept = blueprint.nodes.every((node) => before.has(node.id));
       this.edit(kept ? { ...blueprint, nodes: blueprint.nodes.map((node) => ({ ...node, x: before.get(node.id)?.x ?? 0, y: before.get(node.id)?.y ?? 0 })) } : tidyBlueprint(blueprint, this.setting.kit));
       if (!kept) this.fit();
@@ -687,7 +570,7 @@ export class Workbench {
   }
 
   private async share(): Promise<void> {
-    const link = this.setting.linkTo(this.chosen, printBlueprint(this.history.now, this.setting.kit));
+    const link = this.work.link();
     try {
       await this.setting.copy(link);
       this.say("A link to this blueprint, as it is now, is copied: whoever opens it sees it so.");
@@ -700,7 +583,7 @@ export class Workbench {
   private toggleExamples(): void {
     const open = this.element.querySelector(".wb-examples");
     if (open) open.remove();
-    else openExamples(this.element, this.setting.examples, this.chosen, (example) => this.open(example));
+    else openExamples(this.element, this.setting.examples, this.work.example, (example) => this.open(example));
   }
 
   /** What the hands do, said where the hands are; pressed again, put away. */
@@ -815,10 +698,10 @@ export class Workbench {
       if (event.shiftKey && this.selection.has(id)) this.selection.delete(id);
       else if (event.shiftKey) this.selection.add(id);
       else if (!this.selection.has(id)) this.selection = new Set([id]);
-      this.gesture = { kind: "move", ids: [...this.selection], from: at, before: this.history.now, moved: false };
+      this.gesture = { kind: "move", ids: [...this.selection], from: at, before: this.work.now, moved: false };
     } else if (hit?.dataset["to"]) {
       const [node = "", pinName = ""] = hit.dataset["to"].split("\u0000");
-      this.chosenWire = this.history.now.wires.find((wire) => wire.to.node === node && wire.to.pin === pinName) ?? null;
+      this.chosenWire = this.work.now.wires.find((wire) => wire.to.node === node && wire.to.pin === pinName) ?? null;
       this.selection.clear();
       this.say("A wire chosen: Delete takes it away; or drag its end off the input it goes into.");
     } else if (event.shiftKey) {
@@ -834,7 +717,7 @@ export class Workbench {
   /** A wire taken by one end: out of an output, a new wire; off a wired input, the wire there, to be dropped elsewhere or let go. */
   private grabPin(event: PointerEvent, end: PinFound, at: { x: number; y: number }): void {
     const { kit } = this.setting;
-    const now = this.history.now;
+    const now = this.work.now;
     const typeOf = (found: PinFound) => {
       const kind = kit.kinds.get(now.nodes.find((node) => node.id === found.node)?.kind ?? "");
       return (found.side === "output" ? kind?.outputs : kind?.inputs)?.find((pin) => pin.name === found.pin)?.type ?? "value";
@@ -912,7 +795,7 @@ export class Workbench {
       gesture.at = at;
       const [left, top] = [Math.min(gesture.from.x, at.x), Math.min(gesture.from.y, at.y)];
       const [right, bottom] = [Math.max(gesture.from.x, at.x), Math.max(gesture.from.y, at.y)];
-      const inside = this.history.now.nodes.filter((node) => node.x < right && node.x + NODE.width > left && node.y < bottom && node.y + nodeShapeOf(this.setting.kit.kinds.get(node.kind)).height > top).map((node) => node.id);
+      const inside = this.work.now.nodes.filter((node) => node.x < right && node.x + NODE.width > left && node.y < bottom && node.y + nodeShapeOf(this.setting.kit.kinds.get(node.kind)).height > top).map((node) => node.id);
       this.selection = new Set([...gesture.base, ...inside]);
       Object.assign(this.marquee.style, { left: `${left * this.camera.zoom + this.camera.x}px`, top: `${top * this.camera.zoom + this.camera.y}px`, width: `${(right - left) * this.camera.zoom}px`, height: `${(bottom - top) * this.camera.zoom}px` });
       this.marquee.hidden = false;
@@ -966,7 +849,7 @@ export class Workbench {
     else if (command && key === "y") this.step("redo");
     else if (command && key === "d") this.duplicate();
     else if (command && key === "a") {
-      this.selection = new Set(this.history.now.nodes.map((node) => node.id));
+      this.selection = new Set(this.work.now.nodes.map((node) => node.id));
       this.render();
     } else if (!command && (event.key === " " || key === "a" || event.key === "Tab")) this.openMenu(null, undefined);
     else if (!command && key === "f") this.fit();
@@ -984,12 +867,12 @@ export class Workbench {
     const pin = element?.closest<HTMLElement>(".wb-pin");
     const node = element?.closest<HTMLElement>(".wb-node")?.dataset["node"];
     if (!node) return this.say();
-    const placed = this.history.now.nodes.find((each) => each.id === node);
+    const placed = this.work.now.nodes.find((each) => each.id === node);
     const kind = placed && this.setting.kit.kinds.get(placed.kind);
     if (!kind) return this.say();
     if (!pin) return this.say(`${kind.title}: ${kind.summary}`);
     const name = pin.dataset["pin"] ?? "";
-    const result = this.evaluation.get(node);
+    const result = this.work.evaluation.get(node);
     const output = pin.dataset["side"] === "output";
     const declared = (output ? kind.outputs : kind.inputs).find((each) => each.name === name);
     const type = declared && this.setting.kit.types.get(declared.type);

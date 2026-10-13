@@ -1,18 +1,10 @@
 import { el } from "../../browser/el";
 import type { Dial } from "../../blueprint/dialsOf";
-import type { Literal, Painting } from "../../blueprint/NodeKind";
+import type { Literal } from "../../blueprint/NodeKind";
 import { tag } from "../../blueprint/tag";
+import type { Card } from "../cardsOf";
 import { type Control, controlFor } from "./controlFor";
 import { morphInto } from "./morphInto";
-
-/** A picture on the board, or why there is none yet. */
-export interface Card {
-  readonly node: string;
-  readonly title: string;
-  readonly painting?: Painting;
-  readonly problem?: string;
-  readonly waiting?: boolean;
-}
 
 /** What the board asks of whoever holds the blueprint. */
 export interface BoardHands {

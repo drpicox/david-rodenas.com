@@ -2,6 +2,7 @@ import type { NodeKind } from "../blueprint/NodeKind";
 import type { PinType } from "../blueprint/PinType";
 import type { Page } from "../content/Page";
 import type { AgentTool } from "./AgentTool";
+import type { BenchMaker } from "./Bench";
 import type { Site } from "../content/Site";
 import type { YearlySource } from "../data/YearlySource";
 import type { Flag } from "../flags/Flag";
@@ -61,6 +62,12 @@ export interface Feature {
   readonly nodes?: readonly NodeKind[];
   /** What flows along wires of its own, besides the numbers, words and tables every blueprint has. */
   readonly pinTypes?: readonly PinType[];
+  /**
+   * Another bench to work on a blueprint at, by the flag that asks for it:
+   * while that flag is on, a blueprint written in a page opens there, not
+   * at the frame's own workbench.
+   */
+  readonly benches?: Readonly<Record<string, BenchMaker>>;
   /** Programs it offers, by the name the markdown calls them. */
   readonly apps?: Readonly<Record<string, App>>;
   /** What stands in a program's place in the HTML, by the program's name. Runs in node: no DOM. */

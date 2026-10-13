@@ -10,6 +10,7 @@ import { mountNavigation } from "./platform/page/browser/mountNavigation";
 import { mountSlides } from "./platform/browser/mountSlides";
 import { mountTerminal, type Terminal } from "./platform/shell/browser/mountTerminal";
 import { offerTools } from "./platform/browser/offerTools";
+import { benchOf } from "./platform/plugin/benchOf";
 import { blueprintKitOf } from "./platform/plugin/blueprintKitOf";
 import { mountWorkbench } from "./platform/workbench/browser/mountWorkbench";
 import { siteTools } from "./platform/agent/siteTools";
@@ -49,8 +50,10 @@ function mount(): void {
   );
 
   const commands = [...siteCommands, ...commandsOf(allFeatures), flagsCommand(flags, flagStore)];
-  // A blueprint a page writes can name the nodes of every feature, so it is put together here, where every feature is known.
-  const apps = { ...appsOf(allFeatures), blueprint: mountWorkbench(blueprintKitOf(allFeatures), (name) => flagStore.isOn(name)) };
+  // A blueprint a page writes can name the nodes of every feature, so it is put together here, where every feature is known;
+  // and it opens at the workbench, unless a feature brings another bench behind a flag that is on.
+  const isOn = (name: string) => flagStore.isOn(name);
+  const apps = { ...appsOf(allFeatures), blueprint: mountWorkbench(blueprintKitOf(allFeatures), isOn, () => benchOf(allFeatures, isOn)) };
 
   const here = (path: string) => (path.endsWith("/") ? path : `${path}/`);
   const route = here(window.location.pathname);

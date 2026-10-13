@@ -2,6 +2,7 @@ import { el } from "../../browser/el";
 import { type Example, examplesOf } from "../../blueprint/examplesOf";
 import type { Kit } from "../../blueprint/kitOf";
 import { PROGRAM_ASKED } from "../../browser/PROGRAM_ASKED";
+import type { BenchMaker } from "../../plugin/Bench";
 import { hashOf } from "../hashOf";
 import { linkCodeOf } from "../linkCodeOf";
 import { textOfLinkCode } from "../textOfLinkCode";
@@ -46,10 +47,14 @@ const fetched = (path: string) => fetch(path).then((response) => (response.ok ? 
  * it — or as a link to it carried it, or as the reader left it last time,
  * kept in their browser — and a link to it as it is can be copied at any
  * time. A link on the page to one of its blueprints lands on the place, and
- * opens it.
+ * opens it. Where another bench is asked for — a feature's, behind a flag —
+ * the blueprint opens there, handed the same and told the same; which, is
+ * asked each time a place is filled, since a flag can be switched between
+ * two pages.
  */
-export function mountWorkbench(kit: Kit, isOn: (flag: string) => boolean = () => false): (host: HTMLElement) => () => void {
+export function mountWorkbench(kit: Kit, isOn: (flag: string) => boolean = () => false, another: () => BenchMaker | undefined = () => undefined): (host: HTMLElement) => () => void {
   return (host) => {
+    const make: BenchMaker = another() ?? ((setting) => new Workbench(setting));
     files ??= new FilesInBrowser(fetched);
     const places = [...document.querySelectorAll<HTMLElement>('.app[data-app="blueprint"]')];
     host.id ||= `blueprint-${places.indexOf(host) + 1}`;
@@ -62,7 +67,7 @@ export function mountWorkbench(kit: Kit, isOn: (flag: string) => boolean = () =>
     const kept = new KeptBlueprints(() => window.localStorage);
     const keyOf = (example: Example) => `${window.location.pathname}#${hashOf(example.text)}`;
     const still = host.querySelector(".bp-board")?.innerHTML;
-    const workbench = new Workbench({
+    const workbench = make({
       kit,
       files,
       examples: held.flat(),
