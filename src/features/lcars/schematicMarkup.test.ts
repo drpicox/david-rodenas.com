@@ -65,7 +65,7 @@ describe("a schematic, as markup", () => {
   it("stands each module where the layout says, as wide as its column, in a world as big as the schematic", () => {
     const across = wide(false, true) + SCHEMATIC.channel;
     const told = SCHEMATIC.pad + 3 * SCHEMATIC.line + SCHEMATIC.said;
-    expect(html.startsWith(`<div class="lc-world" style="width: ${across + 2 * (wide(true, true) + SCHEMATIC.channel) + wide(true, false)}px; height: ${told}px">`)).toBe(true);
+    expect(html.startsWith(`<div class="lc-world" style="width: ${across + 2 * (wide(true, true) + SCHEMATIC.channel) + wide(true, false)}px; height: ${told}px" data-rows="0:${told}">`)).toBe(true);
     expect(moduleOf(html, "place")).toContain(`style="left: 0px; top: 0px; width: ${wide(false, true)}px; --lc-step: 0"`);
     expect(moduleOf(html, "n")).toContain(`style="left: ${across}px; top: 0px; width: ${wide(true, true)}px; --lc-step: 1"`);
   });
@@ -144,7 +144,7 @@ describe("a schematic while a conduit is run by hand", () => {
 
   it("marks the module it is run from, those that could take it, and the inputs of theirs it could go into, in the colour of what it carries", () => {
     const html = run();
-    expect(html).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--bp-table\)">/);
+    expect(html).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--bp-table\)"/);
     expect(classOf(moduleOf(html, "n"))).toContain("feeds");
     expect(["whole", "bars", "j"].every((id) => classOf(moduleOf(html, id)).includes("takes"))).toBe(true);
     expect(["place", "other", "n"].some((id) => classOf(moduleOf(html, id)).includes("takes"))).toBe(false);
@@ -175,6 +175,35 @@ describe("a schematic while a conduit is run by hand", () => {
   });
 
   it("is in no colour of its own where the port it is run from is not one the module has", () => {
-    expect(drawn(LOOSE, { joining: { from: { node: "gone" }, into: new Map() } })).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--dim\)">/);
+    expect(drawn(LOOSE, { joining: { from: { node: "gone" }, into: new Map() } })).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--dim\)"/);
+  });
+});
+
+describe("a schematic whose modules a hand moves", () => {
+  const FAN = "n = nights\nbars table: n\nshow-table table: n";
+  const swapped = new Map([["n", 0], ["bars", 1], ["show-table", 0]]);
+  /** How far down the second row is when the first holds only modules told nothing. */
+  const second = SCHEMATIC.pad + SCHEMATIC.said + SCHEMATIC.between;
+  const topOf = (html: string, id: string) => Number(/top: (-?[\d.]+)px/.exec(moduleOf(html, id))?.[1]);
+
+  it("stands each module on the row a hand put it on", () => {
+    expect([topOf(drawn(FAN), "bars"), topOf(drawn(FAN), "show-table")]).toEqual([0, SCHEMATIC.pad + 2 * SCHEMATIC.line + SCHEMATIC.said + SCHEMATIC.between]);
+    expect([topOf(drawn(FAN, { put: swapped }), "bars"), topOf(drawn(FAN, { put: swapped }), "show-table")]).toEqual([second, 0]);
+  });
+
+  it("says of itself which column and row each module stands in, and where its rows are: what a hand on it is read against", () => {
+    const html = drawn(FAN, { put: swapped });
+    expect(["n", "bars", "show-table"].map((id) => /data-column="(\d+)" data-row="(\d+)"/.exec(moduleOf(html, id))?.slice(1).join(":"))).toEqual(["0:0", "1:1", "1:0"]);
+    expect(/data-rows="([^"]*)"/.exec(html)?.[1]).toBe(`0:${SCHEMATIC.pad + SCHEMATIC.said} ${second}:${SCHEMATIC.pad + 2 * SCHEMATIC.line + SCHEMATIC.said}`);
+    expect(/data-rows="([^"]*)"/.exec(drawn("", {}, false))?.[1]).toBe("");
+  });
+
+  it("draws the module a hand is moving where the hand has it, over the place it would land, which is marked", () => {
+    const moving = drawn(FAN, { put: swapped, moving: { node: "bars", top: second - 20 } });
+    expect(classOf(moduleOf(moving, "bars"))).toContain("moving");
+    expect(moduleOf(moving, "bars")).toContain(`top: ${second}px; width: ${wide(true, false)}px; --lc-step: 1; transform: translateY(-20px)"`);
+    expect(moving).toContain(`<i class="lc-slot" style="left: ${wide(false, true) + SCHEMATIC.channel}px; top: ${second}px; width: ${wide(true, false)}px"></i>`);
+    expect(classOf(moduleOf(moving, "show-table"))).not.toContain("moving");
+    expect(drawn(FAN, { put: swapped })).not.toContain("lc-slot");
   });
 });

@@ -40,6 +40,10 @@ export interface SchematicShown {
   readonly read?: (path: string) => string;
   /** The conduit a hand is running, while one is. */
   readonly joining?: Joining;
+  /** The rows a hand put modules on: each stands there, and the rest around them. */
+  readonly put?: ReadonlyMap<string, number>;
+  /** The module a hand is moving, and how far down the schematic the hand has it. */
+  readonly moving?: { readonly node: string; readonly top: number };
 }
 
 /**
@@ -52,12 +56,16 @@ export interface SchematicShown {
  * conduit feeds, and what came out. A module is a button, pressed to ask
  * what it is. While a hand runs a conduit, the module it leaves, those that
  * could take it and the inputs it could go into are marked, and the conduit
- * is drawn out to where the hand is. Markup, so that it is made the same
- * wherever it is made, and drawn again in place.
+ * is drawn out to where the hand is. A module a hand is moving is drawn
+ * where the hand has it, over the place it would land; and the schematic
+ * says of itself which row and column each module stands in, and where its
+ * rows are, so that a hand on it is read against what is drawn and nothing
+ * else. Markup, so that it is made the same wherever it is made, and drawn
+ * again in place.
  */
-export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map(), read = () => "", joining }: SchematicShown): string {
+export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map(), read = () => "", joining, put, moving }: SchematicShown): string {
   const faces = new Map(blueprint.nodes.map((node) => [node.id, faceOf(node, blueprint, kit, evaluation, read)]));
-  const schematic = schematicOf(blueprint, new Map([...faces].map(([id, face]) => [id, { ins: face.ins.map((port) => port.pin), outs: face.outs.map((port) => port.pin), rows: face.rows.length }])));
+  const schematic = schematicOf(blueprint, new Map([...faces].map(([id, face]) => [id, { ins: face.ins.map((port) => port.pin), outs: face.outs.map((port) => port.pin), rows: face.rows.length }])), put);
   const placed = new Map(schematic.modules.map((module) => [module.id, module]));
   const byId = new Map(blueprint.nodes.map((node) => [node.id, node]));
   const feeding = new Set(schematic.conduits.map(({ wire }) => wire.from.node));
@@ -123,10 +131,13 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
       joining?.from.node === node.id ? "feeds" : "",
       joining?.into.has(node.id) ? "takes" : "",
       joining?.over?.node === node.id ? "over" : "",
+      moving?.node === node.id ? "moving" : "",
     ];
+    // Held by a hand, it is drawn where the hand has it: its place in the grid is the one it would land on.
+    const held = moving?.node === node.id && at ? `; transform: translateY(${moving.top - at.y}px)` : "";
     return tag(
       "button",
-      { type: "button", class: names.filter(Boolean).join(" "), "data-key": `node:${node.id}`, "data-node": node.id, "aria-pressed": node.id === chosen ? "true" : "false", title: kind?.summary ?? `There is no kind of node called ${node.kind}.`, style: `left: ${at?.x ?? 0}px; top: ${at?.y ?? 0}px; width: ${at?.width ?? 0}px; --lc-step: ${at?.column ?? 0}` },
+      { type: "button", class: names.filter(Boolean).join(" "), "data-key": `node:${node.id}`, "data-node": node.id, "data-column": at?.column ?? 0, "data-row": at?.row ?? 0, "aria-pressed": node.id === chosen ? "true" : "false", title: kind?.summary ?? `There is no kind of node called ${node.kind}.`, style: `left: ${at?.x ?? 0}px; top: ${at?.y ?? 0}px; width: ${at?.width ?? 0}px; --lc-step: ${at?.column ?? 0}${held}` },
       tag("span", { class: "lc-pad" }, ports("lc-ins", face?.ins ?? [], node.id), tag("span", { class: "lc-name" }, tag("b", {}, node.title ?? kind?.title ?? node.kind)), ports("lc-outs", face?.outs ?? [], node.id)),
       face?.rows.length
         ? tag(
@@ -149,14 +160,18 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     return tag("path", { class: "lc-rubber", d: conduitPath([from, { x: turn, y: from.y }, { x: turn, y: joining.at.y }, joining.at], SCHEMATIC.curve) });
   })();
 
+  const landing = moving ? placed.get(moving.node) : undefined;
   const [width, height] = [schematic.width, schematic.height];
   return tag(
     "div",
     {
       class: ["lc-world", chosen !== null ? "tracing" : "", joining ? "joining" : ""].filter(Boolean).join(" "),
       style: `width: ${width}px; height: ${height}px${joining ? `; --join: var(${kit.types.get(taken?.type ?? "")?.colour ?? "--dim"})` : ""}`,
+      // How far down each row begins, and how high it is.
+      "data-rows": schematic.rows.map((row) => `${row.top}:${row.height}`).join(" "),
     },
     tag("svg", { class: "lc-conduits", width, height, viewBox: `0 0 ${width} ${height}`, "aria-hidden": "true" }, conduits, rubber),
+    landing ? tag("i", { class: "lc-slot", style: `left: ${landing.x}px; top: ${landing.y}px; width: ${landing.width}px` }) : null,
     modules,
   ).html;
 }

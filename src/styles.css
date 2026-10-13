@@ -7332,6 +7332,7 @@ body.wb-full-open {
 .app .lcars .lc-key-undo { --lc-key: var(--lc-bell); }
 .app .lcars .lc-key-redo { --lc-key: var(--lc-bell); }
 .app .lcars .lc-key-reset { --lc-key: var(--lc-red); }
+.app .lcars .lc-key-tidy { --lc-key: var(--lc-peach); }
 .app .lcars .lc-key-text { --lc-key: var(--lc-lilac); }
 .app .lcars .lc-key-link { --lc-key: var(--lc-lilac); }
 .app .lcars .lc-key-help { --lc-key: var(--lc-violet); }
@@ -7771,6 +7772,31 @@ body.wb-full-open {
 
 .app .lc-module.ran-1 .lc-pad {
   animation: lc-ran-b 0.6s ease-out calc(var(--lc-step) * 0.16s) 1;
+}
+
+/* ---- a module moved by hand ---- */
+
+/* Where a module stands changes at a glide, so that it is seen which went where when one is put on another's row. */
+.app .lcars .lc-module {
+  transition: top 0.12s ease-out, left 0.12s ease-out;
+}
+
+/* The one a hand holds is where the hand has it, at once, over everything else. */
+.app .lcars .lc-module.moving {
+  z-index: 3;
+  filter: brightness(1.2);
+  cursor: grabbing;
+  transition: none;
+}
+
+/* Where it would land if it were let go: the two ends of the place, marked. */
+.app .lc-slot {
+  position: absolute;
+  box-sizing: border-box;
+  height: var(--lc-pad);
+  border-inline: 0.4rem solid var(--lc-white);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 /* ---- a conduit run by hand ---- */
@@ -8679,6 +8705,10 @@ body.lc-full-open {
   .app .lcars .lc-stream,
   .app .lcars .lc-key-flow {
     display: none;
+  }
+
+  .app .lcars .lc-module {
+    transition: none;
   }
 }
 

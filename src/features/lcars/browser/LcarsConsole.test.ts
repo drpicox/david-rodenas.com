@@ -533,3 +533,101 @@ describe("a conduit run by hand on the display of a starship", () => {
     expect(keys(element)).toEqual([]);
   });
 });
+
+describe("a module moved by hand on the display of a starship", () => {
+  const FAN = "n = nights\nbars table: n\nshow-table table: n";
+  /** A hand that takes a module by its name and carries it so far down, or up. */
+  const carry = (module: Element | null | undefined, by: number, type = "mouse") => {
+    const name = module?.querySelector(".lc-name") as HTMLElement;
+    name.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, button: 0, clientX: 200, clientY: 10, pointerType: type }));
+    point(document.body, "pointermove", 200, 10 + by);
+    return () => point(document.body, "pointerup", 200, 10 + by);
+  };
+
+  it("is carried down its column onto another row, changes places with what stood there, and stays there", async () => {
+    const { element, module, status } = display(FAN);
+    await settle();
+    const top = (id: string) => Number.parseFloat(module(id)?.style.top ?? "");
+    const under = top("show-table");
+    expect([top("bars"), under > 0]).toEqual([0, true]);
+    const letGo = carry(module("bars"), under);
+    expect(module("bars")?.classList.contains("moving")).toBe(true);
+    expect(element.querySelector(".lc-slot")).not.toBeNull();
+    expect(top("show-table")).toBe(0);
+    expect(status()).toBe("Let go to stand it on this row. A module keeps its column: the flow says which.");
+    letGo();
+    expect([top("show-table"), top("bars") > 0]).toEqual([0, true]);
+    expect([module("bars")?.classList.contains("moving"), module("bars")?.style.transform, element.querySelector(".lc-slot")]).toEqual([false, "", null]);
+    expect(status()).toBe("Moved: everything else stays where it stood. Tidy hands the layout back to the display.");
+  });
+
+  it("is one step, which Undo takes back, and Tidy hands the layout back to the display", async () => {
+    const { module, key } = display(FAN);
+    await settle();
+    const top = (id: string) => Number.parseFloat(module(id)?.style.top ?? "");
+    expect(key("tidy").disabled).toBe(true);
+    carry(module("bars"), top("show-table"))();
+    expect([top("show-table"), key("tidy").disabled]).toEqual([0, false]);
+    key("undo").click();
+    expect([top("bars"), key("tidy").disabled]).toEqual([0, true]);
+    key("redo").click();
+    expect(top("show-table")).toBe(0);
+    key("tidy").click();
+    expect([top("bars"), key("tidy").disabled]).toEqual([0, true]);
+    key("undo").click();
+    expect(top("show-table")).toBe(0);
+  });
+
+  it("stays where it was put through what is done after, until Reset, and is not what another blueprint is told", async () => {
+    const { element, module, key } = display([anExample(FAN, "Fan"), anExample(FAN, "Another")]);
+    await settle();
+    const top = (id: string) => Number.parseFloat(module(id)?.style.top ?? "");
+    carry(module("bars"), top("show-table"))();
+    await settle();
+    module("n")?.click();
+    const from = element.querySelector('.lc-take[data-pin="from"] input') as HTMLInputElement;
+    from.value = "2010";
+    from.dispatchEvent(new Event("change"));
+    await settle();
+    expect(top("show-table")).toBe(0);
+    (element.querySelector(".lc-flip-on") as HTMLButtonElement).click();
+    expect(top("bars")).toBe(0);
+    (element.querySelector(".lc-flip-back") as HTMLButtonElement).click();
+    key("reset").click();
+    expect(top("bars")).toBe(0);
+  });
+
+  it("is left where it stood when it is let go on its own row, or the hand is called away, and a press is still a press", async () => {
+    const { module, key } = display(FAN);
+    await settle();
+    const top = (id: string) => Number.parseFloat(module(id)?.style.top ?? "");
+    carry(module("bars"), 12)();
+    expect([top("bars"), key("undo").disabled]).toEqual([0, true]);
+    carry(module("bars"), top("show-table"));
+    point(document.body, "pointercancel");
+    expect([top("bars"), module("bars")?.classList.contains("moving")]).toEqual([0, false]);
+    carry(module("bars"), 2)();
+    module("bars")?.click();
+    expect(module("bars")?.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("is not carried by a finger, which moves the page", async () => {
+    const { module } = display(FAN);
+    await settle();
+    carry(module("bars"), 90, "touch");
+    expect(module("bars")?.classList.contains("moving")).toBe(false);
+  });
+
+  it("goes a row down, or up, when it is the one chosen and Alt is held with an arrow", async () => {
+    const { element, module } = display(FAN);
+    await settle();
+    const top = (id: string) => Number.parseFloat(module(id)?.style.top ?? "");
+    module("bars")?.click();
+    press(element, "ArrowDown", { altKey: true });
+    expect(top("show-table")).toBe(0);
+    press(element, "ArrowUp", { altKey: true });
+    expect(top("bars")).toBe(0);
+    press(element, "ArrowDown");
+    expect(top("bars")).toBe(0);
+  });
+});

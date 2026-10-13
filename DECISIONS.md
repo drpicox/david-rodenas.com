@@ -73,10 +73,28 @@ take it, as Unreal does. Pad by pad it is the same, for a finger or a
 keyboard: Feed beside an output, then the module pressed; Cut beside an
 input. So a module of any kind can be added, and what it needs run to it.
 
-What it does not do, on purpose: modules are not placed by hand. The
-blueprint's text is a pad away for the rest, and the workbench a flag
-away; both keep the reader's version of an example in the same place, the
-display's without where its nodes stand.
+A module is moved by hand too, as far as a grid that lays itself out lets
+it. It is carried up and down its column, onto another row, and what stood
+there changes places with it. Its column it keeps: that says what comes
+before what, and a conduit run backwards would say the opposite. Moving
+one module among others that stood where the layout wished would move
+nothing — each stands level with what feeds it, so its neighbours would
+follow it and the rows close up as they were — so from the first move
+every module stays where it stood (`withRow`), and the layout only finds a
+place for what is new, around them. Tidy hands it all back. A move is a
+step Undo takes back, though the blueprint is the same before and after:
+where modules were put is kept beside each state of it, while the page is
+open. And a hand on the schematic is read against the schematic as it is
+drawn, which says of itself where its rows are and which each module
+stands on.
+
+What it does not do, on purpose: where modules were put is not kept with
+the reader's version of an example, nor carried in a link. The text of a
+blueprint says nothing of it, and both benches keep that text in the same
+place — the display's without where its nodes stand. And a finger on a
+module moves the page, not the module; Alt and an arrow move the one
+chosen. The blueprint's text is a pad away for the rest, and the workbench
+a flag away.
 
 It cost the frame one seam and one refactor, and both stand without it. A
 feature may bring a bench (`Feature.benches`, by flag; `plugin/Bench` says

@@ -31,6 +31,8 @@ export interface Conduit {
 export interface Schematic {
   readonly width: number;
   readonly height: number;
+  /** Where each row of the grid is, and how high: the tallest of what stands on it. */
+  readonly rows: readonly { readonly top: number; readonly height: number }[];
   readonly modules: readonly Module[];
   readonly conduits: readonly Conduit[];
 }
@@ -65,8 +67,12 @@ const strandKeyOf = (wire: Wire) => `${wire.from.node}\u0000${wire.from.pin}`;
  * Sugiyama's layers, on a grid. A column is as wide as its widest module,
  * and a row as high as its tallest. Where the shape of a module is not
  * said, it has a port for each of its wires, in the order they were drawn.
+ *
+ * A hand may put a module on a row of its own choosing, and only a row: the
+ * column is the flow's to say. It stands there, and what was put nowhere
+ * stands as it would have, around it. A row nothing stands on is closed.
  */
-export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Shape> = new Map()): Schematic {
+export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Shape> = new Map(), put: ReadonlyMap<string, number> = new Map()): Schematic {
   const column = columnsOf(blueprint);
   const order = new Map(blueprint.nodes.map((node, at) => [node.id, at]));
   const wires = blueprint.wires.filter((wire) => order.has(wire.from.node) && order.has(wire.to.node));
@@ -107,12 +113,24 @@ export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Sh
   const standing = (at: number) => [...order.keys()].filter((id) => columnOf(id) === at);
   const row = new Map<string, number>();
   const stack = (at: number, side: ReadonlyMap<string, string[]>) => {
-    const wishes = standing(at).map((id) => ({ id, wish: mean((side.get(id) ?? []).flatMap((other) => (row.has(other) ? [row.get(other) as number] : []))) ?? row.get(id) }));
+    // What a hand put on a row stands there first, the second of two put in one place under the first.
+    const held = new Set<number>();
+    for (const id of standing(at)) {
+      let asked = put.get(id);
+      if (asked === undefined) continue;
+      while (held.has(asked)) asked += 1;
+      row.set(id, asked);
+      held.add(asked);
+    }
+    const wishes = standing(at)
+      .filter((id) => !put.has(id))
+      .map((id) => ({ id, wish: mean((side.get(id) ?? []).flatMap((other) => (row.has(other) ? [row.get(other) as number] : []))) ?? row.get(id) }));
     wishes.sort((a, b) => (a.wish ?? Infinity) - (b.wish ?? Infinity) || (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
     let free = 0;
     for (const { id, wish } of wishes) {
       // Half way between two rows is the upper one: a module fed by two stands level with the first.
-      const taken = Math.max(wish === undefined ? free : Math.ceil(wish - 0.5), free);
+      let taken = Math.max(wish === undefined ? free : Math.ceil(wish - 0.5), free);
+      while (held.has(taken)) taken += 1;
       row.set(id, taken);
       free = taken + 1;
     }
@@ -208,6 +226,7 @@ export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Sh
   return {
     width: modules.length > 0 ? Math.max(...modules.map((module) => module.x + module.width)) : 0,
     height: Math.max(0, rowHeights.reduce((a, b) => a + b, 0) - SCHEMATIC.between),
+    rows: rowHeights.map((height, at) => ({ top: tops[at] ?? 0, height: height - SCHEMATIC.between })),
     modules,
     conduits,
   };

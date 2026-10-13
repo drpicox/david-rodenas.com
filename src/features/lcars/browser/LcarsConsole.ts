@@ -12,13 +12,17 @@ import { openKindMenu } from "../../../platform/workbench/browser/openKindMenu";
 import { openTextPanel } from "../../../platform/workbench/browser/openTextPanel";
 import { OpenBlueprint } from "../../../platform/workbench/OpenBlueprint";
 import { joinsOf } from "../joinsOf";
+import { questionOf } from "../questionOf";
+import { rowAt } from "../rowAt";
 import { SCHEMATIC } from "../SCHEMATIC";
 import { schematicMarkup } from "../schematicMarkup";
+import { withRow } from "../withRow";
 import { openChoice } from "./openChoice";
 import { QueryView } from "./QueryView";
 
-const HINT = "Press a module to ask what it takes and gives. Drag the port at its end onto another module to feed it.";
+const HINT = "Press a module to ask what it takes and gives. Drag the port at its end onto another module to feed it, or the module itself to another row.";
 const PRESS = "Press the module it should feed: those that can take it are lit. Escape lets it go.";
+const MOVED = "Moved: everything else stays where it stood. Tidy hands the layout back to the display.";
 /** How wide the menu of kinds is with its words beside its list. */
 const MENU_SIDE = 580;
 /** How far a hand moves before what it pressed is being dragged: nearer, it was a press. */
@@ -27,6 +31,8 @@ const SLACK = 4;
 const EDGE = 28;
 const CREEP = 14;
 const two = (count: number) => String(count).padStart(2, "0");
+/** No module put anywhere by hand: the layout is all the display's. */
+const NOWHERE: ReadonlyMap<string, number> = new Map();
 
 /** A wire of the blueprint open, and one end of one, called so without this display having to know the blueprint's own files. */
 type Wired = OpenBlueprint["now"]["wires"][number];
@@ -61,9 +67,16 @@ interface Running {
  * on another module, or nowhere, which takes it out. Pad by pad it is the
  * same: Feed beside an output, then the module pressed.
  *
- * A trial, and a small one on purpose: modules are not placed by hand here.
- * The text of the blueprint is a pad away, for whatever the pads do not
- * reach, and the workbench a flag away.
+ * A module is moved by hand too, as far as the grid lets it: up and down
+ * its column, onto another row, where it changes places with what stood
+ * there. Its column is the flow's to say. From then on everything stays
+ * where it stood, and the display only finds a place for what is new, until
+ * Tidy hands the layout back.
+ *
+ * A trial, and a small one on purpose. Where modules were put is kept for
+ * undoing, but not with the reader's version, nor in a link: the text of a
+ * blueprint says nothing of it. That text is a pad away, for whatever the
+ * pads do not reach, and the workbench a flag away.
  */
 export class LcarsConsole implements Bench {
   readonly element: HTMLElement;
@@ -78,6 +91,12 @@ export class LcarsConsole implements Bench {
   private letGo: (() => void) | null = null;
   /** A drag ended a moment ago: the press a browser sends where it ends is not one. */
   private swallow = false;
+  /** The rows a hand put the modules on, for every state of the blueprint it has been drawn in: so that undoing goes back to where they stood, too. */
+  private readonly stood = new WeakMap<object, ReadonlyMap<string, number>>();
+  /** Where they stood in the state drawn last: a state not drawn yet starts from it. */
+  private last = NOWHERE;
+  /** The module a hand is moving: how far down the schematic the hand has it, the rows letting go would leave, and whether that is anything new. */
+  private moving: { readonly node: string; readonly top: number; readonly rows: ReadonlyMap<string, number>; readonly changed: boolean } | null = null;
   /** Whether what flows is to be seen flowing, which its pad says, and whether the display is where it can be seen at all. */
   private flowing = true;
   private onScreen = true;
@@ -94,7 +113,7 @@ export class LcarsConsole implements Bench {
   private readonly status = el("p", { class: "lc-status", "aria-live": "polite" });
   private readonly query: QueryView;
   private readonly board: BoardView;
-  private readonly keys: Record<"examples" | "undo" | "redo" | "reset" | "flow" | "full", HTMLButtonElement>;
+  private readonly keys: Record<"examples" | "undo" | "redo" | "reset" | "tidy" | "flow" | "full", HTMLButtonElement>;
 
   constructor(private readonly setting: BenchSetting) {
     // Kept without where the nodes stand: this display never placed them, and the workbench tidies what does not say.
@@ -126,6 +145,7 @@ export class LcarsConsole implements Bench {
       undo: key("undo", "Undo", "Undo (Ctrl+Z)", () => this.work.undo()),
       redo: key("redo", "Redo", "Redo (Ctrl+Shift+Z)", () => this.work.redo()),
       reset: key("reset", "Reset", "Go back to the blueprint as the page wrote it", () => this.work.reset()),
+      tidy: key("tidy", "Tidy", "Hand the layout back to the display: every module where it would stand of itself", () => this.arrange(NOWHERE, "Tidied: the layout is the display's again.")),
       flow: key("flow", "Flow", "What flows along the conduits, seen flowing: pressed, it rests", () => this.toggleFlow()),
       full: key("full", "Full display", "Give the display the whole window (Esc to come back)", () => this.toggleFull()),
     };
@@ -144,6 +164,7 @@ export class LcarsConsole implements Bench {
       this.keys.undo,
       this.keys.redo,
       this.keys.reset,
+      this.keys.tidy,
       key("text", "Text", "The blueprint as text, to read, copy or write", () => this.openText()),
       key("link", "Link", "Copy a link to the blueprint as it is now", () => void this.share()),
       key("help", "Help", "How this display is worked", () => this.toggleHelp()),
@@ -199,6 +220,8 @@ export class LcarsConsole implements Bench {
     this.closeMenu?.();
     this.element.querySelector(".wb-examples")?.remove();
     this.chosen = null;
+    // Where the modules of one blueprint were put is nothing to another.
+    this.last = NOWHERE;
     this.work.open(example);
     this.tellAbout();
   }
@@ -249,6 +272,7 @@ export class LcarsConsole implements Bench {
     this.keys.undo.disabled = !work.canUndo;
     this.keys.redo.disabled = !work.canRedo;
     this.keys.reset.disabled = !work.own;
+    this.keys.tidy.disabled = this.put().size === 0;
     this.say();
   }
 
@@ -258,7 +282,11 @@ export class LcarsConsole implements Bench {
     // A dial says what it is set to as the board does: a station by its name, not its code.
     const set = new Map(this.work.dials().map((dial) => [dial.node, dial.said]));
     const joining = this.joining();
-    morphInto(this.schematic, schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set, read: this.setting.files.read, ...(joining && { joining }) }));
+    const { moving } = this;
+    morphInto(
+      this.schematic,
+      schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set, read: this.setting.files.read, put: moving?.rows ?? this.put(), ...(joining && { joining }), ...(moving && { moving }) }),
+    );
     this.schematic.classList.toggle("blank", blueprint.nodes.length === 0);
     this.counted.textContent = `${blueprint.nodes.length} ${blueprint.nodes.length === 1 ? "module" : "modules"} · ${blueprint.wires.length} ${blueprint.wires.length === 1 ? "conduit" : "conduits"}`;
     this.fill.textContent = `${two(blueprint.nodes.length)}-${two(blueprint.wires.length)}`;
@@ -363,6 +391,93 @@ export class LcarsConsole implements Bench {
     this.offer();
   }
 
+  // ---- a module moved by hand
+
+  /** The rows a hand put the modules on, as the blueprint now is: what was said of this state of it, or — for one not drawn before — where they stood in the last, unless it is the page's own again. */
+  private put(): ReadonlyMap<string, number> {
+    const now = this.work.now;
+    const known = this.stood.get(now) ?? (now === this.work.original ? NOWHERE : this.last);
+    this.stood.set(now, known);
+    this.last = known;
+    return known;
+  }
+
+  /** Where the modules stand and where the rows are, read off the schematic as it is drawn: a hand on it is on what it shows, and nothing else. */
+  private laid() {
+    const modules = [...this.schematic.querySelectorAll<HTMLElement>("[data-node]")].map((module) => ({
+      id: module.dataset["node"] ?? "",
+      column: Number(module.dataset["column"]),
+      row: Number(module.dataset["row"]),
+      y: Number.parseFloat(module.style.top) || 0,
+    }));
+    const said = this.schematic.querySelector<HTMLElement>(".lc-world")?.dataset["rows"] ?? "";
+    const rows = said.split(" ").filter(Boolean).map((row) => ({ top: Number(row.split(":")[0]), height: Number(row.split(":")[1]) }));
+    return { modules, rows };
+  }
+
+  /** The modules put on other rows, as a step of its own: the blueprint is what it was, and Undo goes back to where they stood. */
+  private arrange(rows: ReadonlyMap<string, number>, words: string): void {
+    const next = { ...this.work.now };
+    this.stood.set(next, rows);
+    this.work.edit(next);
+    this.note(words);
+  }
+
+  /** A hand comes down on a module, away from its ports: carried up or down, it is put on another row. Its column is the flow's to say, so it does not leave it. */
+  private carry(event: PointerEvent, node: string): void {
+    const start = event.clientY;
+    const base = this.laid();
+    const from = base.modules.find((module) => module.id === node);
+    if (!from) return;
+    this.track(
+      (move) => {
+        if (!this.moving && Math.abs(move.clientY - start) < SLACK) return;
+        if (!this.moving) this.closeMenu?.();
+        const top = from.y + move.clientY - start;
+        // Where the middle of its pad is says which row it is on: the rows as they were when it was taken, so that the answer does not shift as the rest makes room.
+        const row = rowAt(base.rows, top + SCHEMATIC.pad / 2);
+        this.moving = { node, top, rows: row === from.row ? this.put() : withRow(base.modules, node, row), changed: row !== from.row };
+        this.drawSchematic();
+        this.say("Let go to stand it on this row. A module keeps its column: the flow says which.");
+      },
+      (end) => {
+        const { moving } = this;
+        if (!moving) return false;
+        this.moving = null;
+        if (end.type === "pointercancel" || !moving.changed) this.render();
+        else this.arrange(moving.rows, MOVED);
+        return true;
+      },
+    );
+  }
+
+  /** The module chosen, put a row down or up. */
+  private nudge(by: number): void {
+    const laid = this.laid();
+    const at = laid.modules.find((module) => module.id === this.chosen);
+    if (at) this.arrange(withRow(laid.modules, at.id, at.row + by), MOVED);
+  }
+
+  /** A hand that pressed is followed over the whole page until it lets go, or is called away. What ends it says whether anything was dragged: the press a browser then sends where the drag ended is not one. */
+  private track(moved: (move: PointerEvent) => void, ended: (end: PointerEvent) => boolean): void {
+    const page = this.element.ownerDocument;
+    const over = (end: PointerEvent) => {
+      this.letGo?.();
+      if (!ended(end)) return;
+      this.swallow = true;
+      setTimeout(() => (this.swallow = false), 0);
+    };
+    page.addEventListener("pointermove", moved);
+    page.addEventListener("pointerup", over);
+    page.addEventListener("pointercancel", over);
+    this.letGo = () => {
+      page.removeEventListener("pointermove", moved);
+      page.removeEventListener("pointerup", over);
+      page.removeEventListener("pointercancel", over);
+      this.letGo = null;
+    };
+  }
+
   // ---- a conduit run by hand
 
   private kindOf(id: string) {
@@ -400,14 +515,16 @@ export class LcarsConsole implements Bench {
     return node === undefined ? null : { node, ...(pin !== undefined && { pin }) };
   }
 
-  /** A hand comes down on a port: out of a module, it may be about to run a conduit from it; into one, to lift the conduit there. Nothing is begun until it has moved. */
+  /** A hand comes down on the schematic: on a port out of a module, it may be about to run a conduit from it; on one into it, to lift the conduit there; anywhere else on a module, to carry it to another row. Nothing is begun until it has moved. */
   private pressed(event: PointerEvent): void {
     this.swallow = false;
     if (event.button !== 0 || this.running) return;
     const tab = (event.target as Element).closest<HTMLElement>(".lc-tab");
-    const node = tab?.closest<HTMLElement>("[data-node]")?.dataset["node"];
+    const node = (event.target as Element).closest<HTMLElement>("[data-node]")?.dataset["node"];
     const pin = tab?.dataset["pin"];
-    if (!tab || node === undefined || pin === undefined) return;
+    if (node === undefined) return;
+    // A finger on a module moves the page under it, as it does anywhere else: only its ports are held.
+    if (!tab || pin === undefined) return event.pointerType === "touch" ? undefined : this.carry(event, node);
     const into = tab.closest(".lc-ins") !== null;
     const lifted = into ? this.work.now.wires.find((wire) => wire.to.node === node && wire.to.pin === pin) : undefined;
     if (into && !lifted) return;
@@ -421,34 +538,25 @@ export class LcarsConsole implements Bench {
       // It was not held.
     }
     const start = { x: event.clientX, y: event.clientY };
-    const page = this.element.ownerDocument;
-    const moved = (move: PointerEvent) => {
-      if (!this.running) {
-        if (Math.hypot(move.clientX - start.x, move.clientY - start.y) < SLACK) return;
-        this.closeMenu?.();
-        this.running = { from, lifted: lifted ?? null, held: true };
-      }
-      this.runTo(move);
-    };
-    const ended = (end: PointerEvent) => {
-      this.letGo?.();
-      if (!this.running?.held) return;
-      // A browser sends a press where a drag ends, to whatever holds both its ends: it is not one.
-      this.swallow = true;
-      setTimeout(() => (this.swallow = false), 0);
-      if (end.type === "pointercancel") return this.endRun();
-      this.runTo(end);
-      this.drop(this.running.over ?? null, { x: end.clientX, y: end.clientY });
-    };
-    page.addEventListener("pointermove", moved);
-    page.addEventListener("pointerup", ended);
-    page.addEventListener("pointercancel", ended);
-    this.letGo = () => {
-      page.removeEventListener("pointermove", moved);
-      page.removeEventListener("pointerup", ended);
-      page.removeEventListener("pointercancel", ended);
-      this.letGo = null;
-    };
+    this.track(
+      (move) => {
+        if (!this.running) {
+          if (Math.hypot(move.clientX - start.x, move.clientY - start.y) < SLACK) return;
+          this.closeMenu?.();
+          this.running = { from, lifted: lifted ?? null, held: true };
+        }
+        this.runTo(move);
+      },
+      (end) => {
+        if (!this.running?.held) return false;
+        if (end.type === "pointercancel") this.endRun();
+        else {
+          this.runTo(end);
+          this.drop(this.running.over ?? null, { x: end.clientX, y: end.clientY });
+        }
+        return true;
+      },
+    );
   }
 
   /** The conduit follows the hand: drawn out to it, what it is over lit, and what letting go there would do said. Near an end of the schematic, the schematic is moved along. */
@@ -517,28 +625,14 @@ export class LcarsConsole implements Bench {
 
   /** The display asks which of the conduits that could be run is meant, where the hand let go: a pad for each, saying what it would take the place of. */
   private askWhich(base: OpenBlueprint["now"], wires: readonly Wired[], lifted: Wired | null, where: { readonly x: number; readonly y: number }): void {
-    const [first] = wires;
-    if (!first) return;
-    const several = { outs: new Set(wires.map((wire) => wire.from.pin)).size > 1, ins: new Set(wires.map((wire) => wire.to.pin)).size > 1 };
-    const [from, to] = [this.titleOf(first.from.node), this.titleOf(first.to.node)];
-    const outSaid = (wire: Wired) => this.kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.label || wire.from.pin;
-    const choices = wires.map((wire) => {
-      const feeder = base.wires.find((each) => each.to.node === wire.to.node && each.to.pin === wire.to.pin);
-      const type = this.kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "";
-      const colour = this.setting.kit.types.get(type)?.colour;
-      return {
-        label: several.outs && several.ins ? `${outSaid(wire)} → ${this.inputSaid(wire)}` : several.outs ? outSaid(wire) : this.inputSaid(wire),
-        said: feeder ? `in place of ${this.titleOf(feeder.from.node)}` : "nothing feeds it yet",
-        ...(colour !== undefined && { colour }),
-      };
-    });
+    const { asked, choices } = questionOf(base, this.setting.kit, wires);
     const box = this.body.getBoundingClientRect();
     this.say("Say which, at the pads; Escape lets the conduit go.");
     this.closeMenu = openChoice(
       this.body,
       // Where the hand let go, in the body's own pixels, which may have been moved up under its frame.
       { left: Math.max(8, Math.min(where.x - box.left, box.width - 260)) + this.body.scrollLeft, top: Math.max(8, where.y - box.top) + this.body.scrollTop },
-      several.outs ? `What of ${from} feeds ${several.ins ? `which input of ${to}` : `${this.inputSaid(first)} of ${to}`}?` : `Which input of ${to} does ${from} feed?`,
+      asked,
       choices,
       (at) => {
         const wire = wires[at];
@@ -617,12 +711,13 @@ export class LcarsConsole implements Bench {
         line("Press a module", "to ask what it does, what it takes and what it gives: its inputs are written there."),
         line("Drag the port at a module's end", "onto the module it should feed: the display finds the input that takes it, and asks where several could. Let go where nothing stands, it offers what could take it."),
         line("Drag the port a conduit arrives at", "to lift it: onto another module, or off into nothing, which takes it out."),
+        line("Drag a module", "up or down its column to stand it on another row; with Alt, the arrows do it for the one chosen. Its column is the flow's to say. Tidy hands the layout back to the display."),
         line("Feed", "beside an output does the same pad by pad: the module pressed next is fed. Cut, beside an input, takes its conduit out."),
         line("Next", "offers what could come after the module chosen: a press adds it, wired and written."),
         line("Dial", "beside a value puts it on the board; a dial is turned there, or where it is chosen."),
         line("Add", "adds a module of any kind; Remove, or Delete, takes the one chosen away; Undo, or Ctrl+Z, brings it back."),
         line("What moves along a conduit", "is what flows; the brighter pulse is what ran again, which is only what follows the dial that was turned. Flow puts the stream to rest."),
-        line("Text", "is the blueprint as it is written, for whatever the pads do not reach. Modules are not placed by hand here: the workbench is a flag away, flags lcars off."),
+        line("Text", "is the blueprint as it is written, for whatever the pads do not reach. The workbench is a flag away: flags lcars off."),
       ),
     );
     close.addEventListener("click", () => help.remove());
@@ -668,6 +763,7 @@ export class LcarsConsole implements Bench {
       const command = event.ctrlKey || event.metaKey;
       const key = event.key.toLowerCase();
       if ((event.key === "Delete" || event.key === "Backspace") && this.chosen !== null) this.remove(this.chosen);
+      else if (event.altKey && (event.key === "ArrowDown" || event.key === "ArrowUp") && this.chosen !== null) this.nudge(event.key === "ArrowDown" ? 1 : -1);
       else if (command && key === "z" && event.shiftKey) this.work.redo();
       else if (command && key === "z") this.work.undo();
       else if (command && key === "y") this.work.redo();

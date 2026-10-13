@@ -5,8 +5,8 @@ import { type Schematic, schematicOf, type Shape } from "./schematicOf";
 
 const node = (id: string): PlacedNode => ({ id, kind: "step", x: 0, y: 0, values: {} });
 const wire = (from: string, to: string, pin = "table", out = "table"): Wire => ({ from: { node: from, pin: out }, to: { node: to, pin } });
-const laid = (ids: string[], wires: Wire[], shapes: Record<string, Partial<Shape>> = {}) =>
-  schematicOf({ nodes: ids.map(node), wires } satisfies Blueprint, new Map(Object.entries(shapes).map(([id, shape]) => [id, { ins: [], outs: [], rows: 0, ...shape }])));
+const laid = (ids: string[], wires: Wire[], shapes: Record<string, Partial<Shape>> = {}, put: Record<string, number> = {}) =>
+  schematicOf({ nodes: ids.map(node), wires } satisfies Blueprint, new Map(Object.entries(shapes).map(([id, shape]) => [id, { ins: [], outs: [], rows: 0, ...shape }])), new Map(Object.entries(put)));
 const at = (schematic: Schematic, id: string) => schematic.modules.find((module) => module.id === id)!;
 const conduit = (schematic: Schematic, from: string, to: string) => schematic.conduits.find(({ wire: each }) => each.from.node === from && each.to.node === to)!;
 /** The upright runs of a conduit: where it changes level, and between which levels. */
@@ -117,7 +117,7 @@ describe("a blueprint laid out as a schematic", () => {
 
   it("stands a module nothing is wired to on its own, and an empty blueprint nowhere", () => {
     expect(laid(["alone"], []).modules).toEqual([{ id: "alone", column: 0, row: 0, x: 0, y: 0, width: SCHEMATIC.name, ins: {}, outs: {} }]);
-    expect(laid([], [])).toEqual({ width: 0, height: 0, modules: [], conduits: [] });
+    expect(laid([], [])).toEqual({ width: 0, height: 0, rows: [], modules: [], conduits: [] });
   });
 
   it("still draws a wire a text written by hand sends backwards, or to a node that is not there", () => {
@@ -125,5 +125,46 @@ describe("a blueprint laid out as a schematic", () => {
     expect(schematic.conduits.map(({ wire: each }) => `${each.from.node}>${each.to.node}`).sort()).toEqual(["a>b", "b>a"]);
     expect(schematic.conduits.every(({ points }) => points.length >= 2)).toBe(true);
     expect(schematic.conduits.some(({ points }) => points.length > 2)).toBe(true);
+  });
+});
+
+describe("a schematic where a hand has put modules on rows of its own choosing", () => {
+  const rowsOf = (schematic: Schematic, ...ids: string[]) => ids.map((id) => at(schematic, id).row);
+  const fan = [wire("a", "b"), wire("a", "c")];
+
+  it("stands a module on the row it was put on, whatever it is fed by", () => {
+    expect(rowsOf(laid(["a", "b", "c"], fan), "a", "b", "c")).toEqual([0, 0, 1]);
+    expect(rowsOf(laid(["a", "b", "c"], fan, {}, { a: 0, b: 1, c: 0 }), "a", "b", "c")).toEqual([0, 1, 0]);
+  });
+
+  it("brings each conduit to where its module now stands", () => {
+    const schematic = laid(["a", "b", "c"], fan, {}, { a: 0, b: 1, c: 0 });
+    expect(conduit(schematic, "a", "c").points.at(-1)).toEqual({ x: at(schematic, "c").x, y: at(schematic, "c").y + SCHEMATIC.pad / 2 });
+    expect(uprights(schematic, "a", "b").length).toBe(1);
+    expect(uprights(schematic, "a", "c")).toEqual([]);
+  });
+
+  it("stands what was put nowhere as it would have stood, but never where a hand put something", () => {
+    // Left to itself b stands level with a; the row is taken, so it stands under what took it.
+    expect(rowsOf(laid(["a", "b", "x"], [wire("a", "b"), wire("a", "x")], {}, { x: 0 }), "x", "b")).toEqual([0, 1]);
+    // And what follows a module put lower follows it there.
+    expect(rowsOf(laid(["a", "x", "b", "c"], [wire("a", "b"), wire("x", "c"), wire("b", "c", "other")], {}, { a: 1, x: 0 }), "a", "x", "b")).toEqual([1, 0, 1]);
+  });
+
+  it("closes a row nothing stands on, and opens one above the first for a module put there", () => {
+    expect(rowsOf(laid(["a", "b"], [wire("a", "b")], {}, { a: 0, b: 5 }), "a", "b")).toEqual([0, 1]);
+    expect(rowsOf(laid(["a", "b"], [wire("a", "b")], {}, { a: 0, b: -1 }), "a", "b")).toEqual([1, 0]);
+  });
+
+  it("stands the second of two put in one place under the first", () => {
+    expect(rowsOf(laid(["a", "b", "c"], fan, {}, { b: 0, c: 0 }), "b", "c")).toEqual([0, 1]);
+  });
+
+  it("says where each of its rows is, and how high: where a module let go of would land", () => {
+    const schematic = laid(["a", "b", "c"], fan, { c: { ins: ["table"], rows: 2 } });
+    expect(schematic.rows).toEqual([
+      { top: 0, height: SCHEMATIC.pad + SCHEMATIC.said },
+      { top: ROW, height: SCHEMATIC.pad + 2 * SCHEMATIC.line + SCHEMATIC.said },
+    ]);
   });
 });
