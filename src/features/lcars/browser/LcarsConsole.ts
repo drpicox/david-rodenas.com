@@ -1,6 +1,8 @@
 import type { Example } from "../../../platform/blueprint/examplesOf";
 import { withoutNodes } from "../../../platform/blueprint/withoutNodes";
+import { withoutWires } from "../../../platform/blueprint/withoutWires";
 import { withTitle } from "../../../platform/blueprint/withTitle";
+import { withWire } from "../../../platform/blueprint/withWire";
 import { el } from "../../../platform/browser/el";
 import type { Bench, BenchSetting } from "../../../platform/plugin/Bench";
 import { BoardView } from "../../../platform/workbench/browser/BoardView";
@@ -9,30 +11,59 @@ import { openExamples } from "../../../platform/workbench/browser/openExamples";
 import { openKindMenu } from "../../../platform/workbench/browser/openKindMenu";
 import { openTextPanel } from "../../../platform/workbench/browser/openTextPanel";
 import { OpenBlueprint } from "../../../platform/workbench/OpenBlueprint";
+import { joinsOf } from "../joinsOf";
 import { SCHEMATIC } from "../SCHEMATIC";
 import { schematicMarkup } from "../schematicMarkup";
+import { openChoice } from "./openChoice";
 import { QueryView } from "./QueryView";
 
-const HINT = "Press a module to ask what it takes and gives, and what could come next. Nothing is dragged on this display.";
-/** What a hand can write: a kind whose every input is one of these can be added with nothing wired into it. */
-const WRITTEN = new Set(["number", "text", "flag"]);
+const HINT = "Press a module to ask what it takes and gives. Drag the port at its end onto another module to feed it.";
+const PRESS = "Press the module it should feed: those that can take it are lit. Escape lets it go.";
 /** How wide the menu of kinds is with its words beside its list. */
 const MENU_SIDE = 580;
+/** How far a hand moves before what it pressed is being dragged: nearer, it was a press. */
+const SLACK = 4;
+/** How near an end of the schematic a hand running a conduit moves it along, and by how much each time it moves there. */
+const EDGE = 28;
+const CREEP = 14;
 const two = (count: number) => String(count).padStart(2, "0");
+
+/** A wire of the blueprint open, and one end of one, called so without this display having to know the blueprint's own files. */
+type Wired = OpenBlueprint["now"]["wires"][number];
+type End = { readonly node: string; readonly pin?: string };
+
+/** A conduit being run by hand. */
+interface Running {
+  /** The module it leaves, the output of it where that is said, and the port the hand took. */
+  readonly from: End & { readonly port: string };
+  /** The conduit lifted off the input it fed: it goes where this one goes, or away. */
+  readonly lifted: Wired | null;
+  /** Held by a hand that drags it. If not, it was asked for at a pad, and the module pressed next ends it. */
+  readonly held: boolean;
+  /** Where the hand is, in the schematic's own pixels, and what it is over there. */
+  at?: { readonly x: number; readonly y: number };
+  over?: End | null;
+}
 
 /**
  * A blueprint as a starship's display would show it, and work it. The same
  * program, the same nodes and the same data as the workbench; another idea
- * of what hands do. Nothing here is dragged: the display lays the modules
- * out itself, on a grid, and a blueprint is worked on by pressing — a module,
- * to ask what it takes and gives; a pad, to add what could come next, to
- * take it away again, to go back. Every figure on a pad is a real one, and
- * what flows is seen to: a stream along every conduit, and a pulse out of
- * whatever ran again, which is only what follows the dial that was turned.
+ * of what hands do. The display lays the modules out itself, on a grid, and
+ * a blueprint is worked on by pressing — a module, to ask what it takes and
+ * gives; a pad, to add what could come next, to take it away again, to go
+ * back. Every figure on a pad is a real one, and what flows is seen to: a
+ * stream along every conduit, and a pulse out of whatever ran again, which
+ * is only what follows the dial that was turned.
  *
- * A trial, and a small one on purpose: wires are not drawn by hand here, nor
- * modules placed. The text of the blueprint is a pad away, for whatever the
- * pads do not reach, and the workbench a flag away.
+ * A conduit is run by hand: the port at a module's end is dragged onto the
+ * module it should feed, and the display works out which input takes it —
+ * asking, where several could. Lifted off the input it feeds, it is let go
+ * on another module, or nowhere, which takes it out. Pad by pad it is the
+ * same: Feed beside an output, then the module pressed.
+ *
+ * A trial, and a small one on purpose: modules are not placed by hand here.
+ * The text of the blueprint is a pad away, for whatever the pads do not
+ * reach, and the workbench a flag away.
  */
 export class LcarsConsole implements Bench {
   readonly element: HTMLElement;
@@ -41,6 +72,12 @@ export class LcarsConsole implements Bench {
   private chosen: string | null = null;
   private pointed: string | null = null;
   private closeMenu: (() => void) | null = null;
+  /** The conduit a hand is running, while one is. */
+  private running: Running | null = null;
+  /** How a hand that pressed a port is no longer listened to. */
+  private letGo: (() => void) | null = null;
+  /** A drag ended a moment ago: the press a browser sends where it ends is not one. */
+  private swallow = false;
   /** Whether what flows is to be seen flowing, which its pad says, and whether the display is where it can be seen at all. */
   private flowing = true;
   private onScreen = true;
@@ -69,6 +106,8 @@ export class LcarsConsole implements Bench {
       go: (node) => this.choose(node),
       follow: (node, label) => this.follow(node, label),
       remove: (node) => this.remove(node),
+      feed: (node, pin) => this.feed(node, pin),
+      cut: (node, pin) => this.cut(node, pin),
     });
     this.board = new BoardView({
       turn: (node, value, done) => this.work.write(node, "value", value, done),
@@ -101,7 +140,7 @@ export class LcarsConsole implements Bench {
       "div",
       { class: "lc-side", role: "toolbar", "aria-label": "Blueprint" },
       ...(several ? [this.keys.examples] : []),
-      key("add", "Add", "Add a module that needs nothing wired into it: a source, a table of your own, a note", () => this.add()),
+      key("add", "Add", "Add a module: a source, a step, a picture, a note", () => this.add()),
       this.keys.undo,
       this.keys.redo,
       this.keys.reset,
@@ -180,6 +219,7 @@ export class LcarsConsole implements Bench {
   stop(): void {
     this.work.stop();
     this.watched?.disconnect();
+    this.letGo?.();
     this.closeMenu?.();
     document.body.classList.remove("lc-full-open");
   }
@@ -217,7 +257,8 @@ export class LcarsConsole implements Bench {
     const { now: blueprint, evaluation, runs } = this.work;
     // A dial says what it is set to as the board does: a station by its name, not its code.
     const set = new Map(this.work.dials().map((dial) => [dial.node, dial.said]));
-    morphInto(this.schematic, schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set, read: this.setting.files.read }));
+    const joining = this.joining();
+    morphInto(this.schematic, schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set, read: this.setting.files.read, ...(joining && { joining }) }));
     this.schematic.classList.toggle("blank", blueprint.nodes.length === 0);
     this.counted.textContent = `${blueprint.nodes.length} ${blueprint.nodes.length === 1 ? "module" : "modules"} · ${blueprint.wires.length} ${blueprint.wires.length === 1 ? "conduit" : "conduits"}`;
     this.fill.textContent = `${two(blueprint.nodes.length)}-${two(blueprint.wires.length)}`;
@@ -250,12 +291,13 @@ export class LcarsConsole implements Bench {
       editors: dial ? new Map([["value", dial.editor]]) : this.work.editorsOf(node),
       next: this.work.nextFor(node.id),
       ...(dial && { said: `on the board: ${dial.said}` }),
+      ...(this.running && !this.running.held && this.running.from.node === node.id && { feeding: this.running.from.port }),
     });
   }
 
-  /** The line under the display: what was just done, or how to begin. */
+  /** The line under the display: what was just done, what a conduit asked for at a pad waits for, or how to begin. */
   private say(words?: string): void {
-    this.status.textContent = words ?? (this.work.notice || HINT);
+    this.status.textContent = words ?? (this.running && !this.running.held ? PRESS : this.work.notice || HINT);
   }
 
   /** Something said of what was just done, kept as what the line says until the next edit: a run that ends a moment later would otherwise wipe it. */
@@ -298,29 +340,236 @@ export class LcarsConsole implements Bench {
     this.note("Taken out, with its conduits. Undo brings it back.");
   }
 
-  /** The kinds that can be added with nothing wired into them, since no wire is drawn by hand here: every input of theirs can be written. */
-  private standing() {
+  /** The menu of kinds, those on trial among them only while their flag is on — and, for a conduit let go where nothing stands, only those it could feed. The one chosen is added, fed by the conduit if there is one, and chosen: where it stands is the schematic's to say. */
+  private offer(fed?: { readonly node: string; readonly pin: string; readonly type: string }): void {
     const { kit } = this.setting;
-    return { kinds: new Map([...kit.kinds].filter(([, kind]) => this.work.offers(kind) && kind.role !== "dial" && kind.inputs.every((pin) => WRITTEN.has(pin.type)))), types: kit.types };
-  }
-
-  /** The menu of what can stand on its own: chosen, it is added and chosen, and what could come after it offered. */
-  private add(): void {
-    if (this.closeMenu) return this.closeMenu();
     const box = this.body.getBoundingClientRect();
-    this.say("Choose what to add, typing to narrow it; Escape closes the menu. What follows it is offered once it is chosen.");
+    this.say(fed ? "Choose what it feeds, typing to narrow it; Escape lets the conduit go." : "Choose what to add, typing to narrow it; Escape closes the menu. What it needs is run to it once it is there.");
     this.closeMenu = openKindMenu(
       this.body,
-      this.standing(),
+      { kinds: new Map([...kit.kinds].filter(([, kind]) => this.work.offers(kind))), types: kit.types },
       { left: 8, top: 8, ...(box.height > 0 && { height: Math.max(200, Math.min(420, box.height - 16)) }), side: box.width >= MENU_SIDE + 16 },
-      undefined,
-      // Where it stands is the schematic's to say.
-      ({ kind }) => this.choose(this.work.add(kind.name, { x: 0, y: 0 })),
+      fed && { type: fed.type, side: "output" },
+      ({ kind, pin }) => this.choose(this.work.add(kind.name, { x: 0, y: 0 }, fed && pin !== undefined ? { pin, from: { node: fed.node, pin: fed.pin } } : undefined)),
       () => {
         this.closeMenu = null;
         this.say();
       },
     );
+  }
+
+  private add(): void {
+    if (this.closeMenu) return this.closeMenu();
+    this.offer();
+  }
+
+  // ---- a conduit run by hand
+
+  private kindOf(id: string) {
+    return this.setting.kit.kinds.get(this.work.now.nodes.find((node) => node.id === id)?.kind ?? "");
+  }
+
+  private titleOf(id: string): string {
+    return this.work.now.nodes.find((node) => node.id === id)?.title ?? this.kindOf(id)?.title ?? id;
+  }
+
+  /** The blueprint a conduit being run is run in: the one open, without the conduit lifted to run it. */
+  private under(running: Running) {
+    return running.lifted ? withoutWires(this.work.now, running.lifted.to, "input") : this.work.now;
+  }
+
+  /** What the schematic is told of the conduit being run: where from, where the hand is, and every input that could take it. */
+  private joining() {
+    const { running } = this;
+    if (!running) return null;
+    const base = this.under(running);
+    const into = new Map(
+      base.nodes.flatMap((node) => {
+        const pins = [...new Set(joinsOf(base, this.setting.kit, running.from, { node: node.id }).wires.map((wire) => wire.to.pin))];
+        return pins.length > 0 ? [[node.id, pins] as const] : [];
+      }),
+    );
+    return { from: { node: running.from.node, port: running.from.port }, into, ...(running.at && { at: running.at }), ...(running.over && { over: running.over }), ...(running.lifted && { lifted: running.lifted.to }) };
+  }
+
+  /** The module something of the schematic is part of, and the input of it, where it is one: a port, or a line written under the module. */
+  private endAt(found: EventTarget | null): End | null {
+    if (!(found instanceof Element) || !this.schematic.contains(found)) return null;
+    const node = found.closest<HTMLElement>("[data-node]")?.dataset["node"];
+    const pin = found.closest<HTMLElement>(".lc-ins .lc-tab, .lc-row")?.dataset["pin"];
+    return node === undefined ? null : { node, ...(pin !== undefined && { pin }) };
+  }
+
+  /** A hand comes down on a port: out of a module, it may be about to run a conduit from it; into one, to lift the conduit there. Nothing is begun until it has moved. */
+  private pressed(event: PointerEvent): void {
+    this.swallow = false;
+    if (event.button !== 0 || this.running) return;
+    const tab = (event.target as Element).closest<HTMLElement>(".lc-tab");
+    const node = tab?.closest<HTMLElement>("[data-node]")?.dataset["node"];
+    const pin = tab?.dataset["pin"];
+    if (!tab || node === undefined || pin === undefined) return;
+    const into = tab.closest(".lc-ins") !== null;
+    const lifted = into ? this.work.now.wires.find((wire) => wire.to.node === node && wire.to.pin === pin) : undefined;
+    if (into && !lifted) return;
+    // A port that carries the module's figure stands for all the module gives: which of it, where it gives several, is asked when the conduit is let go.
+    const all = tab.classList.contains("lc-figure") && (this.kindOf(node)?.outputs.length ?? 0) > 1;
+    const from = lifted ? { node: lifted.from.node, pin: lifted.from.pin, port: lifted.from.pin } : { node, port: pin, ...(!all && { pin }) };
+    // A finger is held to what it first touched, unless it is let go of: what it is over has to be seen.
+    try {
+      tab.releasePointerCapture?.(event.pointerId);
+    } catch {
+      // It was not held.
+    }
+    const start = { x: event.clientX, y: event.clientY };
+    const page = this.element.ownerDocument;
+    const moved = (move: PointerEvent) => {
+      if (!this.running) {
+        if (Math.hypot(move.clientX - start.x, move.clientY - start.y) < SLACK) return;
+        this.closeMenu?.();
+        this.running = { from, lifted: lifted ?? null, held: true };
+      }
+      this.runTo(move);
+    };
+    const ended = (end: PointerEvent) => {
+      this.letGo?.();
+      if (!this.running?.held) return;
+      // A browser sends a press where a drag ends, to whatever holds both its ends: it is not one.
+      this.swallow = true;
+      setTimeout(() => (this.swallow = false), 0);
+      if (end.type === "pointercancel") return this.endRun();
+      this.runTo(end);
+      this.drop(this.running.over ?? null, { x: end.clientX, y: end.clientY });
+    };
+    page.addEventListener("pointermove", moved);
+    page.addEventListener("pointerup", ended);
+    page.addEventListener("pointercancel", ended);
+    this.letGo = () => {
+      page.removeEventListener("pointermove", moved);
+      page.removeEventListener("pointerup", ended);
+      page.removeEventListener("pointercancel", ended);
+      this.letGo = null;
+    };
+  }
+
+  /** The conduit follows the hand: drawn out to it, what it is over lit, and what letting go there would do said. Near an end of the schematic, the schematic is moved along. */
+  private runTo(event: PointerEvent): void {
+    const { running } = this;
+    if (!running) return;
+    const page = this.element.ownerDocument;
+    const box = this.schematic.getBoundingClientRect();
+    if (box.width > 0 && event.clientX > box.right - EDGE) this.schematic.scrollLeft += CREEP;
+    else if (box.width > 0 && event.clientX < box.left + EDGE) this.schematic.scrollLeft -= CREEP;
+    const world = this.schematic.querySelector(".lc-world")?.getBoundingClientRect();
+    running.at = { x: Math.round(event.clientX - (world?.left ?? 0)), y: Math.round(event.clientY - (world?.top ?? 0)) };
+    // What the hand is over is asked of the page: the event may still be held to the port it began on.
+    running.over = this.endAt(page.elementFromPoint?.(event.clientX, event.clientY) ?? event.target);
+    this.drawSchematic();
+    const { over } = running;
+    if (!over) return this.say(running.lifted ? "Let go on a module to feed it instead, or where nothing stands to take the conduit out." : "Let go on a module that is lit to feed it, or where nothing stands for what could come next.");
+    const joins = joinsOf(this.under(running), this.setting.kit, running.from, over);
+    const title = this.titleOf(over.node);
+    this.say(joins.plain ? `Let go to feed ${this.inputSaid(joins.plain)} of ${title}.` : joins.wires.length > 0 ? `Let go, and say which input of ${title} it feeds.` : `Not there: ${joins.refused}.`);
+  }
+
+  private inputSaid(wire: Wired): string {
+    const pin = this.kindOf(wire.to.node)?.inputs.find((each) => each.name === wire.to.pin);
+    return pin?.label || wire.to.pin;
+  }
+
+  /** A module's name, and which of what it gives where it gives several. */
+  private outputSaid(wire: Wired): string {
+    const outputs = this.kindOf(wire.from.node)?.outputs ?? [];
+    const pin = outputs.find((each) => each.name === wire.from.pin);
+    return outputs.length > 1 ? `${this.titleOf(wire.from.node)} (${pin?.label || wire.from.pin})` : this.titleOf(wire.from.node);
+  }
+
+  /** The conduit is let go: on a module, it feeds it, the display asking which input where several could take it; where nothing stands, one lifted is taken out, and one dragged out of a port asks what it should feed. */
+  private drop(target: End | null, where: { readonly x: number; readonly y: number }): void {
+    const { running } = this;
+    if (!running) return;
+    const base = this.under(running);
+    this.running = null;
+    if (!target && running.lifted) {
+      this.work.edit(base);
+      return this.note("Conduit taken out. Undo brings it back.");
+    }
+    if (!target) {
+      this.render();
+      const out = this.kindOf(running.from.node)?.outputs.find((pin) => pin.name === running.from.port);
+      if (running.held && out) this.offer({ node: running.from.node, pin: out.name, type: out.type });
+      return;
+    }
+    const joins = joinsOf(base, this.setting.kit, running.from, target);
+    if (joins.plain) return this.join(base, joins.plain, running.lifted);
+    this.render();
+    if (joins.wires.length === 0) return this.note(`Not wired: ${joins.refused}.`);
+    this.askWhich(base, joins.wires, running.lifted, where);
+  }
+
+  /** A conduit run: the module it feeds is chosen, so that what it takes and gives now is said. One lifted and put back where it was changes nothing. */
+  private join(base: OpenBlueprint["now"], wire: Wired, lifted: Wired | null): void {
+    const back = lifted !== null && lifted.from.node === wire.from.node && lifted.from.pin === wire.from.pin && lifted.to.node === wire.to.node && lifted.to.pin === wire.to.pin;
+    if (back) return this.render();
+    this.work.edit(withWire(base, wire));
+    this.choose(wire.to.node);
+    this.note(`${this.outputSaid(wire)} now feeds ${this.inputSaid(wire)} of ${this.titleOf(wire.to.node)}.`);
+  }
+
+  /** The display asks which of the conduits that could be run is meant, where the hand let go: a pad for each, saying what it would take the place of. */
+  private askWhich(base: OpenBlueprint["now"], wires: readonly Wired[], lifted: Wired | null, where: { readonly x: number; readonly y: number }): void {
+    const [first] = wires;
+    if (!first) return;
+    const several = { outs: new Set(wires.map((wire) => wire.from.pin)).size > 1, ins: new Set(wires.map((wire) => wire.to.pin)).size > 1 };
+    const [from, to] = [this.titleOf(first.from.node), this.titleOf(first.to.node)];
+    const outSaid = (wire: Wired) => this.kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.label || wire.from.pin;
+    const choices = wires.map((wire) => {
+      const feeder = base.wires.find((each) => each.to.node === wire.to.node && each.to.pin === wire.to.pin);
+      const type = this.kindOf(wire.from.node)?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "";
+      const colour = this.setting.kit.types.get(type)?.colour;
+      return {
+        label: several.outs && several.ins ? `${outSaid(wire)} → ${this.inputSaid(wire)}` : several.outs ? outSaid(wire) : this.inputSaid(wire),
+        said: feeder ? `in place of ${this.titleOf(feeder.from.node)}` : "nothing feeds it yet",
+        ...(colour !== undefined && { colour }),
+      };
+    });
+    const box = this.body.getBoundingClientRect();
+    this.say("Say which, at the pads; Escape lets the conduit go.");
+    this.closeMenu = openChoice(
+      this.body,
+      // Where the hand let go, in the body's own pixels, which may have been moved up under its frame.
+      { left: Math.max(8, Math.min(where.x - box.left, box.width - 260)) + this.body.scrollLeft, top: Math.max(8, where.y - box.top) + this.body.scrollTop },
+      several.outs ? `What of ${from} feeds ${several.ins ? `which input of ${to}` : `${this.inputSaid(first)} of ${to}`}?` : `Which input of ${to} does ${from} feed?`,
+      choices,
+      (at) => {
+        const wire = wires[at];
+        if (wire) this.join(base, wire, lifted);
+      },
+      () => {
+        this.closeMenu = null;
+        this.say();
+      },
+    );
+  }
+
+  /** A conduit asked for at a pad beside an output: the module pressed next is what it feeds. Asked for again, it is let go. */
+  private feed(node: string, pin: string): void {
+    const { running } = this;
+    this.closeMenu?.();
+    this.running = running && !running.held && running.from.node === node && running.from.pin === pin ? null : { from: { node, pin, port: pin }, lifted: null, held: false };
+    this.render();
+  }
+
+  /** The conduit into an input, taken out: the input is written by hand again. */
+  private cut(node: string, pin: string): void {
+    this.work.edit(withoutWires(this.work.now, { node, pin }, "input"));
+    this.note("Conduit taken out. Undo brings it back.");
+  }
+
+  /** The conduit being run is let go of, and nothing is changed. */
+  private endRun(): void {
+    this.letGo?.();
+    this.running = null;
+    this.render();
   }
 
   private openText(): void {
@@ -366,13 +615,14 @@ export class LcarsConsole implements Bench {
         "ul",
         {},
         line("Press a module", "to ask what it does, what it takes and what it gives: its inputs are written there."),
+        line("Drag the port at a module's end", "onto the module it should feed: the display finds the input that takes it, and asks where several could. Let go where nothing stands, it offers what could take it."),
+        line("Drag the port a conduit arrives at", "to lift it: onto another module, or off into nothing, which takes it out."),
+        line("Feed", "beside an output does the same pad by pad: the module pressed next is fed. Cut, beside an input, takes its conduit out."),
         line("Next", "offers what could come after the module chosen: a press adds it, wired and written."),
-        line("An input that comes from another module", "says which: a press goes there."),
         line("Dial", "beside a value puts it on the board; a dial is turned there, or where it is chosen."),
-        line("Add", "adds what needs nothing wired into it: a source, a table of your own, a note."),
-        line("Remove, or Delete,", "takes the module chosen away; Undo, or Ctrl+Z, brings it back."),
+        line("Add", "adds a module of any kind; Remove, or Delete, takes the one chosen away; Undo, or Ctrl+Z, brings it back."),
         line("What moves along a conduit", "is what flows; the brighter pulse is what ran again, which is only what follows the dial that was turned. Flow puts the stream to rest."),
-        line("Text", "is the blueprint as it is written, for whatever the pads do not reach. Wires are not drawn by hand here: the workbench is a flag away, flags lcars off."),
+        line("Text", "is the blueprint as it is written, for whatever the pads do not reach. Modules are not placed by hand here: the workbench is a flag away, flags lcars off."),
       ),
     );
     close.addEventListener("click", () => help.remove());
@@ -404,7 +654,11 @@ export class LcarsConsole implements Bench {
   }
 
   private listen(): void {
+    this.schematic.addEventListener("pointerdown", (event) => this.pressed(event));
     this.schematic.addEventListener("click", (event) => {
+      if (this.swallow) return void (this.swallow = false);
+      // A conduit asked for at a pad is ended by the press after it: on a module, it feeds it.
+      if (this.running) return this.drop(this.endAt(event.target), { x: event.clientX, y: event.clientY });
       const module = (event.target as Element | null)?.closest<HTMLElement>("[data-node]");
       // A module pressed again is let go of, and so is one left by pressing where none stands.
       this.choose(module?.dataset["node"] && module.dataset["node"] !== this.chosen ? module.dataset["node"] : null);
@@ -417,6 +671,7 @@ export class LcarsConsole implements Bench {
       else if (command && key === "z" && event.shiftKey) this.work.redo();
       else if (command && key === "z") this.work.undo();
       else if (command && key === "y") this.work.redo();
+      else if (event.key === "Escape" && this.running) this.endRun();
       else if (event.key === "Escape" && this.full()) this.toggleFull();
       else if (event.key === "Escape" && this.chosen !== null) this.choose(null);
       else return;

@@ -14,8 +14,9 @@ export interface Port {
   readonly figure?: true;
 }
 
-/** An input no wire brings: what it is called, what it holds, and whether a hand wrote that, the module chose it, or it is still lacking. */
+/** An input no wire brings: which it is, what it is called, what it holds, and whether a hand wrote that, the module chose it, or it is still lacking. */
 export interface Told {
+  readonly pin: string;
   readonly label: string;
   readonly value: string;
   readonly how: "written" | "settled" | "missing";
@@ -62,10 +63,10 @@ export function faceOf(node: PlacedNode, blueprint: Blueprint, kit: Kit, evaluat
   // A dial holds one thing, and its port out says it.
   const rows = (kind.role === "dial" ? [] : kind.inputs).flatMap((pin): Told[] => {
     if (into.has(pin.name)) return [];
-    const [label, written, chosen] = [pin.label || pin.name, node.values[pin.name], settled[pin.name]];
-    if (written !== undefined) return [{ label, value: saidBy(resolvedEditor(node, pin, kit, read, evaluation), written), how: "written" }];
-    if (chosen !== undefined) return [{ label, value: String(chosen), how: "settled" }];
-    return pin.initial === undefined && !pin.optional ? [{ label, value: "—", how: "missing" }] : [];
+    const [told, written, chosen] = [{ pin: pin.name, label: pin.label || pin.name }, node.values[pin.name], settled[pin.name]];
+    if (written !== undefined) return [{ ...told, value: saidBy(resolvedEditor(node, pin, kit, read, evaluation), written), how: "written" }];
+    if (chosen !== undefined) return [{ ...told, value: String(chosen), how: "settled" }];
+    return pin.initial === undefined && !pin.optional ? [{ ...told, value: "—", how: "missing" }] : [];
   });
   return { ins, outs, rows };
 }

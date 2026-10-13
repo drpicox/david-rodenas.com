@@ -10,7 +10,7 @@ export interface Shape {
   readonly rows: number;
 }
 
-/** A module standing in the schematic: its column and its row, its top left corner, and how wide it is. */
+/** A module standing in the schematic: its column and its row, its top left corner, how wide it is, and how far down the schematic each of its ports is. */
 export interface Module {
   readonly id: string;
   readonly column: number;
@@ -18,6 +18,8 @@ export interface Module {
   readonly x: number;
   readonly y: number;
   readonly width: number;
+  readonly ins: Readonly<Record<string, number>>;
+  readonly outs: Readonly<Record<string, number>>;
 }
 
 /** A wire as the schematic runs it: the points it leaves from, turns at, and arrives at. */
@@ -198,7 +200,11 @@ export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Sh
     return { wire, points: [...points, { x: leftOf(to), y: level }] };
   });
 
-  const modules = blueprint.nodes.map((node): Module => ({ id: node.id, column: columns.indexOf(columnOf(node.id)), row: rowOf(node.id), x: leftOf(columnOf(node.id)), y: topOf(node.id), width: widthAt(columnOf(node.id)) }));
+  const levels = (id: string, ports: readonly string[]) => Object.fromEntries(ports.map((pin) => [pin, topOf(id) + portAt(ports, pin)]));
+  const modules = blueprint.nodes.map((node): Module => {
+    const [at, shape] = [columnOf(node.id), shapeOf(node.id)];
+    return { id: node.id, column: columns.indexOf(at), row: rowOf(node.id), x: leftOf(at), y: topOf(node.id), width: widthAt(at), ins: levels(node.id, shape.ins), outs: levels(node.id, shape.outs) };
+  });
   return {
     width: modules.length > 0 ? Math.max(...modules.map((module) => module.x + module.width)) : 0,
     height: Math.max(0, rowHeights.reduce((a, b) => a + b, 0) - SCHEMATIC.between),

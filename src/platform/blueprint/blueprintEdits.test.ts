@@ -94,4 +94,10 @@ describe("whether a wire can be drawn", () => {
     const dialled = withNode(blueprint, node("k", "dial"));
     expect(wireRefused(dialled, kit, wire("c", "n", "k", "value"))).toBe("a dial is turned by hand, and takes no wire");
   });
+
+  it("calls an input its kind gave no words for by its name", () => {
+    const quiet: NodeKind = { ...kind("quiet", [], []), inputs: [{ name: "amount", label: "", type: "number" }] };
+    const withQuiet = kitOf([...kit.kinds.values(), quiet], coreTypes);
+    expect(wireRefused(withNode(blueprint, node("q", "quiet")), withQuiet, wire("s", "table", "q", "amount"))).toBe("a table cannot go into amount, which takes a number");
+  });
 });

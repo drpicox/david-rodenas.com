@@ -9,6 +9,20 @@ import { flowOf } from "./flowOf";
 import { SCHEMATIC } from "./SCHEMATIC";
 import { schematicOf } from "./schematicOf";
 
+/** A conduit being run by hand: where from, what could take it, and where the hand is. */
+export interface Joining {
+  /** The module it is run from, and the port of it the hand took, where it took one. */
+  readonly from: { readonly node: string; readonly port?: string };
+  /** The inputs that could take it, by module. */
+  readonly into: ReadonlyMap<string, readonly string[]>;
+  /** Where the hand is, in the schematic's own pixels, while it drags. */
+  readonly at?: { readonly x: number; readonly y: number };
+  /** The module the hand is over, and the input of it, where it is over one. */
+  readonly over?: { readonly node: string; readonly pin?: string };
+  /** The input whose conduit the hand lifted off it. */
+  readonly lifted?: { readonly node: string; readonly pin: string };
+}
+
 /** What a schematic is drawn from. */
 export interface SchematicShown {
   readonly blueprint: Blueprint;
@@ -24,6 +38,8 @@ export interface SchematicShown {
   readonly set?: ReadonlyMap<string, string>;
   /** The files the site serves: what is written on an input is said as its list of choices says it, and some lists are read from a file. */
   readonly read?: (path: string) => string;
+  /** The conduit a hand is running, while one is. */
+  readonly joining?: Joining;
 }
 
 /**
@@ -33,11 +49,13 @@ export interface SchematicShown {
  * conduit feeds, called as the input is; its name, in the colour of what it
  * is for; and the port its conduits leave from, carrying its figure. An end
  * nothing joins is rounded. Under it, what is written on the inputs no
- * conduit feeds, and what came out. A module is a button: on this display a
- * blueprint is worked on by pressing, never by dragging. Markup, so that it
- * is made the same wherever it is made, and drawn again in place.
+ * conduit feeds, and what came out. A module is a button, pressed to ask
+ * what it is. While a hand runs a conduit, the module it leaves, those that
+ * could take it and the inputs it could go into are marked, and the conduit
+ * is drawn out to where the hand is. Markup, so that it is made the same
+ * wherever it is made, and drawn again in place.
  */
-export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map(), read = () => "" }: SchematicShown): string {
+export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map(), read = () => "", joining }: SchematicShown): string {
   const faces = new Map(blueprint.nodes.map((node) => [node.id, faceOf(node, blueprint, kit, evaluation, read)]));
   const schematic = schematicOf(blueprint, new Map([...faces].map(([id, face]) => [id, { ins: face.ins.map((port) => port.pin), outs: face.outs.map((port) => port.pin), rows: face.rows.length }])));
   const placed = new Map(schematic.modules.map((module) => [module.id, module]));
@@ -50,7 +68,13 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     const from = byId.get(wire.from.node);
     const type = kit.kinds.get(from?.kind ?? "")?.outputs.find((pin) => pin.name === wire.from.pin)?.type ?? "value";
     const d = conduitPath(points, SCHEMATIC.curve);
-    const names = ["lc-conduit", evaluation.get(wire.from.node)?.state === "done" ? "" : "idle", ran(wire.from.node) ? `flow-${ran(wire.from.node)}` : "", chosen !== null && (wire.from.node === chosen || wire.to.node === chosen) ? "near" : ""];
+    const names = [
+      "lc-conduit",
+      evaluation.get(wire.from.node)?.state === "done" ? "" : "idle",
+      ran(wire.from.node) ? `flow-${ran(wire.from.node)}` : "",
+      chosen !== null && (wire.from.node === chosen || wire.to.node === chosen) ? "near" : "",
+      joining?.lifted?.node === wire.to.node && joining.lifted.pin === wire.to.pin ? "lifted" : "",
+    ];
     return tag(
       "g",
       {
@@ -67,7 +91,16 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     );
   });
 
-  const ports = (side: string, all: readonly Port[]) => (all.length > 0 ? tag("span", { class: side }, all.map((port) => tag("i", { class: port.figure ? "lc-tab lc-figure" : "lc-tab", "data-pin": port.pin, style: `--pin: var(${port.colour})` }, port.said))) : null);
+  /** What marks an input of a module while a conduit is run: that it could take it, and that the hand is over it. */
+  const taking = (id: string, pin: string) => [joining?.into.get(id)?.includes(pin) ? "fits" : "", joining?.over?.node === id && joining.over.pin === pin ? "over" : ""];
+  const ports = (side: string, all: readonly Port[], id: string) =>
+    all.length > 0
+      ? tag(
+          "span",
+          { class: side },
+          all.map((port) => tag("i", { class: ["lc-tab", port.figure ? "lc-figure" : "", ...(side === "lc-ins" ? taking(id, port.pin) : [])].filter(Boolean).join(" "), "data-pin": port.pin, style: `--pin: var(${port.colour})` }, port.said)),
+        )
+      : null;
   const modules = blueprint.nodes.map((node) => {
     const kind = kit.kinds.get(node.kind);
     const result = evaluation.get(node.id);
@@ -87,21 +120,43 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
       result?.state === "waiting" ? "waiting" : "",
       result?.state === "done" || foot.trouble ? "" : "idle",
       ran(node.id) ? `ran-${ran(node.id)}` : "",
+      joining?.from.node === node.id ? "feeds" : "",
+      joining?.into.has(node.id) ? "takes" : "",
+      joining?.over?.node === node.id ? "over" : "",
     ];
     return tag(
       "button",
       { type: "button", class: names.filter(Boolean).join(" "), "data-key": `node:${node.id}`, "data-node": node.id, "aria-pressed": node.id === chosen ? "true" : "false", title: kind?.summary ?? `There is no kind of node called ${node.kind}.`, style: `left: ${at?.x ?? 0}px; top: ${at?.y ?? 0}px; width: ${at?.width ?? 0}px; --lc-step: ${at?.column ?? 0}` },
-      tag("span", { class: "lc-pad" }, ports("lc-ins", face?.ins ?? []), tag("span", { class: "lc-name" }, tag("b", {}, node.title ?? kind?.title ?? node.kind)), ports("lc-outs", face?.outs ?? [])),
-      face?.rows.length ? tag("span", { class: "lc-told" }, face.rows.map((row) => tag("span", { class: `lc-row ${row.how}` }, tag("i", {}, row.label), tag("b", {}, row.value)))) : null,
+      tag("span", { class: "lc-pad" }, ports("lc-ins", face?.ins ?? [], node.id), tag("span", { class: "lc-name" }, tag("b", {}, node.title ?? kind?.title ?? node.kind)), ports("lc-outs", face?.outs ?? [], node.id)),
+      face?.rows.length
+        ? tag(
+            "span",
+            { class: "lc-told" },
+            face.rows.map((row) => tag("span", { class: ["lc-row", row.how, ...taking(node.id, row.pin)].filter(Boolean).join(" "), "data-pin": row.pin }, tag("i", {}, row.label), tag("b", {}, row.value))),
+          )
+        : null,
       tag("span", { class: "lc-said" }, said),
     );
   });
 
+  // The conduit a hand is running: out of the port it took, turning once it is clear of the module, and level to where the hand is.
+  const source = joining ? placed.get(joining.from.node) : undefined;
+  const taken = kit.kinds.get(byId.get(joining?.from.node ?? "")?.kind ?? "")?.outputs.find((pin) => pin.name === joining?.from.port);
+  const rubber = (() => {
+    if (!joining?.at || !source) return null;
+    const from = { x: source.x + source.width, y: source.outs[joining.from.port ?? ""] ?? source.y + SCHEMATIC.pad / 2 };
+    const turn = from.x + SCHEMATIC.channel / 2;
+    return tag("path", { class: "lc-rubber", d: conduitPath([from, { x: turn, y: from.y }, { x: turn, y: joining.at.y }, joining.at], SCHEMATIC.curve) });
+  })();
+
   const [width, height] = [schematic.width, schematic.height];
   return tag(
     "div",
-    { class: chosen !== null ? "lc-world tracing" : "lc-world", style: `width: ${width}px; height: ${height}px` },
-    tag("svg", { class: "lc-conduits", width, height, viewBox: `0 0 ${width} ${height}`, "aria-hidden": "true" }, conduits),
+    {
+      class: ["lc-world", chosen !== null ? "tracing" : "", joining ? "joining" : ""].filter(Boolean).join(" "),
+      style: `width: ${width}px; height: ${height}px${joining ? `; --join: var(${kit.types.get(taken?.type ?? "")?.colour ?? "--dim"})` : ""}`,
+    },
+    tag("svg", { class: "lc-conduits", width, height, viewBox: `0 0 ${width} ${height}`, "aria-hidden": "true" }, conduits, rubber),
     modules,
   ).html;
 }

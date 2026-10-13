@@ -53,31 +53,31 @@ describe("the face a module shows on the schematic: what comes into it, what it 
 
   it("says what is written on each input no wire brings, as a reader would say it", () => {
     expect(face["some"]?.rows).toEqual([
-      { label: "column", value: "year", how: "written" },
-      { label: "is", value: "is at least", how: "written" },
-      { label: "value", value: "2012", how: "written" },
+      { pin: "column", label: "column", value: "year", how: "written" },
+      { pin: "is", label: "is", value: "is at least", how: "written" },
+      { pin: "value", label: "value", value: "2012", how: "written" },
     ]);
-    expect(face["n"]?.rows).toEqual([{ label: "from", value: "2010", how: "written" }]);
-    expect(face["readout"]?.rows).toEqual([{ label: "unit", value: "nights", how: "written" }]);
+    expect(face["n"]?.rows).toEqual([{ pin: "from", label: "from", value: "2010", how: "written" }]);
+    expect(face["readout"]?.rows).toEqual([{ pin: "unit", label: "unit", value: "nights", how: "written" }]);
   });
 
   it("says what a module chose for itself where an input was left to it, and leaves out what merely starts as its kind says", () => {
     expect(face["bars"]?.rows).toEqual([
-      { label: "x", value: "year", how: "settled" },
-      { label: "height", value: "nights", how: "settled" },
+      { pin: "x", label: "x", value: "year", how: "settled" },
+      { pin: "y", label: "height", value: "nights", how: "settled" },
     ]);
     expect(face["c"]?.rows.map((row) => row.label)).toEqual(["x", "y"]);
   });
 
   it("says what a module still lacks, and nothing of a dial, whose setting is its figure", () => {
-    expect(faces("bars")["bars"]?.rows).toEqual([{ label: "table", value: "—", how: "missing" }]);
+    expect(faces("bars")["bars"]?.rows).toEqual([{ pin: "table", label: "table", value: "—", how: "missing" }]);
     expect(face["place"]?.rows).toEqual([]);
   });
 
   it("shows a module that has not run with its ports and what is written on it, and no figure yet", () => {
     const waiting = faces(TEXT, false);
     expect(waiting["n"]?.outs).toEqual([{ pin: "table", said: "···", colour: "--bp-table", figure: true }]);
-    expect(waiting["n"]?.rows).toEqual([{ label: "from", value: "2010", how: "written" }]);
+    expect(waiting["n"]?.rows).toEqual([{ pin: "from", label: "from", value: "2010", how: "written" }]);
     expect(waiting["bars"]?.rows).toEqual([]);
   });
 

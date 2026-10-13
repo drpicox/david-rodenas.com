@@ -56,6 +56,14 @@ describe("a blueprint laid out as a schematic", () => {
     expect(["b", "c"].map((to) => conduit(several, "a", to).points[0]!.y - at(several, "a").y)).toEqual([FIRST, FIRST + SCHEMATIC.port]);
   });
 
+  it("says how far down the schematic each port of a module is, for whoever runs a conduit to it by hand", () => {
+    const schematic = laid(["a", "b", "both"], [wire("a", "both", "left"), wire("b", "both", "right")]);
+    expect(at(schematic, "both").ins).toEqual({ left: FIRST, right: FIRST + SCHEMATIC.port });
+    expect(at(schematic, "both").outs).toEqual({});
+    expect(at(schematic, "a").outs).toEqual({ table: SCHEMATIC.pad / 2 });
+    expect(at(schematic, "b").outs).toEqual({ table: ROW + SCHEMATIC.pad / 2 });
+  });
+
   it("makes a row as high as the tallest module standing in it: one told three things is three lines taller, and so is one with four ports", () => {
     const wires = [wire("a", "b"), wire("a", "c")];
     const below = (shapes: Record<string, Partial<Shape>>) => at(laid(["a", "b", "c"], wires, shapes), "c").y;
@@ -108,7 +116,7 @@ describe("a blueprint laid out as a schematic", () => {
   });
 
   it("stands a module nothing is wired to on its own, and an empty blueprint nowhere", () => {
-    expect(laid(["alone"], []).modules).toEqual([{ id: "alone", column: 0, row: 0, x: 0, y: 0, width: SCHEMATIC.name }]);
+    expect(laid(["alone"], []).modules).toEqual([{ id: "alone", column: 0, row: 0, x: 0, y: 0, width: SCHEMATIC.name, ins: {}, outs: {} }]);
     expect(laid([], [])).toEqual({ width: 0, height: 0, modules: [], conduits: [] });
   });
 

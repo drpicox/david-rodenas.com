@@ -36,6 +36,14 @@ function display(example: string | readonly Example[], more: Partial<BenchSettin
 }
 
 const press = (element: Element, name: string, extra: KeyboardEventInit = {}) => element.dispatchEvent(new KeyboardEvent("keydown", { key: name, bubbles: true, ...extra }));
+const Pointer = (window.PointerEvent ?? MouseEvent) as typeof MouseEvent;
+const point = (target: Element, type: string, x = 0, y = 0) => target.dispatchEvent(new Pointer(type, { bubbles: true, button: 0, clientX: x, clientY: y }));
+/** A hand that takes hold of one thing, goes over another, and lets go there. */
+const drag = (from: Element, to: Element, x = 300, y = 20) => {
+  point(from, "pointerdown");
+  point(to, "pointermove", x, y);
+  point(to, "pointerup", x, y);
+};
 
 afterEach(() => {
   document.body.replaceChildren();
@@ -288,16 +296,14 @@ describe("a blueprint on the display of a starship", () => {
     expect(modules()).toEqual(["n"]);
   });
 
-  it("adds a module that needs nothing wired into it from the menu, and never offers one that does", () => {
+  it("adds a module of any kind from the menu, chosen once it is there: what it needs is run to it by hand", () => {
     const { element, key, modules, module } = display("n = nights");
     key("add").click();
     const offered = [...element.querySelectorAll<HTMLElement>(".wb-menu [role=option]")].map((item) => item.dataset["kind"]);
-    expect(offered).toEqual(expect.arrayContaining(["nights", "your-data", "note"]));
-    expect(offered).not.toContain("bars");
-    expect(offered).not.toContain("dial");
-    element.querySelector<HTMLElement>('.wb-menu [data-kind="nights"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    expect(modules()).toEqual(["n", "nights"]);
-    expect(module("nights")?.getAttribute("aria-pressed")).toBe("true");
+    expect(offered).toEqual(expect.arrayContaining(["nights", "your-data", "note", "bars", "dial"]));
+    element.querySelector<HTMLElement>('.wb-menu [data-kind="bars"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(modules()).toEqual(["n", "bars"]);
+    expect(module("bars")?.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("shows the blueprint as text, and is the blueprint written there once it is applied", () => {
@@ -352,5 +358,178 @@ describe("a blueprint on the display of a starship", () => {
     await settle();
     expect(module("n")?.classList.contains("idle")).toBe(true);
     expect(element.querySelector(".lc-lights i")?.className).toBe("idle");
+  });
+});
+
+describe("a conduit run by hand on the display of a starship", () => {
+  const out = (module: Element | null | undefined) => module?.querySelector(".lc-outs .lc-tab") as HTMLElement;
+  const keys = (element: Element) => [...element.querySelectorAll<HTMLElement>(".lc-conduit")].map((conduit) => conduit.dataset["key"]);
+
+  it("is run from a module's port to the module it is let go on, into the input that takes it, and that module is chosen", async () => {
+    const { element, module, kept, status } = display("n = nights\nbars");
+    await settle();
+    drag(out(module("n")), module("bars")!);
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+    expect(kept.at(-1)).toBe("n = nights\nbars table: n");
+    expect(module("bars")?.getAttribute("aria-pressed")).toBe("true");
+    expect(status()).toBe("Nights now feeds table of Bars.");
+    expect(element.querySelector(".lc-world")?.classList.contains("joining")).toBe(false);
+  });
+
+  it("lights what could take it while it is run, draws it out to the hand, and says what letting go there would do", async () => {
+    const { element, module, status } = display("n = nights\nbars\nreadout");
+    await settle();
+    point(out(module("n")), "pointerdown");
+    expect(element.querySelector(".lc-world")?.classList.contains("joining")).toBe(false);
+    point(module("bars")!, "pointermove", 300, 20);
+    expect(element.querySelector(".lc-world")?.classList.contains("joining")).toBe(true);
+    expect([module("n")?.classList.contains("feeds"), module("bars")?.classList.contains("takes"), module("bars")?.classList.contains("over"), module("readout")?.classList.contains("takes")]).toEqual([true, true, true, false]);
+    expect(element.querySelector(".lc-rubber")?.getAttribute("d")).toMatch(/L300 20$/);
+    expect(status()).toBe("Let go to feed table of Bars.");
+    point(module("readout")!, "pointermove", 300, 90);
+    expect(status()).toBe("Not there: a table cannot go into value, which takes a number.");
+    point(element.querySelector(".lc-schematic")!, "pointermove", 500, 200);
+    expect(status()).toBe("Let go on a module that is lit to feed it, or where nothing stands for what could come next.");
+    point(module("readout")!, "pointerup", 300, 90);
+    expect(keys(element)).toEqual([]);
+    expect(status()).toBe("Not wired: a table cannot go into value, which takes a number.");
+    expect(element.querySelector(".lc-world")?.classList.contains("joining")).toBe(false);
+    expect(element.querySelector(".lc-rubber")).toBeNull();
+  });
+
+  it("asks which input, where the module it is let go on has several that could take it, and feeds the one answered", async () => {
+    const { element, module, key } = display("a = nights\njoin");
+    await settle();
+    drag(out(module("a")), module("join")!);
+    const pads = () => [...element.querySelectorAll<HTMLButtonElement>(".lc-choice button")];
+    expect(element.querySelector(".lc-choice p")?.textContent).toBe("Which input of Join does Nights feed?");
+    expect(pads().map((pad) => pad.textContent)).toEqual(["leftnothing feeds it yet", "rightnothing feeds it yet"]);
+    expect(keys(element)).toEqual([]);
+    pads()[1]?.click();
+    expect(keys(element)).toEqual(["wire:join.right:a.table"]);
+    expect(element.querySelector(".lc-choice")).toBeNull();
+    // Run again, it takes the one input nothing feeds yet, without asking.
+    key("undo").click();
+    key("redo").click();
+    drag(out(module("a")), module("join")!);
+    expect(element.querySelector(".lc-choice")).toBeNull();
+    expect(keys(element)).toEqual(["wire:join.right:a.table", "wire:join.left:a.table"]);
+  });
+
+  it("says what feeds an input already, where an answer would take its place, and changes nothing when the question is put away", async () => {
+    const { element, module } = display("a = nights\nb = nights\njoin left: a right: a");
+    await settle();
+    drag(out(module("b")), module("join")!);
+    const pads = [...element.querySelectorAll<HTMLButtonElement>(".lc-choice button")];
+    expect(pads.map((pad) => pad.textContent)).toEqual(["leftin place of Nights", "rightin place of Nights"]);
+    press(pads[0]!, "Escape");
+    expect(element.querySelector(".lc-choice")).toBeNull();
+    expect(keys(element)).toEqual(["wire:join.left:a.table", "wire:join.right:a.table"]);
+  });
+
+  it("feeds the very input the hand lets go on: a port, in place of what fed it, or a line written under the module", async () => {
+    const { element, module, kept } = display("a = nights\nb = nights\njoin left: a\nj = join");
+    await settle();
+    drag(out(module("b")), module("join")!.querySelector('.lc-ins [data-pin="left"]')!);
+    expect(keys(element)).toEqual(["wire:join.left:b.table"]);
+    drag(out(module("a")), module("j")!.querySelector('.lc-row[data-pin="right"]')!);
+    expect(keys(element)).toEqual(["wire:join.left:b.table", "wire:j.right:a.table"]);
+    expect(kept.at(-1)).toBe("a = nights\nb = nights\njoin left: b\njoin right: a");
+  });
+
+  it("is lifted off the input it feeds by its port there: let go on another module, it feeds that one instead, in one step", async () => {
+    const { element, module, key, status } = display("n = nights\nbars table: n\nshow-table");
+    await settle();
+    const fed = () => module("bars")?.querySelector('.lc-ins [data-pin="table"]') as HTMLElement;
+    point(fed(), "pointerdown");
+    point(module("show-table")!, "pointermove", 300, 90);
+    expect(element.querySelector('[data-key="wire:bars.table:n.table"]')?.classList.contains("lifted")).toBe(true);
+    expect([module("n")?.classList.contains("feeds"), module("bars")?.classList.contains("takes")]).toEqual([true, true]);
+    point(module("show-table")!, "pointerup", 300, 90);
+    expect(keys(element)).toEqual(["wire:show-table.table:n.table"]);
+    expect(status()).toBe("Nights now feeds table of Table.");
+    key("undo").click();
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+  });
+
+  it("is taken out when it is lifted and let go where nothing stands, and left as it was when let go where it was", async () => {
+    const { element, module, status } = display("n = nights\nbars table: n");
+    await settle();
+    const fed = () => module("bars")?.querySelector('.lc-ins [data-pin="table"]') as HTMLElement;
+    drag(fed(), module("bars")!);
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+    drag(fed(), element.querySelector(".lc-schematic")!);
+    expect(keys(element)).toEqual([]);
+    expect(status()).toBe("Conduit taken out. Undo brings it back.");
+  });
+
+  it("offers what could take it where it is let go on nothing, and adds the one chosen already fed, as one step", async () => {
+    const { element, module, modules, key } = display("n = nights");
+    await settle();
+    drag(out(module("n")), element.querySelector(".lc-schematic")!);
+    const offered = [...element.querySelectorAll<HTMLElement>(".wb-menu [role=option]")].map((item) => item.dataset["kind"]);
+    expect(offered).toEqual(expect.arrayContaining(["bars", "keep"]));
+    expect(offered).not.toContain("nights");
+    element.querySelector<HTMLElement>('.wb-menu [data-kind="bars"]')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    expect(modules()).toEqual(["n", "bars"]);
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+    expect(module("bars")?.getAttribute("aria-pressed")).toBe("true");
+    key("undo").click();
+    expect([modules(), keys(element)]).toEqual([["n"], []]);
+  });
+
+  it("leaves a press that goes nowhere a press, and does not take the press that ends a drag for one", async () => {
+    const { element, module } = display("n = nights\nbars");
+    await settle();
+    point(out(module("n")), "pointerdown");
+    point(out(module("n")), "pointerup");
+    module("n")?.click();
+    expect(module("n")?.getAttribute("aria-pressed")).toBe("true");
+    drag(out(module("n")), module("bars")!);
+    // A browser sends a click where a drag ends, to whatever holds both ends of it.
+    element.querySelector<HTMLElement>(".lc-schematic")?.click();
+    expect(module("bars")?.getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("is run pad by pad too: Feed beside an output, then the module pressed; Escape, or Feed again, lets it go", async () => {
+    const { element, module, status } = display("n = nights\nbars");
+    await settle();
+    module("n")?.click();
+    const feed = () => element.querySelector('.lc-give[data-pin="table"] .lc-feed') as HTMLButtonElement;
+    const joining = () => element.querySelector(".lc-world")?.classList.contains("joining");
+    feed().click();
+    expect([joining(), feed().getAttribute("aria-pressed"), module("bars")?.classList.contains("takes")]).toEqual([true, "true", true]);
+    expect(status()).toBe("Press the module it should feed: those that can take it are lit. Escape lets it go.");
+    expect(element.querySelector(".lc-rubber")).toBeNull();
+    press(element, "Escape");
+    expect([joining(), module("n")?.getAttribute("aria-pressed")]).toEqual([false, "true"]);
+    feed().click();
+    feed().click();
+    expect(joining()).toBe(false);
+    feed().click();
+    module("bars")?.click();
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+    expect([joining(), module("bars")?.getAttribute("aria-pressed")]).toEqual([false, "true"]);
+  });
+
+  it("is taken out by the pad beside the input it feeds", async () => {
+    const { element, module, kept, status } = display(NIGHTS);
+    await settle();
+    module("n")?.click();
+    (element.querySelector('.lc-take[data-pin="place"] .lc-cut') as HTMLButtonElement).click();
+    expect(keys(element)).toEqual(["wire:bars.table:n.table"]);
+    expect(kept.at(-1)).toBe('dial "Station" value: X4\nn = nights\nbars "Nights a year" table: n');
+    expect(status()).toBe("Conduit taken out. Undo brings it back.");
+  });
+
+  it("is let go of when the hand is called away", async () => {
+    const { element, module } = display("n = nights\nbars");
+    await settle();
+    point(out(module("n")), "pointerdown");
+    point(module("bars")!, "pointermove", 300, 20);
+    point(module("bars")!, "pointercancel", 300, 20);
+    expect(element.querySelector(".lc-world")?.classList.contains("joining")).toBe(false);
+    point(module("bars")!, "pointerup", 300, 20);
+    expect(keys(element)).toEqual([]);
   });
 });

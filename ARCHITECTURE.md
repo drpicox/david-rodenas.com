@@ -338,7 +338,7 @@ graph LR
   still["blueprintStill<br/><i>node, at build time:<br/>the board, the blueprint drawn,<br/>its text</i>"]
   open["workbench/OpenBlueprint<br/><i>the one open: its history, its runs,<br/>the reader's own version, kept</i>"]
   bench["workbench/browser<br/><i>the canvas and the board:<br/>wires dragged by hand</i>"]
-  other["a feature's bench<br/><i>behind a flag: lcars, a schematic<br/>laid out by the display, and pads</i>"]
+  other["a feature's bench<br/><i>behind a flag: lcars, a schematic<br/>laid out by the display, pads,<br/>and conduits run by hand</i>"]
 
   text --> parse --> run
   run --> still
@@ -378,6 +378,8 @@ the tidying's columns, a row for every module and for every conduit that
 only passes a column, a lane for each output in the channels between),
 shows on each module's face what comes into it, by name, what is written on
 it and what leaves it (`faceOf`), and what flows along each conduit, in
-step with the rest (`flowOf`), and works it by pressing pads. The mount,
+step with the rest (`flowOf`). It is worked by pressing pads, and by
+running a conduit from a module's port onto another module: which input
+takes it is the display's to work out, or to ask (`joinsOf`). The mount,
 the address, the examples, an agent's blueprint and what the reader's
 browser keeps are the same for both.

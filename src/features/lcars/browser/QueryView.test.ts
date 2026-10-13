@@ -17,6 +17,8 @@ function query(text: string) {
     go: (...said) => asked.push(["go", ...said]),
     follow: (...said) => asked.push(["follow", ...said]),
     remove: (...said) => asked.push(["remove", ...said]),
+    feed: (...said) => asked.push(["feed", ...said]),
+    cut: (...said) => asked.push(["cut", ...said]),
   });
   const shown = (id: string, written = text, more: Partial<QueryShown> = {}): QueryShown => {
     const { blueprint } = parseBlueprint(written, aKit);
@@ -94,6 +96,16 @@ describe("a module of the schematic, asked what it is", () => {
     expect(take("place").querySelector("select")).not.toBeNull();
   });
 
+  it("asks for the conduit into a wired input to be taken out, beside where it comes from", () => {
+    const { view, asked, shown, take } = query("n = nights");
+    view.show(shown("n", "n = nights", { from: new Map([["place", { node: "station", said: "Station" }]]) }));
+    const cut = take("place").querySelector(".lc-cut") as HTMLButtonElement;
+    expect(cut.getAttribute("aria-label")).toBe("Take out the conduit into place");
+    cut.click();
+    expect(asked).toEqual([["cut", "n", "place"]]);
+    expect(take("from").querySelector(".lc-cut")).toBeNull();
+  });
+
   it("offers to put on the board what a dial can stand for, and nothing wired, nor a table", () => {
     const { view, asked, shown, take } = query("n = nights\nbars table: n");
     view.show(shown("n"));
@@ -113,6 +125,18 @@ describe("a module of the schematic, asked what it is", () => {
     expect([...element.querySelectorAll(".lc-give .bp-peek-said")].map((said) => said.textContent)[0]).toBe("a number: 20");
     view.show(shown("bars"));
     expect(element.querySelector<HTMLElement>(".lc-gives")?.hidden).toBe(true);
+  });
+
+  it("offers to run a conduit from each output, tells which was asked for, and says which is being run while one is", () => {
+    const TREND = "n = nights\nt = trend table: n y: nights";
+    const { view, element, asked, shown } = query(TREND);
+    view.show(shown("t"));
+    const feed = (pin: string) => element.querySelector(`.lc-give[data-pin="${pin}"] .lc-feed`) as HTMLButtonElement;
+    expect([feed("slope").textContent, feed("slope").getAttribute("aria-pressed")]).toEqual(["Feed", "false"]);
+    feed("slope").click();
+    expect(asked).toEqual([["feed", "t", "slope"]]);
+    view.show(shown("t", TREND, { feeding: "slope" }));
+    expect([feed("slope").getAttribute("aria-pressed"), feed("per-ten").getAttribute("aria-pressed")]).toEqual(["true", "false"]);
   });
 
   it("says a module has not run yet where it has nothing to show", () => {

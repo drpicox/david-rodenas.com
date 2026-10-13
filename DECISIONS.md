@@ -58,9 +58,23 @@ display that moves without being asked, so it keeps the rule of whatever
 moves on this site: only while the display is on screen, with a pad (Flow)
 that puts it to rest, and never for a reader who asked for less motion.
 
-What it does not do, on purpose: wires are not drawn by hand, nodes are not
-placed, and only what needs nothing wired into it can be added from nothing.
-The blueprint's text is a pad away for the rest, and the workbench a flag
+The first day it drew no wire by hand, and David, pleased past what he
+expected, said what it lacked: dragging, and new connections. A conduit is
+run by hand now, and not as the workbench runs a wire. A module shows a
+port only for what is wired, so there is no pin to aim at: the port at a
+module's end is dragged onto a *module*, and the display works out which
+input takes it (`joinsOf`) — the only one that fits, or the only one
+nothing feeds yet — and where several could, it asks, a pad for each,
+saying what the answer would take the place of. A port, or a line written
+under a module, can still be aimed at. Lifted by the port it arrives at, a
+conduit is let go on another module, or where nothing stands, which takes
+it out; dragged out of a port to where nothing stands, it offers what could
+take it, as Unreal does. Pad by pad it is the same, for a finger or a
+keyboard: Feed beside an output, then the module pressed; Cut beside an
+input. So a module of any kind can be added, and what it needs run to it.
+
+What it does not do, on purpose: modules are not placed by hand. The
+blueprint's text is a pad away for the rest, and the workbench a flag
 away; both keep the reader's version of an example in the same place, the
 display's without where its nodes stand.
 

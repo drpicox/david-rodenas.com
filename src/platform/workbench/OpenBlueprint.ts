@@ -1,4 +1,4 @@
-import type { Blueprint, PlacedNode } from "../blueprint/Blueprint";
+import type { Blueprint, PinRef, PlacedNode } from "../blueprint/Blueprint";
 import { type Dial, dialsOf } from "../blueprint/dialsOf";
 import type { Evaluation } from "../blueprint/Evaluation";
 import { evaluateBlueprint } from "../blueprint/evaluateBlueprint";
@@ -14,6 +14,7 @@ import { withDial } from "../blueprint/withDial";
 import { withNext } from "../blueprint/withNext";
 import { withNode } from "../blueprint/withNode";
 import { withValue } from "../blueprint/withValue";
+import { withWire } from "../blueprint/withWire";
 import type { BenchSetting } from "../plugin/Bench";
 import { type Card, cardsOf } from "./cardsOf";
 import { EditHistory } from "./EditHistory";
@@ -155,10 +156,11 @@ export class OpenBlueprint {
     this.edit(withValue(this.history.now, id, pin, value), done ? undefined : `${id}\u0000${pin}`);
   }
 
-  /** A node of a kind added with nothing wired into it, standing where the bench says: what it is called. */
-  add(kind: string, at: { readonly x: number; readonly y: number }): string {
+  /** A node of a kind added, standing where the bench says, with nothing wired into it — or with one input fed from an output there is, which is what a wire let go of in empty space asks for. What it is called. */
+  add(kind: string, at: { readonly x: number; readonly y: number }, fed?: { readonly pin: string; readonly from: PinRef }): string {
     const node: PlacedNode = { id: freshId(this.history.now, kind), kind, x: at.x, y: at.y, values: {} };
-    this.edit(withNode(this.history.now, node));
+    const added = withNode(this.history.now, node);
+    this.edit(fed ? withWire(added, { from: fed.from, to: { node: node.id, pin: fed.pin } }) : added);
     return node.id;
   }
 

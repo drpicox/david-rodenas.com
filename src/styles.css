@@ -7432,6 +7432,8 @@ body.wb-full-open {
   position: relative;
   flex: none;
   margin: 0 auto;
+  /* A hand that drags across it runs a conduit, and marks no words. */
+  user-select: none;
 }
 
 .app .lc-conduits {
@@ -7771,6 +7773,144 @@ body.wb-full-open {
   animation: lc-ran-b 0.6s ease-out calc(var(--lc-step) * 0.16s) 1;
 }
 
+/* ---- a conduit run by hand ---- */
+
+/* The ports are what a hand takes hold of: the one a module feeds from, to run a conduit from it; the one it is fed at, to lift the conduit there. */
+.app .lc-outs .lc-tab,
+.app .lc-ins .lc-tab {
+  cursor: grab;
+  touch-action: none;
+}
+
+.app .lc-world.joining,
+.app .lc-world.joining .lc-module,
+.app .lc-world.joining .lc-tab {
+  cursor: crosshair;
+}
+
+/* While one is run, what could not take it stands back. */
+.app .lc-world.joining .lc-module:not(.takes, .feeds) {
+  opacity: 0.25;
+}
+
+/* What could take it shows where it would come in: an open port at its left, in the colour of what is carried, which blinks until the hand is over the module. */
+.app .lc-world.joining .lc-module.takes::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: calc(100% + var(--lc-seam));
+  width: 0.4rem;
+  height: var(--lc-pad);
+  background: var(--join);
+  animation: lc-wait 0.7s steps(2, jump-none) infinite alternate;
+}
+
+.app .lc-world.joining .lc-module.takes.over::before {
+  width: 0.8rem;
+  animation: none;
+}
+
+.app .lc-world.joining .lc-module.takes.over .lc-name {
+  background: var(--lc-white);
+}
+
+/* The inputs of it that could take it are said brighter; the one the hand is on, brightest. */
+.app .lc-world.joining .lc-row.fits i {
+  color: var(--join);
+}
+
+.app .lc-world.joining .lc-row.fits.over,
+.app .lc-world.joining .lc-tab.fits.over {
+  background: var(--lc-white);
+  color: #000;
+}
+
+.app .lc-world.joining .lc-row.fits.over i,
+.app .lc-world.joining .lc-row.fits.over b {
+  color: #000;
+}
+
+.app .lc-world.joining .lc-tab:not(.fits, .lc-figure) {
+  filter: brightness(0.55);
+}
+
+/* The conduit itself, out to the hand: broken, and moving the way it would flow. */
+.app .lc-rubber {
+  fill: none;
+  stroke: var(--join);
+  stroke-width: 3;
+  stroke-dasharray: 7 5;
+  animation: lc-rubber 0.45s linear infinite;
+}
+
+@keyframes lc-rubber {
+  to { stroke-dashoffset: -12; }
+}
+
+/* One lifted off its input is drawn as let go of, until it is put down. */
+.app .lc-conduit.lifted .lc-line {
+  stroke-dasharray: 2 6;
+  opacity: 0.4;
+}
+
+.app .lc-conduit.lifted .lc-stream,
+.app .lc-conduit.lifted .lc-pulse {
+  display: none;
+}
+
+/* The question the display asks where a hand left it one: which input, of those that could take the conduit. */
+.app .lc-choice {
+  position: absolute;
+  z-index: 6;
+  box-sizing: border-box;
+  width: min(16rem, calc(100% - 1rem));
+  padding: 0.55rem 0 0.7rem 0.7rem;
+  border-left: 0.8rem solid var(--lc-gold);
+  border-radius: 1.05rem 0 0 1.05rem;
+  background: #000;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.72);
+}
+
+.app .lcars .lc-choice p {
+  margin: 0 0 0.5rem;
+  color: var(--lc-gold);
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+.app .lc-choice ul {
+  display: grid;
+  gap: var(--lc-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app .lc-choice li {
+  margin: 0;
+}
+
+.app .lcars .lc-choice button {
+  display: flex;
+  gap: 0.8rem;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.4rem 0.7rem 0.2rem 1rem;
+  border-radius: 999px 0 0 999px;
+  background: var(--pin, var(--lc-bell));
+  text-align: left;
+}
+
+.app .lc-choice button strong {
+  font-weight: inherit;
+}
+
+.app .lc-choice button span {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
 /* ---- the module asked ---- */
 
 .app .lcars .lc-query .lc-deck-head {
@@ -7912,6 +8052,19 @@ body.wb-full-open {
   font-size: 0.72rem;
 }
 
+/* Beside where a wired input comes from, the pad that takes its conduit out. */
+.app .lcars .lc-cut {
+  flex: none;
+  padding-inline: 0.6em 0.8em;
+  border-radius: 0 999px 999px 0;
+  background: var(--lc-red);
+  font-size: 0.72rem;
+}
+
+.app .lcars .lc-take.wired .lc-from {
+  border-radius: 0;
+}
+
 .app .lcars .lc-take:has(.lc-promote) dd > :first-child {
   border-radius: 0;
 }
@@ -7922,7 +8075,24 @@ body.wb-full-open {
 
 .app .lc-give dt {
   display: inline-flex;
+  padding-right: 0;
   background: var(--lc-lilac);
+}
+
+/* At the end of what an output is called, the pad that runs a conduit from it: lit while one is being run. */
+.app .lcars .lc-feed {
+  align-self: stretch;
+  margin: -0.16rem 0 0 0.3rem;
+  padding: 0.16rem 0.7em 0;
+  border-left: var(--lc-gap) solid #000;
+  border-radius: 0;
+  background: var(--lc-gold);
+  font-size: 0.72rem;
+}
+
+.app .lcars .lc-feed[aria-pressed="true"] {
+  background: var(--lc-white);
+  animation: lc-wait 0.7s steps(2, jump-none) infinite alternate;
 }
 
 .app .lc-give dd {

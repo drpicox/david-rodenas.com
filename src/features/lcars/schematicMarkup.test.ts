@@ -38,9 +38,9 @@ describe("a schematic, as markup", () => {
 
   it("says under a module what is written on the inputs no conduit feeds, and what it chose itself, each by the input's name", () => {
     expect(moduleOf(html, "whole")).toContain(
-      '<span class="lc-told"><span class="lc-row written"><i>column</i><b>year</b></span><span class="lc-row written"><i>is</i><b>is at least</b></span><span class="lc-row written"><i>value</i><b>2002</b></span></span>',
+      '<span class="lc-told"><span class="lc-row written" data-pin="column"><i>column</i><b>year</b></span><span class="lc-row written" data-pin="is"><i>is</i><b>is at least</b></span><span class="lc-row written" data-pin="value"><i>value</i><b>2002</b></span></span>',
     );
-    expect(moduleOf(html, "bars")).toContain('<span class="lc-told"><span class="lc-row settled"><i>x</i><b>year</b></span><span class="lc-row settled"><i>height</i><b>nights</b></span></span>');
+    expect(moduleOf(html, "bars")).toContain('<span class="lc-told"><span class="lc-row settled" data-pin="x"><i>x</i><b>year</b></span><span class="lc-row settled" data-pin="y"><i>height</i><b>nights</b></span></span>');
     expect(moduleOf(html, "place")).not.toContain("lc-told");
   });
 
@@ -51,7 +51,7 @@ describe("a schematic, as markup", () => {
   });
 
   it("says what is written on an input as its list of choices says it: a station by its name", () => {
-    expect(moduleOf(drawn("n = nights place: X4"), "n")).toContain('<span class="lc-row written"><i>place</i><b>el Raval</b></span>');
+    expect(moduleOf(drawn("n = nights place: X4"), "n")).toContain('<span class="lc-row written" data-pin="place"><i>place</i><b>el Raval</b></span>');
   });
 
   it("rounds the end of a module nothing arrives at, and the end nothing leaves from", () => {
@@ -98,7 +98,7 @@ describe("a schematic, as markup", () => {
     expect(waiting).toContain('<g class="lc-conduit idle" data-key="wire:whole.table:n.table"');
     expect(classOf(moduleOf(html, "n"))).not.toContain("idle");
     expect(classOf(moduleOf(drawn("bars"), "bars"))).toContain("trouble");
-    expect(moduleOf(drawn("bars"), "bars")).toContain('<span class="lc-row missing"><i>table</i><b>—</b></span>');
+    expect(moduleOf(drawn("bars"), "bars")).toContain('<span class="lc-row missing" data-pin="table"><i>table</i><b>—</b></span>');
   });
 
   it("marks the module chosen, and the conduits that touch it, so its part of the flow is seen apart", () => {
@@ -127,7 +127,54 @@ describe("a schematic, as markup", () => {
     expect(classOf(moduleOf(drawn(TEXT, { runs: new Map([["n", 2]]) }), "n"))).toContain("ran-0");
   });
 
+  it("says nothing of a conduit run by hand while none is", () => {
+    expect(html).not.toContain("joining");
+    expect(html).not.toContain("lc-rubber");
+  });
+
   it("keeps words written in a blueprint from becoming markup", () => {
     expect(drawn('n = nights "<b>Nights</b>"')).toContain("&lt;b&gt;Nights&lt;/b&gt;");
+  });
+});
+
+describe("a schematic while a conduit is run by hand", () => {
+  const LOOSE = `${TEXT}\nj = join left: n\nother = nights`;
+  const into = new Map([["whole", ["table"]], ["bars", ["table"]], ["j", ["left", "right"]]]);
+  const run = (more: Partial<NonNullable<SchematicShown["joining"]>> = {}) => drawn(LOOSE, { joining: { from: { node: "n", port: "table" }, into, ...more } });
+
+  it("marks the module it is run from, those that could take it, and the inputs of theirs it could go into, in the colour of what it carries", () => {
+    const html = run();
+    expect(html).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--bp-table\)">/);
+    expect(classOf(moduleOf(html, "n"))).toContain("feeds");
+    expect(["whole", "bars", "j"].every((id) => classOf(moduleOf(html, id)).includes("takes"))).toBe(true);
+    expect(["place", "other", "n"].some((id) => classOf(moduleOf(html, id)).includes("takes"))).toBe(false);
+    expect(moduleOf(html, "j")).toContain('<i class="lc-tab fits" data-pin="left"');
+    expect(moduleOf(html, "j")).toContain('<span class="lc-row missing fits" data-pin="right">');
+    expect(moduleOf(html, "n")).toContain('<i class="lc-tab" data-pin="place"');
+  });
+
+  it("draws the conduit from the port the hand took to where the hand is, turning once it is out of the module", () => {
+    const from = { x: wide(false, true) + SCHEMATIC.channel + wide(true, true), y: SCHEMATIC.pad / 2 };
+    const turn = from.x + SCHEMATIC.channel / 2;
+    expect(run({ at: { x: from.x + 200, y: 90 } })).toContain(`<path class="lc-rubber" d="M${from.x} ${from.y} L${turn - SCHEMATIC.curve} ${from.y} Q${turn} ${from.y} ${turn} ${from.y + SCHEMATIC.curve} L${turn} ${90 - SCHEMATIC.curve} Q${turn} 90 ${turn + SCHEMATIC.curve} 90 L${from.x + 200} 90"></path>`);
+    expect(run()).not.toContain("lc-rubber");
+  });
+
+  it("marks the module the hand is over, and the input of it, where it is over one", () => {
+    const over = run({ over: { node: "j", pin: "right" } });
+    expect(classOf(moduleOf(over, "j"))).toContain("over");
+    expect(moduleOf(over, "j")).toContain('<span class="lc-row missing fits over" data-pin="right">');
+    expect(classOf(moduleOf(run({ over: { node: "bars" } }), "bars"))).toContain("over");
+    expect(classOf(moduleOf(over, "bars"))).not.toContain("over");
+  });
+
+  it("draws the conduit lifted off the input it fed as one let go of", () => {
+    const lifted = run({ lifted: { node: "whole", pin: "table" } });
+    expect(lifted).toContain('<g class="lc-conduit lifted" data-key="wire:whole.table:n.table"');
+    expect(lifted).toContain('<g class="lc-conduit" data-key="wire:bars.table:whole.table"');
+  });
+
+  it("is in no colour of its own where the port it is run from is not one the module has", () => {
+    expect(drawn(LOOSE, { joining: { from: { node: "gone" }, into: new Map() } })).toMatch(/^<div class="lc-world joining" style="width: \d+px; height: \d+px; --join: var\(--dim\)">/);
   });
 });

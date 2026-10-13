@@ -155,6 +155,14 @@ describe("a blueprint open at a bench", () => {
     expect(open.now.nodes.at(-1)).toEqual({ id: "nights-2", kind: "nights", x: 12, y: 34, values: {} });
   });
 
+  it("adds a node with one of its inputs fed at once from an output there is, as the one step Undo takes back", () => {
+    const { open } = opened("n = nights");
+    expect(open.add("bars", { x: 0, y: 0 }, { pin: "table", from: { node: "n", pin: "table" } })).toBe("bars");
+    expect(open.now.wires).toEqual([{ from: { node: "n", pin: "table" }, to: { node: "bars", pin: "table" } }]);
+    open.undo();
+    expect([ids(open), open.now.wires]).toEqual([["n"], []]);
+  });
+
   it("takes a next step, and puts an input on the board, saying what was added", () => {
     const { open } = opened("n = nights from: 2010");
     const added = open.follow("n", { label: "Trend of nights", kind: "trend", from: "table", into: "table", values: { y: "nights" } }, { x: 300, y: 40 });

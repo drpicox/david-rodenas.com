@@ -28,7 +28,7 @@ export function wireRefused(blueprint: Blueprint, kit: Kit, wire: Wire): string 
   const into = kindOf(wire.to.node)?.inputs.find((pin) => pin.name === wire.to.pin);
   if (!out || !into) return "there is no such pin";
   const label = (type: string) => kit.types.get(type)?.label ?? type;
-  if (!fits(kit, out.type, into.type)) return `${label(out.type)} cannot go into ${into.label}, which takes ${label(into.type)}`;
+  if (!fits(kit, out.type, into.type)) return `${label(out.type)} cannot go into ${into.label || into.name}, which takes ${label(into.type)}`;
   if (needs(blueprint, wire.from.node, wire.to.node)) return `that would make a circle: ${wire.from.node} needs ${wire.to.node} already`;
   return null;
 }
