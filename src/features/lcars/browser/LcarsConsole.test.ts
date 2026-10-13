@@ -49,8 +49,10 @@ describe("a blueprint on the display of a starship", () => {
     expect(element.querySelector(".lc-flow .lc-deck-said")?.textContent).toBe("3 modules · 2 conduits");
     expect(module("n")?.classList.contains("idle")).toBe(true);
     await settle();
-    expect(module("n")?.querySelector(".lc-code")?.textContent).toBe("5");
+    expect(module("n")?.querySelector(".lc-ins .lc-tab")?.textContent).toBe("place");
+    expect(module("n")?.querySelector(".lc-outs .lc-tab")?.textContent).toBe("5");
     expect(module("n")?.querySelector(".lc-said")?.textContent).toBe("5 rows · year, nights");
+    expect([...(module("bars")?.querySelectorAll(".lc-row") ?? [])].map((row) => row.textContent)).toEqual(["xyear", "heightnights"]);
     expect(module("place")?.querySelector(".lc-said")?.textContent).toBe("Dial · el Raval");
     expect(element.querySelector(".wb-board figcaption")?.textContent).toBe("Nights a year");
     expect([...element.querySelectorAll(".lc-lights i")].map((light) => light.className)).toEqual(["done", "done", "done"]);
@@ -115,6 +117,7 @@ describe("a blueprint on the display of a starship", () => {
     expect(element.querySelector(".wb-board svg title")?.textContent).toBe("2010: 10 nights");
     expect(kept.at(-1)).toBe("n = nights from: 2010\nbars table: n");
     expect(element.querySelector('.lc-take[data-pin="from"] input[type="number"]')).toBe(from);
+    expect(module("n")?.querySelector(".lc-told")?.textContent).toBe("from2010");
   });
 
   it("offers what could come after the module chosen, and adds it wired when pressed, chosen in turn", async () => {

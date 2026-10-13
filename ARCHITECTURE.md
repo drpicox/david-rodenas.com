@@ -375,6 +375,7 @@ it, with a canvas and wires to drag. A feature can bring another behind a
 flag (`Feature.benches`, chosen by `benchOf` each time a place is filled):
 `lcars` lays the same blueprint out as a schematic on a grid (`schematicOf`:
 the tidying's columns, a row for every module and for every conduit that
-only passes a column, a lane for each output in the channels between) and
-works it by pressing pads. The mount, the address, the examples, an agent's
+only passes a column, a lane for each output in the channels between),
+shows on each module's face what comes into it, by name, what is written on
+it and what leaves it (`faceOf`), and works it by pressing pads. The mount, the address, the examples, an agent's
 blueprint and what the reader's browser keeps are the same for both.

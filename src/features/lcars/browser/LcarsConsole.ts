@@ -199,7 +199,7 @@ export class LcarsConsole implements Bench {
     const { now: blueprint, evaluation, runs } = this.work;
     // A dial says what it is set to as the board does: a station by its name, not its code.
     const set = new Map(this.work.dials().map((dial) => [dial.node, dial.said]));
-    morphInto(this.schematic, schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set }));
+    morphInto(this.schematic, schematicMarkup({ blueprint, kit: this.setting.kit, evaluation, chosen: this.chosen, pointed: this.pointed, runs, set, read: this.setting.files.read }));
     this.schematic.classList.toggle("blank", blueprint.nodes.length === 0);
     this.counted.textContent = `${blueprint.nodes.length} ${blueprint.nodes.length === 1 ? "module" : "modules"} · ${blueprint.wires.length} ${blueprint.wires.length === 1 ? "conduit" : "conduits"}`;
     this.fill.textContent = `${two(blueprint.nodes.length)}-${two(blueprint.wires.length)}`;

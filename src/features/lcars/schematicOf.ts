@@ -3,13 +3,21 @@ import { columnsOf } from "../../platform/blueprint/columnsOf";
 import type { Point } from "../../platform/blueprint/nodeShapeOf";
 import { SCHEMATIC } from "./SCHEMATIC";
 
-/** A module standing in the schematic: its column and its row, and its top left corner. */
+/** What the layout has to know of a module's face: the inputs and the outputs that have a port, in the order they stand, and how many lines are written under it. */
+export interface Shape {
+  readonly ins: readonly string[];
+  readonly outs: readonly string[];
+  readonly rows: number;
+}
+
+/** A module standing in the schematic: its column and its row, its top left corner, and how wide it is. */
 export interface Module {
   readonly id: string;
   readonly column: number;
   readonly row: number;
   readonly x: number;
   readonly y: number;
+  readonly width: number;
 }
 
 /** A wire as the schematic runs it: the points it leaves from, turns at, and arrives at. */
@@ -46,14 +54,17 @@ const strandKeyOf = (wire: Wire) => `${wire.from.node}\u0000${wire.from.pin}`;
  * A blueprint laid out the way an LCARS display lays a system out: on a
  * grid, the computer's own, with nothing left for a hand to place. Each
  * module stands in the column after the furthest of what it needs, level
- * with what feeds it where that place is free. A conduit runs level out of a
- * module's right end and into another's left, and changes level only in the
- * channel between two columns, on a lane of its own there, shared by
- * everything one output feeds. One that goes further than the next column
- * keeps a place of its own in every column it passes, so it never runs
- * behind a module it has nothing to do with: Sugiyama's layers, on a grid.
+ * with what feeds it where that place is free. A conduit runs level out of
+ * the port of the output it leaves and into the port of the input it feeds,
+ * and changes level only in the channel between two columns, on a lane of
+ * its own there, shared by everything one output feeds. One that goes
+ * further than the next column keeps a place of its own in every column it
+ * passes, so it never runs behind a module it has nothing to do with:
+ * Sugiyama's layers, on a grid. A column is as wide as its widest module,
+ * and a row as high as its tallest. Where the shape of a module is not
+ * said, it has a port for each of its wires, in the order they were drawn.
  */
-export function schematicOf(blueprint: Blueprint): Schematic {
+export function schematicOf(blueprint: Blueprint, shapes: ReadonlyMap<string, Shape> = new Map()): Schematic {
   const column = columnsOf(blueprint);
   const order = new Map(blueprint.nodes.map((node, at) => [node.id, at]));
   const wires = blueprint.wires.filter((wire) => order.has(wire.from.node) && order.has(wire.to.node));
@@ -112,27 +123,29 @@ export function schematicOf(blueprint: Blueprint): Schematic {
   const used = [...new Set(row.values())].sort((a, b) => a - b);
   const rowOf = (id: string) => used.indexOf(row.get(id) ?? 0);
 
-  // Where everything is drawn: the rows are all as high, the channels as wide as the lanes they hold.
-  const middle = (id: string) => rowOf(id) * SCHEMATIC.row + SCHEMATIC.pad / 2;
+  // Where everything is drawn: a row is as high as the tallest module in it, a channel as wide as the lanes it holds.
+  const shapeOf = (id: string): Shape =>
+    shapes.get(id) ?? {
+      ins: [...new Set(wires.filter((wire) => wire.to.node === id).map((wire) => wire.to.pin))],
+      outs: [...new Set(wires.filter((wire) => wire.from.node === id).map((wire) => wire.from.pin))],
+      rows: 0,
+    };
+  /** How far down a module one of its ports is: alone, at the middle of the pad; with others, one under the other from its top. */
+  const portAt = (ports: readonly string[], pin: string) => (ports.length <= 1 ? SCHEMATIC.pad / 2 : (SCHEMATIC.pad - SCHEMATIC.port) / 2 + Math.max(0, ports.indexOf(pin)) * SCHEMATIC.port);
+  const heightOf = ({ ins, outs, rows: lines }: Shape) => {
+    const ports = Math.max(ins.length, outs.length);
+    return Math.max(SCHEMATIC.pad + lines * SCHEMATIC.line + SCHEMATIC.said, ports > 2 ? SCHEMATIC.pad - SCHEMATIC.port + (ports - 1) * SCHEMATIC.port : 0);
+  };
+  const rowHeights = used.map((_, at) => Math.max(SCHEMATIC.pad, ...blueprint.nodes.filter((node) => rowOf(node.id) === at).map((node) => heightOf(shapeOf(node.id)))) + SCHEMATIC.between);
+  const tops = rowHeights.map((_, at) => rowHeights.slice(0, at).reduce((a, b) => a + b, 0));
+  const topOf = (id: string) => tops[rowOf(id)] ?? 0;
+  const middle = (id: string) => topOf(id) + SCHEMATIC.pad / 2;
   const leaving = new Map<string, number>();
-  for (const node of blueprint.nodes) {
-    const mine = [...strands.values()].filter((strand) => strand.node === node.id);
-    // The first output leaves from the middle, so that what it feeds, level with it, is fed by a straight run.
-    mine.forEach((strand, at) => leaving.set(strand.key, middle(node.id) + Math.ceil(at / 2) * (at % 2 === 1 ? 1 : -1) * SCHEMATIC.port));
-  }
+  for (const strand of strands.values()) leaving.set(strand.key, topOf(strand.node) + portAt(shapeOf(strand.node).outs, strand.wires[0]?.from.pin ?? ""));
   /** The level a strand is at as it comes into the channel before a column: out of its module, or through its stand-in. */
   const levelInto = (strand: Strand, at: number) => (at - 1 === columnOf(strand.node) ? (leaving.get(strand.key) ?? 0) : middle(strand.passes.get(at - 1) ?? strand.node));
   const arriving = new Map<Wire, number>();
-  for (const node of blueprint.nodes) {
-    const level = middle(node.id);
-    const coming = wires.filter((wire) => wire.to.node === node.id && forward(wire)).map((wire) => ({ wire, from: levelInto(strands.get(strandKeyOf(wire)) as Strand, columnOf(node.id)) }));
-    const most = Math.floor((SCHEMATIC.pad / 2 - 2) / SCHEMATIC.port);
-    const [above, below] = [coming.filter(({ from }) => from < level).sort((a, b) => b.from - a.from), coming.filter(({ from }) => from > level).sort((a, b) => a.from - b.from)];
-    // What comes level goes straight in at the middle; what comes from above or below keeps to its own side of it.
-    for (const { wire } of coming.filter(({ from }) => from === level)) arriving.set(wire, level);
-    above.forEach(({ wire }, at) => arriving.set(wire, level - Math.min(at + 1, most) * SCHEMATIC.port));
-    below.forEach(({ wire }, at) => arriving.set(wire, level + Math.min(at + 1, most) * SCHEMATIC.port));
-  }
+  for (const wire of wires) arriving.set(wire, topOf(wire.to.node) + portAt(shapeOf(wire.to.node).ins, wire.to.pin));
 
   /** Where a strand comes out of the channel after a column: into what it feeds there, and on to its stand-in if it goes further. */
   const levelsOutOf = (strand: Strand, at: number) => [
@@ -150,26 +163,29 @@ export function schematicOf(blueprint: Blueprint): Schematic {
     const [rising, falling] = [turning.filter((each) => each.rises).sort((a, b) => a.from - b.from), turning.filter((each) => !each.rises).sort((a, b) => b.from - a.from)];
     lanes.set(at, [...rising, ...falling].map((each) => each.key));
   }
+  const widthOf = ({ ins, outs }: Shape) => SCHEMATIC.name + (ins.length > 0 ? SCHEMATIC.tab + SCHEMATIC.seam : 0) + (outs.length > 0 ? SCHEMATIC.seam + SCHEMATIC.out : 0);
+  const wide = new Map(columns.map((at) => [at, Math.max(0, ...blueprint.nodes.filter((node) => columnOf(node.id) === at).map((node) => widthOf(shapeOf(node.id))))]));
+  const widthAt = (at: number) => wide.get(at) ?? 0;
   const left = new Map<number, number>();
   let x = 0;
   for (const at of columns) {
     left.set(at, x);
-    x += SCHEMATIC.module + Math.max(SCHEMATIC.channel, ((lanes.get(at)?.length ?? 0) + 1) * SCHEMATIC.lane);
+    x += widthAt(at) + Math.max(SCHEMATIC.channel, ((lanes.get(at)?.length ?? 0) + 1) * SCHEMATIC.lane);
   }
   const leftOf = (at: number) => left.get(at) ?? 0;
-  const widthOfChannel = (at: number) => leftOf(at + 1) - leftOf(at) - SCHEMATIC.module;
+  const widthOfChannel = (at: number) => leftOf(at + 1) - leftOf(at) - widthAt(at);
   const laneOf = (strand: Strand, at: number) => {
     const all = lanes.get(at) ?? [];
-    return leftOf(at) + SCHEMATIC.module + ((all.indexOf(strand.key) + 1) * widthOfChannel(at)) / (all.length + 1);
+    return leftOf(at) + widthAt(at) + ((all.indexOf(strand.key) + 1) * widthOfChannel(at)) / (all.length + 1);
   };
 
   const conduits = wires.map((wire): Conduit => {
     const strand = strands.get(strandKeyOf(wire)) as Strand;
     const [from, to] = [columnOf(wire.from.node), columnOf(wire.to.node)];
-    const start = { x: leftOf(from) + SCHEMATIC.module, y: leaving.get(strand.key) ?? middle(wire.from.node) };
+    const start = { x: leftOf(from) + widthAt(from), y: leaving.get(strand.key) ?? middle(wire.from.node) };
     if (!forward(wire)) {
       // Against the flow: out, over the row of the module it goes to, and in from its left.
-      const [end, over] = [{ x: leftOf(to), y: middle(wire.to.node) }, rowOf(wire.to.node) * SCHEMATIC.row - (SCHEMATIC.row - SCHEMATIC.pad) / 2];
+      const [end, over] = [{ x: leftOf(to), y: arriving.get(wire) ?? middle(wire.to.node) }, topOf(wire.to.node) - SCHEMATIC.between / 2];
       return { wire, points: [start, { x: start.x + BACK, y: start.y }, { x: start.x + BACK, y: over }, { x: end.x - BACK, y: over }, { x: end.x - BACK, y: end.y }, end] };
     }
     const points: Point[] = [start];
@@ -182,10 +198,10 @@ export function schematicOf(blueprint: Blueprint): Schematic {
     return { wire, points: [...points, { x: leftOf(to), y: level }] };
   });
 
-  const modules = blueprint.nodes.map((node): Module => ({ id: node.id, column: columns.indexOf(columnOf(node.id)), row: rowOf(node.id), x: leftOf(columnOf(node.id)), y: rowOf(node.id) * SCHEMATIC.row }));
+  const modules = blueprint.nodes.map((node): Module => ({ id: node.id, column: columns.indexOf(columnOf(node.id)), row: rowOf(node.id), x: leftOf(columnOf(node.id)), y: topOf(node.id), width: widthAt(columnOf(node.id)) }));
   return {
-    width: modules.length > 0 ? Math.max(...modules.map((module) => module.x)) + SCHEMATIC.module : 0,
-    height: used.length * SCHEMATIC.row,
+    width: modules.length > 0 ? Math.max(...modules.map((module) => module.x + module.width)) : 0,
+    height: Math.max(0, rowHeights.reduce((a, b) => a + b, 0) - SCHEMATIC.between),
     modules,
     conduits,
   };

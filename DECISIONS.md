@@ -16,11 +16,26 @@ workbench. A canvas where nodes are dragged about and wires pulled by hand
 is Unreal's idea of what hands do; an LCARS panel is pads to press, and the
 display lays itself out. `features/lcars` is another bench, behind
 `flags lcars on`: the same blueprint, laid out as a schematic on a grid —
-the tidying's columns, modules as pads in two blocks, conduits that run
-level and turn only in the channels between columns, each output on a lane
-of its own — and worked by pressing: a module, to ask what it takes and
-gives, where its inputs are written; a pad, for what could come next
-(`suggestionsFor`, already there), to take a module away, to go back.
+the tidying's columns, conduits that run level and turn only in the
+channels between columns, each output on a lane of its own — and worked by
+pressing: a module, to ask what it takes and gives, where its inputs are
+written; a pad, for what could come next (`suggestionsFor`, already there),
+to take a module away, to go back.
+
+A module was first a pad with a figure and a name, and David, the same
+day: it looked well, but which inputs were which was lost. A node of the
+workbench carries its inputs on its face, and a blueprint is not read
+without them: which wire goes into which input, and what is written on the
+rest. So a module is read from left to right, as the data flows (`faceOf`):
+a port for each input a conduit feeds, called as the input is; its name;
+and the port its conduits leave from, which carries its figure, or says
+which output it is where the kind gives several. A port is in the colour of
+what passes it, so a conduit joins two blocks of its own colour, and the
+name is in the colour of what the module is for. Under it, a line for each
+input no conduit feeds: what a hand wrote there, and, said lower, what the
+module chose where it was left to it — not what merely starts as its kind
+says, which would make every module as tall as its kind. A row of the grid
+is as high as the tallest module in it.
 
 Two things the idiom gave that the workbench has not. An LCARS panel is
 covered in figures that mean nothing; here every one is real — the rows a

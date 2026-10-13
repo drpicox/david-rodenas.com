@@ -6996,7 +6996,7 @@ body.wb-full-open {
   --bp-role-source: var(--lc-orange);
   --bp-role-step: var(--lc-bell);
   --bp-role-statistic: var(--lc-lilac);
-  --bp-role-paint: var(--lc-ice);
+  --bp-role-paint: var(--lc-peach);
   --bp-role-note: #8d7a9a;
   --bp-c0: var(--lc-orange);
   --bp-c1: var(--lc-violet);
@@ -7497,12 +7497,18 @@ body.wb-full-open {
   100% { opacity: 0.25; }
 }
 
-/* A module: a pad in two blocks — the figure it carries, and its name — with what came out of it under them. */
+/*
+ * A module, read from left to right as the data flows: a port for each input
+ * a conduit feeds, called as the input is; its name; and the port its
+ * conduits leave from, which carries its figure. A port is in the colour of
+ * what passes it, so a conduit joins two blocks of its own colour; the name
+ * is in the colour of what the module is for. Under them, what is written on
+ * the inputs no conduit feeds, and what came out.
+ */
 .app .lcars .lc-module {
   --role: var(--lc-bell);
   position: absolute;
   display: block;
-  width: var(--lc-module);
   padding: 0;
   border-radius: 0;
   background: none;
@@ -7529,67 +7535,167 @@ body.wb-full-open {
 
 .app .lc-pad {
   display: flex;
-  gap: 0.2rem;
+  gap: var(--lc-seam);
   height: var(--lc-pad);
 }
 
-.app .lc-code,
-.app .lc-name {
+/* The ports stand one under the other, as far apart as the layout brings their conduits; a third hangs under the pad. */
+.app .lc-ins,
+.app .lc-outs {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  width: var(--lc-tab);
+}
+
+.app .lc-outs {
+  width: var(--lc-out);
+}
+
+.app .lc-tab {
   box-sizing: border-box;
+  display: block;
+  flex: none;
+  height: calc(var(--lc-port) - 2px);
+  padding: 0.19rem 0.28rem 0;
+  overflow: hidden;
+  background: var(--pin);
+  color: #000;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* A port alone is as high as the pad: it says what it says at its foot, as every block of the display does, and has room for two lines of it. */
+.app .lc-tab:only-child {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
-  height: 100%;
-  padding: 0 0.45rem 0.05rem;
-  overflow: hidden;
-  color: #000;
+  height: var(--lc-pad);
+  padding: 0 0.18rem 0.1rem;
+  font-size: 0.62rem;
+  letter-spacing: 0;
+  text-align: right;
+  white-space: normal;
 }
 
-.app .lc-code {
-  flex: none;
-  min-width: 2.35rem;
-  background: color-mix(in srgb, var(--role) 68%, #000);
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
+/* A figure is said larger than a name, and never broken. */
+.app .lc-tab.lc-figure:only-child {
+  font-size: 0.76rem;
   white-space: nowrap;
 }
 
 .app .lc-name {
+  box-sizing: border-box;
+  display: flex;
   flex: 1;
+  align-items: flex-end;
   min-width: 0;
+  height: 100%;
+  padding: 0 0.4rem 0.08rem;
+  overflow: hidden;
   background: var(--role);
+  color: #000;
+  text-align: left;
 }
 
-/* A name too long for a line takes two, as the small pads of a starship do; one longer still is cut, and said whole where the module is asked. */
+/*
+ * A name too long for a line takes two, as the small pads of a starship do;
+ * one longer still is cut, with the dots that say so, and said whole where
+ * the module is asked. It is set from the left, as what is written under it
+ * is: the dots of a line cut are lost on one set from the right. A narrow
+ * face stands taller than its line, so there is room over the first line,
+ * and the box ends a hair before a third would show its head.
+ */
 .app .lc-name b {
   display: -webkit-box;
-  /* Room over the first line: a narrow face stands taller than its line, and what is cut is cut here. */
-  padding-top: 0.3em;
+  max-height: calc(2.16em + 0.2em - 1px);
+  padding-top: 0.2em;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: inherit;
-  line-height: 1;
+  line-height: 1.08;
 }
 
 /* An end is rounded where the flow begins, or ends: a pill is something nothing else joins. */
-.app .lc-module.begins .lc-code {
+.app .lc-module.begins .lc-name {
   padding-left: 0.8rem;
   border-radius: 999px 0 0 999px;
 }
 
-.app .lc-module.ends .lc-name {
+.app .lc-module.ends .lc-name:last-child {
   padding-right: 0.85rem;
   border-radius: 0 999px 999px 0;
 }
 
+.app .lc-module.begins.ends .lc-name:last-child {
+  border-radius: 999px;
+}
+
+.app .lc-module.ends .lc-outs .lc-tab:only-child {
+  padding-right: 0.6rem;
+  border-radius: 0 999px 999px 0;
+}
+
+/* What is written on a module, and what came out of it, stand under its name: beside the ports, where it has any. */
+.app .lc-module:not(.begins) .lc-told,
+.app .lc-module:not(.begins) .lc-said {
+  margin-left: calc(var(--lc-tab) + var(--lc-seam));
+}
+
+.app .lc-told {
+  display: block;
+  padding-top: 2px;
+}
+
+.app .lc-row {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: space-between;
+  height: var(--lc-line);
+  font-size: 0.66rem;
+  line-height: var(--lc-line);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.app .lc-row i {
+  flex: none;
+  color: color-mix(in srgb, var(--role) 62%, #000);
+  font-style: normal;
+}
+
+.app .lc-row b {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lc-white);
+  font-weight: inherit;
+  text-overflow: ellipsis;
+}
+
+/* What the module chose for itself is said lower than what a hand wrote. */
+.app .lc-row.settled b {
+  color: color-mix(in srgb, var(--role) 85%, #000);
+}
+
+.app .lc-row.missing b {
+  color: var(--lc-alert);
+}
+
 .app .lc-said {
   display: block;
-  margin-top: 0.32rem;
+  margin-top: 0.22rem;
   overflow: hidden;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
+  text-align: left;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -7598,11 +7704,11 @@ body.wb-full-open {
   opacity: 0.4;
 }
 
-.app .lc-module.waiting .lc-code {
+.app .lc-module.waiting .lc-outs .lc-tab {
   animation: lc-wait 0.9s steps(2, jump-none) infinite;
 }
 
-.app .lc-module.trouble .lc-code {
+.app .lc-module.trouble .lc-name {
   background: var(--lc-alert);
 }
 

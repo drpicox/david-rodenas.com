@@ -3,8 +3,8 @@ import type { Evaluation } from "../../platform/blueprint/Evaluation";
 import { footOf } from "../../platform/blueprint/footOf";
 import type { Kit } from "../../platform/blueprint/kitOf";
 import { tag } from "../../platform/blueprint/tag";
-import { codeOf } from "./codeOf";
 import { conduitPath } from "./conduitPath";
+import { faceOf, type Port } from "./faceOf";
 import { SCHEMATIC } from "./SCHEMATIC";
 import { schematicOf } from "./schematicOf";
 
@@ -21,21 +21,26 @@ export interface SchematicShown {
   readonly runs?: ReadonlyMap<string, number>;
   /** What each dial is set to, as a reader would say it: a station by its name, not its code. */
   readonly set?: ReadonlyMap<string, string>;
+  /** The files the site serves: what is written on an input is said as its list of choices says it, and some lists are read from a file. */
+  readonly read?: (path: string) => string;
 }
 
 /**
- * A blueprint as an LCARS display would show it: every node a module — a
- * pad carrying a figure and a name, its end rounded where the flow begins or
- * ends at it, and under it what came out — and every wire a conduit, in the
- * colour of what flows along it. A module is a button: on this display a
+ * A blueprint as an LCARS display would show it: every node a module and
+ * every wire a conduit, in the colour of what flows along it. A module is
+ * read from left to right, as the data flows: a port for each input a
+ * conduit feeds, called as the input is; its name, in the colour of what it
+ * is for; and the port its conduits leave from, carrying its figure. An end
+ * nothing joins is rounded. Under it, what is written on the inputs no
+ * conduit feeds, and what came out. A module is a button: on this display a
  * blueprint is worked on by pressing, never by dragging. Markup, so that it
  * is made the same wherever it is made, and drawn again in place.
  */
-export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map() }: SchematicShown): string {
-  const schematic = schematicOf(blueprint);
+export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, pointed = null, runs = new Map(), set = new Map(), read = () => "" }: SchematicShown): string {
+  const faces = new Map(blueprint.nodes.map((node) => [node.id, faceOf(node, blueprint, kit, evaluation, read)]));
+  const schematic = schematicOf(blueprint, new Map([...faces].map(([id, face]) => [id, { ins: face.ins.map((port) => port.pin), outs: face.outs.map((port) => port.pin), rows: face.rows.length }])));
   const placed = new Map(schematic.modules.map((module) => [module.id, module]));
   const byId = new Map(blueprint.nodes.map((node) => [node.id, node]));
-  const fed = new Set(schematic.conduits.map(({ wire }) => wire.to.node));
   const feeding = new Set(schematic.conduits.map(({ wire }) => wire.from.node));
   const ran = (id: string) => (runs.get(id) ? `${runs.get(id)! % 2}` : null);
 
@@ -53,17 +58,19 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     );
   });
 
+  const ports = (side: string, all: readonly Port[]) => (all.length > 0 ? tag("span", { class: side }, all.map((port) => tag("i", { class: port.figure ? "lc-tab lc-figure" : "lc-tab", "data-pin": port.pin, style: `--pin: var(${port.colour})` }, port.said))) : null);
   const modules = blueprint.nodes.map((node) => {
     const kind = kit.kinds.get(node.kind);
     const result = evaluation.get(node.id);
     const foot = footOf(result, node.kind);
     const at = placed.get(node.id);
+    const face = faces.get(node.id);
     const named = node.title !== undefined && kind !== undefined && node.title !== kind.title;
     const said = [named || kind?.role === "dial" ? kind?.title : "", set.get(node.id) ?? foot.said].filter(Boolean).join(" · ");
     const names = [
       "lc-module",
       `lc-role-${kind?.role ?? "unknown"}`,
-      fed.has(node.id) ? "" : "begins",
+      face?.ins.length ? "" : "begins",
       feeding.has(node.id) ? "" : "ends",
       node.id === chosen ? "chosen" : "",
       node.id === pointed ? "pointed" : "",
@@ -74,8 +81,9 @@ export function schematicMarkup({ blueprint, kit, evaluation, chosen = null, poi
     ];
     return tag(
       "button",
-      { type: "button", class: names.filter(Boolean).join(" "), "data-key": `node:${node.id}`, "data-node": node.id, "aria-pressed": node.id === chosen ? "true" : "false", title: kind?.summary ?? `There is no kind of node called ${node.kind}.`, style: `left: ${at?.x ?? 0}px; top: ${at?.y ?? 0}px; --lc-step: ${at?.column ?? 0}` },
-      tag("span", { class: "lc-pad" }, tag("span", { class: "lc-code" }, codeOf(node, kit, result)), tag("span", { class: "lc-name" }, tag("b", {}, node.title ?? kind?.title ?? node.kind))),
+      { type: "button", class: names.filter(Boolean).join(" "), "data-key": `node:${node.id}`, "data-node": node.id, "aria-pressed": node.id === chosen ? "true" : "false", title: kind?.summary ?? `There is no kind of node called ${node.kind}.`, style: `left: ${at?.x ?? 0}px; top: ${at?.y ?? 0}px; width: ${at?.width ?? 0}px; --lc-step: ${at?.column ?? 0}` },
+      tag("span", { class: "lc-pad" }, ports("lc-ins", face?.ins ?? []), tag("span", { class: "lc-name" }, tag("b", {}, node.title ?? kind?.title ?? node.kind)), ports("lc-outs", face?.outs ?? [])),
+      face?.rows.length ? tag("span", { class: "lc-told" }, face.rows.map((row) => tag("span", { class: `lc-row ${row.how}` }, tag("i", {}, row.label), tag("b", {}, row.value)))) : null,
       tag("span", { class: "lc-said" }, said),
     );
   });
