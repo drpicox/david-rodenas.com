@@ -8,7 +8,8 @@ order: 90
 
 The code of this site is written by an AI — Claude, in Claude Code — from
 what I ask of it. I say what the site is and how it should be made; it
-writes the program, and the tests.
+writes the program, and the tests. In 2026 Anthropic certified me as a
+[Claude Certified Architect – Foundations](https://www.credly.com/badges/cf2b774f-c23c-4806-ab68-18d20a63302e).
 
 The picture is that program. Every ball is a file, every box a folder of the
 frame or a feature, and every arrow a box that needs another. It is read from
